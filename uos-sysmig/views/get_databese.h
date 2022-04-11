@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CONF_NAME "/etc/uos-sysmig/uos-sysmig.conf"
+#define CONF_PATH "/etc/uos-sysmig/uos-sysmig.conf"
+#define CONF_NAME "uos-sysmig.conf"
 
 int get_database(char *name,unsigned long **res)
 {
@@ -16,7 +17,7 @@ int get_database(char *name,unsigned long **res)
         int len = 0;
         int i = 0, j = 0,flag = 0;
 
-        input_file = fopen(CONF_NAME, "rb");
+        input_file = fopen(CONF_PATH, "rb");
         if (input_file == NULL)
         {
                 printf("can not find file!\n");
