@@ -158,27 +158,28 @@ if ! curl -o "switch-to-UOS.repo" "${yum_url}/${repo_file}"; then
 Are you behind a proxy? If so, make sure the 'http_proxy' environment
 variable is set with your proxy address."
 fi
+if [[ "centos" =~ "old_release" ]];then
+	cd "$(mktemp -d)"
+	trap restore_repos ERR
 
-cd "$(mktemp -d)"
-trap restore_repos ERR
+	echo "Backing up and removing old repository files..."
 
-echo "Backing up and removing old repository files..."
+	rpm -ql "$old_release" | grep '\.repo$' > repo_files
 
-rpm -ql "$old_release" | grep '\.repo$' > repo_files
-
-while read -r repo; do
-    if [ -f "$repo" ]; then
-        cat - "$repo" > "$repo".disabled <<EOF
+	while read -r repo; do
+    	if [ -f "$repo" ]; then
+        	cat - "$repo" > "$repo".disabled <<EOF
 # This is a yum repository file that was disabled by
 # ${0##*/}, a script to convert CentOS to UOS Server Enterprise-C 20.
 # Please see $yum_url for more information.
 
 EOF
-        tmpfile=$(mktemp repo.XXXXX)
-        echo "$repo" | cat - "$repo" > "$tmpfile"
-        rm "$repo"
-    fi
-done < repo_files
+       		tmpfile=$(mktemp repo.XXXXX)
+        	echo "$repo" | cat - "$repo" > "$tmpfile"
+        	rm "$repo"
+    	fi
+	done < repo_files
+fi
 
 echo "Downloading UOS Server Enterprise-C 20 release package..."
 if ! yumdownloader "${new_releases[@]}"; then
