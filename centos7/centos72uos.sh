@@ -4,7 +4,7 @@
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 
 set -x
-# Script to switch CentOS (or other similar distribution) to the UniontechOS
+# Script to switch CentOS/RedHat (or other similar distribution) to the UniontechOS
 
 set -e
 unset CDPATH
@@ -21,7 +21,32 @@ skip_if_unavailable = 1
 EOF
 
 yum_url=file:///etc/yum.repos.d/
-bad_packages=( gstreamer1-plugins-bad-free-gtk  python-meh-gui  clucene-contribs-lib centos-release centos-release-cr libreport-plugin-rhtsupport yum-rhn-plugin desktop-backgrounds-basic centos-logos libreport-centos libreport-plugin-mantisbt sl-logos python36-rpm) 
+
+echo "Checking your distribution..."
+if ! old_release=$(rpm -q --whatprovides redhat-release); then
+    exit_message "You appear to be running an unsupported distribution."
+fi
+if [ "$(echo "${old_release}" | wc -l)" -ne 1 ]; then
+    exit_message "Could not determine your distribution because multiple
+packages are providing redhat-release:
+$old_release
+"
+fi
+
+case "${old_release}" in
+    redhat-release*)
+	bad_packages=( gstreamer1-plugins-bad-free-gtk  python-meh-gui  redhat-release* redhat-release-cr  clucene-contribs-lib libreport-plugin-rhtsupport yum-rhn-plugin desktop-backgrounds-basic redhat-logos libreport-redhat libreport-plugin-mantisbt sl-logos python36-rpm subscription-manager gnome-shell-extension-horizontal-workspaces python-meh-guia  Red_Hat_Enterprise* redhat-support-tool redhat-support-lib-python  redhat-access-gui )
+	;;
+    centos-release*) 
+	bad_packages=( gstreamer1-plugins-bad-free-gtk  python-meh-gui  clucene-contribs-lib centos-release centos-release-cr libreport-plugin-rhtsupport yum-rhn-plugin desktop-backgrounds-basic centos-logos libreport-centos libreport-plugin-mantisbt sl-logos python36-rpm)
+	;;
+    sl-release*) ;;
+    uos-release*|enterprise-release*)
+        exit_message "You appear to be already running UOS Server Enterprise-C 20."
+        ;;
+    *) exit_message "You appear to be running an unsupported distribution." ;;
+esac
+
 
 usage() {
     echo "Usage: ${0##*/} [OPTIONS]"
@@ -80,27 +105,7 @@ echo "Checking for required packages..."
 for pkg in rpm yum python2 curl; do
     dep_check "${pkg}"
 done
-echo "Checking your distribution..."
-if ! old_release=$(rpm -q --whatprovides centos-release); then
-    exit_message "You appear to be running an unsupported distribution."
-fi
 
-if [ "$(echo "${old_release}" | wc -l)" -ne 1 ]; then
-    exit_message "Could not determine your distribution because multiple
-packages are providing redhat-release:
-$old_release
-"
-fi
-
-case "${old_release}" in
-    redhat-release*) ;;
-    centos-release*) ;;
-    sl-release*) ;;
-    uos-release*|enterprise-release*)
-        exit_message "You appear to be already running UOS Server Enterprise-C 20."
-        ;;
-    *) exit_message "You appear to be running an unsupported distribution." ;;
-esac
 rhel_version=$(rpm -q "${old_release}" --qf "%{version}")
 base_packages=(basesystem initscripts uos-logos)
 case "$rhel_version" in
@@ -153,27 +158,28 @@ if ! curl -o "switch-to-UOS.repo" "${yum_url}/${repo_file}"; then
 Are you behind a proxy? If so, make sure the 'http_proxy' environment
 variable is set with your proxy address."
 fi
+if [[ "centos" =~ "old_release" ]];then
+	cd "$(mktemp -d)"
+	trap restore_repos ERR
 
-cd "$(mktemp -d)"
-trap restore_repos ERR
+	echo "Backing up and removing old repository files..."
 
-echo "Backing up and removing old repository files..."
+	rpm -ql "$old_release" | grep '\.repo$' > repo_files
 
-rpm -ql "$old_release" | grep '\.repo$' > repo_files
-
-while read -r repo; do
-    if [ -f "$repo" ]; then
-        cat - "$repo" > "$repo".disabled <<EOF
+	while read -r repo; do
+    	if [ -f "$repo" ]; then
+        	cat - "$repo" > "$repo".disabled <<EOF
 # This is a yum repository file that was disabled by
 # ${0##*/}, a script to convert CentOS to UOS Server Enterprise-C 20.
 # Please see $yum_url for more information.
 
 EOF
-        tmpfile=$(mktemp repo.XXXXX)
-        echo "$repo" | cat - "$repo" > "$tmpfile"
-        rm "$repo"
-    fi
-done < repo_files
+       		tmpfile=$(mktemp repo.XXXXX)
+        	echo "$repo" | cat - "$repo" > "$tmpfile"
+        	rm "$repo"
+    	fi
+	done < repo_files
+fi
 
 echo "Downloading UOS Server Enterprise-C 20 release package..."
 if ! yumdownloader "${new_releases[@]}"; then
@@ -200,7 +206,11 @@ yum -y install python-urlgrabber
 echo "Switching old release package with UOS Server Enterprise-C 20..."
 rpm -i --force '*.rpm'
 rpm -e --nodeps "$old_release"
-yum -y remove centos-indexhtml*
+if [[ "redhat" =~ "old_release" ]];then
+	yum -y remove redhat-indexhtml*
+else
+	yum -y remove centos-indexhtml*
+fi
 rm -f "${reposdir}/switch-to-UOS.repo"
 # At this point, the switch is completed.
 trap - ERR
