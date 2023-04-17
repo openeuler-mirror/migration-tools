@@ -106,6 +106,30 @@ for pkg in rpm yum python2 curl; do
     dep_check "${pkg}"
 done
 
+
+echo "Checking your distribution..."
+if ! old_release=$(rpm -q --whatprovides centos-release); then
+    exit_message "You appear to be running an unsupported distribution."
+fi
+
+if [ "$(echo "${old_release}" | wc -l)" -ne 1 ]; then
+    exit_message "Could not determine your distribution because multiple
+packages are providing redhat-release:
+$old_release
+"
+fi
+
+case "${old_release}" in
+    redhat-release*) ;;
+    centos-release*) ;;
+    sl-release*) ;;
+    uos-release*|enterprise-release*)
+        exit_message "You appear to be already running UOS Server Enterprise-C 20."
+        ;;
+    *) exit_message "You appear to be running an unsupported distribution." ;;
+esac
+
+
 rhel_version=$(rpm -q "${old_release}" --qf "%{version}")
 base_packages=(basesystem initscripts uos-logos)
 case "$rhel_version" in
