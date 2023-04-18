@@ -249,6 +249,9 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
     else:
         sys.exit(1)
 
+    if not re.match('8',subver):
+        print("You appear to be running an unsupported distribution.")
+        sys.exit(1)
 
     base_packages=['basesystem','initscripts','uos-logos','plymouth','grub2','grubby']
 
