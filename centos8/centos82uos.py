@@ -119,6 +119,8 @@ old_packages = 'centos-backgrounds centos-logos centos-release centos-release-cr
 centos-release-advanced-virtualization centos-release-ansible26 centos-release-ansible-27 \
 centos-release-ansible-28 centos-release-ansible-29 centos-release-azure \
 centos-release-ceph-jewel centos-release-ceph-luminous centos-release-ceph-nautilus \
+centos-release-ceph-octopus centos-release-configmanagement centos-release-dotnet centos-release-fdio \
+centos-release-gluster40 centos-release-gluster41 centos-release-gluster5 \
 centos-release-gluster6 centos-release-gluster7 centos-release-gluster8 \
 centos-release-gluster-legacy centos-release-messaging centos-release-nfs-ganesha28 \
 centos-release-nfs-ganesha30 centos-release-nfv-common \
