@@ -119,7 +119,13 @@ old_packages = 'centos-backgrounds centos-logos centos-release centos-release-cr
 centos-release-advanced-virtualization centos-release-ansible26 centos-release-ansible-27 \
 centos-release-ansible-28 centos-release-ansible-29 centos-release-azure \
 centos-release-ceph-jewel centos-release-ceph-luminous centos-release-ceph-nautilus \
-centos-release-gluster6 centos-release-gluster7 centos-release-gluster8'
+centos-release-gluster6 centos-release-gluster7 centos-release-gluster8 \
+centos-release-gluster-legacy centos-release-messaging centos-release-nfs-ganesha28 \
+centos-release-nfs-ganesha30 centos-release-nfv-common \
+centos-release-nfv-openvswitch centos-release-openshift-origin centos-release-openstack-queens \
+centos-release-openstack-rocky centos-release-openstack-stein centos-release-openstack-train \
+centos-release-openstack-ussuri centos-release-opstools centos-release-ovirt42 centos-release-ovirt43'
+
 
 reposdir=''
 
