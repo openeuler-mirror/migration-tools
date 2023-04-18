@@ -211,6 +211,22 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
             print("Could not found "+pkg)
             sys.exit(1)
 
+    # display rpms info before conversion
+    if verify_all_rpms:
+        print("Creating a list of RPMs installed before the switch")
+        print("Verifying RPMs installed before the switch against RPM database")
+        out1 = subprocess.check_output('rpm -qa --qf \
+               "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\\n" \
+               | sort > "/var/tmp/$(hostname)-rpms-list-before.log"', shell=True)
+        out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/$(hostname)-rpms-verified-before.log"',shell=True)
+        files = os.listdir('/var/tmp/')
+        hostname = socket.gethostname()
+        print("Review the output of following files:")
+        for f in files:
+            if re.match(hostname+'-rpms-(.*)\.log', f):
+                print(f)
+
+
     # check if the os old_version is supported
     old_version = subprocess.check_output("rpm -q --whatprovides /etc/redhat-release", shell=True)
     old_version = str(old_version, 'utf-8')
