@@ -202,6 +202,13 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         print("Please run the tool as root user.")
         sys.exit(1)
 
+    # check required packages
+    print('Checking required packages')
+    for pkg in ['rpm','yum','curl']:
+        if not check_pkg(pkg):
+            print("Could not found "+pkg)
+            sys.exit(1)
+
     # check if the os old_version is supported
     old_version = subprocess.check_output("rpm -q --whatprovides /etc/redhat-release", shell=True)
     old_version = str(old_version, 'utf-8')
