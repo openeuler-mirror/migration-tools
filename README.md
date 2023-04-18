@@ -1,23 +1,21 @@
 # migration-tools
 
 #### 介绍
-tools for migrating systems
+迁移工具是由统信公司自主研发，具有CentOS7、8系列系统迁移至OpenEuler系统功能的迁移工具。
 
-#### 软件架构
-软件架构说明
+#### 依赖
+
+* python3
+* /bin/bash
 
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+本工具主要由python和shell构成，开箱即用。
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  执行 `python3 xxx.py`
 
 #### 参与贡献
 
