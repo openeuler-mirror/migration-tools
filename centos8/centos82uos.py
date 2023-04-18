@@ -1,0 +1,446 @@
+#!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.  
+
+# SPDX-License-Identifier:   MulanPubL-2.0-or-later
+
+import os
+import subprocess
+import re
+import dnf
+import socket
+import sys
+import shutil
+import argparse
+import platform
+
+local_UniontechOS_repo = '''[UniontechOS-$releasever-AppStream]
+name = UniontechOS $releasever AppStream
+#baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/AppStream/$basearch
+baseurl = file:///mnt/iso/AppStream
+enabled = 1
+username=$auth_u
+password=$auth_p
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
+gpgcheck = 0
+skip_if_unavailable = 1
+
+[UniontechOS-$releasever-BaseOS]
+name = UniontechOS $releasever BaseOS
+#baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/BaseOS/$basearch
+baseurl = file:///mnt/iso/BaseOS
+enabled = 1
+username=$auth_u
+password=$auth_p
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
+gpgcheck = 0
+skip_if_unavailable = 1
+
+[UniontechOS-$releasever-PowerTools]
+name = UniontechOS $releasever PowerTools
+baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/PowerTools/$basearch
+enabled = 0
+username=$auth_u
+password=$auth_p
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
+gpgcheck = 0
+skip_if_unavailable = 1
+
+[UniontechOS-$releasever-Plus]
+name = UniontechOS $releasever Plus
+baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/Plus/$basearch
+enabled = 0
+username=$auth_u
+password=$auth_p
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
+gpgcheck = 0
+skip_if_unavailable = 1
+
+[UniontechOS-$releasever-Extras]
+name = UniontechOS $releasever Extras
+baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/Extras/$basearch
+enabled = 0
+username=$auth_u
+password=$auth_p
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
+gpgcheck = 0
+skip_if_unavailable = 1
+
+[UniontechOS-$releasever-Update]
+name = UniontechOS $releasever Update
+baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/Update/$basearch
+enabled = 0
+username=$auth_u
+password=$auth_p
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
+gpgcheck = 0
+skip_if_unavailable = 1
+
+[UniontechOS-$releasever-HA]
+name = UniontechOS $releasever HighAvailability
+baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/HighAvailability/$basearch
+enabled = 0
+username=$auth_u
+password=$auth_p
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
+gpgcheck = 0
+skip_if_unavailable = 1
+
+[UniontechOS-$releasever-OpenStack-U]
+name = UniontechOS $releasever OpenStack-Ussuri
+baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/OpenStack-U/$basearch
+enabled = 0
+username=$auth_u
+password=$auth_p
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
+gpgcheck = 0
+skip_if_unavailable = 1
+
+'''
+
+
+install_baseurl = "sed -i 's/\$releasever/20/' /etc/yum.repos.d/UniontechOS.repo"
+yum_url="file:///mnt/iso/AppStream"
+
+#Three base rpm download here
+repostr_uos = '''[UniontechOS-AppStream]
+name = UniontechOS AppStream
+baseurl = file:///mnt/iso/AppStream
+enabled = 1
+gpgcheck = 0
+
+[UniontechOS-BaseOS]
+name = UniontechOS BaseOS
+baseurl = file:///mnt/iso/BaseOS
+enabled = 1
+gpgcheck = 0
+'''
+
+old_packages = 'centos-backgrounds centos-logos centos-release centos-release-cr desktop-backgrounds-basic \
+centos-release-advanced-virtualization centos-release-ansible26 centos-release-ansible-27 \
+centos-release-ansible-28 centos-release-ansible-29 centos-release-azure \
+centos-release-ceph-jewel centos-release-ceph-luminous centos-release-ceph-nautilus \
+centos-release-gluster6 centos-release-gluster7 centos-release-gluster8'
+
+reposdir=''
+
+def local_repo():
+    with open('UniontechOS.repo','w',encoding = 'utf-8-sig')as local_repo:
+        local_repo.write(local_UniontechOS_repo)
+    repo_str = '\cp UniontechOS.repo /etc/yum.repos.d/UniontechOS.repo'
+    subprocess.run(repo_str,shell=True)
+
+def check_pkg(pkg):
+    if pkg.split('/')[0] == '':
+        if os.path.exists(pkg):
+            return True
+        else:
+            return False
+
+    paths = os.environ['PATH'].split(':')
+    for path in paths:
+        if not os.path.isdir(path):
+            continue
+        for f in os.listdir(path):
+            if os.path.isfile(os.path.join(path, f)):
+                if f == pkg:
+                    return True
+    return False
+
+def clean_and_exit():
+    global reposdir
+    repo_path = os.path.join(reposdir, 'switch-to-uos.repo')
+    if os.path.exists(repo_path):
+        os.remove(repo_path)
+    sys.exit(1)
+
+def get_disk_info(string):
+    dev_name = ""
+    part_name = ""
+    length = len(string)
+    for c in range(length-1, -1, -1):
+        if not string[c].isdigit():
+            if string.find('nvme') != -1:
+                dev_name = string[0:c]
+                part_num = string[c+1:length]
+            else:
+                dev_name = string[0:c+1]
+                part_num = string[c+1:length]
+            break
+    return dev_name,part_num
+
+def add_boot_option():
+    subprocess.run('which efibootmgr > /dev/null 2>&1 || dnf install -y efibootmgr', shell=True)
+    disk_name = subprocess.check_output('mount | grep /boot/efi | awk \'{print $1}\'', shell=True)
+    disk_name = str(disk_name, 'utf-8')
+    disk_name = disk_name.split('\n')[0]
+    dev_name,part_num = get_disk_info(disk_name)
+    if dev_name == "" or part_num == "":
+        return
+
+    cmd=""
+    arch = platform.machine()
+    if arch == "x86_64":
+        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubx86.efi" -L "Uniontech OS"'
+    elif arch == "aarch64":
+        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubaa64.efi" -L "Uniontech OS"'
+    try:
+        subprocess.check_call(cmd, shell=True)
+    except:
+        print("Use efibootmgr update boot loader failed, please update boot loader manually.")
+
+def main(reinstall_all_rpms=False, verify_all_rpms=False):
+    global reposdir
+
+    # check if the os old_version is supported
+    old_version = subprocess.check_output("rpm -q --whatprovides /etc/redhat-release", shell=True)
+    old_version = str(old_version, 'utf-8')
+    old_version = old_version.split('\n')[:-1]
+    if len(old_version) == 0:
+        sys.exit(1)
+    if len(old_version) > 1:
+        sys.exit(1)
+
+    old_version = old_version[0]
+    if re.match('uos-release', old_version):
+        sys.exit(1)
+    
+    elif re.match('centos-linux-release', old_version):
+        subver = old_version.split('-')[3]
+    
+    elif re.match('redhat-release|centos-release|sl-release', old_version):
+        subver = old_version.split('-')[2]
+        
+    else:
+        sys.exit(1)
+
+
+    base_packages=['basesystem','initscripts','uos-logos','plymouth','grub2','grubby']
+
+    if os.path.exists('/var/run/yum.pid'):
+        with open('/var/run/yum.pid', 'r') as f:
+            pid = f.read()
+            with open('/proc/'+pid+'/comm', 'r') as ff:
+                comm = ff.read()
+        sys.exit(1)
+
+    # check dnf
+    if re.match('8\.',subver):
+        enabled_modules = str(
+            subprocess.check_output("dnf module list --enabled | grep rhel | awk '{print $1}'", shell=True), 
+            'utf-8')
+        enabled_modules = enabled_modules.split('\n')[:-1]
+        unknown_mods=[]
+        if len(enabled_modules) > 0:
+            for mod in enabled_modules:
+                if re.fullmatch('container-tools|llvm-toolset| perl-DBD-SQLite|perl-DBI|satellite-5-client|perl', mod):
+                    subprocess.run('dnf module reset -y '+mod, shell=True)
+                if not re.fullmatch('container-tools|go-toolset|jmc|llvm-toolset|rust-toolset|virt', mod):
+                    unknown_mods.append(mod)
+            if len(unknown_mods) > 0:
+                opt = input('Do you want to continue and resolve it manually? (Yes or No)\n' )
+                if opt != 'Yes':
+                    sys.exit(1)
+
+    if re.match('8\.',subver):
+        dir = dnf.Base().conf.get_reposdir
+        if os.path.isdir(dir):
+            reposdir = dir
+        else:
+            sys.exit(1)
+
+    if re.match('8\.',subver):
+        base = dnf.Base()
+        base.read_all_repos()
+        enabled_repos = []
+        for repo in base.repos.iter_enabled():
+            enabled_repos.append(repo.id)
+
+    if len(reposdir) == 0:
+        sys.exit(1)
+
+    if re.match('8\.',subver):
+        repofile = os.path.join(reposdir, 'switch-to-uos.repo')
+        with open(repofile, 'w') as f:
+            f.write(repostr_uos)
+
+    os.system('yum -y install uos-license-mini license-config ')
+
+    if re.match('centos-release-8\.*|centos-linux-release-8\.*', old_version):
+        old_version = subprocess.check_output('rpm -qa centos*repos', shell=True)
+        old_version = str(old_version, 'utf-8')[:-1]
+
+    try:
+        repos = subprocess.check_output("rpm -ql "+old_version+" | grep '\.repo$'", shell=True)
+        pass
+    except Exception:
+        os.system('yum -y install centos-linux-repos')
+        old_version = subprocess.check_output('rpm -qa centos*repos', shell=True)
+        old_version = str(old_version, 'utf-8')[:-1]
+        repos = subprocess.check_output("rpm -ql "+old_version+" | grep '\.repo$'", shell=True)
+    repos = str(repos, 'utf-8').split('\n')[:-1]
+    num_centos_repos = subprocess.check_output('rpm -qa "centos-release-*" | wc -l', shell=True)
+    if int(str(num_centos_repos,'utf-8')[0]) > 0:
+        addtional_repos = subprocess.check_output('rpm -qla "centos-release-*"', shell=True)
+        addtional_repos = str(addtional_repos, 'utf-8')
+        if addtional_repos != '':
+            addtional_repos = addtional_repos.split('\n')
+            for r in addtional_repos:
+                if re.match('.*\.repo$', r):
+                    repos.append(r)
+
+    backup_comment = '# This is a yum repository file that was disabled by\n' \
+    + '# ' + __file__+ ', a script to convert CentOS to Uniontech.\n' \
+    + '# Please see '+yum_url+' for more information.\n\n'
+
+    for repo in repos:
+        if not os.path.isfile(repo):
+            continue
+        with open(repo, 'r') as fsrc:
+            content = fsrc.read()
+            with open(repo+'.disabled','w') as fdst:
+                fdst.write(repo+'\n'+backup_comment+content)
+        os.remove(repo)
+
+    with open('/etc/yum.conf', 'r') as f:
+        content = f.read()
+    if re.search(r'^distroverpkg=', content, re.MULTILINE):
+        content = re.sub(r"\n(distroverpkg=)", r"\n#\1", content)
+    if re.search(r'bugtracker_url=', content, re.MULTILINE):
+        content = re.sub(r"\n(bugtracker_url=)", r"\n#\1", content)
+    with open('/etc/yum.conf', 'w') as f:
+        f.write(content)
+        
+    dst_release = ['uos-release']
+    try:
+        stat = subprocess.check_output("yumdownloader "+' '.join(dst_release), shell=True)
+        pass
+    except Exception:
+        print("Could not download the following packages from " + yum_url)
+        print('\n'.join(dst_release))
+        print()
+        print("Are you behind a proxy? If so, make sure the 'http_proxy' environmen")
+        print("variable is set with your proxy address.")
+        print("An error occurred while attempting to switch this system to Uniontech" + \
+        "and it may be in an unstable/unbootable state. To avoid further issues, " +\
+        "the script has terminated.")
+
+    dst_rpms = [s+'*.rpm' for s in dst_release]
+    subprocess.run('rpm -e --nodeps ' + old_version + ' centos-gpg-keys', shell=True)
+    subprocess.run('rpm -i --force ' + ' '.join(dst_rpms) + ' --nodeps', shell=True)
+    local_repo()
+    subprocess.run(install_baseurl,shell=True)
+    os.remove(repofile)
+    # switch completed
+
+    repositories={}
+    if re.match('8\.',subver):
+        repositories['AppStream'] = 'REPO AppStream'
+        repositories['BaseOS'] = 'REPO BaseOS'
+        repositories['PowerTools'] = 'REPO PowerTools'
+
+    for repo in enabled_repos:
+        if repo in repositories:
+            action = repositories[repo].split(' ')
+            if action[0] == 'REPO':
+                if re.match('https\..*', action[1]):
+                    subprocess.run('yum-config-manager --add-repo '+action[1], shell=True)
+                else:
+                    subprocess.run('yum-config-manager --enable '+action[1], shell=True)
+            elif action[0] == 'RPM':
+                subprocess.run('yum --assumeyes install '+action[1], shell=True)
+
+    cmd='yum shell -y <<EOF\n\
+remove '+ old_packages +'\n\
+install '+ ' '.join(base_packages) + '\n\
+run\n\
+EOF'
+    try:
+        subprocess.run(cmd, shell=True)
+    except:
+        sys.exit(1)
+
+    if os.access('/usr/libexec/plymouth/plymouth-update-initrd', os.X_OK):
+        os.system('rpm -e --nodeps centos-indexhtml')
+        subprocess.run('/usr/libexec/plymouth/plymouth-update-initrd')
+
+    try:
+        subprocess.run('yum -y distro-sync', shell=True)
+    except:
+        print("Could not automatically sync with UniontechOS repositories.\n\
+        Check the output of 'yum distro-sync' to manually resolve the issue.")
+        sys.exit(1)
+
+
+    if re.match('8\.',subver):
+        if len(enabled_modules) > 0:
+            for mod in enabled_modules:
+                subprocess.run('dnf module reset -y '+mod, shell=True)
+                if re.fullmatch('container-tools|go-toolset|jmc|llvm-toolset|rust-toolset', mod):
+                    subprocess.run('dnf module install -y '+mod+':uelc20', shell=True)
+                elif mod =='virt':
+                    subprocess.run('dnf module install -y '+mod+':uelc', shell=True)
+                else:
+                    print("Unsure how to transform module"+mod)
+            #subprocess.run('dnf --assumeyes --disablerepo "*" --enablerepo "AppStream" update', shell=True)
+            subprocess.run('dnf -y update', shell=True)
+        try:
+            subprocess.check_call('dnf module list --enabled | grep satellite-5-client', shell=True)
+            subprocess.run('dnf module disable -y satellite-5-client', shell=True)
+        except:
+            pass
+
+
+    if reinstall_all_rpms:
+        centos_rpms = subprocess.check_output('rpm -qa --qf "%{NAME}-%{VERSION}-%{RELEASE} %{VENDOR}\n" \
+        | grep CentOS | grep -v kernel | awk \'{print $1}\'', \
+        shell=True)
+        centos_rpms = str(centos_rpms,'utf-8')
+        centos_rpms = centos_rpms.split('\n')[:-1]
+        if len(centos_rpms) > 0:
+            print("Reinstalling RPMs:")
+            print(' '.join(centos_rpms))
+            subprocess.run('yum --assumeyes reinstall '+ ' '.join(centos_rpms), shell=True)
+
+        non_uos_rpms = subprocess.check_output('rpm -qa --qf "%{NAME}-%{VERSION}-%{RELEASE}|%{VENDOR}|%{PACKAGER}\\n" \
+        |grep -v Uniontech', shell=True)
+        non_uos_rpms = str(non_uos_rpms, 'utf-8')
+        non_uos_rpms = non_uos_rpms.split('\n')[:-1]
+        if len(non_uos_rpms) > 0:
+            print("The following non-UniontechOS RPMs are installed on the system:")
+            print(' '.join(non_uos_rpms))
+            print("This may be expected of your environment and does not necessarily indicate a problem.")
+
+    if os.path.isfile('/var/cache/yum'):
+        os.remove('/var/cache/yum')
+    elif os.path.isdir('/var/cache/yum'):
+        shutil.rmtree('/var/cache/yum')
+    if os.path.isfile('/var/cache/dnf'):
+        os.remove('/var/cache/dnf')
+    elif os.path.isdir('/var/cache/dnf'):
+        shutil.rmtree('/var/cache/dnf')
+
+    if verify_all_rpms:
+        out1 = subprocess.check_output('rpm -qa --qf \
+        "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\\n" \
+        | sort > "/var/tmp/$(hostname)-rpms-list-after.log"', shell=True)
+        out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/$(hostname)-rpms-verified-after.log"',shell=True)
+        files = os.listdir('/var/tmp/')
+        hostname = socket.gethostname()
+        for f in files:
+            if re.match(hostname+'-rpms-(.*)\.log', f):
+                print(f)
+
+    if os.path.isdir('/sys/firmware/efi'):
+        subprocess.run('grub2-mkconfig -o /boot/efi/EFI/uos/grub.cfg', shell=True)
+        add_boot_option()
+    else:
+        subprocess.run('grub2-mkconfig -o /boot/grub2/grub.cfg', shell=True)
+    os.system('grep -rl "CentOS" /boot/loader | xargs -i rm -rf {}')
+    print("Switch complete.UniontechOS recommends rebooting this system.")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-r', action='store_true', help='reinstall all CentOS RPMs with UniontechOS RPMs (Note: This is not necessary for support)')
+    parser.add_argument('-V', action='store_true', help='Verify RPM information before and after the switch')
+    args=parser.parse_args()
+    sys.exit(main(args.r, args.V))
