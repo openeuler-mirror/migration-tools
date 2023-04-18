@@ -197,6 +197,11 @@ def add_boot_option():
 def main(reinstall_all_rpms=False, verify_all_rpms=False):
     global reposdir
 
+    # check if the script is executed by root user
+    if os.geteuid() != 0:
+        print("Please run the tool as root user.")
+        sys.exit(1)
+
     # check if the os old_version is supported
     old_version = subprocess.check_output("rpm -q --whatprovides /etc/redhat-release", shell=True)
     old_version = str(old_version, 'utf-8')
