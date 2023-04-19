@@ -408,6 +408,9 @@ EOF'
         os.system('rpm -e --nodeps centos-indexhtml')
         subprocess.run('/usr/libexec/plymouth/plymouth-update-initrd')
 
+    if subver == '8.3':
+        subprocess.run('yum -y downgrade crypto-policies --allowerasing', shell=True)
+
     try:
         subprocess.run('yum -y distro-sync', shell=True)
     except:
