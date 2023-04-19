@@ -126,7 +126,12 @@ centos-release-gluster-legacy centos-release-messaging centos-release-nfs-ganesh
 centos-release-nfs-ganesha30 centos-release-nfv-common \
 centos-release-nfv-openvswitch centos-release-openshift-origin centos-release-openstack-queens \
 centos-release-openstack-rocky centos-release-openstack-stein centos-release-openstack-train \
-centos-release-openstack-ussuri centos-release-opstools centos-release-ovirt42 centos-release-ovirt43'
+centos-release-openstack-ussuri centos-release-opstools centos-release-ovirt42 centos-release-ovirt43 \
+centos-release-ovirt44 centos-release-paas-common centos-release-qemu-ev centos-release-qpid-proton \
+centos-release-rabbitmq-38 centos-release-samba411 centos-release-samba412 \
+centos-release-scl centos-release-scl-rh centos-release-storage-common \
+centos-release-virt-common centos-release-xen centos-release-xen-410 \
+centos-release-xen-412 centos-release-xen-46 centos-release-xen-48 centos-release-xen-common'
 
 
 reposdir=''
