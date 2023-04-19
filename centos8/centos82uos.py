@@ -227,6 +227,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
                 print(f)
 
 
+
     # check if the os old_version is supported
     old_version = subprocess.check_output("rpm -q --whatprovides /etc/redhat-release", shell=True)
     old_version = str(old_version, 'utf-8')
@@ -303,6 +304,11 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
             f.write(repostr_uos)
 
     os.system('yum -y install uos-license-mini license-config ')
+
+    if not check_pkg('yumdownloader'):
+        subprocess.run("yum -y install yum-utils --disablerepo C* || true", shell=True)
+        if not check_pkg('yumdownloader'):
+            clean_and_exit()
 
     if re.match('centos-release-8\.*|centos-linux-release-8\.*', old_version):
         old_version = subprocess.check_output('rpm -qa centos*repos', shell=True)
