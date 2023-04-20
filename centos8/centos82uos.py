@@ -131,7 +131,9 @@ centos-release-ovirt44 centos-release-paas-common centos-release-qemu-ev centos-
 centos-release-rabbitmq-38 centos-release-samba411 centos-release-samba412 \
 centos-release-scl centos-release-scl-rh centos-release-storage-common \
 centos-release-virt-common centos-release-xen centos-release-xen-410 \
-centos-release-xen-412 centos-release-xen-46 centos-release-xen-48 centos-release-xen-common'
+centos-release-xen-412 centos-release-xen-46 centos-release-xen-48 centos-release-xen-common \
+libreport-centos libreport-plugin-mantisbt libreport-plugin-rhtsupport python3-syspurpose \
+python-oauth sl-logos yum-rhn-plugin'
 
 
 reposdir=''
