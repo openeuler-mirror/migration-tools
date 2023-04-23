@@ -449,6 +449,12 @@ EOF'
         subprocess.run('dnf swap -y centos-logos-ipa uos-logos-ipa', shell=True)
     except:
         pass
+    
+    try:
+        subprocess.check_call('rpm -q centos-logos-httpd', shell=True)
+        subprocess.run('dnf swap -y centos-logos-httpd uos-logos-httpd', shell=True)
+    except:
+        pass
 
     if reinstall_all_rpms:
         centos_rpms = subprocess.check_output('rpm -qa --qf "%{NAME}-%{VERSION}-%{RELEASE} %{VENDOR}\n" \
