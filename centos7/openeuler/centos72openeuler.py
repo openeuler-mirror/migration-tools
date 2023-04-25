@@ -1,6 +1,7 @@
 import os
 import subprocess
 
+
 def run_subprocess(cmd=""):
     process = subprocess.Popen(
         cmd,
@@ -19,6 +20,17 @@ def run_subprocess(cmd=""):
     process.communicate()
     return_code = process.poll()
     return output, return_code
+
+
+def swap_release(self):
+    openEuler_release = 'openEuler-release'
+    tmp_dir = '/var/tmp'
+    rpme_release = 'rpm -qf /etc/os-release|xargs -i rpm -e --nodeps {}'
+    run_subprocess(rpme_release)
+    cmd = 'yumdownloader {} --destdir {}'.format(openEuler_release, tmp_dir)
+    run_subprocess(cmd)
+    run_subprocess('rpm -ivh {}/*.rpm --nodeps --force'.format(tmp_dir))
+
 
 def system_sync():
     rebuilddb = 'rpm --rebuilddb;dnf clean all'
