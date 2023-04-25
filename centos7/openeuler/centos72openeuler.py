@@ -22,9 +22,12 @@ def run_subprocess(cmd=""):
 
 def system_sync():
     rebuilddb = 'rpm --rebuilddb;dnf clean all'
-    os.system(rebuilddb)
+    run_subprocess(rebuilddb)
     cmd = 'dnf -y distro-sync --allowerasing --skip-broken'
-    os.system(cmd)
+    _, ret = run_subprocess(cmd)
+    if ret:
+        return False
+    return True
 
 def main():
     system_cross_sync()
