@@ -458,6 +458,13 @@ EOF'
     except:
         pass
 
+    try:
+        subprocess.check_call('rpm -q redhat-lsb-core', shell=True)
+        subprocess.run('dnf swap -y redhat-lsb-core uos-lsb-core', shell=True)
+        subprocess.run('dnf swap -y redhat-lsb-submod-security uos-lsb-submod-security',shell=True)
+    except:
+        pass
+
     if reinstall_all_rpms:
         centos_rpms = subprocess.check_output('rpm -qa --qf "%{NAME}-%{VERSION}-%{RELEASE} %{VENDOR}\n" \
         | grep CentOS | grep -v kernel | awk \'{print $1}\'', \
