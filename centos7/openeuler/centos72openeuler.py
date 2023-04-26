@@ -22,6 +22,13 @@ def run_subprocess(cmd=""):
     return output, return_code
 
 
+def check_pkg(self, rpm):
+    _, ret = run_subprocess('rpm -q {}'.format(rpm))
+    if ret:
+        return
+    return True
+
+
 def swap_release(self):
     openEuler_release = 'openEuler-release'
     tmp_dir = '/var/tmp'
