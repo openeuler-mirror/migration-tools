@@ -184,12 +184,14 @@ def get_disk_info(string):
     return dev_name,part_num
 
 def add_boot_option():
+    print("Current system is uefi, add boot option to boot manager.")
     subprocess.run('which efibootmgr > /dev/null 2>&1 || dnf install -y efibootmgr', shell=True)
     disk_name = subprocess.check_output('mount | grep /boot/efi | awk \'{print $1}\'', shell=True)
     disk_name = str(disk_name, 'utf-8')
     disk_name = disk_name.split('\n')[0]
     dev_name,part_num = get_disk_info(disk_name)
     if dev_name == "" or part_num == "":
+        print("Parse /boot/efi disk info failed, update boot loader failed.")
         return
 
     cmd=""
