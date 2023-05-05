@@ -44,12 +44,16 @@ def system_sync():
     run_subprocess(rebuilddb)
     cmd = 'dnf -y distro-sync --allowerasing --skip-broken'
     _, ret = run_subprocess(cmd)
+    _, ret = run_subprocess('rpm -q kernel|grep {}'.format('uel20'))
     if ret:
         return False
     return True
 
 def main():
-    system_cross_sync()
+    if system_sync():
+        print("System Migration Successful")
+    else:
+        print("System Migration Failed")
 
 if __name__ == '__main__':
     main()
