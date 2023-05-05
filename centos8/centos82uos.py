@@ -209,6 +209,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
     global reposdir
 
     # check if the script is executed by root user
+    print("Checking if the tool is executed by root user")
     if os.geteuid() != 0:
         print("Please run the tool as root user.")
         sys.exit(1)
