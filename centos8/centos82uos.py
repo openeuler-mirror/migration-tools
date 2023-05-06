@@ -470,6 +470,13 @@ EOF'
     except:
         pass
 
+    try:
+        subprocess.check_call('rpm -q rhn-client-tools', shell=True)
+        print("rhn related packages is not provided by Uniontech")
+        subprocess.run('dnf -y remove rhn-client-tools python3-rhn-client-tools python3-rhnlib', shell=True)
+    except:
+        pass
+
     if reinstall_all_rpms:
         centos_rpms = subprocess.check_output('rpm -qa --qf "%{NAME}-%{VERSION}-%{RELEASE} %{VENDOR}\n" \
         | grep CentOS | grep -v kernel | awk \'{print $1}\'', \
