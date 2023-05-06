@@ -239,12 +239,16 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
 
 
     # check if the os old_version is supported
+    print("========= Checking: distribution =========")
     old_version = subprocess.check_output("rpm -q --whatprovides /etc/redhat-release", shell=True)
     old_version = str(old_version, 'utf-8')
     old_version = old_version.split('\n')[:-1]
     if len(old_version) == 0:
+        print("You appear to be running an unsupported distribution.")
         sys.exit(1)
     if len(old_version) > 1:
+        print("Could not determine your distribution because multiple packages are providing redhat-release:")
+        print('\n'.join(old_version))
         sys.exit(1)
 
     old_version = old_version[0]
