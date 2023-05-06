@@ -50,6 +50,9 @@ def system_sync():
     return True
 
 def main():
+    if check_pkg("yum-utils"):
+        print("please install yum-utils")
+        return
     if system_sync():
         print("System Migration Successful")
     else:
