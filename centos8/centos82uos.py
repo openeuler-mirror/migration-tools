@@ -253,6 +253,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
 
     old_version = old_version[0]
     if re.match('uos-release', old_version):
+        print("You are already using Uniontech.")
         sys.exit(1)
     
     elif re.match('centos-linux-release', old_version):
@@ -262,6 +263,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         subver = old_version.split('-')[2]
         
     else:
+        print("Your are using an unsupported distribution.")
         sys.exit(1)
 
     if not re.match('8',subver):
