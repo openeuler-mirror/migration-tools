@@ -30,7 +30,6 @@ def check_pkg(self, rpm):
 
 
 def swap_release(self):
-    openEuler_release = 'openEuler-release'
     tmp_dir = '/var/tmp'
     rpme_release = 'rpm -qf /etc/os-release|xargs -i rpm -e --nodeps {}'
     run_subprocess(rpme_release)
@@ -50,9 +49,12 @@ def system_sync():
     return True
 
 def main():
+    openEuler_release = 'openEuler-release'
     if check_pkg("yum-utils"):
         print("please install yum-utils")
         return
+    if not check_pkg(openEuler_release):
+        swap_release()
     if system_sync():
         print("System Migration Successful")
     else:
