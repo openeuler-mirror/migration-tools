@@ -270,6 +270,11 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         print("You appear to be running an unsupported distribution.")
         sys.exit(1)
 
+    print("========= Checking: required python packages =========")
+    if not check_pkg('/usr/libexec/platform-python'):
+        print('/usr/libexec/platform-python not found.')
+        sys.exit(1)
+
     base_packages=['basesystem','initscripts','uos-logos','plymouth','grub2','grubby']
 
     if os.path.exists('/var/run/yum.pid'):
