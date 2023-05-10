@@ -277,11 +277,15 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
 
     base_packages=['basesystem','initscripts','uos-logos','plymouth','grub2','grubby']
 
+    print("========= Checking: yum lock ===========")
     if os.path.exists('/var/run/yum.pid'):
         with open('/var/run/yum.pid', 'r') as f:
             pid = f.read()
             with open('/proc/'+pid+'/comm', 'r') as ff:
                 comm = ff.read()
+                print('Another app is currently holding the yum lock: '+comm)
+                print('Running as pid: '+pid)
+                print('Please kill it and run the tool again.')
         sys.exit(1)
 
     # check dnf
