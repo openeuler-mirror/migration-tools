@@ -2,7 +2,7 @@ import os
 import subprocess
 
 
-def run_subprocess(cmd=""):
+def run_subprocess(cmd:str):
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -22,11 +22,28 @@ def run_subprocess(cmd=""):
     return output, return_code
 
 
-def check_pkg(self, rpm):
+def check_pkg(rpm):
     _, ret = run_subprocess('rpm -q {}'.format(rpm))
     if ret:
         return
     return True
+
+
+def get_disk_info(string):
+    dev_name = ""
+    part_num = ""
+    length = len(string)
+    for c in range(length - 1, -1, -1):
+        if not string[c].isdigit():
+            if string.find('nvme') != -1:
+                dev_name = string[0:c]
+                part_num = string[c + 1:length]
+            else:
+                dev_name = string[0:c + 1]
+                part_num = string[c + 1:length]
+            break
+    return dev_name, part_num
+
 
 
 def swap_release():
