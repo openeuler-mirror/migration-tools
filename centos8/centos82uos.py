@@ -290,6 +290,8 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
 
     # check dnf
     if re.match('8\.',subver):
+        print("========= Checking: dnf =========")
+        print("Identifying dnf modules that are enabled...")
         enabled_modules = str(
             subprocess.check_output("dnf module list --enabled | grep rhel | awk '{print $1}'", shell=True), 
             'utf-8')
