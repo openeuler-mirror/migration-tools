@@ -321,12 +321,15 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
             print("repository directory not found")
             sys.exit(1)
 
+    print("========= Learning which repositories are enabled ==========")
     if re.match('8\.',subver):
         base = dnf.Base()
         base.read_all_repos()
         enabled_repos = []
         for repo in base.repos.iter_enabled():
             enabled_repos.append(repo.id)
+    print("Repositories enabled before update include:")
+    print(enabled_repos)
 
     if len(reposdir) == 0:
         sys.exit(1)
