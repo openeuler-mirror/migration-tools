@@ -312,11 +312,13 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
                 if opt != 'Yes':
                     sys.exit(1)
 
+    print("========= Finding your repository directory =========")
     if re.match('8\.',subver):
         dir = dnf.Base().conf.get_reposdir
         if os.path.isdir(dir):
             reposdir = dir
         else:
+            print("repository directory not found")
             sys.exit(1)
 
     if re.match('8\.',subver):
