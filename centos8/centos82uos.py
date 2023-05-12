@@ -304,6 +304,10 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
                 if not re.fullmatch('container-tools|go-toolset|jmc|llvm-toolset|rust-toolset|virt', mod):
                     unknown_mods.append(mod)
             if len(unknown_mods) > 0:
+                print('This tool is unable to automatically switch module(s) ' \
+                + ','.join(unknown_mods) \
+                + ' from a CentOS \'rhel\' stream to an UniontechOS equivalent.'\
+                )
                 opt = input('Do you want to continue and resolve it manually? (Yes or No)\n' )
                 if opt != 'Yes':
                     sys.exit(1)
