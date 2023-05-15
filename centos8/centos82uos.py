@@ -332,6 +332,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
     print(enabled_repos)
 
     if len(reposdir) == 0:
+        print("Could not locate your repository directory.")
         sys.exit(1)
 
     if re.match('8\.',subver):
