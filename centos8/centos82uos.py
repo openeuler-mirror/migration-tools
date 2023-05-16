@@ -500,6 +500,13 @@ EOF'
     except:
         pass
 
+    try:
+        subprocess.check_call('rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS', shell=True)
+        print("remove centos gpg-pubkey")
+        subprocess.run('rpm -e $(rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS | awk \'{print $1}\')', shell=True)
+    except:
+        pass
+
     if reinstall_all_rpms:
         centos_rpms = subprocess.check_output('rpm -qa --qf "%{NAME}-%{VERSION}-%{RELEASE} %{VENDOR}\n" \
         | grep CentOS | grep -v kernel | awk \'{print $1}\'', \
