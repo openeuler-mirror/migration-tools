@@ -45,6 +45,36 @@ def get_disk_info(string):
     return dev_name, part_num
 
 
+def add_boot_option():
+    """
+    Current system is uefi, add boot option to boot manager.
+    """
+    subprocess.run('which efibootmgr > /dev/null 2>&1 || dnf install -y efibootmgr', shell=True)
+    disk_name = subprocess.check_output('mount | grep /boot/efi | awk \'{print $1}\'', shell=True)
+    disk_name = str(disk_name, 'utf-8')
+    disk_name = disk_name.split('\n')[0]
+    dev_name, part_num = get_disk_info(disk_name)
+    if dev_name == "" or part_num == "":
+        # "Parse /boot/efi disk info failed, update boot loader failed.
+        return
+
+    cmd = ""
+    arch = platform.machine()
+    openEuler_path = '/boot/efi/EFI/openEuler'
+    if os.path.exists(openEuler_path):
+        efi_name = 'openEuler'
+    else:
+        efi_name = 'uos'
+    if arch == "x86_64":
+        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/{}/grubx86.efi" -L "openEuler"'.format(
+            efi_name)
+    elif arch == "aarch64":
+        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/{}/grubaa64.efi" -L "openEuler"'.format(
+            efi_name)
+    try:
+        run_subprocess(cmd)
+    except Exception as e:
+        print(e)
 
 def swap_release():
     tmp_dir = '/var/tmp'
