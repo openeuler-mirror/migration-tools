@@ -341,7 +341,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
             f.write(repostr_uos)
 
     os.system('yum -y install uos-license-mini license-config ')
-
+    print("========= Looking for yumdownloader ==========")
     if not check_pkg('yumdownloader'):
         subprocess.run("yum -y install yum-utils --disablerepo C* || true", shell=True)
         if not check_pkg('yumdownloader'):
