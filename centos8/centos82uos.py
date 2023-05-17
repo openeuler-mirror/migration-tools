@@ -352,6 +352,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         old_version = subprocess.check_output('rpm -qa centos*repos', shell=True)
         old_version = str(old_version, 'utf-8')[:-1]
 
+    print("Backing up and removing old repository files...")
     try:
         repos = subprocess.check_output("rpm -ql "+old_version+" | grep '\.repo$'", shell=True)
         pass
