@@ -347,6 +347,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         if not check_pkg('yumdownloader'):
             clean_and_exit()
 
+    print("========= Start converting =========")
     if re.match('centos-release-8\.*|centos-linux-release-8\.*', old_version):
         old_version = subprocess.check_output('rpm -qa centos*repos', shell=True)
         old_version = str(old_version, 'utf-8')[:-1]
