@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 
 
@@ -85,6 +86,14 @@ def swap_release():
     run_subprocess('rpm -ivh {}/*.rpm --nodeps --force'.format(tmp_dir))
 
 
+def conf_grub():
+    if os.path.isdir('/sys/firmware/efi'):
+        old_kernel = '3.10.0'
+        if old_kernel:
+            run_subprocess('rpm -e --nodeps kernel-{}'.format(old_kernel))
+            run_subprocess('dnf install -y shim')
+
+
 def system_sync():
     rebuilddb = 'rpm --rebuilddb;dnf clean all'
     run_subprocess(rebuilddb)
@@ -105,6 +114,8 @@ def main():
         return
     if not check_pkg(openEuler_release):
         swap_release()
+
+    conf_grub()
     if system_sync():
         print("System Migration Successful")
     else:
