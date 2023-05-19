@@ -394,7 +394,8 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         content = re.sub(r"\n(bugtracker_url=)", r"\n#\1", content)
     with open('/etc/yum.conf', 'w') as f:
         f.write(content)
-        
+     
+    print("Downloading uos release package...")   
     dst_release = ['uos-release']
     try:
         stat = subprocess.check_output("yumdownloader "+' '.join(dst_release), shell=True)
