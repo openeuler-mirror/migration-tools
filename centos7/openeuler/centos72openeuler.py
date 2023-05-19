@@ -92,6 +92,11 @@ def conf_grub():
         if old_kernel:
             run_subprocess('rpm -e --nodeps kernel-{}'.format(old_kernel))
             run_subprocess('dnf install -y shim')
+        openEuler_path = '/boot/efi/EFI/openEuler'
+        if not os.path.exists(openEuler_path):
+            uos_path = '/boot/efi/EFI/openEuler'
+        run_subprocess('grub2-mkconfig -o {}/grub.cfg'.format(openEuler_path))
+        add_boot_option()
 
 
 def system_sync():
