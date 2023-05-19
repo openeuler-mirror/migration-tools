@@ -385,6 +385,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
                 fdst.write(repo+'\n'+backup_comment+content)
         os.remove(repo)
 
+    print("Removing CentOS-specific yum configuration from /etc/yum.conf ...")
     with open('/etc/yum.conf', 'r') as f:
         content = f.read()
     if re.search(r'^distroverpkg=', content, re.MULTILINE):
