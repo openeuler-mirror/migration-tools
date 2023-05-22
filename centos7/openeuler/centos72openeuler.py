@@ -97,6 +97,14 @@ def conf_grub():
             uos_path = '/boot/efi/EFI/openEuler'
         run_subprocess('grub2-mkconfig -o {}/grub.cfg'.format(openEuler_path))
         add_boot_option()
+    else:
+        run_subprocess('grub2-mkconfig -o /boot/grub2/grub.cfg')
+        try:
+            run_subprocess('test -L /boot/grub2/grubenv')
+            run_subprocess('mv /boot/grub2/grubenv /boot/grub2/grubenv-bak')
+            run_subprocess('cat /boot/grub2/grubenv-bak > /boot/grub2/grubenv')
+        except Exception as e:
+            print(e)
 
 
 def system_sync():
