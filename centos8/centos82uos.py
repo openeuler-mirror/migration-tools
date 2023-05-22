@@ -410,6 +410,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         "and it may be in an unstable/unbootable state. To avoid further issues, " +\
         "the script has terminated.")
 
+    print("Switching old release package with Uniontech...")
     dst_rpms = [s+'*.rpm' for s in dst_release]
     subprocess.run('rpm -e --nodeps ' + old_version + ' centos-gpg-keys', shell=True)
     subprocess.run('rpm -i --force ' + ' '.join(dst_rpms) + ' --nodeps', shell=True)
