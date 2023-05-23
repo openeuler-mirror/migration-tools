@@ -118,6 +118,8 @@ def system_sync():
     return True
 
 def main():
+    # 安装基础包
+    os.system("yum install -y gdbm-help")
     openEuler_release = 'openEuler-release'
     if not self.check_pkg('rsync'):
         print('please install rsync')
