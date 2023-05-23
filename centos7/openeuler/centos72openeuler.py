@@ -120,6 +120,12 @@ def system_sync():
 def main():
     # 安装基础包
     os.system("yum install -y gdbm-help")
+
+    remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos']
+    for i in remove_packages_nodeps:
+        nodeps_cmd = 'rpm -q {} && rpm -e --nodeps {}'.format(i, i)
+        os.system(nodeps_cmd)
+
     openEuler_release = 'openEuler-release'
     if not self.check_pkg('rsync'):
         print('please install rsync')
