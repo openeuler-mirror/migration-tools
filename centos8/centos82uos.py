@@ -429,6 +429,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         if repo in repositories:
             action = repositories[repo].split(' ')
             if action[0] == 'REPO':
+                print('Enabling ' + action[1] + 'which replaces ' + repo)
                 if re.match('https\..*', action[1]):
                     subprocess.run('yum-config-manager --add-repo '+action[1], shell=True)
                 else:
