@@ -121,7 +121,9 @@ def main():
     # 安装基础包
     os.system("yum install -y gdbm-help")
 
-    remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos']
+    remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos', 
+                                'iwl7265-firmware', 'ivtv-firmware', 
+                                'sysvinit-tools', 'sg3_utils-libs']
     for i in remove_packages_nodeps:
         nodeps_cmd = 'rpm -q {} && rpm -e --nodeps {}'.format(i, i)
         os.system(nodeps_cmd)
