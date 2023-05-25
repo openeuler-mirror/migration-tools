@@ -137,6 +137,8 @@ def main():
             os.makedirs(install_dir)
         else:
             shutil.rmtree(install_dir)
+    install_cmd = 'yum install -y systemd python3-libdnf python3-libcomps python3-rpm util-linux --installroot={}'.format(install_dir)
+    os.system(install_cmd)
 
     openEuler_release = 'openEuler-release'
     if not self.check_pkg('rsync'):
