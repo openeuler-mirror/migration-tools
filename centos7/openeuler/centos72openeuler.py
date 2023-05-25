@@ -1,5 +1,6 @@
 import os
 import platform
+import shutil
 import subprocess
 
 
@@ -127,6 +128,15 @@ def main():
     for i in remove_packages_nodeps:
         nodeps_cmd = 'rpm -q {} && rpm -e --nodeps {}'.format(i, i)
         os.system(nodeps_cmd)
+
+
+    rpm_perl = '/etc/rpm/macros.perl'
+        dnf_path = '/usr/bin/dnf'
+        install_dir = os.path.join(os.path.dirname('/var/tmp'), 'DNF')
+        if not os.path.exists(install_dir):
+            os.makedirs(install_dir)
+        else:
+            shutil.rmtree(install_dir)
 
     openEuler_release = 'openEuler-release'
     if not self.check_pkg('rsync'):
