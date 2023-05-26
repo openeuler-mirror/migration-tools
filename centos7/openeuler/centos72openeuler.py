@@ -137,7 +137,8 @@ def main():
             os.makedirs(install_dir)
         else:
             shutil.rmtree(install_dir)
-    install_cmd = 'yum install -y systemd python3-libdnf python3-libcomps python3-rpm util-linux --installroot={}'.format(install_dir)
+    install_cmd = 'yum install -y systemd python3-libdnf libreport-filesystem python3-gpg libmodulemd deltarpm python3-hawkey \
+                    python3-libcomps python3-rpm util-linux --installroot={}'.format(install_dir)
     os.system(install_cmd)
 
     openEuler_release = 'openEuler-release'
