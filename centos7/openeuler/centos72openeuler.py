@@ -141,6 +141,10 @@ def main():
                     python3-libcomps python3-rpm util-linux --installroot={}'.format(install_dir)
     os.system(install_cmd)
 
+    #下载dnf
+    download_dnf = '/usr/bin/yumdownloader {} --destdir={}'.format('dnf python3-dnf dnf-help', os.path.join(install_dir, 'root'))
+    os.system(download_dnf)
+
     openEuler_release = 'openEuler-release'
     if not self.check_pkg('rsync'):
         print('please install rsync')
