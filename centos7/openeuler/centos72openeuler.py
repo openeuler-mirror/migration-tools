@@ -141,13 +141,21 @@ def main():
                     python3-libcomps python3-rpm util-linux --installroot={}'.format(install_dir)
     os.system(install_cmd)
 
-    #下载dnf
+    # 下载dnf
     download_dnf = '/usr/bin/yumdownloader {} --destdir={}'.format('dnf python3-dnf dnf-help', os.path.join(install_dir, 'root'))
     os.system(download_dnf)
 
     # 安装dnf
     ivh_dnf = '/sbin/chroot {} /bin/bash -c "rpm --rebuilddb"'.format(install_dir)
     _, ret = run_subprocess(ivh_dnf)
+    if ret:
+        return
+
+    # 同步文件
+    rsync = '/usr/bin/rsync -a {}/ / --exclude="var/lib/rpm" --exclude="var/cache/yum" --exclude="tmp" ' \
+                '--exclude="sys" --exclude="run" --exclude="lost+found" --exclude="mnt" --exclude="proc" ' \
+                '--exclude="dev" --exclude="media" --exclude="etc" --exclude="root" '.format(install_dir)
+    _, ret = run_subprocess(rsync)
     if ret:
         return
 
