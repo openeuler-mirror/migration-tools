@@ -145,6 +145,12 @@ def main():
     download_dnf = '/usr/bin/yumdownloader {} --destdir={}'.format('dnf python3-dnf dnf-help', os.path.join(install_dir, 'root'))
     os.system(download_dnf)
 
+    # 安装dnf
+    ivh_dnf = '/sbin/chroot {} /bin/bash -c "rpm --rebuilddb"'.format(install_dir)
+    _, ret = run_subprocess(ivh_dnf)
+    if ret:
+        return
+
     openEuler_release = 'openEuler-release'
     if not self.check_pkg('rsync'):
         print('please install rsync')
