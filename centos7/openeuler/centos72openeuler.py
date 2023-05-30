@@ -130,7 +130,6 @@ def main():
         os.system(nodeps_cmd)
 
 
-    rpm_perl = '/etc/rpm/macros.perl'
         dnf_path = '/usr/bin/dnf'
         install_dir = os.path.join(os.path.dirname('/var/tmp'), 'DNF')
         if not os.path.exists(install_dir):
@@ -158,6 +157,13 @@ def main():
     _, ret = run_subprocess(rsync)
     if ret:
         return
+
+    rpm_perl = '/etc/rpm/macros.perl'
+    os.system('rpm --rebuilddb')
+        if os.path.exists(rpm_perl):
+            os.remove(rpm_perl)
+        if os.path.exists(dnf_path):
+            return True
 
     openEuler_release = 'openEuler-release'
     if not self.check_pkg('rsync'):
