@@ -175,8 +175,11 @@ def main():
     if not check_pkg(openEuler_release):
         swap_release()
 
-    conf_grub()
     if system_sync():
+        # 安装必要软件包、license
+        install_cmd = 'dnf -y groupinstall "Minimal Install"'
+        run_subprocess(install_cmd)
+        conf_grub()
         print("System Migration Successful")
     else:
         print("System Migration Failed")
