@@ -184,5 +184,9 @@ def main():
     else:
         print("System Migration Failed")
 
+    # 开机启动cui
+    cmd = 'systemctl set-default {}'.format(default)
+    run_subprocess(cmd)
+
 if __name__ == '__main__':
     main()
