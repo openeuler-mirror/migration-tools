@@ -435,6 +435,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
                 else:
                     subprocess.run('yum-config-manager --enable '+action[1], shell=True)
             elif action[0] == 'RPM':
+                print('Installing ' + action[1] + ' to get content that replaces ' + repo)
                 subprocess.run('yum --assumeyes install '+action[1], shell=True)
 
     cmd='yum shell -y <<EOF\n\
