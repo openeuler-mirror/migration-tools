@@ -438,6 +438,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
                 print('Installing ' + action[1] + ' to get content that replaces ' + repo)
                 subprocess.run('yum --assumeyes install '+action[1], shell=True)
 
+    print("Installing base packages for UniontechOS...")
     cmd='yum shell -y <<EOF\n\
 remove '+ old_packages +'\n\
 install '+ ' '.join(base_packages) + '\n\
