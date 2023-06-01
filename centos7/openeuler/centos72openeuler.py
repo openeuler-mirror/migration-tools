@@ -187,6 +187,10 @@ def main():
     # 开机启动cui
     cmd = 'systemctl set-default {}'.format(default)
     run_subprocess(cmd)
+    
+    if not os.path.exists('/usr/bin/python3'):
+        cmd = 'ln -s /usr/bin/python3.7 /usr/bin/python3'
+        run_subprocess(cmd)
 
 if __name__ == '__main__':
     main()
