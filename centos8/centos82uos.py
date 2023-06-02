@@ -447,6 +447,7 @@ EOF'
     try:
         subprocess.run(cmd, shell=True)
     except:
+        print("Could not install base packages.Run 'yum distro-sync' to manually install them.")
         sys.exit(1)
 
     if os.access('/usr/libexec/plymouth/plymouth-update-initrd', os.X_OK):
