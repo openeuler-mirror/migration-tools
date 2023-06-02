@@ -451,6 +451,7 @@ EOF'
         sys.exit(1)
 
     if os.access('/usr/libexec/plymouth/plymouth-update-initrd', os.X_OK):
+        print("Updating initrd...")
         os.system('rpm -e --nodeps centos-indexhtml')
         subprocess.run('/usr/libexec/plymouth/plymouth-update-initrd')
 
