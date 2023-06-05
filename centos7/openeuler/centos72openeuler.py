@@ -192,5 +192,13 @@ def main():
         cmd = 'ln -s /usr/bin/python3.7 /usr/bin/python3'
         run_subprocess(cmd)
 
+    yum_conflict_dir = '/etc/yum/'
+    if os.path.exists('/usr/bin/yum'):
+        return
+    if os.path.exists(yum_conflict_dir):
+        shutil.rmtree(yum_conflict_dir)
+    run_subprocess('dnf install -y yum')
+
+
 if __name__ == '__main__':
     main()
