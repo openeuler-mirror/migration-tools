@@ -537,6 +537,7 @@ EOF'
             print(' '.join(non_uos_rpms))
             print("This may be expected of your environment and does not necessarily indicate a problem.")
 
+    print("Removing yum cache")
     if os.path.isfile('/var/cache/yum'):
         os.remove('/var/cache/yum')
     elif os.path.isdir('/var/cache/yum'):
