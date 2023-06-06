@@ -481,6 +481,7 @@ EOF'
             subprocess.run('dnf -y update', shell=True)
         try:
             subprocess.check_call('dnf module list --enabled | grep satellite-5-client', shell=True)
+            print("UniontechOS does not provide satellite-5-client module, disable it.")
             subprocess.run('dnf module disable -y satellite-5-client', shell=True)
         except:
             pass
