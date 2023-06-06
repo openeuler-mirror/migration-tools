@@ -454,6 +454,7 @@ EOF'
         print("Updating initrd...")
         os.system('rpm -e --nodeps centos-indexhtml')
         subprocess.run('/usr/libexec/plymouth/plymouth-update-initrd')
+        print("Switch successful. Syncing with UniontechOS repositories.")
 
     if subver == '8.3':
         subprocess.run('yum -y downgrade crypto-policies --allowerasing', shell=True)
