@@ -550,6 +550,8 @@ EOF'
         shutil.rmtree('/var/cache/dnf')
 
     if verify_all_rpms:
+        print("Creating a list of RPMs installed after the switch")
+        print("Verifying RPMs installed after the switch against RPM database")
         out1 = subprocess.check_output('rpm -qa --qf \
         "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\\n" \
         | sort > "/var/tmp/$(hostname)-rpms-list-after.log"', shell=True)
