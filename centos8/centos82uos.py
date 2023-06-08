@@ -340,6 +340,9 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         with open(repofile, 'w') as f:
             f.write(repostr_uos)
 
+    os.system("sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*")
+    os.system("sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*")
+
     os.system('yum -y install uos-license-mini license-config ')
     print("========= Looking for yumdownloader ==========")
     if not check_pkg('yumdownloader'):
