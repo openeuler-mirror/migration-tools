@@ -558,6 +558,7 @@ EOF'
         out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/$(hostname)-rpms-verified-after.log"',shell=True)
         files = os.listdir('/var/tmp/')
         hostname = socket.gethostname()
+        print("Review the output of following files:")
         for f in files:
             if re.match(hostname+'-rpms-(.*)\.log', f):
                 print(f)
