@@ -500,6 +500,7 @@ EOF'
 
     try:
         subprocess.check_call('rpm -q redhat-lsb-core', shell=True)
+        print("redhat-lsb is replaced by system-lsb on uos")
         subprocess.run('dnf swap -y redhat-lsb-core uos-lsb-core', shell=True)
         subprocess.run('dnf swap -y redhat-lsb-submod-security uos-lsb-submod-security',shell=True)
     except:
