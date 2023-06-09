@@ -54,11 +54,6 @@ python-oauth sl-logos yum-rhn-plugin'
 
 reposdir=''
 
-def local_repo():
-    with open('UniontechOS.repo','w',encoding = 'utf-8-sig')as local_repo:
-        local_repo.write(local_UniontechOS_repo)
-    repo_str = '\cp UniontechOS.repo /etc/yum.repos.d/UniontechOS.repo'
-    subprocess.run(repo_str,shell=True)
 
 def check_pkg(pkg):
     if pkg.split('/')[0] == '':
@@ -333,7 +328,6 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
     dst_rpms = [s+'*.rpm' for s in dst_release]
     subprocess.run('rpm -e --nodeps ' + old_version + ' centos-gpg-keys', shell=True)
     subprocess.run('rpm -i --force ' + ' '.join(dst_rpms) + ' --nodeps', shell=True)
-    #local_repo()
     subprocess.run(install_baseurl,shell=True)
     os.remove(repofile)
     # switch completed
