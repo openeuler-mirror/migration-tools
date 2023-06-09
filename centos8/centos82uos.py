@@ -13,90 +13,6 @@ import shutil
 import argparse
 import platform
 
-local_UniontechOS_repo = '''[UniontechOS-$releasever-AppStream]
-name = UniontechOS $releasever AppStream
-#baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/AppStream/$basearch
-baseurl = file:///mnt/iso/AppStream
-enabled = 1
-username=$auth_u
-password=$auth_p
-gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
-gpgcheck = 0
-skip_if_unavailable = 1
-
-[UniontechOS-$releasever-BaseOS]
-name = UniontechOS $releasever BaseOS
-#baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/BaseOS/$basearch
-baseurl = file:///mnt/iso/BaseOS
-enabled = 1
-username=$auth_u
-password=$auth_p
-gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
-gpgcheck = 0
-skip_if_unavailable = 1
-
-[UniontechOS-$releasever-PowerTools]
-name = UniontechOS $releasever PowerTools
-baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/PowerTools/$basearch
-enabled = 0
-username=$auth_u
-password=$auth_p
-gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
-gpgcheck = 0
-skip_if_unavailable = 1
-
-[UniontechOS-$releasever-Plus]
-name = UniontechOS $releasever Plus
-baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/Plus/$basearch
-enabled = 0
-username=$auth_u
-password=$auth_p
-gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
-gpgcheck = 0
-skip_if_unavailable = 1
-
-[UniontechOS-$releasever-Extras]
-name = UniontechOS $releasever Extras
-baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/Extras/$basearch
-enabled = 0
-username=$auth_u
-password=$auth_p
-gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
-gpgcheck = 0
-skip_if_unavailable = 1
-
-[UniontechOS-$releasever-Update]
-name = UniontechOS $releasever Update
-baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/Update/$basearch
-enabled = 0
-username=$auth_u
-password=$auth_p
-gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
-gpgcheck = 0
-skip_if_unavailable = 1
-
-[UniontechOS-$releasever-HA]
-name = UniontechOS $releasever HighAvailability
-baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/HighAvailability/$basearch
-enabled = 0
-username=$auth_u
-password=$auth_p
-gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
-gpgcheck = 0
-skip_if_unavailable = 1
-
-[UniontechOS-$releasever-OpenStack-U]
-name = UniontechOS $releasever OpenStack-Ussuri
-baseurl = https://enterprise-c-packages.chinauos.com/server-enterprise-c/kongzi/1020/OpenStack-U/$basearch
-enabled = 0
-username=$auth_u
-password=$auth_p
-gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
-gpgcheck = 0
-skip_if_unavailable = 1
-
-'''
-
 
 install_baseurl = "sed -i 's/\$releasever/20/' /etc/yum.repos.d/UniontechOS.repo"
 yum_url="file:///mnt/iso/AppStream"
@@ -417,7 +333,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
     dst_rpms = [s+'*.rpm' for s in dst_release]
     subprocess.run('rpm -e --nodeps ' + old_version + ' centos-gpg-keys', shell=True)
     subprocess.run('rpm -i --force ' + ' '.join(dst_rpms) + ' --nodeps', shell=True)
-    local_repo()
+    #local_repo()
     subprocess.run(install_baseurl,shell=True)
     os.remove(repofile)
     # switch completed
