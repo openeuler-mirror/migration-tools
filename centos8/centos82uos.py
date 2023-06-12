@@ -373,6 +373,12 @@ EOF'
         subprocess.run('yum -y downgrade crypto-policies --allowerasing', shell=True)
 
     try:
+        subprocess.run("yum install -y kernel-headers")
+    except:
+        print("Install kernel-headers failed, please check if kernel-headers exist in repository")
+        sys.exit(1)
+
+    try:
         subprocess.run('yum -y distro-sync', shell=True)
     except:
         print("Could not automatically sync with UniontechOS repositories.\n\
