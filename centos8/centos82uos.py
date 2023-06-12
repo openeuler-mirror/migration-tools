@@ -434,6 +434,7 @@ EOF'
         pass
 
     if reinstall_all_rpms:
+        print("Testing for remaining CentOS RPMs")
         centos_rpms = subprocess.check_output('rpm -qa --qf "%{NAME}-%{VERSION}-%{RELEASE} %{VENDOR}\n" \
         | grep CentOS | grep -v kernel | awk \'{print $1}\'', \
         shell=True)
