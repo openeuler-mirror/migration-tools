@@ -55,6 +55,20 @@ python-oauth sl-logos yum-rhn-plugin'
 reposdir=''
 
 
+def run_cmd(args):
+    process = subprocess.Popen(args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+            shell=False,
+            encoding='utf-8',
+            universal_newlines=False
+        )
+    out_std, out_err = process.communicate()
+    retval = process.returncode
+    return out_std, out_err, retval
+
+
 def check_pkg(pkg):
     if pkg.split('/')[0] == '':
         if os.path.exists(pkg):
