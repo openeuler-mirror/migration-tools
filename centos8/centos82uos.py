@@ -387,7 +387,7 @@ EOF'
         subprocess.run('yum -y downgrade crypto-policies --allowerasing', shell=True)
 
     out_std, out_err, retval = run_cmd(["yum","list","kernel-headers"])
-    if retval != "0":
+    if retval != 0:
         # 无法在repo源中找到kernel-headers
         print("Unable to find kernel-headers in repository")
         sys.exit(1)
