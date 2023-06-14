@@ -386,10 +386,10 @@ EOF'
     if subver == '8.3':
         subprocess.run('yum -y downgrade crypto-policies --allowerasing', shell=True)
 
-    try:
-        subprocess.run("yum install -y kernel-headers")
-    except:
-        print("Install kernel-headers failed, please check if kernel-headers exist in repository")
+    out_std, out_err, retval = run_cmd(["yum","list","kernel-headers"])
+    if retval != "0":
+        # 无法在repo源中找到kernel-headers
+        print("Unable to find kernel-headers in repository")
         sys.exit(1)
 
     try:
