@@ -343,7 +343,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
     subprocess.run('rpm -e --nodeps ' + old_version + ' centos-gpg-keys', shell=True)
     subprocess.run('rpm -i --force ' + ' '.join(dst_rpms) + ' --nodeps', shell=True)
     subprocess.run(install_baseurl,shell=True)
-    os.remove(repofile)
+    os.remove('/etc/yum.repos.d/UniontechOS.repo')
     # switch completed
 
     repositories={}
