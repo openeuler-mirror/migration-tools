@@ -160,10 +160,10 @@ def main():
 
     rpm_perl = '/etc/rpm/macros.perl'
     os.system('rpm --rebuilddb')
-        if os.path.exists(rpm_perl):
-            os.remove(rpm_perl)
-        if os.path.exists(dnf_path):
-            return True
+    if os.path.exists(rpm_perl):
+        os.remove(rpm_perl)
+    if os.path.exists(dnf_path):
+        return True
 
     openEuler_release = 'openEuler-release'
     if not self.check_pkg('rsync'):
