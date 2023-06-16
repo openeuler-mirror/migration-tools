@@ -4,7 +4,7 @@ import shutil
 import subprocess
 
 
-def run_subprocess(cmd:str):
+def run_subprocess(cmd):
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
