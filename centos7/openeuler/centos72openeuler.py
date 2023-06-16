@@ -4,6 +4,15 @@ import shutil
 import subprocess
 
 
+openeuler_repo = '''
+[openeuler]
+name = openeuler
+baseurl = file:///mnt/
+enabled = 1
+gpgcheck = 0
+'''
+
+
 def run_subprocess(cmd):
     process = subprocess.Popen(
         cmd,
