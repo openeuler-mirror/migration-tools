@@ -119,7 +119,7 @@ def system_sync():
     return True
 
 def main():
-    # 安装基础包
+    # install basic packages
     os.system("yum install -y gdbm-help")
 
     remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos', 
@@ -140,17 +140,17 @@ def main():
                     python3-libcomps python3-rpm util-linux --installroot={}'.format(install_dir)
     os.system(install_cmd)
 
-    # 下载dnf
+    # download dnf
     download_dnf = '/usr/bin/yumdownloader {} --destdir={}'.format('dnf python3-dnf dnf-help', os.path.join(install_dir, 'root'))
     os.system(download_dnf)
 
-    # 安装dnf
+    # rebuild dnfdb
     ivh_dnf = '/sbin/chroot {} /bin/bash -c "rpm --rebuilddb"'.format(install_dir)
     _, ret = run_subprocess(ivh_dnf)
     if ret:
         return
 
-    # 同步文件
+    # sync files
     rsync = '/usr/bin/rsync -a {}/ / --exclude="var/lib/rpm" --exclude="var/cache/yum" --exclude="tmp" ' \
                 '--exclude="sys" --exclude="run" --exclude="lost+found" --exclude="mnt" --exclude="proc" ' \
                 '--exclude="dev" --exclude="media" --exclude="etc" --exclude="root" '.format(install_dir)
@@ -176,7 +176,6 @@ def main():
         swap_release()
 
     if system_sync():
-        # 安装必要软件包、license
         install_cmd = 'dnf -y groupinstall "Minimal Install"'
         run_subprocess(install_cmd)
         conf_grub()
@@ -184,7 +183,7 @@ def main():
     else:
         print("System Migration Failed")
 
-    # 开机启动cui
+    # boot cui
     cmd = 'systemctl set-default {}'.format(default)
     run_subprocess(cmd)
     
