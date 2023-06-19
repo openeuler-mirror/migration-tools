@@ -175,7 +175,7 @@ def main():
         return True
 
     openEuler_release = 'openEuler-release'
-    if not self.check_pkg('rsync'):
+    if not check_pkg('rsync'):
         print('please install rsync')
         return
     if check_pkg("yum-utils"):
