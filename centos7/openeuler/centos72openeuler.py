@@ -137,6 +137,9 @@ def main():
     # install basic packages
     os.system("yum install -y gdbm-help")
 
+    # disable centos repository
+    os.system("yum-config-manager --disable base updates extras")
+
     remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos', 
                                 'iwl7265-firmware', 'ivtv-firmware', 
                                 'sysvinit-tools', 'sg3_utils-libs']
