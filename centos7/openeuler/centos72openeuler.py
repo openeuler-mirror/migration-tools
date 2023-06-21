@@ -134,11 +134,15 @@ def system_sync():
     return True
 
 def main():
-    # install basic packages
-    os.system("yum install -y gdbm-help")
-
     # disable centos repository
     os.system("yum-config-manager --disable base updates extras")
+
+    repofile = "/etc/yum.repos.d/openeuler.repo"
+    with open(repofile, 'w') as f:
+        f.write(openeuler_repo)
+
+    # install basic packages
+    os.system("yum install -y gdbm-help")
 
     remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos', 
                                 'iwl7265-firmware', 'ivtv-firmware', 
