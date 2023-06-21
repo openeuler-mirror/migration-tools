@@ -172,6 +172,12 @@ def main():
     if ret:
         return
 
+    # install dnf 
+    ivh_dnf = '/sbin/chroot {} /bin/bash -c "rpm -ivh {}/*"'.format(install_dir, '/root')
+    _, ret = run_subprocess(ivh_dnf)
+    if ret:
+        return
+
     # sync files
     rsync = '/usr/bin/rsync -a {}/ / --exclude="var/lib/rpm" --exclude="var/cache/yum" --exclude="tmp" ' \
                 '--exclude="sys" --exclude="run" --exclude="lost+found" --exclude="mnt" --exclude="proc" ' \
