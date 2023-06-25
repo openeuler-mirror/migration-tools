@@ -165,6 +165,7 @@ def main():
     ivh_dnf = '/sbin/chroot {} /bin/bash -c "rpm --rebuilddb"'.format(install_dir)
     _, ret = run_subprocess(ivh_dnf)
     if ret:
+        print("rebuild yum db failed")
         return
 
     # install dnf 
