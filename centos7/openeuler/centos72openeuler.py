@@ -172,6 +172,7 @@ def main():
     ivh_dnf = '/sbin/chroot {} /bin/bash -c "rpm -ivh {}/*"'.format(install_dir, '/root')
     _, ret = run_subprocess(ivh_dnf)
     if ret:
+        print("Install dnf failed")
         return
 
     # sync files
