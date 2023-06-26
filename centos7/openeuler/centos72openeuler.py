@@ -224,5 +224,8 @@ def main():
     run_subprocess('dnf install -y yum')
 
 
+    os.system("reboot")
+
+
 if __name__ == '__main__':
     main()
