@@ -146,7 +146,6 @@ def main():
         nodeps_cmd = 'rpm -q {} && rpm -e --nodeps {}'.format(i, i)
         os.system(nodeps_cmd)
 
-
         dnf_path = '/usr/bin/dnf'
         install_dir = os.path.join(os.path.dirname('/var/tmp'), 'DNF')
         if not os.path.exists(install_dir):
@@ -209,6 +208,7 @@ def main():
         print("System Migration Failed")
 
     # boot cui
+    print("set boot target to cui")
     cmd = 'systemctl set-default {}'.format(default)
     run_subprocess(cmd)
     
@@ -222,7 +222,6 @@ def main():
     if os.path.exists(yum_conflict_dir):
         shutil.rmtree(yum_conflict_dir)
     run_subprocess('dnf install -y yum')
-
 
     os.system("reboot")
 
