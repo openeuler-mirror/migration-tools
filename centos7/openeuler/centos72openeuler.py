@@ -214,6 +214,7 @@ def main():
     
     if not os.path.exists('/usr/bin/python3'):
         cmd = 'ln -s /usr/bin/python3.7 /usr/bin/python3'
+        print("Create symlink for python3")
         run_subprocess(cmd)
 
     yum_conflict_dir = '/etc/yum/'
@@ -222,7 +223,8 @@ def main():
     if os.path.exists(yum_conflict_dir):
         shutil.rmtree(yum_conflict_dir)
     run_subprocess('dnf install -y yum')
-
+    
+    print("System migration completed, rebooting system")
     os.system("reboot")
 
 
