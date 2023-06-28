@@ -223,7 +223,8 @@ def main():
     if os.path.exists(yum_conflict_dir):
         shutil.rmtree(yum_conflict_dir)
     run_subprocess('dnf install -y yum')
-
+    
+    print("System migration completed, rebooting system")
     os.system("reboot")
 
 
