@@ -197,6 +197,7 @@ def main():
         print("please install yum-utils")
         return
     if not check_pkg(openEuler_release):
+        print("swap release")
         swap_release()
 
     if system_sync():
