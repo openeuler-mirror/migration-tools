@@ -134,7 +134,7 @@ def system_sync():
     return True
 
 def main():
-    if check_pkg("yum-utils"):
+    if not check_pkg("yum-utils"):
         print("please install yum-utils")
         return
 
