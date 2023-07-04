@@ -131,6 +131,10 @@ def main():
         print("please install yum-utils")
         return
 
+    if not check_pkg('rsync'):
+        print('please install rsync')
+        return
+
     # disable centos repository
     os.system("yum-config-manager --disable base updates extras")
 
@@ -192,9 +196,6 @@ def main():
         return True
 
     openEuler_release = 'openEuler-release'
-    if not check_pkg('rsync'):
-        print('please install rsync')
-        return
     if not check_pkg(openEuler_release):
         print("swap release")
         swap_release()
