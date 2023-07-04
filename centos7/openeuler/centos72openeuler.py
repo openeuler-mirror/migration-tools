@@ -6,16 +6,9 @@ import subprocess
 
 openeuler_repo = '''[openeuler]
 name = openeuler
-baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-20.03-LTS/everything/$basearch
+baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-20.03-LTS-SP1/everything/$basearch
 enabled = 1
 gpgcheck = 0
-
-[openeuler]
-name = openeuler
-baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-20.03-LTS/OS/$basearch
-enabled = 1
-gpgcheck = 0
-
 '''
 
 
