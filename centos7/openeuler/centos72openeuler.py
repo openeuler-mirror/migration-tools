@@ -192,8 +192,9 @@ def main():
     os.system('rpm --rebuilddb')
     if os.path.exists(rpm_perl):
         os.remove(rpm_perl)
+
     if os.path.exists(dnf_path):
-        return True
+        pass
 
     openEuler_release = 'openEuler-release'
     if not check_pkg(openEuler_release):
