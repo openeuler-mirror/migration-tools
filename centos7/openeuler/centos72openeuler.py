@@ -135,6 +135,11 @@ def main():
         print('please install rsync')
         return
 
+    openEuler_release = 'openEuler-release'
+    if not check_pkg(openEuler_release):
+        print("swaping release")
+        swap_release(openEuler_release)
+
     # disable centos repository
     os.system("yum-config-manager --disable base updates extras")
 
@@ -195,11 +200,6 @@ def main():
 
     if os.path.exists(dnf_path):
         pass
-
-    openEuler_release = 'openEuler-release'
-    if not check_pkg(openEuler_release):
-        print("swaping release")
-        swap_release(openEuler_release)
 
     if system_sync():
         install_cmd = 'dnf -y groupinstall "Minimal Install"'
