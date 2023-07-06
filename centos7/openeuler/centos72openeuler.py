@@ -86,11 +86,11 @@ def add_boot_option():
     except Exception as e:
         print(e)
 
-def swap_release():
+def swap_release(release):
     tmp_dir = '/var/tmp'
     rpme_release = 'rpm -qf /etc/os-release|xargs -i rpm -e --nodeps {}'
     run_subprocess(rpme_release)
-    cmd = 'yumdownloader {} --destdir {}'.format(openEuler_release, tmp_dir)
+    cmd = 'yumdownloader {} --destdir {}'.format(release, tmp_dir)
     run_subprocess(cmd)
     run_subprocess('rpm -ivh {}/*.rpm --nodeps --force'.format(tmp_dir))
 
@@ -198,8 +198,8 @@ def main():
 
     openEuler_release = 'openEuler-release'
     if not check_pkg(openEuler_release):
-        print("swap release")
-        swap_release()
+        print("swaping release")
+        swap_release(openEuler_release)
 
     if system_sync():
         install_cmd = 'dnf -y groupinstall "Minimal Install"'
