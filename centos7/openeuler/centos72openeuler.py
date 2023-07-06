@@ -121,7 +121,7 @@ def system_sync():
     run_subprocess(rebuilddb)
     cmd = 'dnf -y distro-sync --allowerasing --skip-broken'
     _, ret = run_subprocess(cmd)
-    _, ret = run_subprocess('rpm -q kernel|grep {}'.format('uel20'))
+    _, ret = run_subprocess('rpm -q kernel|grep {}'.format('oe1'))
     if ret:
         return False
     return True
