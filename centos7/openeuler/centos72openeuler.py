@@ -135,17 +135,18 @@ def main():
         print('please install rsync')
         return
 
-    openEuler_release = 'openEuler-release'
-    if not check_pkg(openEuler_release):
-        print("swaping release")
-        swap_release(openEuler_release)
-
     # disable centos repository
     os.system("yum-config-manager --disable base updates extras")
 
     repofile = "/etc/yum.repos.d/openeuler.repo"
     with open(repofile, 'w') as f:
         f.write(openeuler_repo)
+
+
+    openEuler_release = 'openEuler-release'
+    if not check_pkg(openEuler_release):
+        print("swaping release")
+        swap_release(openEuler_release)
 
     # install basic packages
     os.system("yum install -y gdbm-help")
