@@ -139,6 +139,10 @@ def main():
         print('please install python3')
         return
 
+    if not check_pkg('dnf'):
+        print('please install dnf')
+        return
+
     # disable centos repository
     os.system("yum-config-manager --disable base updates extras")
 
