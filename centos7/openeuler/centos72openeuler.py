@@ -220,7 +220,7 @@ def main():
 
     # boot cui
     print("set boot target to cui")
-    cmd = 'systemctl set-default {}'.format(default)
+    cmd = 'systemctl set-default multi-user.target'
     run_subprocess(cmd)
     
     if not os.path.exists('/usr/bin/python3'):
