@@ -214,10 +214,10 @@ def main():
         install_cmd = 'dnf -y groupinstall "Minimal Install"'
         run_subprocess(install_cmd)
         conf_grub()
-        print("System Migration Successful")
     else:
-        print("System Migration Failed")
+        run_subprocess("rpm -e --nodeps yum")
 
+    
     # boot cui
     print("set boot target to cui")
     cmd = 'systemctl set-default multi-user.target'
@@ -238,6 +238,7 @@ def main():
     
     print("System migration completed, rebooting system")
     os.system("reboot")
+    
 
 
 if __name__ == '__main__':
