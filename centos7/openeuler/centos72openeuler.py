@@ -216,6 +216,7 @@ def main():
         conf_grub()
     else:
         run_subprocess("rpm -e --nodeps yum")
+        system_sync()
 
     
     # boot cui
