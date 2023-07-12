@@ -215,6 +215,7 @@ def main():
         run_subprocess(install_cmd)
         conf_grub()
     else:
+        print("Removing confilct package yum...")
         run_subprocess("rpm -e --nodeps yum")
         system_sync()
 
