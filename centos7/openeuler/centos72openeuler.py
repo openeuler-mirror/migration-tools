@@ -231,8 +231,6 @@ def main():
         run_subprocess(cmd)
 
     yum_conflict_dir = '/etc/yum/'
-    if os.path.exists('/usr/bin/yum'):
-        return
     if os.path.exists(yum_conflict_dir):
         shutil.rmtree(yum_conflict_dir)
     print("Installing yum...")
