@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>管理首页 | 统信迁移工具</title>
+    <link type="text/css" rel="stylesheet" href="static/css/admin/framework.css" />
+	<link href="static/css/admin/style.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="static/css/admin/main.css" />
+	<link type="text/css" rel="stylesheet" href="static/css/admin/alert.css" />
+</head>
+<body>
+<div class="page">
+<!--the main content begin-->
+	<div class="container">
+	<!--the content-->
+		<div class="pageHeader" >
+			<div class="segment">
+				<h3 class="ui dividing header">	
+					<img src="static/images/logo.png" style="width: 120px; height: 50px;"/>				
+  					<label style="padding-left:320px;font-size:28px;">统信服务器系统迁移软件</label>
+				</h3>
+			</div>				
+		</div>
+
+		
+		<div class="ui warning message">
+        		<i class="close icon" data-dismiss="alert"></i>
+            		<div class="header">
+            			<i class="rocket icon"></i> 欢迎使用统信服务器系统迁移软件。
+            		</div>
+            		此迁移工具用于将【当前操作系统】替换为【统信服务器操作系统 V20】，并将 RPM 软件包替换为统信的 RPM 软件包。
+        </div>
+    
+	<!--device list-->
+	<b>协议许可:</b>
+	<div class="pr-agreement">
+		协议内容
+	</div>
+
+	<div class="menter_btn_a_lf">
+		<br/>
+		<input name="readpact" type="checkbox" id="readpact" value="" class="check_boxId" /><label for="readpact"><strong class="fc-690 fs-14" data-locale="Consent_Agreements">我已经阅读并同意此协议</strong></label>
+        <button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
+ 	    <a href="javascript:return false;" id="paymentId" data-locale="Next_Step" type="button" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px; opacity: 0.2"><style>a{TEXT-DECORATION:none}</style>下一步</a>
+	</div>
+
+</div>
+</div>
+
+<script type="text/javascript" src="static/js/admin/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/admin/framework.js"></script>
+<script type="text/javascript" src="static/js/admin/jquery.zclip.min.js"></script>
+<script type="text/javascript" src="static/js/admin/alert.js"></script>
+
+<script type="text/javascript" src="static/js/admin/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/admin/json.js"></script>
+
+<script>
+	$(document).ready(function(){
+		$("#readpact").prop("checked",false);
+		$('.ui.dropdown')
+			.dropdown();
+	});
+
+	$("#readpact").click(function(){
+    	var paymentId = document.getElementById('paymentId');
+    	if($(".check_boxId").is(":checked")){
+    		paymentId.style = "text-align: center; line-height: 37px; color:black; font-size:18px; opacity: 1"
+    		paymentId.href = "MT_note"
+		}
+		else
+		{
+			paymentId.style = "text-align: center; line-height: 37px; color:black; font-size:18px; opacity: 0.2"
+			paymentId.href = "javascript:return false;"
+		}
+    });
+
+    function close_tool() {
+        alert("确定关闭迁移软件吗?")
+	}
+
+
+</script>
+</body>
+</html>
