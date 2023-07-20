@@ -25,5 +25,14 @@ def MT_agreement():
     return render_template('MT_agreement.html')
 
 
+@app.route('/MT_note', methods=['GET', 'POST'])
+def MT_note():
+    """
+    跳转用户需知界面
+    :return:
+    """
+    return render_template('MT_note.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port='9999')
