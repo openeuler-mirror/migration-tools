@@ -16,5 +16,14 @@ def MT_index():
     return render_template('MT_agreement.html')
 
 
+@app.route('/MT_agreement', methods=['GET', 'POST'])
+def MT_agreement():
+    """
+    跳转协议许可界面
+    :return:
+    """
+    return render_template('MT_agreement.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port='9999')
