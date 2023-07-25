@@ -162,8 +162,8 @@ def main():
     remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos', 
                                 'iwl7265-firmware', 'ivtv-firmware', 
                                 'sysvinit-tools', 'sg3_utils-libs']
-    for i in remove_packages_nodeps:
-        nodeps_cmd = 'rpm -q {} && rpm -e --nodeps {}'.format(i, i)
+    for package in remove_packages_nodeps:
+        nodeps_cmd = f"rpm -q {package} && rpm -e --nodeps {package}"
         os.system(nodeps_cmd)
 
         dnf_path = '/usr/bin/dnf'
