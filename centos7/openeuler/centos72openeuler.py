@@ -13,23 +13,22 @@ gpgcheck = 0
 
 
 def run_subprocess(cmd):
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        bufsize=1,
-        shell=True
-    )
-    output = ""
     try:
-        for line in iter(process.stdout.readline, b""):
-            output += line.decode()
-            print(line.decode())
-    except:
-        pass
-    process.communicate()
-    return_code = process.poll()
-    return output, return_code
+        process = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False,  # Avoid using shell=True
+            text=True,    # Capture output as text
+            check=True    # Check for non-zero return code and raise exception if found
+        )
+        output = process.stdout
+        print(output)  # Print the output to console
+        return output, process.returncode
+    except subprocess.CalledProcessError as e:
+        print(f"Command '{e.cmd}' failed with return code {e.returncode}.")
+        print(e.stderr)  # Print the error output to console
+        return e.stderr, e.returncode
 
 
 def check_pkg(rpm):
