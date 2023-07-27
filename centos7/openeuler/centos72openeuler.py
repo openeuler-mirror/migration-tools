@@ -87,11 +87,11 @@ def add_boot_option():
 
 def swap_release(release):
     tmp_dir = '/var/tmp'
-    rpme_release = 'rpm -qf /etc/os-release|xargs -i rpm -e --nodeps {}'
-    run_subprocess(rpme_release)
+    rpme_release = 'rpm -qf /etc/os-release | xargs -i rpm -e --nodeps {}'
+    run_subprocess(rpme_release.split())
     cmd = 'yumdownloader {} --destdir {}'.format(release, tmp_dir)
-    run_subprocess(cmd)
-    run_subprocess('rpm -ivh {}/*.rpm --nodeps --force'.format(tmp_dir))
+    run_subprocess(cmd.split())
+    run_subprocess('rpm -ivh {}/*.rpm --nodeps --force'.format(tmp_dir).split())
 
 
 def conf_grub():
@@ -116,8 +116,8 @@ def conf_grub():
 
 
 def system_sync():
-    rebuilddb = 'rpm --rebuilddb;dnf clean all'
-    run_subprocess(rebuilddb)
+    run_subprocess(['rpm','--rebuilddb'])
+    run_subprocess(['dnf','clean','all'])
     cmd = 'dnf -y distro-sync --allowerasing --skip-broken'
     _, ret = run_subprocess(cmd)
     _, ret = run_subprocess('rpm -q kernel|grep {}'.format('oe1'))
