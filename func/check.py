@@ -7,7 +7,7 @@ def list_to_json(keylist, valuelist):
     res = json.dumps(res)
     return json.dumps(res)
 
-def check_storage():
+def check_storage(data):
     agent_ip = '127.0.0.1'
     path = '/var/cache'
     stat = os.statvfs(path)
