@@ -76,6 +76,31 @@
 <script>
 
     $(document).ready(function() {
+        var check_os_data_json={"mod":"check_os"};
+            check_os_data_json.ip="tasks"
+        $.ajax({
+            async:true,
+            type: 'post',
+            dataType: 'json',
+            url: 'MT_check_os',
+            data: $.toJSON(check_os_data_json),
+            success: function(res) {
+                res=$.evalJSON(res);
+                if (res.ret == 1) {
+                    document.getElementById('os_id1').style.display = "none"
+                    document.getElementById('os_id2').style.display = ""
+                    document.getElementById('os_info1').innerHTML=res.error
+                }else if(res.ret == 0) {
+                    document.getElementById('os_id1').style.display = "none"
+                    document.getElementById('os_id3').style.display = ""
+                    document.getElementById('os_info2').innerHTML=res.data
+                    document.getElementById('os_res').name = '1'
+                }
+            }
+        });    
+    });
+
+    $(document).ready(function() {
         var check_storage_data_json={"mod":"check_storage"};
         check_storage_data_json.ip="tasks"
         $.ajax({
