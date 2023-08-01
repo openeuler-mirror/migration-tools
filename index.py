@@ -86,5 +86,16 @@ def MT_check_storage():
     return render_template('MT_check_evn.html')
 
 
+@app.route('/MT_close_tool', methods=['GET', 'POST'])
+def MT_close_tool():
+    """
+    关闭迁移工具
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port='9999')
