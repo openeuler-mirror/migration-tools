@@ -1,9 +1,10 @@
 import os
-import sys
 import json
 
 
-mods = {'check_storage': check_storage}
+mods = {
+        'check_storage': check_storage,
+        }
 
 def check_methods():
     if request.method == 'POST':
@@ -23,5 +24,9 @@ def mt_check_storage():
         return Response(mod, content_type='application/json')
 
 
-#if __name__ == '__main__':
-    #app.run(debug=True, host=127.0.0.1, port='9999')
+if __name__ == '__main__':
+    app.config["JSON_AS_ASCII"] = False
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+    port = int(json.loads(uos_sysmig_conf).get('agentport').strip()[1:-1])
+    app.run(debug=True, host=ip, port=port)
