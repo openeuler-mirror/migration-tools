@@ -1,6 +1,8 @@
 import os
 import json
 import platform
+import re
+
 from settings import *
 
 def list_to_json(keylist, valuelist):
