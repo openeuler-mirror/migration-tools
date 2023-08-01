@@ -1,5 +1,6 @@
 import os
 import json
+import platform
 from settings import *
 
 def list_to_json(keylist, valuelist):
@@ -42,7 +43,6 @@ def check_os(data):
     version = os_version_ret[1].split('.',-1)
     local_os_version = os_version_ret[0]+version[0]
     state = 0
-    agent_os = local_os_version
 
     if re.match('.entos8',local_os_version):
         data = '当前操作系统为CentOS 8'
