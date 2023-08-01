@@ -34,3 +34,23 @@ def check_storage(data):
         data = '可用空间为'+ava_cache+'GB,请清理/var/cache的空间后重试。'
         valuelist = [agent_ip, state, data]
         return list_to_json(keylist, valuelist)
+
+
+def check_os(data):
+    agent_ip = '127.0.0.1'
+    os_version_ret = platform.dist()
+    version = os_version_ret[1].split('.',-1)
+    local_os_version = os_version_ret[0]+version[0]
+    state = 0
+    agent_os = local_os_version
+
+    if re.match('.entos8',local_os_version):
+        data = '当前操作系统为CentOS 8'
+        return list_to_json(['ip', 'ret', 'data'],[agent_ip, state, data])
+    elif re.match('.entos7',local_os_version):
+        data = '当前操作系统为CentOS 7'
+        return list_to_json(['ip', 'ret', 'data'],[agent_ip, state, data])
+    else:
+        state = 1
+        data = '无法检测到当前系统，请检查/etc/os-release文件，确认后重试.'
+        return list_to_json(['ip', 'ret', 'data'],[agent_ip, state, data])
