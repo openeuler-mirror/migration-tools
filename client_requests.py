@@ -23,3 +23,8 @@ class PostIntranetIP:
         return r
 
 
+def post_client_data(data, mod, url=ip):
+    post_url = "http://" + url + ":" + str(port) + mod
+    post_data = PostIntranetIP(post_url, data)
+
+    return post_data.post_intranetip()
