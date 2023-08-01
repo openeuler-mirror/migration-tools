@@ -4,11 +4,7 @@ import platform
 import re
 
 from settings import *
-
-def list_to_json(keylist, valuelist):
-    res = dict(zip(keylist, valuelist))
-    res = json.dumps(res)
-    return json.dumps(res)
+from func.utils import list_to_json
 
 def check_storage(data):
     agent_ip = '127.0.0.1'

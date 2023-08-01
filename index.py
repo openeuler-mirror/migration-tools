@@ -3,7 +3,7 @@
 import os
 import sys
 import json
-from func import check
+from func import check, share
 
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
 app = Flask(__name__)
