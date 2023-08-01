@@ -98,4 +98,8 @@ def MT_close_tool():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port='9999')
+    app.config["JSON_AS_ASCII"] = False
+    uos_sysmig_conf = json.loads(share.getSysMigConf())
+    ip = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
+    port = int(json.loads(uos_sysmig_conf).get('serverport').strip()[1:-1])
+    app.run(debug=True, host=ip, port=port)
