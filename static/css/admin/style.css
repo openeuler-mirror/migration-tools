@@ -1,7 +1,7 @@
 /*@import "tablebox.css";*/
 /*全局*/
 *{padding:0px;margin:0px;}
-body{font-family:Verdana, Arial, Helvetica, sans-serif;font-size:12px;background:url(images/top-bg.png) left top repeat-x;background-color:#FFF;}
+body{font-family:Verdana, Arial, Helvetica, sans-serif;font-size:12px;}
 ul{list-style:none;}
 a{color:#06C;}
 a:hover{color:#669900;text-decoration:none;}

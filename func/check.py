@@ -54,5 +54,5 @@ def check_os(data):
         return list_to_json(['ip', 'ret', 'data'],[agent_ip, state, data])
     else:
         state = 1
-        data = '无法检测到当前系统，请检查/etc/os-release文件，确认后重试.'
-        return list_to_json(['ip', 'ret', 'data'],[agent_ip, state, data])
+        error = '无法检测到当前系统，请检查/etc/os-release文件，确认后重试.'
+        return list_to_json(['ip', 'ret', 'error'],[agent_ip, state, error])
