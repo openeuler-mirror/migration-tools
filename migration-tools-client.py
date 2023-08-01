@@ -1,9 +1,12 @@
 import os
 import json
 
+from func import check
+
 
 mods = {
-        'check_storage': check_storage,
+        'check_storage': check.check_storage,
+        'check_os': check.check_os,
         }
 
 def check_methods():
@@ -19,6 +22,13 @@ def check_methods():
 
 @app.route('/check_storage', methods=['GET', 'POST'])
 def mt_check_storage():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/check_os', methods=['GET', 'POST'])
+def mt_check_os():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
