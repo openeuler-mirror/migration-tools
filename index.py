@@ -57,6 +57,19 @@ def MT_check_env():
     return render_template('MT_check_evn.html')
 
 
+@app.route('/MT_check_os', methods=['GET', 'POST'])
+def MT_check_os():
+    """
+    检测系统版本
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+    return render_template('MT_check_evn.html')
+
+
 @app.route('/MT_check_storage', methods=['GET', 'POST'])
 def MT_check_storage():
     """
