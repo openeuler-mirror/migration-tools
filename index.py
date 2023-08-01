@@ -8,7 +8,10 @@ from func import check
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
 app = Flask(__name__)
 
-mods = {'check_storage' : check.check_storage}
+mods = {
+        'check_storage' : check.check_storage,
+        'check_os': check.check_os,
+        }
 
 
 def check_methods():
