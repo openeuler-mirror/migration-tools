@@ -3,14 +3,15 @@
 import os
 import sys
 import json
-from func import check, share
+from func import share
+from views import migration
 
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
 app = Flask(__name__)
 
 mods = {
-        'check_storage' : check.check_storage,
-        'check_os': check.check_os,
+        'check_storage' : migration.check_storage,
+        'check_os': migration.check_os,
         }
 
 
