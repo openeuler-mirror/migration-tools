@@ -1,8 +1,11 @@
+from flask import *
 import os
 import json
 
 from func import check
+from func.share import *
 
+app = Flask(__name__)
 
 mods = {
         'check_storage': check.check_storage,
