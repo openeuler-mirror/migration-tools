@@ -15,7 +15,6 @@ mods = {
 def check_methods():
     if request.method == 'POST':
         data = request.get_data()
-        migration.info(data)
         json_data = json.loads(data)
         mod = mods.get(json_data['mod'])
         if mod:
