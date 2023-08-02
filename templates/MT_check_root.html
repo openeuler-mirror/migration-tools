@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>管理首页 | 统信迁移工具</title>
+    <link type="text/css" rel="stylesheet" href="static/css/admin/framework.css" />
+	<link href="static/css/admin/style.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="static/css/admin/main.css" />
+	<link type="text/css" rel="stylesheet" href="static/css/admin/alert.css" />
+</head>
+<body>
+<div class="page">
+<div id="loading"><img style="position: absolute;top:50%; left:50%; transform: translate(-50%,-50%);opacity:0.8;" src="static/images/login.gif" alt=""/></div>
+<!--the main content begin-->
+	<div class="container">
+	<!--the content-->
+		<div class="pageHeader" >
+			<div class="segment">
+				<h3 class="ui dividing header">	
+					<img src="static/images/logo.png" style="width: 120px; height: 50px;"/>				
+  					<label style="padding-left:320px;font-size:28px;">统信服务器系统迁移软件</label>
+				</h3>
+			</div>				
+		</div>
+
+	<div class="pageHeader">
+        <div class="segment">
+            <h5 class="ui dividing  header">
+  		        <i class="large key alternate icon"></i>
+  		        <div class="content">验证用户密码</div>
+            </h5>
+        </div>
+    </div>	
+
+
+     </br>
+  
+     <div class="two fields">
+        <div class="field">
+            <label>登录用户:</label>
+                <div class="ui small left icon input">
+                    <input id="uname_id" name="password" size="30" value="请输入具有root权限的用户">
+                    <i class="user icon"></i>
+                </div>
+        </div>
+    </div>
+    
+    <div class="two fields">
+        <div class="field">
+            <label>用户密码:</label>
+                <div class="ui small left icon input">
+                    <input type="password" id="machine_password" name="password1" size="30">
+                    <i class="lock icon"></i>
+                </div>
+        </div>
+    </div>
+        <br/>
+    <div id="info_id" style="display: none;"><img src="../static/images/login.gif" width="13" height="13" style="padding-left:0px;"/><label style="font-size:13px;font-family:”微软雅黑”;font-weight:bold;">正在验证用户名和密码......</label></div>
+        <div id="faild_id" style="display: none;"><img id="os_res" name="0" src="../static/images/u70.svg" width="13" height="13" style="padding-left:0px;"/><label id="os_info1" style="font-size:13px;font-family:”微软雅黑”;font-weight:bold;">验证失败，请重新输入用户名密码</label></div>
+    </br>
+        </br>
+        </br>
+        </br>
+        </br>
+        </br>
+
+    <div class="menter_btn_a_lf" >
+        <hr style="opacity: 0.1;border: 1px solid #4C4D4E;width:99%;" />
+    </br>
+    </br>
+        <button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
+        <button id="check_id" disabled="disabled" data-locale="Next_Step" type="submit" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 0.2" onclick="save()"><style>a{TEXT-DECORATION:none}</style>下一步</button>
+    </div>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="static/js/admin/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/admin/framework.js"></script>
+<script type="text/javascript" src="static/js/admin/jquery.zclip.min.js"></script>
+<script type="text/javascript" src="static/js/admin/alert.js"></script>
+
+<script type="text/javascript" src="static/js/admin/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/admin/json.js"></script>
+
+<script>
+
+    
+	function close_tool() {
+        alert("确定关闭迁移软件吗?");
+	}
+
+
+</script>
+
+</body>
+</html>
