@@ -15,3 +15,8 @@ def check_os(data):
     services = check_services(data, '/check_os')
     if services:
         return services
+
+def check_storage(data):
+    services = check_services(data, '/check_storage')
+    if services:
+        return services
