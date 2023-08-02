@@ -99,6 +99,18 @@ def MT_close_tool():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/MT_check_user', methods=['GET', 'POST'])
+def MT_check_user():
+    """
+    检测用户账户
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+    
+    return render_template('MT_check_root.html')
+
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
     uos_sysmig_conf = json.loads(share.getSysMigConf())
