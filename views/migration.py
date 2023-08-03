@@ -26,3 +26,8 @@ def close_tool(data):
     data = {"ip": "0.0.0.0"}
     data_json = json.dumps(data)
     return data_json
+
+def check_user(data):
+    services = check_services(data, '/check_user')
+    if services:
+        return services
