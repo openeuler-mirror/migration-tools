@@ -58,7 +58,7 @@ def check_os(data):
         error = '无法检测到当前系统，请检查/etc/os-release文件，确认后重试.'
         return list_to_json(['ip', 'ret', 'error'],[agent_ip, state, error])
 
-def check_SSHClent(user=None, passwd=None, ip=ip, port=port):
+def check_SSHClent(user, passwd, ip, port):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     t = 0
@@ -102,6 +102,8 @@ def check_user(data):
     with open('/usr/lib/uos-sysmig-server/.passwd.txt','w',encoding='utf-8') as f:
         text = json_data['passwd']
         f.write(text)
-    re_data = check_SSHClent(json_data['user'], json_data['passwd'])
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+    re_data = check_SSHClent(json_data['user'], json_data['passwd'], agent_ip, 22)
     return re_data
 
