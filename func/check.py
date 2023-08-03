@@ -2,6 +2,8 @@ import os
 import json
 import platform
 import re
+import time
+import paramiko
 
 from settings import *
 from func.utils import list_to_json
@@ -55,3 +57,34 @@ def check_os(data):
         state = 1
         error = '无法检测到当前系统，请检查/etc/os-release文件，确认后重试.'
         return list_to_json(['ip', 'ret', 'error'],[agent_ip, state, error])
+
+def check_SSHClent(user=None, passwd=None, ip=ip, port=port):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    t = 0
+    for _ in range(10):
+        t += 1
+        time.sleep(1)
+        try:
+            ssh.connect(ip, username=user, password=passwd, port=port)
+            if user != "root":
+                stdin, stdout, stderr = ssh.exec_command('sudo -v')
+                flag = True
+                ret = stderr.read().decode()
+                ret = ret.split('\n')[:-1]
+                for i in range(len(ret)):
+                    if re.match('sudo',ret[i].strip()[0:4]):
+                        flag = False
+                    strsudo = ret[i].strip()
+                if flag:
+                    if ret != 'sudo':
+                        data = list_to_json(['res', 'error'], ['1', '此用户没有root权限'])
+                        return data
+
+            ssh.close()
+            data = list_to_json(['res', 'data'], ['0', '验证完成成功'])
+            return data
+        except:
+            print("error:" + ip + user + passwd + str(port))
+    data = list_to_json(['res', 'error'], ['1', '此用户没有root权限'])
+    return data
