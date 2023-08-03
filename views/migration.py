@@ -10,3 +10,8 @@ def check_services(data, url):
         return list_to_json(['res', 'error'], ['1', '迁移客户端没有启动'])
     else:
         return info.text
+
+def check_os(data):
+    services = check_services(data, '/check_os')
+    if services:
+        return services
