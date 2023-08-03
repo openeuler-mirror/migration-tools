@@ -10,6 +10,7 @@ app = Flask(__name__)
 mods = {
         'check_storage': check.check_storage,
         'check_os': check.check_os,
+        'check_user': check.check_user,
         }
 
 def check_methods():
