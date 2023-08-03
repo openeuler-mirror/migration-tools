@@ -36,6 +36,13 @@ def mt_check_os():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/check_user', methods=['GET', 'POST'])
+def mt_check_user():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
     uos_sysmig_conf = json.loads(getSysMigConf())
