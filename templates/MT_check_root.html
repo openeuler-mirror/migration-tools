@@ -95,6 +95,29 @@
         alert("确定关闭迁移软件吗?");
     }
 
+	$("#uname_id").bind("input propertychange",function(event){
+        $("#machine_password").bind("input propertychange",function(event){
+            if ($("#machine_password").val() != "" && $("#uname_id").val() != "") {
+                document.getElementById('check_id').style.opacity = 1
+                document.getElementById('check_id').removeAttribute("disabled");
+            } else {
+                document.getElementById('check_id').style.opacity = 0.2
+                document.getElementById('check_id').setAttribute("disabled", true);
+            }
+        });
+    });
+
+    $("#machine_password").bind("input propertychange",function(event){
+        $("#uname_id").bind("input propertychange",function(event){
+            if ($("#machine_password").val() != "" && $("#uname_id").val() != "") {
+                document.getElementById('check_id').style.opacity = 1
+                document.getElementById('check_id').removeAttribute("disabled");
+            } else {
+                document.getElementById('check_id').style.opacity = 0.2
+                document.getElementById('check_id').setAttribute("disabled", true);
+            }
+        });
+    });
 
 </script>
 
