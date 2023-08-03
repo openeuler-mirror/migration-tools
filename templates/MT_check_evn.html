@@ -96,6 +96,7 @@
                     document.getElementById('os_id3').style.display = ""
                     document.getElementById('os_info2').innerHTML=res.data
                     document.getElementById('os_res').name = '1'
+                    check_node();
                 }
             }
         });    
@@ -121,10 +122,22 @@
                     document.getElementById('storage_id3').style.display = ""
                     document.getElementById('storage_info2').innerHTML=res.data
                     document.getElementById('storage_res').name = '1'
+                    check_node();
                 }
             }
         });	
     });
+
+    function check_node() {
+        var os_res = document.getElementById('os_res').name;
+        var storage_res = document.getElementById('storage_res').name;
+        if (os_res == '1' && storage_res == '1') {
+            document.getElementById('check_id').style.opacity = "1"
+            document.getElementById('check_id').removeAttribute("disabled");
+            os_res.name = '0';
+            storage_res.name = '0';
+        }
+    }
 
     function save() {
         window.location.href="MT_check_user"
