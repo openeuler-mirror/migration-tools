@@ -12,6 +12,7 @@ app = Flask(__name__)
 mods = {
         'check_storage' : migration.check_storage,
         'check_os': migration.check_os,
+        'close_tool': migration.close_tool,
         }
 
 

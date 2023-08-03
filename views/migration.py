@@ -20,3 +20,9 @@ def check_storage(data):
     services = check_services(data, '/check_storage')
     if services:
         return services
+
+def close_tool(data):
+    os.system('kill -9 `ps -ef | grep "start_webview.py" | grep -v grep | awk \'{print $2}\'`')
+    data = {"ip": "0.0.0.0"}
+    data_json = json.dumps(data)
+    return data_json
