@@ -107,3 +107,22 @@ def check_user(data):
     re_data = check_SSHClent(json_data['user'], json_data['passwd'], agent_ip, 22)
     return re_data
 
+
+def init_remove_oldrepo():
+    backup_comment = '#This is a yum repository file that was disabled . <Migration to UiniontechOS> \
+            \n'
+    path = '/etc/yum.repos.d/'
+    repos = os.listdir(path)
+    for repo in repos:
+        path_file = path+'/'+repo
+        if not os.path.isfile(path_file):
+            continue
+        if not re.search('repo$',repo):
+            continue
+        with open(path_file, 'r') as fsrc:
+            content = fsrc.read()
+            with open(path_file+'.disabled','w') as fdst:
+                fdst.write(repo+'\n'+backup_comment+content)
+                fdst.close()
+            fsrc.close()
+        os.remove(path_file)
