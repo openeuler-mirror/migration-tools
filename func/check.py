@@ -5,9 +5,11 @@ import re
 
 from settings import *
 from func.utils import list_to_json
+from func.share import *
 
 def check_storage(data):
-    agent_ip = '127.0.0.1'
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     path = '/var/cache'
     stat = os.statvfs(path)
     CACHE_SPACE = 10.0
@@ -36,7 +38,8 @@ def check_storage(data):
 
 
 def check_os(data):
-    agent_ip = '127.0.0.1'
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     os_version_ret = platform.dist()
     version = os_version_ret[1].split('.',-1)
     local_os_version = os_version_ret[0]+version[0]
