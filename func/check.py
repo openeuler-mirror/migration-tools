@@ -126,3 +126,31 @@ def init_remove_oldrepo():
                 fdst.close()
             fsrc.close()
         os.remove(path_file)
+
+
+#初始化repo文件
+def initRepoFile(baseurl):
+    reposdir = '/etc/yum.repos.d/'
+    h = 0
+    if re.match('file:',baseurl):
+        str0, path = baseurl.split('://',1)
+        path = '/' + path.strip('/') + '/'
+    else:
+       h = 1
+    if re.fullmatch('8',version[0]):
+        path_appstream = baseurl+'/AppStream'
+        path_baseos = baseurl+'/BaseOS'
+        path_310 = baseurl+'/kernel-3.10'
+        path_418 = baseurl+'/kernel-4.18'
+        path_510 = baseurl+'/kernel-5.10'
+
+        repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = '''+path_appstream.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-BaseOS]\nname = UniontechOS BaseOS\nbaseurl = '''+path_baseos.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-4.18.0]\nname = UniontechOS Kernel-4.18.0\nbaseurl = '''+path_418.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = '''+path_510.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n
+'''
+    else:
+        path_310 = baseurl+'/kernel-3.10'
+        repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = '''+baseurl.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-3.10.0]\nname = UniontechOS Kernel-3.10.0\nbaseurl = '''+path_310.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n
+        '''
+    repofile = os.path.join(reposdir, 'switch-to-uos.repo')
+    with open(repofile,'w') as f_repo:
+        f_repo.write(repostr_uos)
+        f_repo.close()
