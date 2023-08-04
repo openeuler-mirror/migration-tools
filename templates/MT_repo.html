@@ -70,6 +70,23 @@
         $("#loading").hide();
 　　}
 
+	function save() {
+    	document.getElementById("repo2").style.display = "none"
+    	document.getElementById("check_repo").setAttribute("disabled", true);
+    	document.getElementById("check_repo").style.opacity = "0.2"
+    	var check_repo_data_json={"mod":"check_repo"};
+    	check_repo_data_json.repo_pwd = document.getElementById("repo_pwd").value;
+    	check_repo_data_json.ip = "tasks"
+		document.getElementById("repo1").style.display = ""
+		$.ajax({
+                async:true,
+                type: 'post',
+                dataType: 'json',
+                url: 'MT_check_repo',
+                data: $.toJSON(check_repo_data_json)
+        });	//ajax end
+    }
+
 	function close_tool() {
         alert("确定关闭迁移软件吗");
 	}
