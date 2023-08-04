@@ -88,3 +88,20 @@ def check_SSHClent(user=None, passwd=None, ip=ip, port=port):
             print("error:" + ip + user + passwd + str(port))
     data = list_to_json(['res', 'error'], ['1', '此用户没有root权限'])
     return data
+
+
+def check_user(data):
+    """
+    检测用户密码
+    :param data:
+    :return:
+    """
+    log_info = "post check_user:" + str(data)
+    print(log_info)
+    json_data = json.loads(data)
+    with open('/usr/lib/uos-sysmig-server/.passwd.txt','w',encoding='utf-8') as f:
+        text = json_data['passwd']
+        f.write(text)
+    re_data = check_SSHClent(json_data['user'], json_data['passwd'])
+    return re_data
+
