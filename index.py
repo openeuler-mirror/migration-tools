@@ -112,6 +112,16 @@ def MT_check_user():
     
     return render_template('MT_check_root.html')
 
+
+@app.route('/MT_repo', methods=['GET', 'POST'])
+def MT_rope():
+    """
+    跳转软件仓库界面
+    :return:
+    """
+    return render_template('MT_repo.html')
+
+
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
     uos_sysmig_conf = json.loads(share.getSysMigConf())
