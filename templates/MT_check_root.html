@@ -90,7 +90,35 @@
     window.onload = function(){
         $("#loading").hide();
     }
-    
+
+    function save() {
+        document.getElementById('info_id').style.display = ""
+        document.getElementById('faild_id').style.display = "none"
+        var check_user_data_json={"mod":"check_user"};
+        check_user_data_json.user = document.getElementById("uname_id").value;
+        check_user_data_json.passwd = document.getElementById("machine_password").value;
+        check_user_data_json.ip = "tasks"
+        document.getElementById('check_id').style.opacity = 0.2
+        document.getElementById('check_id').setAttribute("disabled", true);
+        info = document.getElementById("uname_id").value + "|" + document.getElementById("machine_password").value
+        $.ajax({
+            async:true,
+            type: 'post',
+            dataType: 'json',
+            url: 'MT_check_user',
+            data: $.toJSON(check_user_data_json),
+            success: function(res) {
+                retinfo=$.evalJSON(res);
+                if (retinfo.res == 1) {
+                    document.getElementById('info_id').style.display = "none"
+                    document.getElementById('faild_id').style.display = ""
+                }else{
+                    window.location = '/MT_rope?valus='+ info
+                }
+            }
+        });	//ajax end
+    }
+
     function close_tool() {
         alert("确定关闭迁移软件吗?");
     }
