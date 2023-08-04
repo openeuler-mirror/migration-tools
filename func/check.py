@@ -175,3 +175,25 @@ def checkRepoMakeCache():
             if ret:
                 return 0
         return 1
+
+
+#检测repo
+def check_repo(data_j):
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+    baseurl = json.loads(data_j).get('repo_pwd')
+    keylist = None
+    valuelist = None
+    data = None
+    init_remove_oldrepo()
+    initRepoFile(baseurl)
+    state = checkRepoMakeCache()
+
+    if state == 0:
+        keylist = ['ip','res','data']
+        valuelist = [AGENT_IP,state,'连接成功']
+    else:
+        data = '下载失败，请检查您的软件源'
+        keylist = ['ip','res','error']
+        valuelist = [AGENT_IP,state,data]
+    return list_to_json(keylist,valuelist)
