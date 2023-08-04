@@ -12,6 +12,7 @@ mods = {
         'check_os': check.check_os,
         'check_user': check.check_user,
         'check_repo': check.check_repo,
+        'check_repo_kernel': check.check_repo_kernel,
         }
 
 def check_methods():
@@ -51,6 +52,12 @@ def mt_check_repo():
     if mod:
         return Response(mod, content_type='application/json')
 
+
+@app.route('/check_repo_kernel', methods=['GET', 'POST'])
+def mt_check_repo_kernel():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
 
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
