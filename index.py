@@ -114,12 +114,23 @@ def MT_check_user():
 
 
 @app.route('/MT_repo', methods=['GET', 'POST'])
-def MT_rope():
+def MT_repo():
     """
     跳转软件仓库界面
     :return:
     """
     return render_template('MT_repo.html')
+
+
+@app.route('/MT_check_repo', methods=['GET', 'POST'])
+def MT_check_repo():
+    """
+    检测软件仓库
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
 
 
 if __name__ == '__main__':
