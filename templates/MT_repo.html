@@ -49,6 +49,7 @@
         <hr style="opacity: 0.1;border: 1px solid #4C4D4E;width:99%;" />
     </br>
         <button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
+		<button id="check_repo" disabled="disabled" data-locale="Next_Step" type="submit" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 0.2" onclick="save()"><style>a{TEXT-DECORATION:none}</style>下一步</button>
     </div>
 
     </div>
@@ -73,6 +74,15 @@
         alert("确定关闭迁移软件吗");
 	}
 
+	$("#repo_pwd").bind("input propertychange",function(event){
+		if ($("#repo_pwd").val() != "") {
+			document.getElementById('check_repo').style.opacity = 1
+			document.getElementById('check_repo').removeAttribute("disabled");
+		} else {
+			document.getElementById('check_id').style.opacity = 0.2
+			document.getElementById('check_id').setAttribute("disabled", true);
+		}
+    });
 
 </script>
 
