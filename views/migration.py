@@ -31,3 +31,8 @@ def check_user(data):
     services = check_services(data, '/check_user')
     if services:
         return services
+
+def check_repo(data):
+    services = check_services(data, '/check_repo')
+    if services:
+        return services
