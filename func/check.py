@@ -99,7 +99,7 @@ def check_user(data):
     log_info = "post check_user:" + str(data)
     print(log_info)
     json_data = json.loads(data)
-    with open('/usr/lib/uos-sysmig-server/.passwd.txt','w',encoding='utf-8') as f:
+    with open('/usr/lib/uos-sysmig-agent/.passwd.txt','w',encoding='utf-8') as f:
         text = json_data['passwd']
         f.write(text)
     uos_sysmig_conf = json.loads(getSysMigConf())
