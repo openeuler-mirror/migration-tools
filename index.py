@@ -134,6 +134,15 @@ def MT_check_repo():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/MT_kernel', methods=['GET', 'POST'])
+def MT_kernel():
+    """
+    跳转检测内核界面
+    :return:
+    """
+    return render_template('MT_kernel.html') 
+
+
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
     uos_sysmig_conf = json.loads(share.getSysMigConf())

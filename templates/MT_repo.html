@@ -79,7 +79,7 @@
 
     window.onload = function(){
         $("#loading").hide();
-　　}
+    }
 
     function save() {
         document.getElementById("repo2").style.display = "none"
@@ -103,10 +103,13 @@
                     document.getElementById("check_repo").style.opacity = "1"
                     document.getElementById("repo2").style.display = ""
                     document.getElementById("repo_info").innerHTML = res.error
+				}else{
+                    	agent_passwd = window.location.search;
+						window.location = '/MT_kernel' + agent_passwd;
                 }
 			}
-        });	//ajax end
-    }
+     	});	//ajax end
+	}
 
     function close_tool() {
         alert("确定关闭迁移软件吗");
