@@ -143,10 +143,10 @@ def initRepoFile(baseurl):
         path_appstream = baseurl+'/AppStream'
         path_baseos = baseurl+'/BaseOS'
         path_310 = baseurl+'/kernel-3.10'
-        path_418 = baseurl+'/kernel-4.18'
-        path_510 = baseurl+'/kernel-5.10'
+        path_419 = baseurl+'/kernel419'
+        path_510 = baseurl+'/kernel510'
 
-        repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = '''+path_appstream.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-BaseOS]\nname = UniontechOS BaseOS\nbaseurl = '''+path_baseos.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-4.18.0]\nname = UniontechOS Kernel-4.18.0\nbaseurl = '''+path_418.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = '''+path_510.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n
+        repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = '''+path_appstream.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-BaseOS]\nname = UniontechOS BaseOS\nbaseurl = '''+path_baseos.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-4.19.0]\nname = UniontechOS Kernel-4.19.0\nbaseurl = '''+path_419.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = '''+path_510.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n
 '''
     else:
         path_310 = baseurl+'/kernel-3.10'
@@ -201,6 +201,15 @@ def check_repo(data_j):
     return list_to_json(keylist,valuelist)
 
 
+def check_os_kernel(data):
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+    platformInfo = platform.platform()
+    systemKernelVersion = platformInfo.split('-',-1)
+    kernel_version = systemKernelVersion[1]
+    return list_to_json(['ip','data'],[AGENT_IP,kernel_version])
+
+
 def check_repo_kernel(data):
     uos_sysmig_conf = json.loads(getSysMigConf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
@@ -208,7 +217,7 @@ def check_repo_kernel(data):
     os_version_ret = platform.dist()
     version = os_version_ret[1].split('.', -1)
     if re.fullmatch('8', version[0]):
-        ret = os.popen('yum repoquery --nvr kernel --enablerepo UniontechOS-kernel-4.18.0')
+        ret = os.popen('yum repoquery --nvr kernel --enablerepo UniontechOS-kernel-4.19.0')
         for r in ret.readlines():
             if re.match('kernel', r):
                 kernel_version = re.sub('kernel-', '', r)
