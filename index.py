@@ -158,6 +158,19 @@ def MT_check_os_kernel():
     return render_template('MT_kernel.html')
 
 
+@app.route('/MT_repo_kernel', methods=['GET', 'POST'])
+def MT_repo_kernel():
+    """
+    检测软件仓库内核版本
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+    return render_template('MT_kernel.html')
+
+
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
     uos_sysmig_conf = json.loads(share.getSysMigConf())
