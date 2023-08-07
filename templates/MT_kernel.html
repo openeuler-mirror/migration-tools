@@ -95,9 +95,33 @@
         });	//ajax end
     });
 
-	function close_tool() {
+
+    $(document).ready(function() {
+        var check_repo_kernel_data_json={"mod":"check_repo_kernel"};
+        check_repo_kernel_data_json.ip = "tasks"
+        $.ajax({
+                async:true,
+                type: 'post',
+                dataType: 'json',
+                url: 'MT_repo_kernel',
+                data: $.toJSON(check_repo_kernel_data_json),
+                success: function(res) {
+                    res=$.evalJSON(res);
+                    for (var i in res.data) {
+                        actType = document.getElementById('actType');
+                        var option = document.createElement("option");
+                        option.appendChild(document.createTextNode(res.data[i]));
+                        option.setAttribute("value", res.data[i]);
+                        actType.appendChild(option);
+                    }
+                }
+        });	//ajax end
+    });
+
+
+    function close_tool() {
         alert("确定关闭迁移软件吗?");
-	}
+    }
 
 
 </script>
