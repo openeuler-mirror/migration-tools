@@ -199,3 +199,24 @@ def check_repo(data_j):
         keylist = ['ip','res','error']
         valuelist = [AGENT_IP,state,data]
     return list_to_json(keylist,valuelist)
+
+
+def check_repo_kernel(data):
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+    version_list = []
+    os_version_ret = platform.dist()
+    version = os_version_ret[1].split('.', -1)
+    if re.fullmatch('8', version[0]):
+        ret = os.popen('yum repoquery --nvr kernel --enablerepo UniontechOS-kernel-4.18.0')
+        for r in ret.readlines():
+            if re.match('kernel', r):
+                kernel_version = re.sub('kernel-', '', r)
+                kernel_version = re.sub('-.*$', '', kernel_version)
+                version_list.append(kernel_version.strip())
+    else:
+        version_list = ''
+    keylist = ['ip', 'data']
+    print(version_list)
+    valuelist = [AGENT_IP, version_list]
+    return list_to_json(keylist, valuelist)
