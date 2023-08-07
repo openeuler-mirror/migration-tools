@@ -36,7 +36,7 @@
     </div>
 	
 	<div class="ui attached warning message" style="width: 40%;">
-       <p id="os_kernel"><i class="info letter icon"></i>当前系统版本内核为: 5.10.29-amd64 </p>
+       <p id="os_kernel"><i class="info letter icon"></i>当前系统版本内核</p>
     </div>
 
 	 <div class="two fields" style="margin-top: 30px;">
@@ -78,6 +78,22 @@
 
 <script>
 
+    $(document).ready(function() {
+        var check_os_kernel_data_json={"mod":"check_os_kernel"};
+        check_os_kernel_data_json.ip = "tasks"
+        $.ajax({
+                async:true,
+                type: 'post',
+                dataType: 'json',
+                url: 'MT_check_os_kernel',
+                data: $.toJSON(check_os_kernel_data_json),
+                success: function(res) {
+                    res=$.evalJSON(res);
+                    info = "当前系统版本内核为: " + res.data
+                    document.getElementById('os_kernel').innerHTML = info
+                }
+        });	//ajax end
+    });
 
 	function close_tool() {
         alert("确定关闭迁移软件吗?");
