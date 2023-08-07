@@ -119,6 +119,14 @@
     });
 
 
+    function save() {
+        agent_passwd = window.location.search;
+    	var kernel_version = document.getElementById("actType").value;
+    	var arr_info = [agent_passwd, kernel_version]
+        window.location = '/Mt_environment'+ arr_info;
+    }
+
+
     function close_tool() {
         alert("确定关闭迁移软件吗?");
     }
