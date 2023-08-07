@@ -15,6 +15,7 @@ mods = {
         'close_tool': migration.close_tool,
         'check_user': migration.check_user,
         'check_repo': migration.check_repo,
+        'check_os_kernel': migration.check_os_kernel,
         'check_repo_kernel': migration.check_repo_kernel,
         }
 
@@ -142,6 +143,19 @@ def MT_kernel():
     :return:
     """
     return render_template('MT_kernel.html') 
+
+
+@app.route('/MT_check_os_kernel', methods=['GET', 'POST'])
+def MT_check_os_kernel():
+    """
+    检测系统内核版本
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+    return render_template('MT_kernel.html')
 
 
 if __name__ == '__main__':
