@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>管理首页 | 统信迁移工具</title>
+    <link type="text/css" rel="stylesheet" href="static/css/admin/framework.css" />
+	<link href="static/css/admin/style.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="static/css/admin/main.css" />
+    <link type="text/css" rel="stylesheet" href="static/css/admin/alert.css" />
+
+</head>
+<body>
+<div class="page">
+<!--the main content begin-->
+	<div class="container">
+	<!--the content-->
+		<div class="pageHeader" >
+			<div class="segment">
+				<h3 class="ui dividing header">	
+					<img src="static/images/logo.png" style="width: 120px; height: 50px;"/>				
+  					<label style="padding-left:320px;font-size:28px;">统信服务器系统迁移软件</label>
+				</h3>
+			</div>				
+		</div>
+
+
+	<div class="pageHeader">
+        <div class="segment">
+            <h5 class="ui dividing  header">
+  		        <i class="large settings alternate icon"></i>
+  		        <div class="content">选择迁移系统内核版本</div>
+            </h5>
+        </div>
+    </div>
+	
+	<div class="ui attached warning message" style="width: 40%;">
+       <p id="os_kernel"><i class="info letter icon"></i>当前系统版本内核为: 5.10.29-amd64 </p>
+    </div>
+
+	 <div class="two fields" style="margin-top: 30px;">
+			<div class="field">
+				<label>迁移系统内核:</label>
+				<div class="ui left labeled icon input">
+                    <select class="form-control" id="actType">
+                        <option value="0">不迁移内核</option>
+                    </select>
+				</div>
+			</div>
+	  </div>
+	</br>
+		</br>
+        </br>
+        </br>
+        </br>
+        </br>
+        </br>
+
+    <div class="menter_btn_a_lf" >
+        <hr style="opacity: 0.1;border: 1px solid #4C4D4E;width:99%;" />
+    </br>
+    </br>
+        <button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
+        <button id="check_note"  type="submit" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 1" onclick="save()"><style>a{TEXT-DECORATION:none}</style>下一步</button>
+    </div>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="static/js/admin/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/admin/framework.js"></script>
+<script type="text/javascript" src="static/js/admin/jquery.zclip.min.js"></script>
+<script type="text/javascript" src="static/js/admin/alert.js"></script>
+
+<script type="text/javascript" src="static/js/admin/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/admin/json.js"></script>
+
+<script>
+
+
+	function close_tool() {
+        alert("确定关闭迁移软件吗?");
+	}
+
+
+</script>
+
+</body>
+</html>
