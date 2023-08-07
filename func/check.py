@@ -201,6 +201,15 @@ def check_repo(data_j):
     return list_to_json(keylist,valuelist)
 
 
+def check_os_kernel(data):
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+    platformInfo = platform.platform()
+    systemKernelVersion = platformInfo.split('-',-1)
+    kernel_version = systemKernelVersion[1]
+    return list_to_json(['ip','data'],[AGENT_IP,kernel_version])
+
+
 def check_repo_kernel(data):
     uos_sysmig_conf = json.loads(getSysMigConf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
