@@ -38,6 +38,13 @@ def check_repo(data):
     if services:
         return services
 
+
+def check_os_kernel(data):
+    services = check_services(data, '/check_os_kernel')
+    if services:
+        return services
+
+
 def check_repo_kernel(data):
     services = check_services(data, '/check_repo_kernel')
     if services:

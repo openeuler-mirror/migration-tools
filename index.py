@@ -15,6 +15,7 @@ mods = {
         'close_tool': migration.close_tool,
         'check_user': migration.check_user,
         'check_repo': migration.check_repo,
+        'check_os_kernel': migration.check_os_kernel,
         'check_repo_kernel': migration.check_repo_kernel,
         }
 
