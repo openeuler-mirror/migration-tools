@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>管理首页 | 统信迁移工具</title>
+    <link type="text/css" rel="stylesheet" href="static/css/admin/framework.css" />
+	<link href="static/css/admin/style.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="static/css/admin/main.css" />
+	<link rel="stylesheet" href="static/css/admin/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="static/css/admin/alert.css" />
+	<script src="static/css/admin/jquery.min.js"></script>
+</head>
+<body>
+<div class="page">
+<!--the main content begin-->
+	<div class="container">
+	<!--the content-->
+		<div class="pageHeader" >
+			<div class="segment">
+				<h3 class="ui dividing header">	
+					<img src="static/images/logo.png" style="width: 120px; height: 50px;"/>				
+  					<label style="padding-left:320px;font-size:28px;">统信服务器系统迁移软件</label>
+				</h3>
+			</div>				
+		</div>
+	<br/>
+		<br/>
+	<div class="pageHeader">
+            <p style="padding-left:470px;font-size:23px;font-family:”微软雅黑”;font-weight:bold;">迁移前系统环境检查</p><br/>
+	</br>
+		</br>
+		</br>
+    <div class="menter_btn_a_lf" >
+        <hr style="opacity: 0.1;border: 1px solid #4C4D4E;width:99%;" />
+    </br>
+    </br>
+        <button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
+		<button id="check_id" onclick="save()" type="submit" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 0.2;" disabled = "disabled"><style>a{TEXT-DECORATION:none}</style>下一步</button>
+    </div>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="static/js/admin/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/admin/framework.js"></script>
+<script type="text/javascript" src="static/js/admin/jquery.zclip.min.js"></script>
+<script type="text/javascript" src="static/js/admin/alert.js"></script>
+<script type="text/javascript" src="static/js/admin/save_alert.js"></script>
+<script type="text/javascript" src="static/js/admin/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/admin/json.js"></script>
+
+<script>
+    
+
+	function save() {
+	    save_alert("确定开始迁移吗？" + "\n" + "迁移工作即将开始，请保证稳定的网络链接，迁移开始后会禁用您的自动更新功能，迁移过程不可逆，请确保您的数据和设置已经[备份]");
+	}
+
+	function close_tool() {
+            alert("确定关闭迁移软件吗?")
+	}
+	
+
+</script>
+
+</body>
+</html>
