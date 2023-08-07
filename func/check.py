@@ -154,3 +154,24 @@ def initRepoFile(baseurl):
     with open(repofile,'w') as f_repo:
         f_repo.write(repostr_uos)
         f_repo.close()
+
+
+#检测repo文件创建缓存
+def checkRepoMakeCache():
+    os.system('yum clean all')
+    os.system('yum makecache')
+    os_version_ret = platform.dist()
+    version = os_version_ret[1].split('.',-1)
+    ret = os.path.exists('/var/cache/dnf/UniontechOS-AppStream.solv')
+    if ret:
+        ret = os.path.exists('/var/cache/dnf/UniontechOS-BaseOS.solv')
+        if ret or re.fullmatch('7',version[0]):
+            return 0
+        else:
+            return 1
+    else:
+        if re.fullmatch('7',version[0]):
+            ret = os.path.exists('/var/cache/yum/x86_64/7/UniontechOS-AppStream/repomd.xml')
+            if ret:
+                return 0
+        return 1
