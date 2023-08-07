@@ -171,6 +171,19 @@ def MT_repo_kernel():
     return render_template('MT_kernel.html')
 
 
+@app.route('/MT_check_environment', methods=['GET', 'POST'])
+def MT_check_environment():
+    """
+    迁移前系统环境检查
+    :return:
+    """
+    mod = check_methods()
+
+    if mod:
+        return Response(mod, content_type='application/json')
+    return render_template('MT_check_environment.html')
+
+
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
     uos_sysmig_conf = json.loads(share.getSysMigConf())
