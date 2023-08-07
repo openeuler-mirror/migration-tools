@@ -11,6 +11,7 @@ mods = {
         'check_storage': check.check_storage,
         'check_os': check.check_os,
         'check_user': check.check_user,
+        'check_repo': check.check_repo,
         }
 
 def check_methods():
@@ -39,6 +40,13 @@ def mt_check_os():
 
 @app.route('/check_user', methods=['GET', 'POST'])
 def mt_check_user():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/check_repo', methods=['GEt', 'POST'])
+def mt_check_repo():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
