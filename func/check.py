@@ -130,6 +130,8 @@ def init_remove_oldrepo():
 
 #初始化repo文件
 def initRepoFile(baseurl):
+    os_version_ret = platform.dist()
+    version = os_version_ret[1].split('.',-1)
     reposdir = '/etc/yum.repos.d/'
     h = 0
     if re.match('file:',baseurl):
