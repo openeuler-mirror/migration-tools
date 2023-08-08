@@ -12,6 +12,13 @@ def check_services(data, url):
     else:
         return info.text
 
+
+def check_environment(data):
+    services = check_services(data, '/check_environment')
+    if services:
+        return services
+
+
 def check_os(data):
     services = check_services(data, '/check_os')
     if services:
@@ -49,3 +56,4 @@ def check_repo_kernel(data):
     services = check_services(data, '/check_repo_kernel')
     if services:
         return services
+
