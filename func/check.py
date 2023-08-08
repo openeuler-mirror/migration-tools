@@ -229,3 +229,14 @@ def check_repo_kernel(data):
     print(version_list)
     valuelist = [AGENT_IP, version_list]
     return list_to_json(keylist, valuelist)
+
+
+def systemCheckRequires(conflist):
+    os.system('rpm --rebuilddb')
+    cmd = 'rpm -qa|xargs -i rpm -V --nordev --nomode  --nomtime  --nogroup --nouser  --nosize --nofiledigest --nolinkto --noscripts --nofiles --nodigest {} >>' + PRE_MIG
+    rets = os.popen(cmd)
+    if rets:
+        for ret in rets.readlines():
+            conflist.append(ret)
+        if len(conflist) > 1:
+            return conflist
