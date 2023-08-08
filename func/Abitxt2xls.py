@@ -16,6 +16,7 @@ report_path_bef="/var/tmp/uos-migration/UOS_analysis_report/"
 report_path_ago='/var/tmp/uos-migration/UOS_migration_log/'
 
 txtFileName = '/var/tmp/uos-migration/data/exp-rst/abi-compat-pkg.txt'
+txtFileName1 = '/var/tmp/uos-migration/data/exp-rst/abi-incompat-pkg.txt'
 SysInfoFile = '/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'
 PkgCompFile1= '/var/tmp/uos-migration/data/exp-rst/pkginfo_1.txt'
 PkgCompFile2= '/var/tmp/uos-migration/data/exp-rst/pkginfo_2.txt'
@@ -81,7 +82,12 @@ def abi_incomp_info(file_incomp):
     sheet_comp = file_incomp.add_sheet("ABI兼容")
     accord_line_write(txtFileName, sheet_comp, 0, 0)
 
+#sheet5-ABI不兼容
+def abi_comp_pkg(file_comp):
+    #新建一个sheet
+    sheet_incomp = file_comp.add_sheet("ABI不兼容")
 
+    accord_line_write(txtFileName1, sheet_incomp, 0, 0)
 
 def abi_txt2xls():
     #兼容性检查报告名规则：UOS_migration_log_10.0.2.3_cy.server_202110192140.xls
@@ -100,3 +106,28 @@ def abi_txt2xls():
     system_info(check_file)
     pkg_comp(check_file)
     abi_incomp_info(check_file)
+    abi_comp_pkg(check_file)
+
+    check_file.save(report_name_check)
+
+
+def abi_txt2xls_after_mig():
+
+    hostip = get_host_ip()
+    hostname = socket.gethostname()
+    excelFileName_after = "UOS_migration_log_"+hostip+"_"+hostname+"_"+datetime.datetime.now().strftime('%Y%m%d%H%M')+".xls"
+
+    report_name_after=report_path_ago+excelFileName_after
+
+    if os.path.exists(report_name_after):
+        os.remove(report_name_after)
+
+    #新建一个excel文件
+    after_mig_xls = xlwt.Workbook(encoding='utf-8',style_compression=0)
+
+    system_info(after_mig_xls)
+    pkg_comp(after_mig_xls)
+    abi_incomp_info(after_mig_xls)
+    abi_comp_pkg(after_mig_xls)
+
+    after_mig_xls.save(report_name_after)
