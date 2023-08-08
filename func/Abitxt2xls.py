@@ -18,6 +18,7 @@ report_path_ago='/var/tmp/uos-migration/UOS_migration_log/'
 txtFileName = '/var/tmp/uos-migration/data/exp-rst/abi-compat-pkg.txt'
 txtFileName1 = '/var/tmp/uos-migration/data/exp-rst/abi-incompat-pkg.txt'
 SysInfoFile = '/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'
+SysInfoFile_after = '/var/tmp/uos-migration/data/exp-rst/trans-end-sysinfo.txt'
 PkgCompFile1= '/var/tmp/uos-migration/data/exp-rst/pkginfo_1.txt'
 PkgCompFile2= '/var/tmp/uos-migration/data/exp-rst/pkginfo_2.txt'
 PkgCompFile3= '/var/tmp/uos-migration/data/exp-rst/pkginfo_3.txt'
@@ -65,6 +66,13 @@ def system_info(check_file):
     #新建一个sheet
     sheet_sysinfo = check_file.add_sheet("系统基本信息")
     accord_line_write(SysInfoFile, sheet_sysinfo, 0, 0)
+
+
+#sheet1-系统基本信息
+def system_info_after(sys):
+    #新建一个sheet
+    sheet_sysinfo = sys.add_sheet("系统基本信息")
+    accord_line_write(SysInfoFile_after, sheet_sysinfo, 0, 0)
 
 
 #sheet2-软件包对比
@@ -125,7 +133,7 @@ def abi_txt2xls_after_mig():
     #新建一个excel文件
     after_mig_xls = xlwt.Workbook(encoding='utf-8',style_compression=0)
 
-    system_info(after_mig_xls)
+    system_info_after(after_mig_xls)
     pkg_comp(after_mig_xls)
     abi_incomp_info(after_mig_xls)
     abi_comp_pkg(after_mig_xls)
