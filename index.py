@@ -10,13 +10,14 @@ from flask import Flask, render_template, url_for, request, redirect, make_respo
 app = Flask(__name__)
 
 mods = {
+        'check_environment': migration.check_environment,
         'check_storage' : migration.check_storage,
         'check_os': migration.check_os,
-        'close_tool': migration.close_tool,
-        'check_user': migration.check_user,
-        'check_repo': migration.check_repo,
         'check_os_kernel': migration.check_os_kernel,
+        'check_repo': migration.check_repo,
         'check_repo_kernel': migration.check_repo_kernel,
+        'check_user': migration.check_user,
+        'close_tool': migration.close_tool,
         }
 
 
