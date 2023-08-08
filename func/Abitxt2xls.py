@@ -15,7 +15,13 @@ from func.share import *
 report_path_bef="/var/tmp/uos-migration/UOS_analysis_report/"
 report_path_ago='/var/tmp/uos-migration/UOS_migration_log/'
 
+txtFileName = '/var/tmp/uos-migration/data/exp-rst/abi-compat-pkg.txt'
 SysInfoFile = '/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'
+PkgCompFile1= '/var/tmp/uos-migration/data/exp-rst/pkginfo_1.txt'
+PkgCompFile2= '/var/tmp/uos-migration/data/exp-rst/pkginfo_2.txt'
+PkgCompFile3= '/var/tmp/uos-migration/data/exp-rst/pkginfo_3.txt'
+PkgCompFile4= '/var/tmp/uos-migration/data/exp-rst/pkginfo_4.txt'
+
 
 def get_host_ip():
     """
@@ -25,21 +31,6 @@ def get_host_ip():
     uos_sysmig_conf = json.loads(getSysMigConf())
     ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     return ip
-
-
-def system_info(check_file):
-    #新建一个sheet
-    sheet_sysinfo = check_file.add_sheet("系统基本信息")
-    accord_line_write(SysInfoFile, sheet_sysinfo, 0, 0)
-
-
-#sheet2-软件包对比
-def pkg_comp(pkg):
-    #新建一个sheet
-    sheet_pkgcomp = pkg.add_sheet("软件包对比")
-    accord_line_write(PkgCompFile1, sheet_pkgcomp, 0, 0)
-    accord_colu_write(PkgCompFile2, sheet_pkgcomp, 3, 0)
-    accord_colu_write(PkgCompFile4, sheet_pkgcomp, 3, 1)
 
 
 def accord_line_write(txtLineFile, sheet_line, line_num, colu_num):
@@ -69,6 +60,29 @@ def accord_colu_write(txtColuFile,sheet_colu, line_num, colu_num):
                 x += 1
     colu_f.close()
 
+def system_info(check_file):
+    #新建一个sheet
+    sheet_sysinfo = check_file.add_sheet("系统基本信息")
+    accord_line_write(SysInfoFile, sheet_sysinfo, 0, 0)
+
+
+#sheet2-软件包对比
+def pkg_comp(pkg):
+    #新建一个sheet
+    sheet_pkgcomp = pkg.add_sheet("软件包对比")
+    accord_line_write(PkgCompFile1, sheet_pkgcomp, 0, 0)
+    accord_colu_write(PkgCompFile2, sheet_pkgcomp, 3, 0)
+    accord_colu_write(PkgCompFile4, sheet_pkgcomp, 3, 1)
+
+
+#sheet4-ABI兼容
+def abi_incomp_info(file_incomp):
+    #新建一个sheet
+    sheet_comp = file_incomp.add_sheet("ABI兼容")
+    accord_line_write(txtFileName, sheet_comp, 0, 0)
+
+
+
 def abi_txt2xls():
     #兼容性检查报告名规则：UOS_migration_log_10.0.2.3_cy.server_202110192140.xls
     hostip = get_host_ip()
@@ -85,4 +99,4 @@ def abi_txt2xls():
 
     system_info(check_file)
     pkg_comp(check_file)
-    
+    abi_incomp_info(check_file)
