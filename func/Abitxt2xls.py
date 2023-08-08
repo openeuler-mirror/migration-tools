@@ -23,6 +23,7 @@ PkgCompFile1= '/var/tmp/uos-migration/data/exp-rst/pkginfo_1.txt'
 PkgCompFile2= '/var/tmp/uos-migration/data/exp-rst/pkginfo_2.txt'
 PkgCompFile3= '/var/tmp/uos-migration/data/exp-rst/pkginfo_3.txt'
 PkgCompFile4= '/var/tmp/uos-migration/data/exp-rst/pkginfo_4.txt'
+PkgCompFile1_after= '/var/tmp/uos-migration/data/exp-rst/pkginfo_1_trans.txt'
 
 
 def get_host_ip():
@@ -84,6 +85,16 @@ def pkg_comp(pkg):
     accord_colu_write(PkgCompFile4, sheet_pkgcomp, 3, 1)
 
 
+#sheet2-软件包对比
+def pkg_comp_after(pkg):
+    #新建一个sheet
+    sheet_pkgcomp = pkg.add_sheet("软件包对比")
+    accord_line_write(PkgCompFile1_after, sheet_pkgcomp, 0, 0)
+    accord_colu_write(PkgCompFile2, sheet_pkgcomp, 3, 0)
+    accord_colu_write(PkgCompFile3, sheet_pkgcomp, 3, 1)
+    accord_colu_write(PkgCompFile4, sheet_pkgcomp, 3, 2)
+
+
 #sheet4-ABI兼容
 def abi_incomp_info(file_incomp):
     #新建一个sheet
@@ -134,7 +145,7 @@ def abi_txt2xls_after_mig():
     after_mig_xls = xlwt.Workbook(encoding='utf-8',style_compression=0)
 
     system_info_after(after_mig_xls)
-    pkg_comp(after_mig_xls)
+    pkg_comp_after(after_mig_xls)
     abi_incomp_info(after_mig_xls)
     abi_comp_pkg(after_mig_xls)
 
