@@ -33,6 +33,15 @@ def system_info(check_file):
     accord_line_write(SysInfoFile, sheet_sysinfo, 0, 0)
 
 
+#sheet2-软件包对比
+def pkg_comp(pkg):
+    #新建一个sheet
+    sheet_pkgcomp = pkg.add_sheet("软件包对比")
+    accord_line_write(PkgCompFile1, sheet_pkgcomp, 0, 0)
+    accord_colu_write(PkgCompFile2, sheet_pkgcomp, 3, 0)
+    accord_colu_write(PkgCompFile4, sheet_pkgcomp, 3, 1)
+
+
 def accord_line_write(txtLineFile, sheet_line, line_num, colu_num):
     # 通过列的形式写入文件
     with open(txtLineFile,'r') as line_f:
@@ -47,6 +56,18 @@ def accord_line_write(txtLineFile, sheet_line, line_num, colu_num):
             y = 0
     line_f.close()
 
+
+def accord_colu_write(txtColuFile,sheet_colu, line_num, colu_num):
+    # 通过行的形式写入文件
+    with open(txtColuFile,'r') as colu_f:
+        x = line_num 
+        y = colu_num 
+        sys_colus = colu_f.readlines()
+        for line in sys_colus:
+            for value in line.strip().split("|"):
+                sheet_colu.write(x,y,value)
+                x += 1
+    colu_f.close()
 
 def abi_txt2xls():
     #兼容性检查报告名规则：UOS_migration_log_10.0.2.3_cy.server_202110192140.xls
@@ -63,4 +84,5 @@ def abi_txt2xls():
     check_file = xlwt.Workbook(encoding='utf-8',style_compression=0)
 
     system_info(check_file)
+    pkg_comp(check_file)
     
