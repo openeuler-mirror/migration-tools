@@ -4,6 +4,8 @@ main function：主要实现把txt中的每行数据写入到excel中
 '''
 #################
 import json
+import socket
+import datetime
 
 from func.share import *
 
@@ -24,3 +26,15 @@ def get_host_ip():
 
     return ip
 
+
+def abi_txt2xls():
+
+    #兼容性检查报告名规则：UOS_migration_log_10.0.2.3_cy.server_202110192140.xls
+    hostip = get_host_ip()
+    hostname = socket.gethostname()
+    excelFileName = "UOS_migration_log_"+hostip+"_"+hostname+"_"+datetime.datetime.now().strftime('%Y%m%d%H%M')+".xls"
+
+    report_name_check=report_path_bef+excelFileName
+
+    if os.path.exists(report_name_check):
+        os.remove(report_name_check)
