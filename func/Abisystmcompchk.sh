@@ -129,6 +129,53 @@ get_rpm_list()
 	done
 }
 
+
+#根据解压列表，过滤出兼容性检测的文件
+deal_file()
+{
+	#清理数据
+	rm -f $EXP_DIR/$2.diff
+
+	for line in `cat $1`
+	do
+		rst=`file -i $line`
+		if [[ ${rst#*charset=} == "binary" ]];then
+
+			#获取要对比的文件名
+			uos_bin=${line##*\/}
+
+			#获取要对比的文件名路径
+			uos_path_1=${line#*\/}
+			uos_path=${uos_path_1%%\/*}
+
+			#获取本系统文件名
+			rst_find=`find /$uos_path -name $uos_bin` 
+			if [[ ${rst_find} != 0 ]];then
+
+				#做对比到处结果
+				abidiff .$line $rst_find > $EXP_DIR/abidiff_comp_rst.txt
+				#abidiff工具检测结果不存在报错
+			       	if [[ ! -f "$EXP_DIR/abidiff_comp_rst.txt" ]];then
+					echo "abidiff $line $rst_find err!!!!"
+					continue
+				else
+					if [[  -s $EXP_DIR/abidiff_comp_rst.txt ]];then
+
+						#存在不为空,按照abipkgdiff工具结果格式生成报告
+						echo ${START_CHANGE//START/\'$uos_bin\'} >> $DIFF_DIR/$2.diff
+						cat $EXP_DIR/abidiff_comp_rst.txt >> $DIFF_DIR/$2.diff
+						echo ${ENDS_CHANGE//END/\'$uos_bin\'} >> $DIFF_DIR/$2.diff
+						echo " " >> $DIFF_DIR/$2.diff
+					else
+						#存在为空，直接导入结果列表
+						cat $EXP_DIR/abidiff_comp_rst.txt >> $DIFF_DIR/$2.diff
+					fi
+				fi	
+			fi
+		fi
+	done
+}
+
 #3. abi检查结果，包括兼容、非兼容的二进制包
 #   逐个处理 .diff 结果文件
 get_abi_comp_rest()
