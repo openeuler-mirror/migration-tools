@@ -53,7 +53,43 @@
 <script type="text/javascript" src="static/js/admin/json.js"></script>
 
 <script>
+    function check_environment() {
+	    env = setInterval("check_env()",2000);
+    }
     
+    function check_env(){
+        var check_environment_data_json={"mod":"check_environment"};
+        check_environment_data_json.ip="tasks"
+        var arr_info = window.location.search;
+		check_environment_data_json.kernel_version = arr_info.split(",")[1]
+    	$.ajax({
+			async:true,
+			type: 'post',
+			dataType: 'json',
+			url: 'MT_check_environment',
+			data: $.toJSON(check_environment_data_json),
+			success: function(res) {
+				res=$.evalJSON(res);
+				if (res.res == -1) {
+    				clearInterval(progress)
+    				clearInterval(env)
+				}
+				else if (res.res == 2){
+					console.log("......")
+				}
+				else if (res.res == 0){
+					if (res.data == 1) {
+						clearInterval(progress)
+    					clearInterval(env)
+					} else {
+						clearInterval(progress)
+    					clearInterval(env)
+					}
+				}
+			}
+        });	//ajax end
+
+    }
 
 	function save() {
 	    save_alert("确定开始迁移吗？" + "\n" + "迁移工作即将开始，请保证稳定的网络链接，迁移开始后会禁用您的自动更新功能，迁移过程不可逆，请确保您的数据和设置已经[备份]");
