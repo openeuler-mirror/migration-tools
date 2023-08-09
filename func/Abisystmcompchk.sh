@@ -367,3 +367,52 @@ get_system_info()
 
 	#echo "====================End enter get_system_info=============="
 }
+
+#5. 软件包对比
+pkg_comp_rst()
+{
+	#软件包对比文件头定义
+	PKGINFO_1_LINE1="待替换/安装的软件包共SUM1个，新安装的软件包共SUM2个"
+	PKGINFO_2_LINE2="当前系统持有（不替换）|迁移系统软件包总表"
+	PKGINFO_3_LINE3="OTH_VERSION|UOS_VERSION"
+
+	#echo "==============Start enter pkg_comp_rst========="
+        #清理数据
+        rm -f $EXP_DIR/$PKG_COMP_LIST_01
+
+        pkg_sum_num=`cat $EXP_DIR/$UOS_PKG_RPMS_LIST | wc -l`
+        #pkg_num_inst=`cat $EXP_DIR/$UOS_PKG_RPMS_LIST | grep uelc20 | wc -l`
+        pkg_num_inst_tmp=`cat $EXP_DIR/$ABI_COMPAT_PKG | wc -l`
+	pkg_num_inst=`expr $pkg_num_inst_tmp - 1`
+
+
+	pkginfo_1_line1_tmp=${PKGINFO_1_LINE1//SUM1/$pkg_sum_num}
+	pkginfo_1_line1=${pkginfo_1_line1_tmp//SUM2/$pkg_num_inst}
+
+        echo $pkginfo_1_line1 >> $EXP_DIR/$PKG_COMP_LIST_01
+
+        echo $PKGINFO_2_LINE2 >> $EXP_DIR/$PKG_COMP_LIST_01
+
+        #获取系统版本
+        cur_sysinfo_1=`cat /etc/os-release | grep PRETTY_NAME`
+        cur_sysinfo_2=${cur_sysinfo_1#*=}
+        cur_sysinfo_len_1=`echo ${cur_sysinfo_1#*=} | wc -L`
+        cur_sysinfo_len=`expr $cur_sysinfo_len_1 - 2`
+
+        cur_sysinfo=${cur_sysinfo_2:1:$cur_sysinfo_len}
+
+        trans_sysinfo_1="UOS Server Enterprise "
+
+	pkginfo_3_line3_tmp=${PKGINFO_3_LINE3//OTH_VERSION/$cur_sysinfo}
+	pkginfo_3_line3=${pkginfo_3_line3_tmp//UOS_VERSION/$trans_sysinfo_1}
+        echo $pkginfo_3_line3 >> $EXP_DIR/$PKG_COMP_LIST_01
+
+	#cat $EXP_DIR/$UOS_PKG_RPMS_LIST | grep uelc20 > $EXP_DIR/$PKG_COMP_LIST_04	
+	#echo "==============End enter pkg_comp_rst========="
+}
+
+create_file_path
+get_rpm_list
+get_abi_comp_rest
+get_system_info
+pkg_comp_rst
