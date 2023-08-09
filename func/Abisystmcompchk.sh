@@ -20,6 +20,28 @@ EXP_DIR=$LOCAL_DIR/exp-rst
 #系统基本信息文件
 SYSTEM_INFO=systeminfo.txt
 
+#软件包对比文件
+PKG_COMP_LIST_01=pkginfo_1.txt
+PKG_COMP_LIST_02=pkginfo_2.txt
+PKG_COMP_LIST_04=pkginfo_4.txt
+
+#不兼容兼容定义
+START_CHANGE="================ changes of START==============="
+ENDS_CHANGE="================ end of changes of END==============="
+
+#兼容、不兼容检查结果输出列表
+ABI_COMPAT_PKG=abi-compat-pkg.txt
+ABI_INCOMPAT_PKG=abi-incompat-pkg.txt
+
+#生成总包文件
+UOS_PKG_RPMS_LIST=uos-pkg-rpms-list.txt
+OTH_PKG_RPMS_LIST=oth-pkg-rpms-list.txt
+
+ABI_DIFF_PKG_ERR=abi-diff-pkg-err.txt
+SUFFIX=.oked
+
+CACHE_SPACE="/var/tmp/uos-migration/UOS_analysis_report/rpmva-before.txt"
+
 #1. 创建目录
 create_file_path()
 {

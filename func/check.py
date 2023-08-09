@@ -4,6 +4,8 @@ import platform
 import re
 import time
 import paramiko
+import subprocess
+from multiprocessing import Process
 
 
 from settings import *
@@ -243,6 +245,16 @@ def systemCheckRequires(conflist):
             conflist.append(ret)
         if len(conflist) > 1:
             return conflist
+
+
+def fork_sh(cmd):
+    try:
+        fderr = open("/var/tmp/uos-migration/UOS_migration_log/err_log",'a')
+        subprocess.run(cmd, stderr=fderr , shell=True)
+        messageState('2')
+        fderr.close()
+    except:
+        return 0
 
 
 def env():
