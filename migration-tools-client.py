@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 mods = {
         'check_storage': check.check_storage,
+        'check_environment': check.check_environment,
         'check_os': check.check_os,
         'check_user': check.check_user,
         'check_repo': check.check_repo,
@@ -24,6 +25,13 @@ def check_methods():
         if mod:
             response_str = mod(data)
             return response_str
+
+
+@app.route('/check_environment', methods=['GET', 'POST'])
+def mt_check_environment():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
 
 
 @app.route('/check_storage', methods=['GET', 'POST'])
