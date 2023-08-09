@@ -5,9 +5,12 @@ import re
 import time
 import paramiko
 
+
 from settings import *
-from func.utils import list_to_json
+from func.utils import *
 from func.share import *
+from func.Abitxt2xls import *
+
 
 def check_storage(data):
     uos_sysmig_conf = json.loads(getSysMigConf())
@@ -240,3 +243,44 @@ def systemCheckRequires(conflist):
             conflist.append(ret)
         if len(conflist) > 1:
             return conflist
+
+
+def env():
+    cmd = 'sh func/Abisystmcompchk.sh'
+    t = Process(target=fork_sh, args=(cmd,))
+    t.start()
+
+##系统环境检查
+def check_environment(data_j):
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+    state = None
+    #abi check
+    with open(pstate,'r+') as fp:
+        state = fp.readlines()
+        fp.close()
+        state = state[0]
+    if re.match('0',state):
+        messageState('1')
+        if systemCheckRequires([]):
+            data = '1'
+        env()
+    if re.match('1',state):
+        data = '1'
+        keylist = ['ip','res','data']
+        valuelist = [AGENT_IP,'2',data]
+        return list_to_json(keylist,valuelist)
+    elif re.match('2',state):
+        abi_txt2xls()
+        messageState('3')
+    elif re.match('3',state) or re.match('9',state):
+        data = '1'
+        res = 0
+        keylist = ['ip','res','data']
+        valuelist = [AGENT_IP,res,data]
+        messageState('9')
+        return list_to_json(keylist,valuelist)
+    data = '1'
+    keylist = ['ip','res','data']
+    valuelist = [AGENT_IP,'2',data]
+    return list_to_json(keylist,valuelist)
