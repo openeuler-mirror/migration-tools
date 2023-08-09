@@ -273,3 +273,97 @@ get_abi_comp_rest()
 	echo "非兼容包列表：$EXP_DIR/$ABI_INCOMPAT_PKG"
 	echo "-------------------------  获取abi兼容、非兼容包列表结束  -------------------------"
 }
+
+#4. 获取系统基本信息
+get_system_info()
+{
+	#echo "====================Start enter get_system_info=============="
+        #数据清理
+        rm -f $EXP_DIR/$SYSTEM_INFO
+
+	#SYSTEM_INFO_1_LINE1="|当前系统|迁移系统"
+	SYSTEM_INFO_1_LINE1="|当前系统"
+	#SYSTEM_INFO_2_LINE2="系统版本|CUR_VERSION|TRA_VERSION"
+	SYSTEM_INFO_2_LINE2="系统版本|CUR_VERSION"
+	#SYSTEM_INFO_3_LINE3="内核版本|CUR_KERNEL_VERSION|TRA_KERNEL_VERSION"
+	SYSTEM_INFO_3_LINE3="内核版本|CUR_KERNEL_VERSION"
+
+	SYSTEM_INFO_5_LINE5="/var/cache可用空间|CUR_USE_SPACE"
+	SYSTEM_INFO_6_LINE6="架构|CUR_ARCH"
+
+	#SYSTEM_INFO_8_LINE8="软件包|被替换的软件包|安装的软件包"
+	SYSTEM_INFO_8_LINE8="软件包|被替换的软件包"
+	#SYSTEM_INFO_9_LINE9="软件包数量|REPLACE_PKG_NUM|INSTALL_PKG_NUM"
+	SYSTEM_INFO_9_LINE9="软件包数量|REPLACE_PKG_NUM"
+
+	SYSTEM_INFO_11_LINE11="ABI"
+	SYSTEM_INFO_12_LINE12="兼容数量|COMP_NUM"
+	SYSTEM_INFO_13_LINE13="不兼容数量|INCOMP_NUM"
+	SYSTEM_INFO_14_LINE14="总数|SUM_NUM"
+
+        echo $SYSTEM_INFO_1_LINE1 >> $EXP_DIR/$SYSTEM_INFO
+
+        #获取系统版本
+	cur_sysinfo_1=`cat /etc/os-release | grep PRETTY_NAME`
+	cur_sysinfo_2=${cur_sysinfo_1#*=}
+	cur_sysinfo_len_1=`echo ${cur_sysinfo_1#*=} | wc -L`
+	cur_sysinfo_len=`expr $cur_sysinfo_len_1 - 2`
+
+	cur_sysinfo=${cur_sysinfo_2:1:$cur_sysinfo_len}
+
+	system_info_2_line2=${SYSTEM_INFO_2_LINE2//CUR_VERSION/$cur_sysinfo}
+	#system_info_2_line2=${system_info_2_line2_tmp//TRA_VERSION/$trans_sysinfo}
+        echo $system_info_2_line2 >> $EXP_DIR/$SYSTEM_INFO
+
+	#获取内核版本
+        cur_kernel_info=`uname -r`
+        #trans_kernel_info="******"
+
+	system_info_3_line3=${SYSTEM_INFO_3_LINE3//CUR_KERNEL_VERSION/$cur_kernel_info}
+	#system_info_3_line3=${system_info_3_line3_tmp//TRA_KERNEL_VERSION/$trans_kernel_info}
+        echo $system_info_3_line3 >> $EXP_DIR/$SYSTEM_INFO
+	echo " " >> $EXP_DIR/$SYSTEM_INFO
+
+	#cache空间及架构
+	cur_cache_space_tmp=`head -1 $CACHE_SPACE`
+        cur_cache_space=${cur_cache_space_tmp#*为}
+        cur_system_arch=`uname -m`
+
+	system_info_5_line5=${SYSTEM_INFO_5_LINE5//CUR_USE_SPACE/$cur_cache_space}
+        echo $system_info_5_line5 >> $EXP_DIR/$SYSTEM_INFO
+
+	system_info_6_line6=${SYSTEM_INFO_6_LINE6//CUR_ARCH/$cur_system_arch}
+        echo $system_info_6_line6 >> $EXP_DIR/$SYSTEM_INFO
+	echo " " >> $EXP_DIR/$SYSTEM_INFO
+
+        echo $SYSTEM_INFO_8_LINE8 >> $EXP_DIR/$SYSTEM_INFO
+
+        abi_comp_pkg_num_tmp=`cat $EXP_DIR/$ABI_COMPAT_PKG | wc -l`
+        cur_pkg_num=`expr $abi_comp_pkg_num_tmp - 1`
+        #cur_pkg_sum=`rpm -qa | wc -l`
+        #trans_pkg_sum=`rpm -qa | wc -l`
+
+	system_info_9_line9=${SYSTEM_INFO_9_LINE9//REPLACE_PKG_NUM/$cur_pkg_num}
+	#system_info_9_line9=${system_info_9_line9_tmp//INSTALL_PKG_NUM/$trans_pkg_sum}
+        echo $system_info_9_line9 >> $EXP_DIR/$SYSTEM_INFO
+	echo " " >> $EXP_DIR/$SYSTEM_INFO
+
+        echo $SYSTEM_INFO_11_LINE11 >> $EXP_DIR/$SYSTEM_INFO
+
+        #abi_comp_pkg_num_tmp=`cat $EXP_DIR/$ABI_COMPAT_PKG | wc -l`
+        #abi_comp_pkg_num=`expr $abi_comp_pkg_num_tmp - 1`
+	#system_info_12_line12=${SYSTEM_INFO_12_LINE12//COMP_NUM/$abi_comp_pkg_num}
+	system_info_12_line12=${SYSTEM_INFO_12_LINE12//COMP_NUM/$cur_pkg_num}
+        echo $system_info_12_line12 >> $EXP_DIR/$SYSTEM_INFO
+
+        abi_incomp_pkg_num_tmp=`cat $EXP_DIR/$ABI_INCOMPAT_PKG | awk -F "|" '{print $1}'| sort | uniq |wc -l`
+        abi_incomp_pkg_num=`expr $abi_incomp_pkg_num_tmp - 2`
+	system_info_13_line13=${SYSTEM_INFO_13_LINE13//INCOMP_NUM/$abi_incomp_pkg_num}
+        echo $system_info_13_line13 >> $EXP_DIR/$SYSTEM_INFO
+
+        abi_pkg_num=`expr $abi_comp_pkg_num + $abi_incomp_pkg_num`
+	system_info_14_line14=${SYSTEM_INFO_14_LINE14//SUM_NUM/$abi_pkg_num}
+        echo $system_info_14_line14 >> $EXP_DIR/$SYSTEM_INFO
+
+	#echo "====================End enter get_system_info=============="
+}
