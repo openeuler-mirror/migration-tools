@@ -106,3 +106,170 @@ get_rpm_list()
 		done
 	done
 }
+
+#3. abi检查结果，包括兼容、非兼容的二进制包
+#   逐个处理 .diff 结果文件
+get_abi_comp_rest()
+{
+	echo ""
+	echo "-------------------------  获取abi兼容、非兼容包列表开始  -------------------------"
+	TOTAL_NUM=0
+	TOTAL_COMP_NUM=0
+	FILE_SO=".so"
+	FILE_EXEC=".exec"
+	FILE_MOD=".mod"
+	DATA_LINE_1="================ changes"
+	DATA_LINE_2="Functions changes summary: "
+	DATA_LINE_3="Variables changes summary: "
+	DATA_LINE_4="Function symbols changes summary: "
+	DATA_LINE_5="Variable symbols changes summary: "
+	ABI_DIFF_PKG_ABNO=abi-diff-pkg-abno.txt
+	ABI_INCOMPAT_PKG_ERR=abi-incompat-pkg-err.txt
+
+	ABI_COMPAT_PKG_LINE="包名"
+	ABI_INCOMPAT_PKG_LINE1="abi不兼容的包有INCOMP_PKG_NUM|"
+	ABI_INCOMPAT_PKG_LINE2="包名|不兼容类型|不兼容来源|说明"
+
+	cd $DIFF_DIR
+
+	#初始化文件头信息
+	echo $ABI_COMPAT_PKG_LINE >> $EXP_DIR/$ABI_COMPAT_PKG
+	echo $ABI_INCOMPAT_PKG_LINE1 >> $EXP_DIR/$ABI_INCOMPAT_PKG
+	echo $ABI_INCOMPAT_PKG_LINE2 >> $EXP_DIR/$ABI_INCOMPAT_PKG
+
+	for abi_diff_file in `ls *.diff`
+	do
+		TOTAL_NUM=`expr $TOTAL_NUM + 1`
+		NAME=${abi_diff_file%.*}
+		FILE_SIZE=`ls -l $abi_diff_file | awk '{print $5}'`
+		if [ $FILE_SIZE -eq 0 ];then
+			#abi兼容性对比结果文件大小为 0 ，该软件包兼容
+			echo $NAME >> $EXP_DIR/$ABI_COMPAT_PKG
+			TOTAL_COMP_NUM=`expr $TOTAL_COMP_NUM + 1`
+		else
+			#将差错报告按以下条件重定向到文件，并分析
+			grep "^================ changes" --after-context=4 $abi_diff_file > $abi_diff_file.tmp
+        		if [ $? -ne 0 ];then
+				grep_rest_tmp="$abi_diff_file|================ changes|grep non-existent!"
+				echo $grep_rest_tmp >> $EXP_DIR/$ABI_DIFF_PKG_ABNO 
+        		else
+				sed -i '/^--$/d' $abi_diff_file.tmp
+        		fi
+			NUM1=0
+			#兼容性开关,0-兼容；1-不兼容
+			COMP_FLAG=0
+			#cat ./$abi_diff_file.tmp | while read line
+			while read line	
+			do
+				if [[ $line == *$DATA_LINE_1* ]];then 
+                			NUM2=$(( $NUM1 % 5 ))
+                			if [ $NUM2 = 0 ];then
+						str1=${line%\'*}
+						data_line="${str1#*\'}"
+						if [[ $data_line =~ $FILE_SO ]]
+						then
+							COMP_TYPE="库差异"
+						elif [[ $data_line =~ $FILE_EXEC ]]
+						then
+							COMP_TYPE="可执行文件"
+						elif [[ $data_line =~ $FILE_MOD ]]
+						then
+							COMP_TYPE="视频文件"
+						else
+							COMP_TYPE="二进制差异"
+						fi
+                			else
+						#该情况不规范，需要查看
+						echo "$NAME|$COMP_TYPE|$data_line|$line" >> $EXP_DIR/$ABI_DIFF_PKG_ERR
+					fi
+				elif [[ $line == *$DATA_LINE_2* ]];then 
+					str2="${line#*: }"
+					removed_num=${str2% Removed*}
+					change_line=${str2% Changed*}
+					change_num=${tmp#*, }
+					added_line=${str2% Added*}
+					added_num=${tmp1##*,}
+					if [[ $removed_num -eq 0 ]] && [[ $change_num -eq 0 ]] && [[ $added_num -eq 0 ]]
+					then
+						abi_var_comp_2="${abi_diff_file%.*}|$line|兼容"
+					else
+                        			#echo "$abi_diff_file|$line|不规范，清确认！" >> $EXP_DIR/$ABI_DIFF_PKG_ERR
+						abi_var_incomp_2="$NAME|$COMP_TYPE|$data_line|$line"
+						echo $abi_var_incomp_2  >> $EXP_DIR/$ABI_INCOMPAT_PKG
+						#此时abi编译以来库文件或者二进制包不兼容，那么该rpm包不兼容
+						COMP_FLAG=1
+					fi
+				elif [[ $line == *$DATA_LINE_3* ]];then 
+                                        str3="${line#*: }"
+                                        removed_num=${str3% Removed*}
+                                        change_line=${str3% Changed*}
+                                        change_num=${tmp#*, }
+                                        added_line=${str3% Added*}
+                                        added_num=${tmp1##*,}
+                                        if [[ $removed_num -eq 0 ]] && [[ $change_num -eq 0 ]] && [[ $added_num -eq 0 ]]
+                                        then
+						#abi检查结果中，rpm包以来的库文件或者二进制文件兼容
+						abi_var_comp_3="${abi_diff_file%.*}|$line|兼容"
+                                        else
+                        			#echo "$abi_diff_file|$line|不规范，清确认！" >> $EXP_DIR/$ABI_DIFF_PKG_ERR
+						abi_var_incomp_3="$NAME|$COMP_TYPE|$data_line|$line|"
+						echo $abi_var_incomp_3  >> $EXP_DIR/$ABI_INCOMPAT_PKG
+						#此时abi编译以来库文件或者二进制包不兼容，那么该rpm包不兼容
+						COMP_FLAG=1
+                                        fi
+				elif [[ $line == *$DATA_LINE_4* ]];then 
+					str4=${line#*: }
+					removed_num=${str4% Removed*}
+					if [ $removed_num -ne 0 ]
+					then
+						#abi检查结果中，rpm包依赖的库文件或者二进制文件不兼容
+						abi_var_incomp_4="$NAME|$COMP_TYPE|$data_line|$str4"
+						echo $abi_var_incomp_4 >> $EXP_DIR/$ABI_INCOMPAT_PKG
+						COMP_FLAG=1
+					else
+						#此时abi编译依赖库文件或者二进制包兼容
+						abi_var_comp_4="${abi_diff_file%.*}|$line|兼容"
+					fi
+				elif [[ $line == *$DATA_LINE_5* ]];then 
+                                	str5=${line#*: }
+                                	removed_num=${str5% Removed*}
+                                	if [ $removed_num -ne 0 ]
+					then
+                                                #abi检查结果中，rpm包依赖的库文件或者二进制文件不兼容
+                                                abi_var_incomp_5="$NAME|$COMP_TYPE|$data_line|$str5"
+                                                echo $abi_var_incomp_5 >> $EXP_DIR/$ABI_INCOMPAT_PKG
+                                                COMP_FLAG=1
+                                	else
+                                                #此时abi编译依赖库文件或者二进制包兼容
+                                                abi_var_comp_5="${abi_diff_file%.*}|$line|兼容"
+                                	fi
+				else 
+					ohter_err_info="$NAME|$COMP_TYPE|$data_line|$line|"
+					echo $other_err_info >> $EXP_DIR/$ABI_INCOMPAT_PKG_ERR
+				fi
+				NUM1=`expr $NUM1 + 1`
+			done < ./$abi_diff_file.tmp
+			#根据兼容性开发COMP_FLAG判断该rpm包是否兼容
+			if [ $COMP_FLAG -eq 0 ]
+			then
+				echo $NAME >> $EXP_DIR/$ABI_COMPAT_PKG
+			else
+				NUM10=`expr $NUM1 + 1`
+			fi
+				 
+		fi
+	done
+	rm -f *.diff.tmp
+
+	ABI_INCOMP_NUM_TMP=`cat $EXP_DIR/$ABI_INCOMPAT_PKG | awk -F "|" '{print $1}' | sort | uniq | wc -l`
+	ABI_INCOMP_NUM=`expr $ABI_INCOMP_NUM_TMP - 2`
+	sed -i 's/INCOMP_PKG_NUM/'$ABI_INCOMP_NUM'/g' $EXP_DIR/$ABI_INCOMPAT_PKG
+
+	#cp -f $EXP_DIR/$ABI_COMPAT_PKG $EXP_DIR/$PKG_COMP_LIST_03 
+	#sed -i '/包名/d' $EXP_DIR/$PKG_COMP_LIST_03
+
+
+	echo "兼容包列表：$EXP_DIR/$ABI_COMPAT_PKG"
+	echo "非兼容包列表：$EXP_DIR/$ABI_INCOMPAT_PKG"
+	echo "-------------------------  获取abi兼容、非兼容包列表结束  -------------------------"
+}
