@@ -48,6 +48,13 @@ def mt_check_os():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/check_progress', methods=['GET', 'POST'])
+def mt_check_progress():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/check_user', methods=['GET', 'POST'])
 def mt_check_user():
     mod = check_methods()

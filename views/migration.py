@@ -57,3 +57,8 @@ def check_repo_kernel(data):
     if services:
         return services
 
+
+def check_progress(data):
+    services = check_services(data, '/check_progress')
+    if services:
+        return services
