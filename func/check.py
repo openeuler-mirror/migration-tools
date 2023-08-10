@@ -35,8 +35,8 @@ def init_dir():
             fp.close()
 
     with open(pstate,'w+') as fp:
-    fp.write('0')
-    fp.close()
+        fp.write('0')
+        fp.close()
 
 
 def check_storage(data):
