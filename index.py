@@ -193,6 +193,19 @@ def MT_check_environment():
     return render_template('MT_check_environment.html')
 
 
+@app.route('/MT_check_progress', methods=['GET', 'POST'])
+def MT_check_progress():
+    """
+    环境检测进度检测
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+    return render_template('MT_check_environment.html')
+
+
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
     uos_sysmig_conf = json.loads(share.getSysMigConf())
