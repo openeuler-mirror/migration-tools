@@ -3,6 +3,8 @@ AGENT_DIR = '/var/tmp/uos-migration/'
 
 #迁移数据目录
 MIGRATION_DATA_RPMS_DIR = '/var/tmp/uos-migration/data/exp-rst'
+MIGRATION_DATA_RPMS_3_INFO = '/var/tmp/uos-migration/data/exp-rst/pkginfo_3.txt'
+MIGRATION_KERNEL = '/var/tmp/uos-migration/kernel'
 pstate = '/var/tmp/uos-migration/.state'
 
 # 迁移前分析目录

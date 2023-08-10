@@ -17,9 +17,20 @@ from func.Abitxt2xls import *
 def init_dir():
     if not os.path.isdir(PRE_MIG_DIR):
         os.makedirs(PRE_MIG_DIR)
-
+    
+    if not os.path.isdir(MIGRATION_KERNEL):
+        os.makedirs(MIGRATION_KERNEL)
+    
+    if not os.path.isdir(MIGRATION_DATA_RPMS_DIR):
+        os.makedirs(MIGRATION_DATA_RPMS_DIR)
+    
     if not os.path.exists(PRE_MIG):
         with open(PRE_MIG,'w+') as fp:
+            fp.write(' ')
+            fp.close()
+    
+    if not os.path.exists(MIGRATION_DATA_RPMS_3_INFO):
+        with open(MIGRATION_DATA_RPMS_3_INFO,'w+') as fp:
             fp.write(' ')
             fp.close()
 
@@ -61,6 +72,7 @@ def check_storage(data):
 def check_os(data):
     uos_sysmig_conf = json.loads(getSysMigConf())
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+    init_dir()
     os_version_ret = platform.dist()
     version = os_version_ret[1].split('.',-1)
     local_os_version = os_version_ret[0]+version[0]
