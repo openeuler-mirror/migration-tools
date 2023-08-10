@@ -14,6 +14,20 @@ from func.share import *
 from func.Abitxt2xls import *
 
 
+def init_dir():
+    if not os.path.isdir(PRE_MIG_DIR):
+        os.makedirs(PRE_MIG_DIR)
+
+    if not os.path.exists(PRE_MIG):
+        with open(PRE_MIG,'w+') as fp:
+            fp.write(' ')
+            fp.close()
+
+    with open(pstate,'w+') as fp:
+    fp.write('0')
+    fp.close()
+
+
 def check_storage(data):
     uos_sysmig_conf = json.loads(getSysMigConf())
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
