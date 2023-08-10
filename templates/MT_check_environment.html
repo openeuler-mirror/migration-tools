@@ -42,6 +42,17 @@
 			<div id="env_id4" style="padding-left:500px;display: none;">
 				<img src="../static/images/u70.svg" width="13" height="13" /><label style="font-size:13px;font-family:”微软雅黑”;font-weight:bold;">检查失败，请重新检查</label>
 			</div>
+
+			<br/>
+		    <br/>
+			<div class="progress progress-striped active" style="margin-left: 85px;">
+				<div id = "pg" class="progress-bar progress-bar-success" role="progressbar"
+						 aria-valuenow="0" aria-valuemin="0" aria-valuemax="10"
+						 style="width: 0%;">
+						<span class="sr-only"></span>
+				</div>
+			</div>
+			<label id="pg_info" style="padding-left:560px;font-size:13px;font-family:”微软雅黑”;font-weight:bold;">0%</label>
 	</br>
 		</br>
 		</br>
@@ -66,6 +77,7 @@
 
 <script>
     function check_environment() {
+		progress = setInterval("check_progress()",2000);
 	    env = setInterval("check_env()",2000);
     }
     
