@@ -15,6 +15,7 @@ mods = {
         'check_repo': check.check_repo,
         'check_os_kernel': check.check_os_kernel,
         'check_repo_kernel': check.check_repo_kernel,
+        'check_progress': check.check_progress,
         }
 
 def check_methods():

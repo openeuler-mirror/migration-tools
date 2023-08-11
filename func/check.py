@@ -354,3 +354,30 @@ def analysisProgress():
     data = format(data, '.1f')
     messageProgress(str(data))
     return data
+
+
+def check_progress(data):
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+
+    with open(pstate,'r+') as fp:
+        state = fp.readlines()
+        fp.close()
+        state = state[0]
+    if  re.fullmatch('1',state):
+        if not analysisProgress():
+            messageProgress('0')
+        with open(progresslogdir,'r+') as fpro:
+            data = fpro.readlines()
+            fpro.close()
+    elif re.fullmatch('0',state):
+        data = '0'
+    elif re.fullmatch('2',state):
+        data = '99'
+    elif re.fullmatch('3',state):
+        data = '100'
+    else:
+        data = '0'
+    keylist = ['ip','progress']
+    valuelist = [AGENT_IP,data]
+    return list_to_json(keylist,valuelist)
