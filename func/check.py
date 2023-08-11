@@ -29,6 +29,11 @@ def init_dir():
             fp.write(' ')
             fp.close()
     
+    if not os.path.exists(PROGRESS):
+        with open(PROGRESS,'w+') as fp:
+            fp.write(' ')
+            fp.close()
+
     if not os.path.exists(MIGRATION_DATA_RPMS_3_INFO):
         with open(MIGRATION_DATA_RPMS_3_INFO,'w+') as fp:
             fp.write(' ')
@@ -88,6 +93,7 @@ def check_os(data):
         state = 1
         error = '无法检测到当前系统，请检查/etc/os-release文件，确认后重试.'
         return list_to_json(['ip', 'ret', 'error'],[agent_ip, state, error])
+
 
 def check_SSHClent(user, passwd, ip, port):
     ssh = paramiko.SSHClient()
