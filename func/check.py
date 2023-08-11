@@ -328,3 +328,29 @@ def check_environment(data_j):
     keylist = ['ip','res','data']
     valuelist = [AGENT_IP,'2',data]
     return list_to_json(keylist,valuelist)
+
+# 检测进度
+def analysisProgress():
+    path = '/var/tmp/uos-migration/data/uos/rpms'
+    if os.path.exists(path):
+        file_list = os.listdir(path)
+    else:
+        return None
+    h=noan=oked=1
+
+    for file in file_list:
+        path = re.sub('/$',"",path)
+        cur_path = os.path.join(path, file)
+        if os.path.isdir(cur_path):
+            continue
+        else:
+            ret = file.split('.',-1)
+            fret = ret[len(ret)-1]
+            if re.fullmatch('rpm',fret):
+                noan = noan + 1
+            elif re.fullmatch('oked',fret):
+                oked = oked + 1
+    data = (oked/(noan+oked))*98
+    data = format(data, '.1f')
+    messageProgress(str(data))
+    return data
