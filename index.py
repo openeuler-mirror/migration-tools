@@ -14,6 +14,7 @@ mods = {
         'check_storage' : migration.check_storage,
         'check_os': migration.check_os,
         'check_os_kernel': migration.check_os_kernel,
+        'check_progress': migration.check_progress,
         'check_repo': migration.check_repo,
         'check_repo_kernel': migration.check_repo_kernel,
         'check_user': migration.check_user,
