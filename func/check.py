@@ -18,6 +18,9 @@ def init_dir():
     if not os.path.isdir(PRE_MIG_DIR):
         os.makedirs(PRE_MIG_DIR)
     
+    if not os.path.isdir(MIGRATION_DIR):
+        os.makedirs(MIGRATION_DIR)
+
     if not os.path.isdir(MIGRATION_KERNEL):
         os.makedirs(MIGRATION_KERNEL)
     
