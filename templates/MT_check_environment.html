@@ -124,8 +124,25 @@
 				}
 			}
         });	//ajax end
-
     }
+
+	function check_progress() {
+		var check_progress_data_json={"mod":"check_progress"};
+        check_progress_data_json.ip="tasks"
+        var pg = document.getElementById('pg')
+        $.ajax({
+			async:true,
+			type: 'post',
+			dataType: 'json',
+			url: 'MT_check_progress',
+			data: $.toJSON(check_progress_data_json),
+			success: function(res) {
+				res=$.evalJSON(res);
+				pg.style.width=res.progress + "%";
+				document.getElementById('pg_info').innerHTML=res.progress + "%";
+			}
+        });	//ajax end
+	}
 
 	function save() {
 	    save_alert("确定开始迁移吗？" + "\n" + "迁移工作即将开始，请保证稳定的网络链接，迁移开始后会禁用您的自动更新功能，迁移过程不可逆，请确保您的数据和设置已经[备份]");
