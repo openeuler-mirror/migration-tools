@@ -60,8 +60,8 @@
         <hr style="opacity: 0.1;border: 1px solid #4C4D4E;width:99%;" />
     </br>
     </br>
-        <button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
-		<button id="check_id" onclick="save()" type="submit" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 0.2;" disabled = "disabled"><style>a{TEXT-DECORATION:none}</style>下一步</button>
+		<button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
+        <button id="next_id" onclick="save();"  data-locale="Next_Step" type="submit" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 1"><style>a{TEXT-DECORATION:none}</style>下一步</button>
     </div>
 
     </div>
@@ -103,6 +103,7 @@
 			success: function(res) {
 				res=$.evalJSON(res);
 				if (res.res == -1) {
+					console.log(res)
 					document.getElementById('check_id').removeAttribute("disabled");
     				document.getElementById('check_id').style.opacity = 1
     				document.getElementById('env_id1').style.display = "none"
@@ -111,13 +112,28 @@
     				clearInterval(env)
 				}
 				else if (res.res == 2){
+					console.log(res)
 					console.log("......")
 				}
 				else if (res.res == 0){
 					if (res.data == 1) {
+						console.log(res)
+						document.getElementById('check_id').removeAttribute("disabled");
+    					document.getElementById('check_id').style.opacity = 1
+    					document.getElementById('env_id1').style.display = "none"
+    					document.getElementById('env_id3').style.display = ""
+						document.getElementById('next_id').removeAttribute("disabled");
+						document.getElementById('next_id').style.opacity = 1
 						clearInterval(progress)
     					clearInterval(env)
 					} else {
+						console.log(res)
+						document.getElementById('check_id').removeAttribute("disabled");
+    					document.getElementById('check_id').style.opacity = 1
+    					document.getElementById('env_id1').style.display = "none"
+    					document.getElementById('env_id2').style.display = ""
+						document.getElementById('next_id').removeAttribute("disabled");
+						document.getElementById('next_id').style.opacity = 1
 						clearInterval(progress)
     					clearInterval(env)
 					}
