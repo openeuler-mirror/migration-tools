@@ -30,6 +30,14 @@
 	<div class="pageHeader">
 			<br/>
 		    <p style="padding-left:85px;font-size:18px;font-family:”微软雅黑”;font-weight:bold;">迁移中，请稍后......</p><br/>
+			<div class="progress progress-striped active" style="margin-left: 85px;">
+				<div id = "pg" class="progress-bar progress-bar-success" role="progressbar"
+						 aria-valuenow="0" aria-valuemin="0" aria-valuemax="10"
+						 style="width: 0%;">
+						<span class="sr-only"></span>
+				</div>
+			</div>
+			<span style="padding-left:85px;font-size:13px;"><label id="pg_info">0%</label></span>
 		<br/>
 		
 		</div>
@@ -50,6 +58,27 @@
 
 <script>
 
+	$(document).ready(function() {
+        progress = setInterval("check_progress()",2000);
+    });
+
+	function check_progress() {
+		var check_progress_data_json={"mod":"check_migration_progress"};
+        check_progress_data_json.ip="tasks"
+        var pg = document.getElementById('pg')
+        $.ajax({
+			async:true,
+			type: 'post',
+			dataType: 'json',
+			url: 'MT_migration_progress',
+			data: $.toJSON(check_progress_data_json),
+			success: function(res) {
+				res=$.evalJSON(res);
+				pg.style.width=res.progress + "%";
+				document.getElementById('pg_info').innerHTML=res.progress + "%";
+			}
+        });	//ajax end
+	}
 </script>
 
 </body>
