@@ -207,6 +207,39 @@ def MT_check_progress():
     return render_template('MT_check_environment.html')
 
 
+@app.route('/MT_export_migration_reports', methods=['GET', 'POST'])
+def MT_export_migration_reports():
+    """
+    导出迁移检测报告
+    :return:
+    """
+    mod = check_methods()
+    f = open("/usr/lib/uos-sysmig-agent/.passwd.txt","r")
+    password = f.read()
+    f.close()
+    if mod:
+        data = request.get_data()
+        json_data = json.loads(data)
+        mkdir_log_pwd = "/var/uos-migration/"
+        isExists=os.path.exists(mkdir_log_pwd)
+        if not isExists:
+            try:
+                os.makedirs(mkdir_log_pwd)
+                print(mkdir_log_pwd)
+            except:
+                print("export report mkdir error:%s" % mkdir_log_pwd)
+
+        info = mod.split(',')
+        scp_log = "sshpass -p %s" % password + " scp -r %s" % json_data.get('info').split("|")[0] + "@%s" % info[1] \
+                  + ":/var/tmp/uos-migration/UOS*.tar.gz /var/uos-migration/"
+        try:
+            os.system(scp_log)
+            print(scp_log)
+        except:
+            print('export report scp error:%s' % scp_log)
+        return Response(mod, content_type='application/json')
+
+
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
     uos_sysmig_conf = json.loads(share.getSysMigConf())
