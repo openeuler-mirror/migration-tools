@@ -1,5 +1,5 @@
 import os
-import sys
+import subprocess
 import re
 
 from func.utils import list_to_json
@@ -59,3 +59,13 @@ def getSysMigConf():
         keylist = ['id','agentip','serverip','agentport','serverport','baseurl','type','agentdatabase_ip','serverdatabase_ip','agentdatabase_port','serverdatabase_port']
         valuelist = [cfid,agentip,serverip,agentport,serverport,baseurl,cftype,agentdatabase_ip,serverdatabase_ip,agentdatabase_port,serverdatabase_port]
         return list_to_json(keylist,valuelist)
+
+
+def run_cmd2file(cmd):
+    fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
+    fderr = open("/var/tmp/uos-migration/UOS_migration_log/err_log",'a')
+    p = subprocess.Popen(cmd, stdout=fdout, stderr=fderr, shell=True)
+    if p.poll():
+       return
+    p.wait()
+    return
