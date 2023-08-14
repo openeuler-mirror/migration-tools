@@ -430,3 +430,27 @@ def ifnot_mig_kernel(kernel_version):
             f.close()
 
 
+def Sysmig(data_j):
+    os_version_ret = platform.dist()
+    version = os_version_ret[1].split('.',-1)
+    AGENT_OS = os_version_ret[0]+version[0]
+    kernel_version = json.loads(data_j).get('kernel_version')
+    #if re.search('centos8',AGENT_OS):
+    if re.fullmatch('8',version[0]):
+        cmd = 'python3 func/centos82uos.py'
+        t = Process(target=run_cmd2file, args=(cmd,))
+        t.start()
+    elif re.search('centos7',AGENT_OS):
+        ex_kernel = 'sh func/centos72uos.sh -e "kernel-devel* kernel-headers* kernel-tools* kernel* bpftool perf python-perf kernel-abi* kernel-modules kernel-core kmod-kvdo"'
+        if kernel_version == '0':
+            run_cmd2file(ex_kernel)
+            messageState('3')
+        elif kernel_version == '3.10.0' :
+            run_cmd2file(ex_kernel)
+            cmd_k = 'sh func/kernel.sh -k 3.10.0'
+            run_cmd2file(cmd_k)
+            messageState('3')
+        else:
+            cmd = 'sh func/centos72uos.sh'
+            run_cmd2file(cmd)
+            messageState('3')
