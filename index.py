@@ -19,6 +19,7 @@ mods = {
         'check_repo_kernel': migration.check_repo_kernel,
         'check_user': migration.check_user,
         'close_tool': migration.close_tool,
+        'export_migration_reports': export_migration_reports,
         }
 
 
