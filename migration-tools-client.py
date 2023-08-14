@@ -16,6 +16,7 @@ mods = {
         'check_os_kernel': check.check_os_kernel,
         'check_repo_kernel': check.check_repo_kernel,
         'check_progress': check.check_progress,
+        'export_migration_reports': check.export_reports,
         }
 
 def check_methods():
@@ -82,6 +83,14 @@ def mt_check_repo_kernel():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
+
+
+@app.route('/export_migration_reports', methods=['GET', 'POST'])
+def mt_export_migration_reports():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
 
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
