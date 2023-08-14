@@ -271,6 +271,32 @@ def check_repo_kernel(data):
     return list_to_json(keylist, valuelist)
 
 
+def export_reports(data):
+    """
+    导出接口
+    :param data:
+    :return:
+    """
+    json_data = json.loads(data)
+    hostname = socket.gethostname()
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    ip = json.loads(uos_sysmig_conf).get('agentip').strip()
+    now = datetime.now().strftime('%Y%m%d%H%M%S')
+
+    compression = "tar zcvf /var/tmp/uos-migration/%s" % json_data.get("name") + "_%s" % ip +\
+                  "_%s" % hostname + "_%s" % now + ".tar.gz" + " /var/tmp/uos-migration/%s" % json_data.get("export")
+    print(compression)
+    try:
+        os.system(compression)
+    except:
+        print("export reports error: %s" % compression)
+
+    data = {}
+    scp_info = hostname + "," + ip
+    data[scp_info] = scp_info
+    return data
+
+
 def systemCheckRequires(conflist):
     os.system('rpm --rebuilddb')
     cmd = 'rpm -qa|xargs -i rpm -V --nordev --nomode  --nomtime  --nogroup --nouser  --nosize --nofiledigest --nolinkto --noscripts --nofiles --nodigest {} >>' + PRE_MIG
