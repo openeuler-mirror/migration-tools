@@ -68,3 +68,9 @@ def export_migration_reports(data):
     services = check_services(data, '/export_migration_reports')
     if services:
         return services
+
+
+def system_migration(data):
+    services = check_services(data, '/system_migration')
+    if services:
+        return services
