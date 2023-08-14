@@ -241,6 +241,15 @@ def MT_export_migration_reports():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/MT_migration', methods=['GET', 'POST'])
+def MT_migration():
+    """
+    跳转迁移中界面
+    :return:
+    """
+    return render_template('MT_migration.html')
+
+
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
     uos_sysmig_conf = json.loads(share.getSysMigConf())
