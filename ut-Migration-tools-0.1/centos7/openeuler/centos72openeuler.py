@@ -13,27 +13,25 @@ gpgcheck = 0
 
 
 def run_subprocess(cmd):
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        bufsize=1,
-        shell=True
-    )
-    output = ""
     try:
-        for line in iter(process.stdout.readline, b""):
-            output += line.decode()
-            print(line.decode())
-    except:
-        pass
-    process.communicate()
-    return_code = process.poll()
-    return output, return_code
+        process = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False,  # Avoid using shell=True
+            check=True    # Check for non-zero return code and raise exception if found
+        )
+        output = process.stdout
+        print(output)  # Print the output to console
+        return output, process.returncode
+    except subprocess.CalledProcessError as e:
+        print(f"Command '{e.cmd}' failed with return code {e.returncode}.")
+        print(e.stderr)  # Print the error output to console
+        return e.stderr, e.returncode
 
 
 def check_pkg(rpm):
-    _, ret = run_subprocess('rpm -q {}'.format(rpm))
+    _, ret = run_subprocess('rpm -q {}'.format(rpm).split())
     if ret:
         return
     return True
@@ -82,46 +80,46 @@ def add_boot_option():
         cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/{}/grubaa64.efi" -L "openEuler"'.format(
             efi_name)
     try:
-        run_subprocess(cmd)
+        run_subprocess(cmd.split())
     except Exception as e:
         print(e)
 
 def swap_release(release):
     tmp_dir = '/var/tmp'
-    rpme_release = 'rpm -qf /etc/os-release|xargs -i rpm -e --nodeps {}'
-    run_subprocess(rpme_release)
+    rpme_release = 'rpm -qf /etc/os-release | xargs -i rpm -e --nodeps {}'
+    os.system(rpme_release)
     cmd = 'yumdownloader {} --destdir {}'.format(release, tmp_dir)
-    run_subprocess(cmd)
-    run_subprocess('rpm -ivh {}/*.rpm --nodeps --force'.format(tmp_dir))
+    run_subprocess(cmd.split())
+    run_subprocess('rpm -ivh {}/*.rpm --nodeps --force'.format(tmp_dir).split())
 
 
 def conf_grub():
     if os.path.isdir('/sys/firmware/efi'):
         old_kernel = '3.10.0'
         if old_kernel:
-            run_subprocess('rpm -e --nodeps kernel-{}'.format(old_kernel))
-            run_subprocess('dnf install -y shim')
+            run_subprocess('rpm -e --nodeps kernel-{}'.format(old_kernel).split())
+            run_subprocess('dnf install -y shim'.split())
         openEuler_path = '/boot/efi/EFI/openEuler'
         if not os.path.exists(openEuler_path):
             uos_path = '/boot/efi/EFI/openEuler'
-        run_subprocess('grub2-mkconfig -o {}/grub.cfg'.format(openEuler_path))
+        run_subprocess('grub2-mkconfig -o {}/grub.cfg'.format(openEuler_path).split())
         add_boot_option()
     else:
-        run_subprocess('grub2-mkconfig -o /boot/grub2/grub.cfg')
+        run_subprocess('grub2-mkconfig -o /boot/grub2/grub.cfg'.split())
         try:
-            run_subprocess('test -L /boot/grub2/grubenv')
-            run_subprocess('mv /boot/grub2/grubenv /boot/grub2/grubenv-bak')
-            run_subprocess('cat /boot/grub2/grubenv-bak > /boot/grub2/grubenv')
+            run_subprocess('test -L /boot/grub2/grubenv'.split())
+            run_subprocess('mv /boot/grub2/grubenv /boot/grub2/grubenv-bak'.split())
+            run_subprocess('cat /boot/grub2/grubenv-bak > /boot/grub2/grubenv'.split())
         except Exception as e:
             print(e)
 
 
 def system_sync():
-    rebuilddb = 'rpm --rebuilddb;dnf clean all'
-    run_subprocess(rebuilddb)
+    subprocess.run('rpm --rebuilddb', shell=True)
+    subprocess.run('dnf clean all', shell=True)
     cmd = 'dnf -y distro-sync --allowerasing --skip-broken'
-    _, ret = run_subprocess(cmd)
-    _, ret = run_subprocess('rpm -q kernel|grep {}'.format('oe1'))
+    subprocess.run(cmd, shell=True)
+    _, ret = run_subprocess('rpm -q kernel | grep oe1'.split())
     if ret:
         return False
     return True
@@ -162,8 +160,8 @@ def main():
     remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos', 
                                 'iwl7265-firmware', 'ivtv-firmware', 
                                 'sysvinit-tools', 'sg3_utils-libs']
-    for i in remove_packages_nodeps:
-        nodeps_cmd = 'rpm -q {} && rpm -e --nodeps {}'.format(i, i)
+    for package in remove_packages_nodeps:
+        nodeps_cmd = f"rpm -q {package} && rpm -e --nodeps {package}"
         os.system(nodeps_cmd)
 
         dnf_path = '/usr/bin/dnf'
@@ -181,60 +179,45 @@ def main():
     os.system(download_dnf)
 
     # rebuild dnfdb
-    ivh_dnf = '/sbin/chroot {} /bin/bash -c "rpm --rebuilddb"'.format(install_dir)
-    _, ret = run_subprocess(ivh_dnf)
-    if ret:
-        print("rebuild yum db failed")
-        return
-
+    subprocess.run("/sbin/chroot /var/DNF /bin/bash -c 'rpm --rebuilddb'", shell=True)
     # install dnf 
-    ivh_dnf = '/sbin/chroot {} /bin/bash -c "rpm -ivh {}/*"'.format(install_dir, '/root')
-    _, ret = run_subprocess(ivh_dnf)
-    if ret:
-        print("Install dnf failed")
-        return
+    subprocess.run("/sbin/chroot /var/DNF /bin/bash -c 'rpm -ivh /root/*'", shell=True)
 
     # sync files
     rsync = '/usr/bin/rsync -a {}/ / --exclude="var/lib/rpm" --exclude="var/cache/yum" --exclude="tmp" ' \
                 '--exclude="sys" --exclude="run" --exclude="lost+found" --exclude="mnt" --exclude="proc" ' \
                 '--exclude="dev" --exclude="media" --exclude="etc" --exclude="root" '.format(install_dir)
-    _, ret = run_subprocess(rsync)
-    if ret:
-        return
+    subprocess.run(rsync, shell=True)
 
     rpm_perl = '/etc/rpm/macros.perl'
     os.system('rpm --rebuilddb')
     if os.path.exists(rpm_perl):
         os.remove(rpm_perl)
 
-    if os.path.exists(dnf_path):
-        pass
-
     if system_sync():
-        install_cmd = 'dnf -y groupinstall "Minimal Install"'
-        run_subprocess(install_cmd)
+        subprocess.run('dnf -y groupinstall Minimal Install', shell=True)
         conf_grub()
     else:
         print("Removing confilct package yum...")
-        run_subprocess("rpm -e --nodeps yum")
+        os.system("rpm -e --nodeps yum")
         system_sync()
 
     
     # boot cui
     print("set boot target to cui")
     cmd = 'systemctl set-default multi-user.target'
-    run_subprocess(cmd)
+    run_subprocess(cmd.split())
     
     if not os.path.exists('/usr/bin/python3'):
         cmd = 'ln -s /usr/bin/python3.7 /usr/bin/python3'
         print("Create symlink for python3")
-        run_subprocess(cmd)
+        run_subprocess(cmd.split())
 
     yum_conflict_dir = '/etc/yum/'
     if os.path.exists(yum_conflict_dir):
         shutil.rmtree(yum_conflict_dir)
     print("Installing yum...")
-    run_subprocess('dnf install -y yum')
+    run_subprocess('dnf install -y yum'.split())
     
     print("System migration completed, rebooting system")
     os.system("reboot")
