@@ -60,7 +60,34 @@
 
 	$(document).ready(function() {
         progress = setInterval("check_progress()",2000);
+		setInterval("system_migration()",36000);
     });
+
+	function system_migration() {
+		var url = window.location.search;
+		kernel_version = url.split(",")[1]
+        var system_migration_data_json={"mod":"system_migration"};
+            system_migration_data_json.ip="tasks"
+            system_migration_data_json.kernel_version=kernel_version
+        var arr_info = window.location.search;
+        $.ajax({
+			async:true,
+			type: 'post',
+			dataType: 'json',
+			url: 'MT_system_migration',
+			data: $.toJSON(system_migration_data_json),
+			success: function(res) {
+				res=$.evalJSON(res);
+				if (res.res == -1) {
+					setTimeout(function () { window.location.href="/MT_migration_results" + arr_info + 1 }, 3000);
+				} else if (res.res == 0) {
+					setTimeout(function () { window.location.href="/MT_migration_results" + arr_info + 0 }, 3000);
+				} else if (res.res == 2) {
+					console.log("迁移进行中")
+				}
+			}
+        });	//ajax end
+    };
 
 	function check_progress() {
 		var check_progress_data_json={"mod":"check_migration_progress"};
