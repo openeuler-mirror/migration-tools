@@ -20,6 +20,7 @@ mods = {
         'check_user': migration.check_user,
         'close_tool': migration.close_tool,
         'export_migration_reports': migration.export_migration_reports,
+        'system_migration':migration.system_migration
         }
 
 
@@ -247,6 +248,19 @@ def MT_migration():
     跳转迁移中界面
     :return:
     """
+    return render_template('MT_migration.html')
+
+
+@app.route('/MT_system_migration', methods=['GET', 'POST'])
+def MT_system_migration():
+    """
+    迁移状态
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
     return render_template('MT_migration.html')
 
 
