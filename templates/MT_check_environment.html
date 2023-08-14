@@ -103,7 +103,6 @@
 			success: function(res) {
 				res=$.evalJSON(res);
 				if (res.res == -1) {
-					console.log(res)
 					document.getElementById('check_id').removeAttribute("disabled");
     				document.getElementById('check_id').style.opacity = 1
     				document.getElementById('env_id1').style.display = "none"
@@ -112,12 +111,10 @@
     				clearInterval(env)
 				}
 				else if (res.res == 2){
-					console.log(res)
-					console.log("......")
+					console.log("正在进行环境检查......")
 				}
 				else if (res.res == 0){
 					if (res.data == 1) {
-						console.log(res)
 						document.getElementById('check_id').removeAttribute("disabled");
     					document.getElementById('check_id').style.opacity = 1
     					document.getElementById('env_id1').style.display = "none"
@@ -127,7 +124,6 @@
 						clearInterval(progress)
     					clearInterval(env)
 					} else {
-						console.log(res)
 						document.getElementById('check_id').removeAttribute("disabled");
     					document.getElementById('check_id').style.opacity = 1
     					document.getElementById('env_id1').style.display = "none"
@@ -156,6 +152,26 @@
 				res=$.evalJSON(res);
 				pg.style.width=res.progress + "%";
 				document.getElementById('pg_info').innerHTML=res.progress + "%";
+			}
+        });	//ajax end
+	}
+
+	function export_test_reports() {
+		var export_test_reports_data_json={"mod":"export_migration_reports"};
+        export_test_reports_data_json.ip="tasks"
+        export_test_reports_data_json.export="UOS_analysis_report"
+        export_test_reports_data_json.name="UOS_migration_report"
+        var arr_info = window.location.search;
+        export_test_reports_data_json.kernel_version = arr_info.split(",")[1]
+        export_test_reports_data_json.info = arr_info.split(",")[0].split("=")[1]
+		$.ajax({
+			async:true,
+			type: 'post',
+			dataType: 'json',
+			url: 'MT_export_migration_reports',
+			data: $.toJSON(export_test_reports_data_json),
+			success: function(res) {
+
 			}
         });	//ajax end
 	}
