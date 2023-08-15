@@ -521,6 +521,30 @@ def mig_check_migration_progress():
     messageProgress(data)
 
 
+def check_migration_progress(data_j):
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+    if not analysisProgress():
+        messageProgress('0')
+    with open(pstate,'r+') as fp:
+        state = fp.readlines()
+        fp.close()
+        state = state[0]
+
+    if re.fullmatch('9',state):
+        messageState('0')
+    mig_check_migration_progress()
+    with open(progresslogdir,'r+') as fpro:
+        data = fpro.readlines()
+        keylist = ['ip','progress']
+        valuelist = [AGENT_IP,data]
+        fpro.close()
+
+    keylist = ['ip','progress']
+    valuelist = [AGENT_IP,data]
+    return list_to_json(keylist,valuelist)
+
+
 def Sysmig(data_j):
     os_version_ret = platform.dist()
     version = os_version_ret[1].split('.',-1)
