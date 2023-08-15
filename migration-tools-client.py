@@ -18,6 +18,7 @@ mods = {
         'check_progress': check.check_progress,
         'export_migration_reports': check.export_reports,
         'system_migration': check.system_migration,
+        'check_migration_progress': check.check_migration_progress,
         }
 
 def check_methods():
@@ -86,8 +87,22 @@ def mt_check_repo_kernel():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/check_migration_progress', methods=['GET', 'POST'])
+def mt_check_migration_progress():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/export_migration_reports', methods=['GET', 'POST'])
 def mt_export_migration_reports():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/system_migration', methods=['GET', 'POST'])
+def mt_system_migration():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
