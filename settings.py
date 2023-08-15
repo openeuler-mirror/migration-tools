@@ -13,3 +13,5 @@ PROGRESS = '/var/tmp/uos-migration/.progress'
 # 迁移前分析目录
 PRE_MIG = '/var/tmp/uos-migration/UOS_analysis_report/rpmva-before.txt'
 PRE_MIG_DIR = '/var/tmp/uos-migration/UOS_analysis_report'
+
+RPMS = '/var/tmp/uos-migration/.rpms'
