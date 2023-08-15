@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>管理首页 | 统信迁移工具</title>
+    <link type="text/css" rel="stylesheet" href="static/css/admin/framework.css" />
+	<link href="static/css/admin/style.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="static/css/admin/main.css" />
+	<link rel="stylesheet" href="static/css/admin/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="static/css/admin/alert.css" />
+	<script src="static/css/admin/jquery.min.js"></script>
+	<script src="static/css/admin/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="page">
+<div id="loading"><img style="position: absolute;top:50%; left:50%; transform: translate(-50%,-50%);opacity:0.8;" src="static/images/login.gif" alt=""/></div>
+<!--the main content begin-->
+	<div class="container">
+	<!--the content-->
+		<div class="pageHeader" >
+			<div class="segment">
+				<h3 class="ui dividing header">	
+					<img src="static/images/logo.png" style="width: 120px; height: 50px;"/>
+					<label style="padding-left:320px;font-size:28px;">统信服务器系统迁移软件</label>
+				</h3>
+			</div>				
+		</div>
+	<br/>
+		<br/>
+	<div class="pageHeader">
+			<div id="successId">
+			<div style="padding-left:490px;">
+				<img src="../static/images/u157.svg" width="30" height="30" /><span style="padding-left:20px;font-size:25px;font-family:”微软雅黑”;font-weight:bold;">迁移成功</span>
+			</div>
+			<br/>
+            <div align="center" >
+				<label style="font-size:15px;font-family:”微软雅黑”;font-weight:bold;">系统迁移已完成，请您导出迁移分析报告后手动重启服务器。</label>
+			</div>
+		<br/>
+		<br/>
+		<span style="padding-left:470px;font-size:13px;"><font color="blue" onclick="exportMigrationLogs();">导出迁移日志</font></span>
+		<span style="padding-left:15px;font-size:13px;"><font color="blue" onclick="exportAnalysisReport();">导出迁移分析报告</font></span>
+			<br/>
+		    <br/>
+		<br/>
+		<br/>
+		<br/>
+			</div>
+
+
+		<div id="faildId" style="display: none;">
+			<div style="padding-left:490px;">
+				<img src="../static/images/u170.svg" width="30" height="30" /><span style="padding-left:20px;font-size:25px;font-family:”微软雅黑”;font-weight:bold;">迁移失败</span>
+			</div>
+			<br/>
+            <div align="center" >
+				<label style="font-size:15px;font-family:”微软雅黑”;font-weight:bold;">系统迁移未完成，建议联系管理员进行确认后还原系统。</label>
+			</div>
+		<br/>
+		<br/>
+		<span style="padding-left:470px;font-size:13px;"><font color="blue" onclick="exportMigrationLogs();">导出迁移日志</font></span>
+		<span style="padding-left:15px;font-size:13px;"><font color="blue" onclick="exportAnalysisReport();">导出迁移分析报告</font></span>
+			<br/>
+		    <br/>
+		<br/>
+		<br/>
+		<br/>
+			</div>
+	</br>
+		</br>
+
+    <div class="menter_btn_a_lf" >
+        <hr style="opacity: 0.1;border: 1px solid #4C4D4E;width:99%;" />
+    </br>
+    </br>
+        <button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>完成</button>
+    </div>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="static/js/admin/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/admin/framework.js"></script>
+<script type="text/javascript" src="static/js/admin/jquery.zclip.min.js"></script>
+<script type="text/javascript" src="static/js/admin/alert.js"></script>
+<script type="text/javascript" src="static/js/admin/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/admin/json.js"></script>
+
+<script>
+
+    window.onload = function(){
+        $("#loading").hide();
+	}
+
+    function close() {
+    	window.opener = null;
+    	window.open("", "_self", "");
+    	window.close();
+    }
+
+	function close_tool() {
+        alert("确定关闭迁移软件吗?");
+	}
+
+</script>
+
+</body>
+</html>
