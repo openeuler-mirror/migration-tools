@@ -1,35 +1,37 @@
-#!/usr/bin/env python3
-# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.  
-
-# SPDX-License-Identifier:   MulanPubL-2.0-or-later
+#!/usr/libexec/platform-python
 
 import os
 import subprocess
 import re
-import dnf
 import socket
 import sys
 import shutil
 import argparse
 import platform
+import logging
+reposdir=''
 
-
-install_baseurl = "sed -i 's/\$releasever/20/' /etc/yum.repos.d/UniontechOS.repo"
-yum_url="file:///mnt/iso/AppStream"
-
-#Three base rpm download here
-repostr_uos = '''[UniontechOS-AppStream]
-name = UniontechOS AppStream
-baseurl = file:///mnt/iso/AppStream
-enabled = 1
-gpgcheck = 0
-
-[UniontechOS-BaseOS]
-name = UniontechOS BaseOS
-baseurl = file:///mnt/iso/BaseOS
-enabled = 1
-gpgcheck = 0
-'''
+def local_disabled_release_repo():
+    path = '/etc/yum.repos.d'
+    if os.path.exists(path):
+        file_list = os.listdir(path)
+    for file in file_list:
+        fpath = os.path.join(path,file)
+        if os.path.isdir(fpath):
+            continue
+        else:
+            if re.fullmatch('switch-to-uos.repo',file,re.IGNORECASE):
+                continue
+            elif not re.search('repo',file,re.IGNORECASE):
+                continue
+            with open(fpath,'r') as fdst:
+                allrepo = fdst.read()
+                fdst.close()
+                print(allrepo)
+                with open(fpath+'.disabled','w+') as fdst:
+                    fdst.write('#This is a yum repository file that was disabled . <Migration to UiniontechOS>\n'+allrepo)
+                    fdst.close()
+                    os.remove(fpath)
 
 old_packages = 'centos-backgrounds centos-logos centos-release centos-release-cr desktop-backgrounds-basic \
 centos-release-advanced-virtualization centos-release-ansible26 centos-release-ansible-27 \
@@ -50,9 +52,6 @@ centos-release-virt-common centos-release-xen centos-release-xen-410 \
 centos-release-xen-412 centos-release-xen-46 centos-release-xen-48 centos-release-xen-common \
 libreport-centos libreport-plugin-mantisbt libreport-plugin-rhtsupport python3-syspurpose \
 python-oauth sl-logos yum-rhn-plugin'
-
-
-reposdir=''
 
 
 def run_cmd(args):
