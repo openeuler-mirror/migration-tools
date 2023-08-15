@@ -1,6 +1,7 @@
 import os
 import platform
 import re
+import shutil
 import subprocess
 
 from func.utils import list_to_json
@@ -117,3 +118,120 @@ def conf_grub():
         add_boot_option()
     else:
         subprocess.run('grub2-mkconfig -o /boot/grub2/grub.cfg',shell=True)
+
+
+def process_special_pkgs():
+    subprocess.run('rpm -q centos-logos-ipa && dnf swap -y centos-logos-ipa uos-logos-ipa', shell=True)
+    subprocess.run('rpm -q centos-logos-httpd && dnf swap -y centos-logos-httpd uos-logos-httpd', shell=True)
+    subprocess.run('rpm -q anolis-logos-ipa && dnf swap -y anolis-logos-ipa uos-logos-ipa', shell=True)
+    subprocess.run('rpm -q anolis-logos-httpd && dnf swap -y anolis-logos-httpd uos-logos-httpd', shell=True)
+    subprocess.run('rpm -q redhat-lsb-core && dnf swap -y redhat-lsb-core system-lsb-core', shell=True)
+    subprocess.run('rpm -q redhat-lsb-submod-security && dnf swap -y redhat-lsb-submod-security system-lsb-submod-security',shell=True)
+    subprocess.run('rpm -q rhn-client-tools && dnf -y remove rhn-client-tools python3-rhn-client-tools python3-rhnlib', shell=True)
+    subprocess.run('rpm -q subscription-manager && dnf -y remove subscription-manager', shell=True)
+    subprocess.run('rpm -q python3-syspurpose && dnf -y remove python3-syspurpose', shell=True)
+    subprocess.run('rpm -e $(rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS | awk \'{print $1}\')', shell=True)
+
+
+def title_conf(oldosname):
+    oldosname=oldosname.strip()
+    path = '/boot/loader/entries'
+    #path='/root/a'
+    if os.path.exists(path):
+        file_list = os.listdir(path)
+    else:
+        return None
+    fl = False
+    for file in file_list:
+        fpath = os.path.join(path,file)
+        if os.path.isdir(fpath):
+            continue
+        else:
+            with open(fpath,'r') as fp:
+                strall = fp.read()
+                fp.close()
+            if re.search('uniontech',strall,re.IGNORECASE):
+                fl = True
+    for file in file_list:
+        ustr=None
+        fpath = os.path.join(path,file)
+        if os.path.isdir(fpath):
+            continue
+        else:
+            with open(fpath,'r') as fp:
+                strall = fp.read()
+                fp.close()
+            if re.search(oldosname,strall,re.IGNORECASE):
+                if fl:
+                    os.remove(fpath)
+                    continue
+                else:
+                    ustr = re.sub(oldosname,"UniontechOS",strall,1,flags=re.IGNORECASE)
+            if re.search('8 \(Core\)',strall):
+                ustr = re.sub(' 8 ',' 20 ',ustr,1,flags=re.IGNORECASE)
+                ustr = re.sub("Core","kongzi",ustr,1,flags=re.IGNORECASE)
+                with open(fpath,'w') as ptitle:
+                    ptitle.write(ustr)
+                    ptitle.close()
+
+
+def main_conf(osname):
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    #rq = time.strftime('%Y%m%d%H%M', time.localtime(time.time()))
+    log_name = '/var/tmp/uos-migration/UOS_migration_log/log'
+    logfile = log_name
+    fh = logging.FileHandler(logfile, mode='w')
+    fh.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+
+    enabled_modules = str(
+        subprocess.check_output("dnf module list --enabled | grep rhel | awk '{print $1}'", shell=True),
+        'utf-8')
+    enabled_modules = enabled_modules.split('\n')[:-1]
+    if len(enabled_modules) > 0:
+        for mod in enabled_modules:
+            subprocess.run('dnf module reset -y '+mod, shell=True)
+            if re.fullmatch('container-tools|go-toolset|jmc|llvm-toolset|rust-toolset', mod):
+                #subprocess.run('dnf module install -y '+mod+':uelc20', shell=True)
+                subprocess.run('dnf module install -y '+mod, shell=True)
+            elif mod =='virt':
+                #subprocess.run('dnf module install -y '+mod+':uelc', shell=True)
+                subprocess.run('dnf module install -y '+mod, shell=True)
+            else:
+                logger.info("Unsure how to transform module"+mod)
+        #fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
+        #subprocess.run('dnf -y distro-sync', stdout=fdout ,shell=True)
+        #fdout.close()
+    try:
+        subprocess.check_call('dnf module list --enabled | grep satellite-5-client', shell=True)
+        logger.info("UniontechOS does not provide satellite-5-client module, disable it.")
+        subprocess.run('dnf module disable -y satellite-5-client', shell=True)
+    except:
+        pass
+    process_special_pkgs()   
+    logger.info("Removing yum cache")
+    if os.path.isfile('/var/cache/yum'):
+        os.remove('/var/cache/yum')
+    elif os.path.isdir('/var/cache/yum'):
+        shutil.rmtree('/var/cache/yum')
+    if os.path.isfile('/var/cache/dnf'):
+        os.remove('/var/cache/dnf')
+    elif os.path.isdir('/var/cache/dnf'):
+        shutil.rmtree('/var/cache/dnf')
+    logger.info("------------- : "+osname)
+    
+    conf_grub()
+    title_conf(osname)
+
+    logger.info("Creating a list of RPMs installed after the switch")
+    logger.info("Verifying RPMs installed after the switch against RPM database")
+    out1 = subprocess.check_output('rpm -qa --qf \
+    "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\n" \
+    | sort > "/var/tmp/uos-migration/UOS_migration_log/rpms-list-after.txt"', shell=True)
+    out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-after.txt"',shell=True)
+
+    logger.info("Switch complete.UniontechOS recommends rebooting this system.")
+    return 0
