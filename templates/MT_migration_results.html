@@ -89,11 +89,40 @@
 <script type="text/javascript" src="static/js/admin/json.js"></script>
 
 <script>
+	$(document).ready(function() {
+		var url = window.location.search;
+		var status =  Number(url.substring(url.length-1))
+		if (status == 1) {
+			document.getElementById('successId').style.display = "none"
+			document.getElementById('faildId').style.display = ""
+		} else if (status == 0) {
+			document.getElementById('successId').style.display = ""
+			document.getElementById('faildId').style.display = "none"
+		}
+    });
 
     window.onload = function(){
         $("#loading").hide();
 	}
 
+	function exportMigrationLogs() {
+		var export_migration_data_json={"mod":"export_migration_reports"};
+        export_migration_data_json.ip="tasks"
+        export_migration_data_json.export="UOS_migration_log"
+        export_migration_data_json.name="UOS_migration_log"
+	var url = window.location.search;
+        export_migration_data_json.info = url.split(",")[0].split("=")[1]
+        $.ajax({
+			async:true,
+			type: 'post',
+			dataType: 'json',
+			url: 'MT_export_migration_reports',
+			data: $.toJSON(export_migration_data_json),
+			success: function(res) {
+			}
+        });	//ajax end
+	}
+	
     function close() {
     	window.opener = null;
     	window.open("", "_self", "");
