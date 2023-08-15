@@ -1,3 +1,4 @@
+import logging
 import os
 import platform
 import re
@@ -178,7 +179,6 @@ def title_conf(oldosname):
 def main_conf(osname):
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
-    #rq = time.strftime('%Y%m%d%H%M', time.localtime(time.time()))
     log_name = '/var/tmp/uos-migration/UOS_migration_log/log'
     logfile = log_name
     fh = logging.FileHandler(logfile, mode='w')
@@ -195,16 +195,12 @@ def main_conf(osname):
         for mod in enabled_modules:
             subprocess.run('dnf module reset -y '+mod, shell=True)
             if re.fullmatch('container-tools|go-toolset|jmc|llvm-toolset|rust-toolset', mod):
-                #subprocess.run('dnf module install -y '+mod+':uelc20', shell=True)
                 subprocess.run('dnf module install -y '+mod, shell=True)
             elif mod =='virt':
-                #subprocess.run('dnf module install -y '+mod+':uelc', shell=True)
                 subprocess.run('dnf module install -y '+mod, shell=True)
             else:
                 logger.info("Unsure how to transform module"+mod)
-        #fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
-        #subprocess.run('dnf -y distro-sync', stdout=fdout ,shell=True)
-        #fdout.close()
+
     try:
         subprocess.check_call('dnf module list --enabled | grep satellite-5-client', shell=True)
         logger.info("UniontechOS does not provide satellite-5-client module, disable it.")
