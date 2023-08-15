@@ -14,6 +14,13 @@ from func.share import *
 from func.Abitxt2xls import *
 
 
+def migInit_porgress():
+    uelc_rpm = os.popen('rpm -qa|wc -l').readlines()
+    with open('/var/tmp/uos-migration/.rpms','w+') as fp:
+        fp.write(uelc_rpm[0])
+        fp.close()
+
+
 def init_dir():
     if not os.path.isdir(PRE_MIG_DIR):
         os.makedirs(PRE_MIG_DIR)
@@ -45,6 +52,9 @@ def init_dir():
     with open(pstate,'w+') as fp:
         fp.write('0')
         fp.close()
+    # 迁移进度
+    migInit_porgress()
+
 
 
 def check_storage(data):
@@ -550,7 +560,6 @@ def Sysmig(data_j):
     version = os_version_ret[1].split('.',-1)
     AGENT_OS = os_version_ret[0]+version[0]
     kernel_version = json.loads(data_j).get('kernel_version')
-    #if re.search('centos8',AGENT_OS):
     if re.fullmatch('8',version[0]):
         cmd = 'python3 func/centos82uos.py'
         t = Process(target=run_cmd2file, args=(cmd,))
@@ -574,8 +583,6 @@ def Sysmig(data_j):
 def system_migration(data_j):
     uos_sysmig_conf = json.loads(getSysMigConf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
-    os_version_ret = platform.dist()
-    version = os_version_ret[1].split('.',-1)
     state = '1'
     res = '0'
     kernel_version = json.loads(data_j).get('kernel_version')

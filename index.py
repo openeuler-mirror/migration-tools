@@ -251,6 +251,19 @@ def MT_migration():
     return render_template('MT_migration.html')
 
 
+@app.route('/MT_migration_progress', methods=['GET', 'POST'])
+def MT_migration_progress():
+    """
+    迁移进度
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+    return render_template('MT_migration.html')
+
+
 @app.route('/MT_system_migration', methods=['GET', 'POST'])
 def MT_system_migration():
     """
