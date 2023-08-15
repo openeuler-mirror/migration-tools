@@ -1,6 +1,7 @@
 import os
-import subprocess
+import platform
 import re
+import subprocess
 
 from func.utils import list_to_json
 
@@ -69,3 +70,50 @@ def run_cmd2file(cmd):
        return
     p.wait()
     return
+
+
+def get_disk_info(string):
+    dev_name = ""
+    part_num = ""
+    length = len(string)
+    for c in range(length-1, -1, -1):
+        if not string[c].isdigit():
+            if string.find('nvme') != -1:
+                dev_name = string[0:c]
+                part_num = string[c+1:length]
+            else:
+                dev_name = string[0:c+1]
+                part_num = string[c+1:length]
+            break
+    return dev_name,part_num
+
+
+def add_boot_option():
+    print("Current system is uefi, add boot option to boot manager.")
+    subprocess.run('which efibootmgr > /dev/null 2>&1 || dnf install -y efibootmgr', shell=True)
+    disk_name = subprocess.check_output('mount | grep /boot/efi | awk \'{print $1}\'', shell=True)
+    disk_name = str(disk_name, 'utf-8')
+    disk_name = disk_name.split('\n')[0]
+    dev_name,part_num = get_disk_info(disk_name)
+    if dev_name == "" or part_num == "":
+        print("Parse /boot/efi disk info failed, update boot loader failed.")
+        return
+
+    cmd=""
+    arch = platform.machine()
+    if arch == "x86_64":
+        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubx86.efi" -L "Uniontech OS"'
+    elif arch == "aarch64":
+        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubaa64.efi" -L "Uniontech OS"'
+    try:
+        subprocess.check_call(cmd, shell=True)
+    except:
+        print("Use efibootmgr update boot loader failed, please update boot loader manually.")
+
+
+def conf_grub():
+    if os.path.isdir('/sys/firmware/efi'):
+        subprocess.run('grub2-mkconfig -o /boot/efi/EFI/uos/grub.cfg' ,shell=True)
+        add_boot_option()
+    else:
+        subprocess.run('grub2-mkconfig -o /boot/grub2/grub.cfg',shell=True)
