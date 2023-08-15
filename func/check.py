@@ -511,3 +511,67 @@ def migprogress():
         data = fpro.read()
         fpro.close()
     return int(data)
+
+
+def system_migration(data_j):
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+    os_version_ret = platform.dist()
+    version = os_version_ret[1].split('.',-1)
+    state = '1'
+    res = '0'
+    kernel_version = json.loads(data_j).get('kernel_version')
+    with open(pstate,'r+') as fp:
+        state = fp.readlines()
+        fp.close()
+    state = state[0]
+    if re.match('0',state):
+        messageState('1')
+        ifnot_mig_kernel(kernel_version)
+        t = Process(target=Sysmig, args=(data_j,))
+        t.start()
+    elif re.fullmatch('2',state):
+        messageState('6')
+        mig_kernel(kernel_version)
+        with open(PRE_MIG,'r') as fp:
+            stros = fp.readlines()
+            oldos = stros[0]
+            fp.close()
+        oldos = oldos.split(':',1)
+        main_conf(oldos[1]) 
+        if os.path.exists('/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'):
+            run_cmd2file('sh func/Abitranrept.sh')
+            abi_txt2xls_after_mig()
+        messageState('4')
+    elif re.fullmatch('4',state):
+        messageState('5')
+        if os.path.exists('/var/tmp/uos-migration/UOS_migration_log/rpms-verified-after.txt'):
+            res = '0'
+        else:
+            res = '-1'
+    elif re.fullmatch('3',state):
+        messageState('5')
+        if os.path.exists('/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'):
+            run_cmd2file('func/Abitranrept.sh')
+            abi_txt2xls_after_mig()
+        if os.path.exists('/var/tmp/uos-migration/UOS_migration_log/rpms-list-after.txt'):
+            res = '0'
+        else:
+            res = '-1'
+    elif re.fullmatch('5',state):
+        if re.fullmatch('-1',res):
+            data =' 迁移失败。'
+            keylist = ['ip','res','error']
+            valuelist = [AGENT_IP,res,data]
+            return list_to_json(keylist,valuelist)
+        else:
+            data = '迁移成功。'
+        keylist = ['ip','res','data']
+        valuelist = [AGENT_IP,res,data]
+        return list_to_json(keylist,valuelist)
+    
+    res = '2'
+    data = '......'
+    keylist = ['ip','res','data']
+    valuelist = [AGENT_IP,res,data]
+    return list_to_json(keylist,valuelist)
