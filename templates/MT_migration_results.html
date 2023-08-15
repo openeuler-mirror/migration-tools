@@ -122,7 +122,25 @@
 			}
         });	//ajax end
 	}
-	
+
+	function exportAnalysisReport() {
+		var export_analysis_data_json={"mod":"export_migration_reports"};
+        export_analysis_data_json.ip="tasks"
+        export_analysis_data_json.export="UOS_analysis_report"
+        export_analysis_data_json.name="UOS_migration_completed_report"
+	var url = window.location.search;
+        export_analysis_data_json.info = url.split(",")[0].split("=")[1]
+        $.ajax({
+			async:true,
+			type: 'post',
+			dataType: 'json',
+			url: 'MT_export_migration_reports',
+			data: $.toJSON(export_analysis_data_json),
+			success: function(res) {
+			}
+        });	//ajax end
+	}
+
     function close() {
     	window.opener = null;
     	window.open("", "_self", "");
