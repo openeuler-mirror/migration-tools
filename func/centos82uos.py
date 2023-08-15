@@ -9,6 +9,9 @@ import shutil
 import argparse
 import platform
 import logging
+
+from utils import *
+
 reposdir=''
 
 def local_disabled_release_repo():
@@ -50,20 +53,6 @@ def get_bad_packages():
                 badpackages = badpackages + ' ' + bad_package.strip()
             bf.close()
     return badpackages
-
-
-def run_cmd(args):
-    process = subprocess.Popen(args,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            close_fds=True,
-            shell=False,
-            encoding='utf-8',
-            universal_newlines=False
-        )
-    out_std, out_err = process.communicate()
-    retval = process.returncode
-    return out_std, out_err, retval
 
 
 def check_pkg(pkg):
@@ -143,12 +132,14 @@ def centos8_main(osname):
     if os.geteuid() != 0:
         logger.info("Please run the tool as root user.")
         sys.exit(1)
+    badpackages = get_bad_packages()
     # check required packages
     logger.info('Checking required packages')
     for pkg in ['rpm','yum','curl']:
         if not check_pkg(pkg):
             logger.info("Could not found "+pkg)
             sys.exit(1)
+
     #sto system rpms info before migration
     pre_system_rpms_info()
 
@@ -256,6 +247,7 @@ def centos8_main(osname):
         "and it may be in an unstable/unbootable state. To avoid further issues, " +\
         "the script has terminated.")
 
+
     logger.info("Switching old release package with Uniontech...")
     dst_rpms = [s+'*.rpm' for s in dst_release]
     oldkeys = osname+'-gpg-keys'
@@ -297,116 +289,7 @@ EOF'
         logger.info("error distro-sync migration ....")
     messageState('2')
 
-
-    if re.match('8\.',subver):
-        if len(enabled_modules) > 0:
-            for mod in enabled_modules:
-                subprocess.run('dnf module reset -y '+mod, shell=True)
-                if re.fullmatch('container-tools|go-toolset|jmc|llvm-toolset|rust-toolset', mod):
-                    subprocess.run('dnf module install -y '+mod+':uelc20', shell=True)
-                elif mod =='virt':
-                    subprocess.run('dnf module install -y '+mod+':uelc', shell=True)
-                else:
-                    print("Unsure how to transform module"+mod)
-            #subprocess.run('dnf --assumeyes --disablerepo "*" --enablerepo "AppStream" update', shell=True)
-            subprocess.run('dnf -y update', shell=True)
-        try:
-            subprocess.check_call('dnf module list --enabled | grep satellite-5-client', shell=True)
-            print("UniontechOS does not provide satellite-5-client module, disable it.")
-            subprocess.run('dnf module disable -y satellite-5-client', shell=True)
-        except:
-            pass
-
-    try:
-        subprocess.check_call('rpm -q centos-logos-ipa', shell=True)
-        subprocess.run('dnf swap -y centos-logos-ipa uos-logos-ipa', shell=True)
-    except:
-        pass
-
-    try:
-        subprocess.check_call('rpm -q centos-logos-httpd', shell=True)
-        subprocess.run('dnf swap -y centos-logos-httpd uos-logos-httpd', shell=True)
-    except:
-        pass
-
-    try:
-        subprocess.check_call('rpm -q redhat-lsb-core', shell=True)
-        print("redhat-lsb is replaced by system-lsb on uos")
-        subprocess.run('dnf swap -y redhat-lsb-core uos-lsb-core', shell=True)
-        subprocess.run('dnf swap -y redhat-lsb-submod-security uos-lsb-submod-security',shell=True)
-    except:
-        pass
-
-    try:
-        subprocess.check_call('rpm -q rhn-client-tools', shell=True)
-        print("rhn related packages is not provided by Uniontech")
-        subprocess.run('dnf -y remove rhn-client-tools python3-rhn-client-tools python3-rhnlib', shell=True)
-    except:
-        pass
-
-    try:
-        subprocess.check_call('rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS', shell=True)
-        print("remove centos gpg-pubkey")
-        subprocess.run('rpm -e $(rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS | awk \'{print $1}\')', shell=True)
-    except:
-        pass
-
-    if reinstall_all_rpms:
-        print("Testing for remaining CentOS RPMs")
-        centos_rpms = subprocess.check_output('rpm -qa --qf "%{NAME}-%{VERSION}-%{RELEASE} %{VENDOR}\n" \
-        | grep CentOS | grep -v kernel | awk \'{print $1}\'', \
-        shell=True)
-        centos_rpms = str(centos_rpms,'utf-8')
-        centos_rpms = centos_rpms.split('\n')[:-1]
-        if len(centos_rpms) > 0:
-            print("Reinstalling RPMs:")
-            print(' '.join(centos_rpms))
-            subprocess.run('yum --assumeyes reinstall '+ ' '.join(centos_rpms), shell=True)
-
-        non_uos_rpms = subprocess.check_output('rpm -qa --qf "%{NAME}-%{VERSION}-%{RELEASE}|%{VENDOR}|%{PACKAGER}\\n" \
-        |grep -v Uniontech', shell=True)
-        non_uos_rpms = str(non_uos_rpms, 'utf-8')
-        non_uos_rpms = non_uos_rpms.split('\n')[:-1]
-        if len(non_uos_rpms) > 0:
-            print("The following non-UniontechOS RPMs are installed on the system:")
-            print(' '.join(non_uos_rpms))
-            print("This may be expected of your environment and does not necessarily indicate a problem.")
-
-    print("Removing yum cache")
-    if os.path.isfile('/var/cache/yum'):
-        os.remove('/var/cache/yum')
-    elif os.path.isdir('/var/cache/yum'):
-        shutil.rmtree('/var/cache/yum')
-    if os.path.isfile('/var/cache/dnf'):
-        os.remove('/var/cache/dnf')
-    elif os.path.isdir('/var/cache/dnf'):
-        shutil.rmtree('/var/cache/dnf')
-
-    if verify_all_rpms:
-        print("Creating a list of RPMs installed after the switch")
-        print("Verifying RPMs installed after the switch against RPM database")
-        out1 = subprocess.check_output('rpm -qa --qf \
-        "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\\n" \
-        | sort > "/var/tmp/$(hostname)-rpms-list-after.log"', shell=True)
-        out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/$(hostname)-rpms-verified-after.log"',shell=True)
-        files = os.listdir('/var/tmp/')
-        hostname = socket.gethostname()
-        print("Review the output of following files:")
-        for f in files:
-            if re.match(hostname+'-rpms-(.*)\.log', f):
-                print(f)
-
-    if os.path.isdir('/sys/firmware/efi'):
-        subprocess.run('grub2-mkconfig -o /boot/efi/EFI/uos/grub.cfg', shell=True)
-        add_boot_option()
-    else:
-        subprocess.run('grub2-mkconfig -o /boot/grub2/grub.cfg', shell=True)
-    os.system('grep -rl "CentOS" /boot/loader | xargs -i rm -rf {}')
-    print("Switch complete.UniontechOS recommends rebooting this system.")
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-r', action='store_true', help='reinstall all CentOS RPMs with UniontechOS RPMs (Note: This is not necessary for support)')
-    parser.add_argument('-V', action='store_true', help='Verify RPM information before and after the switch')
-    args=parser.parse_args()
-    sys.exit(main(args.r, args.V))
+os_version_ret = platform.dist()
+osname = os_version_ret[0]
+centos8_main(osname)
+sys.exit(messageState('2'))
