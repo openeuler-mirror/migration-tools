@@ -123,55 +123,54 @@ def pre_system_rpms_info():
         if re.match(hostname+'-rpms-(.*)\.log', f):
             print(f)
 
-def main(reinstall_all_rpms=False, verify_all_rpms=False):
+def centos8_main(osname):
     global reposdir
 
-    # check if the script is executed by root user
-    print("Checking if the tool is executed by root user")
-    if os.geteuid() != 0:
-        print("Please run the tool as root user.")
-        sys.exit(1)
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    #rq = time.strftime('%Y%m%d%H%M', time.localtime(time.time()))
+    log_name = '/var/tmp/uos-migration/UOS_migration_log/log'
+    logfile = log_name
+    fh = logging.FileHandler(logfile, mode='w')
+    fh.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
 
+
+    logger.info("Checking if the tool is executed by root user")
+    # check if the script is executed by root user
+    if os.geteuid() != 0:
+        logger.info("Please run the tool as root user.")
+        sys.exit(1)
     # check required packages
-    print('Checking required packages')
+    logger.info('Checking required packages')
     for pkg in ['rpm','yum','curl']:
         if not check_pkg(pkg):
-            print("Could not found "+pkg)
+            logger.info("Could not found "+pkg)
             sys.exit(1)
-
-    # display rpms info before conversion
-    if verify_all_rpms:
-        print("Creating a list of RPMs installed before the switch")
-        print("Verifying RPMs installed before the switch against RPM database")
-        out1 = subprocess.check_output('rpm -qa --qf \
-               "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\\n" \
-               | sort > "/var/tmp/$(hostname)-rpms-list-before.log"', shell=True)
-        out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/$(hostname)-rpms-verified-before.log"',shell=True)
-        files = os.listdir('/var/tmp/')
-        hostname = socket.gethostname()
-        print("Review the output of following files:")
-        for f in files:
-            if re.match(hostname+'-rpms-(.*)\.log', f):
-                print(f)
-
-
+    #sto system rpms info before migration
+    pre_system_rpms_info()
 
     # check if the os old_version is supported
-    print("========= Checking: distribution =========")
+    logger.info("========= Checking: distribution =========")
     old_version = subprocess.check_output("rpm -q --whatprovides /etc/redhat-release", shell=True)
     old_version = str(old_version, 'utf-8')
     old_version = old_version.split('\n')[:-1]
     if len(old_version) == 0:
-        print("You appear to be running an unsupported distribution.")
+        logger.info("You appear to be running an unsupported distribution.")
         sys.exit(1)
     if len(old_version) > 1:
-        print("Could not determine your distribution because multiple packages are providing redhat-release:")
-        print('\n'.join(old_version))
+        logger.info("Could not determine your distribution because multiple packages are providing redhat-release:")
+        logger.info('\n'.join(old_version))
         sys.exit(1)
 
     old_version = old_version[0]
+    logger.info(old_version)
+    osrelease = osname + '-release'
+    linux_release = osname+'-linux-release'
     if re.match('uos-release', old_version):
-        print("You are already using Uniontech.")
+        logger.info("You are already using Uniontech.")
         sys.exit(1)
     
     elif re.match('centos-linux-release', old_version):
