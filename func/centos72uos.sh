@@ -262,28 +262,53 @@ esac
 rpm  -e  ${old_rhel}
 
 #In order to specify the installation kernel, add parameters
-if [ -n "$1" ]
+if [ -n "$comd" ]
 then
-        kernel_dir=/mnt/iso/kernel-$1
+        kernel_dir=/mnt/iso/kernel-"$comd"
         if [ -d $kernel_dir ]
         then
+        local=(`rpm -qa | grep 'kernel\|bpftool\|perf' | sed -e s/-[[:digit:]]./@/|  awk -F '@' '{print $1}'
+		`)
+		update=(`ls -1 $kernel_dir |sed -e s/-[[:digit:]]./@/|  awk -F '@' '{print $1}'
+		`)
+		
+		t=0
+		flag=0
+		declare -a diff_list
+		
+		for i in ${local[@]}
+		do
+		        for j in ${update[@]}
+		        do
+		        if [ "$i" == "$j" ]
+		        then
                 cd $kernel_dir
-                rpm -Uvh kernel-devel* --oldpackage
-                rpm -Uvh kernel-headers* --oldpackage
-                rpm -Uvh kernel-tools* --oldpackage
-                rpm -Uvh  kernel-3.10.0-1062.18.1.uelc20.4.x86_64.rpm --oldpackage
-		rpm -Uvh bpftool-3.10.0-1062.18.1.uelc20.4.x86_64.rpm --oldpackage
-		rpm -Uvh perf-3.10.0-1062.18.1.uelc20.4.x86_64.rpm --oldpackage
-		rpm -Uvh python-perf-3.10.0-1062.18.1.uelc20.4.x86_64.rpm --oldpackage
-		rpm -Uvh kernel-abi* --oldpackage
-
-		rpm -ef kernel-modules --nodeps
-		rpm -ef kernel-core --nodeps
+                rpm -Uvh $j-$comd* --nodeps --oldpackage
+		                flag=1
+		                break
+		        fi
+		        done
+		        if [ $flag -eq 0 ]
+		        then
+		                diff_list[t]=$i
+		                t=$((t+1))
+		        else
+		                flag=0
+		        fi
+		done
+		for x in ${diff_list[@]}
+		do
+		        rpm -ef $x --nodeps
+		done
+                
         else
-                echo "Error,The kernel-$1 packages was not found in the source"
+                echo "Error,The kernel-"$comd" packages was not found in the source"
                 exit
         fi
 fi
 
+rpm -qa --qf \
+    "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\n" \
+    | sort > "/var/tmp/uos-migration/UOS_migration_log/rpms-list-after.txt
 
 echo "Switch complete. UOS Server Enterprise-C 20 recommends rebooting this system."
