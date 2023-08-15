@@ -90,42 +90,38 @@ def clean_and_exit():
         os.remove(repo_path)
     sys.exit(1)
 
-def get_disk_info(string):
-    dev_name = ""
-    part_name = ""
-    length = len(string)
-    for c in range(length-1, -1, -1):
-        if not string[c].isdigit():
-            if string.find('nvme') != -1:
-                dev_name = string[0:c]
-                part_num = string[c+1:length]
-            else:
-                dev_name = string[0:c+1]
-                part_num = string[c+1:length]
-            break
-    return dev_name,part_num
 
-def add_boot_option():
-    print("Current system is uefi, add boot option to boot manager.")
-    subprocess.run('which efibootmgr > /dev/null 2>&1 || dnf install -y efibootmgr', shell=True)
-    disk_name = subprocess.check_output('mount | grep /boot/efi | awk \'{print $1}\'', shell=True)
-    disk_name = str(disk_name, 'utf-8')
-    disk_name = disk_name.split('\n')[0]
-    dev_name,part_num = get_disk_info(disk_name)
-    if dev_name == "" or part_num == "":
-        print("Parse /boot/efi disk info failed, update boot loader failed.")
-        return
+def process_special_pkgs():
+    print("swap *-logos related packages with UniontechOS packages")
+    subprocess.run('rpm -q centos-logos-ipa && dnf swap -y centos-logos-ipa uos-logos-ipa', shell=True)
+    subprocess.run('rpm -q centos-logos-httpd && dnf swap -y centos-logos-httpd uos-logos-httpd', shell=True)				
+    print("redhat-lsb is replaced by system-lsb on UniontechOS")
+    subprocess.run('rpm -q redhat-lsb-core && dnf swap -y redhat-lsb-core system-lsb-core', shell=True)
+    subprocess.run('rpm -q redhat-lsb-submod-security && dnf swap -y redhat-lsb-submod-security system-lsb-submod-security',shell=True)
+    print("rhn related packages is not provided by UniontechOS")
+    subprocess.run('rpm -q rhn-client-tools && dnf -y remove rhn-client-tools python3-rhn-client-tools python3-rhnlib', shell=True)		
+    print("subscription-manager related packages is not provided by UniontechOS")
+    subprocess.run('rpm -q subscription-manager && dnf -y remove subscription-manager', shell=True)
+    print("python3-syspurpose is not provided by UniontechOS")
+    subprocess.run('rpm -q python3-syspurpose && dnf -y remove python3-syspurpose', shell=True)
+    print("remove centos gpg-pubkey")
+    subprocess.run('rpm -e $(rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS | awk \'{print $1}\')', shell=True)
 
-    cmd=""
-    arch = platform.machine()
-    if arch == "x86_64":
-        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubx86.efi" -L "Uniontech OS"'
-    elif arch == "aarch64":
-        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubaa64.efi" -L "Uniontech OS"'
-    try:
-        subprocess.check_call(cmd, shell=True)
-    except:
-        print("Use efibootmgr update boot loader failed, please update boot loader manually.")
+
+def pre_system_rpms_info():
+ # display rpms info before conversion
+    print("Creating a list of RPMs installed before the switch")
+    print("Verifying RPMs installed before the switch against RPM database")
+    out1 = subprocess.check_output('rpm -qa --qf \
+           "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\\n" \
+           | sort > "/var/tmp/uos-migration/UOS_migration_log/rpms-list-before.txt"', shell=True)
+    out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-before.txt"',shell=True)
+    files = os.listdir('/var/tmp/uos-migration/')
+    hostname = socket.gethostname()
+    print("Review the output of following files:")
+    for f in files:
+        if re.match(hostname+'-rpms-(.*)\.log', f):
+            print(f)
 
 def main(reinstall_all_rpms=False, verify_all_rpms=False):
     global reposdir
