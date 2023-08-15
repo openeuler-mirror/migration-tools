@@ -480,6 +480,47 @@ def mig_kernel(kernel_version):
             return 1
 
 
+def migprogress():
+    with open(RPMS,'r+') as fpro:
+        data = fpro.read()
+        fpro.close()
+    return int(data)
+
+
+def readline_log():
+    path = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
+    if not os.path.exists(path):
+        return 0
+    else:
+        ln = 0
+        with open(path,'r') as rf:
+            for line in rf:
+                ln = ln + 1
+            rf.close()
+        return ln
+
+##迁移进度
+def rpmsProgress():
+    percent = 99
+    uelc_rpm = os.popen('rpm -qa|grep uelc20|wc -l').readlines()
+    all_rpms = os.popen('rpm -qa|wc -l').readlines()
+    rpms_progress  = percent * ( int(uelc_rpm[0].strip()) /  int(all_rpms[0].strip()))
+    rpms_progress = format(rpms_progress, '.1f')
+    return rpms_progress
+
+
+def mig_check_migration_progress():
+    percent = 98
+    rpms = migprogress()
+    lines = readline_log()
+    lines = lines//4
+    if lines >= rpms:
+        lines = rpms
+    data = percent*(lines/rpms)
+    data = format(data, '.1f')
+    messageProgress(data)
+
+
 def Sysmig(data_j):
     os_version_ret = platform.dist()
     version = os_version_ret[1].split('.',-1)
@@ -504,13 +545,6 @@ def Sysmig(data_j):
             cmd = 'sh func/centos72uos.sh'
             run_cmd2file(cmd)
             messageState('3')
-
-
-def migprogress():
-    with open(RPMS,'r+') as fpro:
-        data = fpro.read()
-        fpro.close()
-    return int(data)
 
 
 def system_migration(data_j):
