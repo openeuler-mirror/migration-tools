@@ -263,6 +263,25 @@ def check_repo_kernel(data):
                 kernel_version = re.sub('kernel-', '', r)
                 kernel_version = re.sub('-.*$', '', kernel_version)
                 version_list.append(kernel_version.strip())
+    elif re.fullmatch('7', version[0]):
+        cmd_310 = 'yum list --enablerepo UniontechOS-kernel-3.10.0 --disablerepo UniontechOS-AppStream  kernel'
+        ret = os.popen(cmd_310)
+        for r in ret.readlines():
+            if re.match('kernel', r) and re.search('uelc', r):
+                kernel_version = re.sub('kernel-', '', r)
+                kernel_version = re.sub('-.*$', '', kernel_version)
+                kernel_version=kernel_version.split(' ',-1)
+                kernel = kernel_version[len(kernel_version)-1]
+                version_list.append(kernel.strip())
+        cmd_419 = 'yum list kernel'
+        ret = os.popen(cmd_419)
+        for r in ret.readlines():
+            if re.match('kernel', r) and re.search('uelc', r):
+                kernel_version = re.sub('kernel-', '', r)
+                kernel_version = re.sub('-.*$', '', kernel_version)
+                kernel_version=kernel_version.split(' ',-1)
+                kernel = kernel_version[len(kernel_version)-1]
+                version_list.append(kernel.strip())
     else:
         version_list = ''
     keylist = ['ip', 'data']
