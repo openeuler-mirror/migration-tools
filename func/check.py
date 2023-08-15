@@ -449,6 +449,37 @@ def ifnot_mig_kernel(kernel_version):
             f.close()
 
 
+def mig_kernel(kernel_version):
+    cwd = '/var/tmp/uos-migration/kernel/'
+    ret = os.listdir(cwd)
+    for i in ret:
+        os.unlink(cwd+i)
+    cmd = ' rpm -qa | grep "kernel\|bpftool\|perf" |xargs -i rpm -q --qf "%{NAME}\\n" {}'
+    ret = os.popen(cmd).readlines()
+    if kernel_version == '0':
+        return 0
+    else:
+        repo = ''
+        if re.fullmatch('4.18.0',kernel_version):
+            repo = 'UniontechOS-kernel-'+kernel_version.strip()
+        elif re.fullmatch('5.10.0',kernel_version):
+            repo = 'UniontechOS-kernel-'+kernel_version.strip()
+        else:
+            return 1
+        down_cmd = 'yumdownloader  --destdir "/var/tmp/uos-migration/kernel" --enablerepo '+repo
+        ret = os.popen(cmd).readlines()
+        for i in ret:
+            downpackage = down_cmd+' '+i.strip()+'-'+kernel_version.strip()
+            os.system(downpackage)
+
+        cwd = '/var/tmp/uos-migration/kernel/'
+        if  os.listdir(cwd):
+            os.system('rpm -Uvh "/var/tmp/uos-migration/kernel/*" --nodeps --oldpackage')
+        else:
+            ifnot_mig_kernel()
+            return 1
+
+
 def Sysmig(data_j):
     os_version_ret = platform.dist()
     version = os_version_ret[1].split('.',-1)
@@ -473,3 +504,10 @@ def Sysmig(data_j):
             cmd = 'sh func/centos72uos.sh'
             run_cmd2file(cmd)
             messageState('3')
+
+
+def migprogress():
+    with open(RPMS,'r+') as fpro:
+        data = fpro.read()
+        fpro.close()
+    return int(data)
