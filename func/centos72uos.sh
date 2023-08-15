@@ -1,7 +1,5 @@
 #!/bin/bash
-# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 
-# SPDX-License-Identifier:   MulanPubL-2.0-or-later
 
 set -x
 # Script to switch CentOS/RedHat (or other similar distribution) to the UniontechOS
@@ -9,43 +7,44 @@ set -x
 set -e
 unset CDPATH
 
-cat  > /etc/yum.repos.d/UOS.repo  <<-EOF
-[UniontechOS-AppStream]
-name = UniontechOS AppStream
-gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-uos-release
-gpgcheck = 0
-baseurl = file:///mnt/iso/
-enabled = 1
-skip_if_unavailable = 1
+while getopts n:e:d:k: opt
+do
+    case "$opt" in
+    n) n=${OPTARG};;
+    e) exclude_pkgs=${OPTARG};echo "Exclude is ${OPTARG} - $exclude_pkgs";;
+    d) pwddir=${OPTARG};echo "Kernle diractory is ${OPTARG} - $pwddir";;
+    k) knl=${OPTARG};echo "Kernel opt is ${OPTARG} - $knl";;
+    *) echo "Null";;
+    esac
+done
 
+echo "Kernel opt : $knl"
+echo "Exlcude : $exclude_pkgs"
+echo $pwddir
+
+
+
+if [ -n  "$exclude_pkgs" ]
+then
+cat  > /etc/yum.conf <<-EOF
+[main]
+cachedir=/var/cache/yum/\$basearch/\$releasever
+keepcache=0
+debuglevel=2
+logfile=/var/log/yum.log
+exactarch=1
+obsoletes=1
+gpgcheck=1
+plugins=1
+installonly_limit=3
+exclude=$exclude_pkgs
 EOF
+fi
+
+comd=$knl
 
 yum_url=file:///etc/yum.repos.d/
-
-echo "Checking your distribution..."
-if ! old_release=$(rpm -q --whatprovides redhat-release); then
-    exit_message "You appear to be running an unsupported distribution."
-fi
-if [ "$(echo "${old_release}" | wc -l)" -ne 1 ]; then
-    exit_message "Could not determine your distribution because multiple
-packages are providing redhat-release:
-$old_release
-"
-fi
-
-case "${old_release}" in
-    redhat-release*)
-	bad_packages=( gstreamer1-plugins-bad-free-gtk  python-meh-gui  redhat-release* redhat-release-cr  clucene-contribs-lib libreport-plugin-rhtsupport yum-rhn-plugin desktop-backgrounds-basic redhat-logos libreport-redhat libreport-plugin-mantisbt sl-logos python36-rpm subscription-manager gnome-shell-extension-horizontal-workspaces python-meh-guia  Red_Hat_Enterprise* redhat-support-tool redhat-support-lib-python  redhat-access-gui )
-	;;
-    centos-release*) 
-	bad_packages=( gstreamer1-plugins-bad-free-gtk  python-meh-gui  clucene-contribs-lib centos-release centos-release-cr libreport-plugin-rhtsupport yum-rhn-plugin desktop-backgrounds-basic centos-logos libreport-centos libreport-plugin-mantisbt sl-logos python36-rpm)
-	;;
-    sl-release*) ;;
-    uos-release*|enterprise-release*)
-        exit_message "You appear to be already running UOS Server Enterprise-C 20."
-        ;;
-    *) exit_message "You appear to be running an unsupported distribution." ;;
-esac
+bad_packages=( subscription-manager gstreamer1-plugins-bad-free-gtk  python-meh-gui  clucene-contribs-lib centos-release centos-release-cr libreport-plugin-rhtsupport yum-rhn-plugin desktop-backgrounds-basic centos-logos libreport-centos libreport-plugin-mantisbt sl-logos python36-rpm) 
 
 
 usage() {
