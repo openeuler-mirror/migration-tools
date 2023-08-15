@@ -80,7 +80,6 @@ restore_repos() {
             tail -n+2 "${repo}" > "${destination}"
         fi
     done
-    rm "${reposdir}/${repo_file}"
     exit_message "Could not install UOS Server Enterprise-C 20 packages.
 Your repositories have been restored to your previous configuration."
 }
@@ -133,14 +132,8 @@ rhel_version=$(rpm -q "${old_release}" --qf "%{version}")
 base_packages=(basesystem initscripts uos-logos)
 case "$rhel_version" in
     7*)
-        repo_file=UOS.repo
         new_releases=(uos-release-server)
-        base_packages=("${base_packages[@]}" plymouth grub2 grubby kernel* uos-rpm-config hypervvssd hypervfcopyd hypervkvpd kmod-kvdo compat-gnome-desktop* ) 
-        ;;
-    6*)
- #       repo_file=public-yum-ol6.repo
-        new_releases=(uos-release-server)
-        base_packages=("${base_packages[@]}" plymouth grub grubby kernel*)
+        base_packages=("${base_packages[@]}" plymouth grub2 grubby uos-rpm-config hypervvssd hypervfcopyd hypervkvpd )
         ;;
     *) exit_message "You appear to be running an unsupported distribution." ;;
 esac
@@ -158,51 +151,12 @@ if ! have_program yumdownloader; then
     yum -y install yum-utils || true
     dep_check yumdownloader
 fi
-##寻找存储库目录
-echo "Finding your repository directory..."
 
-reposdir=$(python2 -c "
-import yum
-import os
 
-for dir in yum.YumBase().doConfigSetup(init_plugins=False).reposdir:
-    if os.path.isdir(dir):
-        print dir
-        break
-")
+cd "$(mktemp -d)"
 
-if [ -z "${reposdir}" ]; then
-    exit_message "Could not locate your repository directory."
-fi
-cd "$reposdir"
-echo "Downloading UOS Server Enterprise-C 20 yum repository file..."
-if ! curl -o "switch-to-UOS.repo" "${yum_url}/${repo_file}"; then
-    exit_message "Could not download $repo_file from $yum_url.
-Are you behind a proxy? If so, make sure the 'http_proxy' environment
-variable is set with your proxy address."
-fi
-if [[ "centos" =~ "old_release" ]];then
-	cd "$(mktemp -d)"
-	trap restore_repos ERR
+echo "Backing up and removing old repository files..."
 
-	echo "Backing up and removing old repository files..."
-
-	rpm -ql "$old_release" | grep '\.repo$' > repo_files
-
-	while read -r repo; do
-    	if [ -f "$repo" ]; then
-        	cat - "$repo" > "$repo".disabled <<EOF
-# This is a yum repository file that was disabled by
-# ${0##*/}, a script to convert CentOS to UOS Server Enterprise-C 20.
-# Please see $yum_url for more information.
-
-EOF
-       		tmpfile=$(mktemp repo.XXXXX)
-        	echo "$repo" | cat - "$repo" > "$tmpfile"
-        	rm "$repo"
-    	fi
-	done < repo_files
-fi
 
 echo "Downloading UOS Server Enterprise-C 20 release package..."
 if ! yumdownloader "${new_releases[@]}"; then
@@ -214,9 +168,7 @@ if ! yumdownloader "${new_releases[@]}"; then
         echo "Are you behind a proxy? If so, make sure the 'http_proxy' environment"
         echo "variable is set with your proxy address."
     } >&2
-    restore_repos
 fi
-
 
 
 #################  使用uos-release-server默认软件源##
@@ -229,12 +181,7 @@ yum -y install python-urlgrabber
 echo "Switching old release package with UOS Server Enterprise-C 20..."
 rpm -i --force '*.rpm'
 rpm -e --nodeps "$old_release"
-if [[ "redhat" =~ "old_release" ]];then
-	yum -y remove redhat-indexhtml*
-else
-	yum -y remove centos-indexhtml*
-fi
-rm -f "${reposdir}/switch-to-UOS.repo"
+yum -y remove centos-indexhtml*
 # At this point, the switch is completed.
 trap - ERR
 
@@ -276,6 +223,27 @@ for  x  in  $yumdb;do
 	rm  -rf  ${x}
 done
 
+kernel='kernel'
+
+if [[ ${exclude_pkgs} =~ "$kernel" ]]
+then
+        echo 'kernel not migrated...';
+else
+    case "$rhel_version" in
+        7*)
+            if [ -d /sys/firmware/efi ]; then
+                grub2-mkconfig -o /boot/efi/EFI/UOS/grub.cfg
+            else
+                grub2-mkconfig -o /boot/grub2/grub.cfg
+            fi
+            grubby --set-default="${uek_path}"
+            ;;
+        6*)
+            grubby --set-default="${uek_path}"
+            ;;
+    esac
+    rpm  -e  ${old_rhel}
+fi
 
 # vmlinuz-3.10.0-1062.18.1.uelc20.4.x86_64
 case "$rhel_version" in
@@ -292,8 +260,6 @@ case "$rhel_version" in
         ;;
 esac
 rpm  -e  ${old_rhel}
-
-
 
 #In order to specify the installation kernel, add parameters
 if [ -n "$1" ]
