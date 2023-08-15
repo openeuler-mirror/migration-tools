@@ -172,43 +172,40 @@ def centos8_main(osname):
     if re.match('uos-release', old_version):
         logger.info("You are already using Uniontech.")
         sys.exit(1)
-    
-    elif re.match('centos-linux-release', old_version):
+    elif re.match(linux_release, old_version):
         subver = old_version.split('-')[3]
-    
-    elif re.match('redhat-release|centos-release|sl-release', old_version):
+    elif re.match(osrelease, old_version):
         subver = old_version.split('-')[2]
-        
     else:
-        print("Your are using an unsupported distribution.")
+        logger.info("Your are using an unsupported distribution.")
         sys.exit(1)
-
     if not re.match('8',subver):
-        print("You appear to be running an unsupported distribution.")
+        logger.info("You appear to be running an unsupported distribution.")
         sys.exit(1)
 
-    print("========= Checking: required python packages =========")
+    logger.info("========= Checking: required python packages =========")
     if not check_pkg('/usr/libexec/platform-python'):
-        print('/usr/libexec/platform-python not found.')
+        logger.info('/usr/libexec/platform-python not found.')
         sys.exit(1)
-
     base_packages=['basesystem','initscripts','uos-logos','plymouth','grub2','grubby']
 
-    print("========= Checking: yum lock ===========")
+    logger.info("========= Checking: yum lock ===========")
     if os.path.exists('/var/run/yum.pid'):
         with open('/var/run/yum.pid', 'r') as f:
             pid = f.read()
+            f.close()
             with open('/proc/'+pid+'/comm', 'r') as ff:
                 comm = ff.read()
-                print('Another app is currently holding the yum lock: '+comm)
-                print('Running as pid: '+pid)
-                print('Please kill it and run the tool again.')
+                logger.info('Another app is currently holding the yum lock: '+comm)
+                logger.info('Running as pid: '+pid)
+                logger.info('Please kill it and run the tool again.')
+                ff.close()
         sys.exit(1)
 
     # check dnf
     if re.match('8\.',subver):
-        print("========= Checking: dnf =========")
-        print("Identifying dnf modules that are enabled...")
+        logger.info("========= Checking: dnf =========")
+        logger.info("Identifying dnf modules that are enabled...")
         enabled_modules = str(
             subprocess.check_output("dnf module list --enabled | grep rhel | awk '{print $1}'", shell=True), 
             'utf-8')
@@ -221,7 +218,7 @@ def centos8_main(osname):
                 if not re.fullmatch('container-tools|go-toolset|jmc|llvm-toolset|rust-toolset|virt', mod):
                     unknown_mods.append(mod)
             if len(unknown_mods) > 0:
-                print('This tool is unable to automatically switch module(s) ' \
+                logger.info('This tool is unable to automatically switch module(s) ' \
                 + ','.join(unknown_mods) \
                 + ' from a CentOS \'rhel\' stream to an UniontechOS equivalent.'\
                 )
@@ -229,167 +226,76 @@ def centos8_main(osname):
                 if opt != 'Yes':
                     sys.exit(1)
 
-    print("========= Finding your repository directory =========")
-    if re.match('8\.',subver):
-        dir = dnf.Base().conf.get_reposdir
-        if os.path.isdir(dir):
-            reposdir = dir
-        else:
-            print("repository directory not found")
-            sys.exit(1)
 
-    print("========= Learning which repositories are enabled ==========")
-    if re.match('8\.',subver):
-        base = dnf.Base()
-        base.read_all_repos()
-        enabled_repos = []
-        for repo in base.repos.iter_enabled():
-            enabled_repos.append(repo.id)
-    print("Repositories enabled before update include:")
-    print(enabled_repos)
-
-    if len(reposdir) == 0:
-        print("Could not locate your repository directory.")
-        sys.exit(1)
-
-    if re.match('8\.',subver):
-        repofile = os.path.join(reposdir, 'switch-to-uos.repo')
-        with open(repofile, 'w') as f:
-            f.write(repostr_uos)
-
-    os.system("sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*")
-    os.system("sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*")
-
+    logger.info("========= Looking for yumdownloader ==========")
     os.system('yum -y install uos-license-mini license-config ')
-    print("========= Looking for yumdownloader ==========")
     if not check_pkg('yumdownloader'):
         subprocess.run("yum -y install yum-utils --disablerepo C* || true", shell=True)
-        if not check_pkg('yumdownloader'):
-            clean_and_exit()
 
-    print("========= Start converting =========")
-    if re.match('centos-release-8\.*|centos-linux-release-8\.*', old_version):
-        old_version = subprocess.check_output('rpm -qa centos*repos', shell=True)
+    logger.info("========= Start converting =========")
+    if re.match(osname+'-release-8', old_version):
+        repos = 'rpm -qa '+osname+'*repos'
+        old_version = subprocess.check_output(repos, shell=True)
         old_version = str(old_version, 'utf-8')[:-1]
+        subprocess.run('rpm -e --nodeps ' + old_version , shell=True)
 
-    print("Backing up and removing old repository files...")
-    try:
-        repos = subprocess.check_output("rpm -ql "+old_version+" | grep '\.repo$'", shell=True)
-        pass
-    except Exception:
-        os.system('yum -y install centos-linux-repos')
-        old_version = subprocess.check_output('rpm -qa centos*repos', shell=True)
-        old_version = str(old_version, 'utf-8')[:-1]
-        repos = subprocess.check_output("rpm -ql "+old_version+" | grep '\.repo$'", shell=True)
-    repos = str(repos, 'utf-8').split('\n')[:-1]
-    num_centos_repos = subprocess.check_output('rpm -qa "centos-release-*" | wc -l', shell=True)
-    if int(str(num_centos_repos,'utf-8')[0]) > 0:
-        addtional_repos = subprocess.check_output('rpm -qla "centos-release-*"', shell=True)
-        addtional_repos = str(addtional_repos, 'utf-8')
-        if addtional_repos != '':
-            addtional_repos = addtional_repos.split('\n')
-            for r in addtional_repos:
-                if re.match('.*\.repo$', r):
-                    repos.append(r)
-
-    backup_comment = '# This is a yum repository file that was disabled by\n' \
-    + '# ' + __file__+ ', a script to convert CentOS to Uniontech.\n' \
-    + '# Please see '+yum_url+' for more information.\n\n'
-
-    for repo in repos:
-        if not os.path.isfile(repo):
-            continue
-        with open(repo, 'r') as fsrc:
-            content = fsrc.read()
-            with open(repo+'.disabled','w') as fdst:
-                fdst.write(repo+'\n'+backup_comment+content)
-        os.remove(repo)
-
-    print("Removing CentOS-specific yum configuration from /etc/yum.conf ...")
-    with open('/etc/yum.conf', 'r') as f:
-        content = f.read()
-    if re.search(r'^distroverpkg=', content, re.MULTILINE):
-        content = re.sub(r"\n(distroverpkg=)", r"\n#\1", content)
-    if re.search(r'bugtracker_url=', content, re.MULTILINE):
-        content = re.sub(r"\n(bugtracker_url=)", r"\n#\1", content)
-    with open('/etc/yum.conf', 'w') as f:
-        f.write(content)
-     
-    print("Downloading uos release package...")   
+    logger.info("Downloading uos release package...")
     dst_release = ['uos-release']
     try:
         stat = subprocess.check_output("yumdownloader "+' '.join(dst_release), shell=True)
+        if not check_pkg('yumdownloader'):
+            subprocess.run("yum -y install yum-utils --disablerepo C* || true", shell=True)
+        if not check_pkg('yumdownloader'):
+            clean_and_exit()
         pass
     except Exception:
-        print("Could not download the following packages from " + yum_url)
-        print('\n'.join(dst_release))
-        print()
-        print("Are you behind a proxy? If so, make sure the 'http_proxy' environmen")
-        print("variable is set with your proxy address.")
-        print("An error occurred while attempting to switch this system to Uniontech" + \
+        logger.info('\n'.join(dst_release))
+        logger.info("Are you behind a proxy? If so, make sure the 'http_proxy' environmen")
+        logger.info("variable is set with your proxy address.")
+        logger.info("An error occurred while attempting to switch this system to Uniontech" + \
         "and it may be in an unstable/unbootable state. To avoid further issues, " +\
         "the script has terminated.")
 
-    print("Switching old release package with Uniontech...")
+    logger.info("Switching old release package with Uniontech...")
     dst_rpms = [s+'*.rpm' for s in dst_release]
-    subprocess.run('rpm -e --nodeps ' + old_version + ' centos-gpg-keys', shell=True)
+    oldkeys = osname+'-gpg-keys'
+    subprocess.run('rpm -e --nodeps ' + oldkeys, shell=True)
     subprocess.run('rpm -i --force ' + ' '.join(dst_rpms) + ' --nodeps', shell=True)
-    subprocess.run(install_baseurl,shell=True)
-    os.remove('/etc/yum.repos.d/UniontechOS.repo')
-    # switch completed
-
-    repositories={}
-    if re.match('8\.',subver):
-        repositories['AppStream'] = 'REPO AppStream'
-        repositories['BaseOS'] = 'REPO BaseOS'
-        repositories['PowerTools'] = 'REPO PowerTools'
-
-    for repo in enabled_repos:
-        if repo in repositories:
-            action = repositories[repo].split(' ')
-            if action[0] == 'REPO':
-                print('Enabling ' + action[1] + 'which replaces ' + repo)
-                if re.match('https\..*', action[1]):
-                    subprocess.run('yum-config-manager --add-repo '+action[1], shell=True)
-                else:
-                    subprocess.run('yum-config-manager --enable '+action[1], shell=True)
-            elif action[0] == 'RPM':
-                print('Installing ' + action[1] + ' to get content that replaces ' + repo)
-                subprocess.run('yum --assumeyes install '+action[1], shell=True)
-
-    print("Installing base packages for UniontechOS...")
+    local_disabled_release_repo()
+    logger.info("Installing base packages for UniontechOS...")
     cmd='yum shell -y <<EOF\n\
-remove '+ old_packages +'\n\
+remove '+ badpackages +'\n\
 install '+ ' '.join(base_packages) + '\n\
 run\n\
 EOF'
     try:
-        subprocess.run(cmd, shell=True)
+        fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
+        subprocess.run(cmd,stdout=fdout , shell=True)
+        fdout.close()
     except:
-        print("Could not install base packages.Run 'yum distro-sync' to manually install them.")
+        logger.info("Could not install base packages.Run 'yum distro-sync' to manually install them.")
         sys.exit(1)
 
     if os.access('/usr/libexec/plymouth/plymouth-update-initrd', os.X_OK):
-        print("Updating initrd...")
-        os.system('rpm -e --nodeps centos-indexhtml')
-        subprocess.run('/usr/libexec/plymouth/plymouth-update-initrd')
-        print("Switch successful. Syncing with UniontechOS repositories.")
+        logger.info("Updating initrd...")
+        indexhtml ='rpm -e --nodeps ' + osname+'-indexhtml'
+        os.system(indexhtml)
+        fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
+        subprocess.run('/usr/libexec/plymouth/plymouth-update-initrd',stdout=fdout,shell=True)
+        #run_cmd2file('/usr/libexec/plymouth/plymouth-update-initrd')
+        fdout.close()
+    logger.info("Switch successful. Syncing with UniontechOS repositories.")
+    logger.debug('358')
 
     if subver == '8.3':
         subprocess.run('yum -y downgrade crypto-policies --allowerasing', shell=True)
-
-    out_std, out_err, retval = run_cmd(["yum","list","kernel-headers"])
-    if retval != 0:
-        # 无法在repo源中找到kernel-headers
-        print("Unable to find kernel-headers in repository")
-        sys.exit(1)
-
     try:
-        subprocess.run('yum -y distro-sync', shell=True)
+        fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
+        subprocess.run('yum -y distro-sync', stdout=fdout ,shell=True)
+        fdout.close()
     except:
-        print("Could not automatically sync with UniontechOS repositories.\n\
-        Check the output of 'yum distro-sync' to manually resolve the issue.")
-        sys.exit(1)
+        logger.info("error distro-sync migration ....")
+    messageState('2')
 
 
     if re.match('8\.',subver):
