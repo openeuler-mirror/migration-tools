@@ -56,6 +56,24 @@ def init_dir():
     migInit_porgress()
 
 
+def check_os_type():
+    return platform.system()
+
+def check_os_arch():
+    return platform.machine()
+
+def check_os_kernel_release():
+    return platform.release()
+
+def preSystemCheck():
+    with open(PRE_MIG,'w+') as pf:
+        os_version_ret = platform.dist()
+        pf.write('原系统   :'+os_version_ret[0]+'\n')
+        pf.write('系统类型 :'+check_os_type()+'\n')
+        pf.write('系统内核 :'+check_os_kernel_release()+'\n')
+        pf.write('系统架构 : '+check_os_arch()+'\n')
+        pf.close()
+
 
 def check_storage(data):
     uos_sysmig_conf = json.loads(getSysMigConf())
@@ -91,6 +109,8 @@ def check_os(data):
     uos_sysmig_conf = json.loads(getSysMigConf())
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     init_dir()
+    preSystemCheck()
+    messageProgress('0')
     os_version_ret = platform.dist()
     version = os_version_ret[1].split('.',-1)
     local_os_version = os_version_ret[0]+version[0]
