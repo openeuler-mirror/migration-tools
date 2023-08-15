@@ -64,6 +64,12 @@ def check_progress(data):
         return services
 
 
+def check_migration_progress(data):
+    services = check_services(data, '/check_migration_progress')
+    if services:
+        return services
+
+
 def export_migration_reports(data):
     services = check_services(data, '/export_migration_reports')
     if services:
