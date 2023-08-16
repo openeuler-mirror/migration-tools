@@ -1,5 +1,3 @@
-#!/usr/libexec/platform-python
-
 import os
 import subprocess
 import re
