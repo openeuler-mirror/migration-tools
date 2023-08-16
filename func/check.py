@@ -330,7 +330,7 @@ def export_reports(data):
     hostname = socket.gethostname()
     uos_sysmig_conf = json.loads(getSysMigConf())
     ip = json.loads(uos_sysmig_conf).get('agentip').strip()
-    now = datetime.now().strftime('%Y%m%d%H%M%S')
+    now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
     compression = "tar zcvf /var/tmp/uos-migration/%s" % json_data.get("name") + "_%s" % ip +\
                   "_%s" % hostname + "_%s" % now + ".tar.gz" + " /var/tmp/uos-migration/%s" % json_data.get("export")
