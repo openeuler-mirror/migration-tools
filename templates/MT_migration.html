@@ -38,8 +38,14 @@
 				</div>
 			</div>
 			<span style="padding-left:85px;font-size:13px;"><label id="pg_info">0%</label></span>
+			<span style="padding-left:15px;font-size:13px;"><font color="blue" onclick="showInfo();">查看详情</font></span>
+			<img src="../static/images/u122.svg" width="11" height="8" onclick="showInfo();" id="showId" name="1" style="display: inline-block;"/>
 		<br/>
-		
+		<div id="showInfoId" style="position: relative;padding-left:81px;display: none;">
+			<img src="../static/images/u11.svg" width="920" height="220" style="padding-left:0px;"/>
+			<div class="pr-agreement" style="position: absolute;top: 0px; padding-left:220px;width: 673px" >
+			<span id="log_info" >log</span>
+			</div>
 		</div>
 
     <div class="menter_btn_a_lf" >
@@ -103,6 +109,23 @@
 				res=$.evalJSON(res);
 				pg.style.width=res.progress + "%";
 				document.getElementById('pg_info').innerHTML=res.progress + "%";
+			}
+        });	//ajax end
+	}
+
+	function migration_details() {
+		var migration_details_data_json={"mod":"migration_details"};
+        migration_details_data_json.ip="tasks"
+        var pg = document.getElementById('pg')
+        $.ajax({
+			async:true,
+			type: 'post',
+			dataType: 'json',
+			url: 'MT_system_migration_info',
+			data: $.toJSON(migration_details_data_json),
+			success: function(res) {
+				res=$.evalJSON(res);
+				document.getElementById('log_info').innerHTML=res.data
 			}
         });	//ajax end
 	}
