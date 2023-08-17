@@ -517,6 +517,21 @@ def migprogress():
     return int(data)
 
 
+def migration_details(data_j):
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
+    path = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
+    if os.path.exists(path):
+        with open(path,'r') as lf:
+           data = lf.read()
+        lf.close()
+    else:
+        data = 'Init... ...'
+    keylist = ['ip','data']
+    valuelist = [AGENT_IP,data]
+    return list_to_json(keylist,valuelist)
+
+
 def readline_log():
     path = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
     if not os.path.exists(path):
