@@ -129,6 +129,25 @@
 			}
         });	//ajax end
 	}
+
+	function showInfo() {
+		var showId = document.getElementById('showId');
+		var showInfoId = document.getElementById('showInfoId');
+		if (showId.name == '1') {
+			showId.name = '0'
+			showInfoId.style.display = ""
+			var current = 0;
+			current = (current+180)%360;
+			showId.style.transform = 'rotate('+current+'deg)';
+		} else if (showId.name == '0') {
+			showId.name = '1'
+			showInfoId.style.display = "none"
+			var current = 180;
+			current = (current+180)%360;
+			showId.style.transform = 'rotate('+current+'deg)';
+		}
+	}
+	
 </script>
 
 </body>
