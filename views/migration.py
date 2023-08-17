@@ -80,3 +80,9 @@ def system_migration(data):
     services = check_services(data, '/system_migration')
     if services:
         return services
+
+
+def migration_details(data):
+    services = check_services(data, '/migration_details')
+    if services:
+        return services

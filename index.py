@@ -21,7 +21,8 @@ mods = {
         'check_user': migration.check_user,
         'close_tool': migration.close_tool,
         'export_migration_reports': migration.export_migration_reports,
-        'system_migration':migration.system_migration
+        'system_migration':migration.system_migration,
+        'migration_details': migration.migration_details,
         }
 
 
@@ -285,6 +286,19 @@ def MT_migration_results():
     :return:
     """
     return render_template('MT_migration_results.html')
+
+
+@app.route('/MT_system_migration_info', methods=['GET', 'POST'])
+def MT_system_migration_info():
+    """
+    迁移日志
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+    return render_template('MT_migration.html')
 
 
 if __name__ == '__main__':
