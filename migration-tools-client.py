@@ -19,6 +19,7 @@ mods = {
         'export_migration_reports': check.export_reports,
         'system_migration': check.system_migration,
         'check_migration_progress': check.check_migration_progress,
+        'migration_details': check.migration_details,
         }
 
 def check_methods():
@@ -96,6 +97,13 @@ def mt_check_migration_progress():
 
 @app.route('/export_migration_reports', methods=['GET', 'POST'])
 def mt_export_migration_reports():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/migration_details', methods=['GET', 'POST'])
+def mt_migration_details():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
