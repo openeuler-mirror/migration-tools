@@ -13,6 +13,7 @@ from func.utils import *
 from func.share import *
 from func.Abitxt2xls import *
 
+os.chdir('/usr/lib/uos-sysmig-agent')
 
 def migInit_porgress():
     uelc_rpm = os.popen('rpm -qa|wc -l').readlines()
