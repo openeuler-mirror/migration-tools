@@ -83,6 +83,8 @@ def check_storage(data):
     stat = os.statvfs(path)
     CACHE_SPACE = 10.0
     state = 1
+    # 避免centos7系统检测失败
+    time.sleep(5)
     if stat:
         ava_cache = format(stat.f_bavail * stat.f_frsize / 1024 // 1024 /1024, '.1f')
         with open(PRE_MIG,'a+') as pf:
