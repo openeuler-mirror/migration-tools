@@ -25,7 +25,7 @@ def run_subprocess(cmd):
         print(output)  # Print the output to console
         return output, process.returncode
     except subprocess.CalledProcessError as e:
-        print(f"Command '{e.cmd}' failed with return code {e.returncode}.")
+        #print(f"Command '{e.cmd}' failed with return code {e.returncode}.")
         print(e.stderr)  # Print the error output to console
         return e.stderr, e.returncode
 
@@ -161,7 +161,7 @@ def main():
                                 'iwl7265-firmware', 'ivtv-firmware', 
                                 'sysvinit-tools', 'sg3_utils-libs']
     for package in remove_packages_nodeps:
-        nodeps_cmd = f"rpm -q {package} && rpm -e --nodeps {package}"
+        nodeps_cmd = "rpm -q " + package+ " && rpm -e --nodeps " + package
         os.system(nodeps_cmd)
 
         dnf_path = '/usr/bin/dnf'
