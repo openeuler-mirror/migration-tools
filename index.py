@@ -218,7 +218,7 @@ def MT_export_migration_reports():
     :return:
     """
     mod = check_methods()
-    f = open("/usr/lib/migration-tools-agent/.passwd.txt","r")
+    f = open("/usr/lib/migration-tools-server/.passwd.txt","r")
     password = f.read()
     f.close()
     if mod:
@@ -234,7 +234,7 @@ def MT_export_migration_reports():
                 print("export report mkdir error:%s" % mkdir_log_pwd)
 
         info = mod.split(',')
-        scp_log = "sshpass -p %s" % password + " scp -r %s" % json_data.get('info').split("|")[0] + "@%s" % info[1] \
+        scp_log = "sshpass -p '%s'" % password + " scp -r %s" % json_data.get('info').split("|")[0] + "@%s" % info[1] \
                   + ":/var/tmp/uos-migration/UOS*.tar.gz /var/uos-migration/"
         try:
             os.system(scp_log)
