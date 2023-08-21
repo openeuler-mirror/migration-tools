@@ -13,7 +13,7 @@ from func.utils import *
 from func.share import *
 from func.Abitxt2xls import *
 
-os.chdir('/usr/lib/uos-sysmig-agent')
+os.chdir('/usr/lib/migration-tools-agent')
 
 def migInit_porgress():
     uelc_rpm = os.popen('rpm -qa|wc -l').readlines()
@@ -172,7 +172,7 @@ def check_user(data):
     log_info = "post check_user:" + str(data)
     print(log_info)
     json_data = json.loads(data)
-    with open('/usr/lib/uos-sysmig-agent/.passwd.txt','w',encoding='utf-8') as f:
+    with open('/usr/lib/migration-tools-agent/.passwd.txt','w',encoding='utf-8') as f:
         text = json_data['passwd']
         f.write(text)
     uos_sysmig_conf = json.loads(getSysMigConf())

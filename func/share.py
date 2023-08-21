@@ -8,7 +8,7 @@ import subprocess
 from func.utils import list_to_json
 
 def getSysMigConf():
-    confpath = '/etc/uos-sysmig/uos-sysmig.conf'
+    confpath = '/etc/migration-tools/migration-tools.conf'
     if not os.path.exists(confpath):
         return None
     else:

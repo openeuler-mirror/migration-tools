@@ -1,10 +1,10 @@
 [Unit]
-Description=uos sysmig server
+Description=uos sysmig agent
 After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /usr/lib/uos-sysmig-server/index.py
+ExecStart=/usr/bin/python3 /usr/lib/migration-tools-agent/migration-tools-client.py
 ExecStop=/bin/kill-INT $MAINPID
 
 [Install]
