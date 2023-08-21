@@ -208,6 +208,8 @@ fi
 
 echo "Switch successful. Syncing with UOS Server Enterprise-C 20 repositories."
 
+rpm -e --nodeps python36-six
+
 if ! yum -y distro-sync; then
     exit_message "Could not automatically sync with UOS Server Enterprise-C 20  repositories.
 Check the output of 'yum distro-sync' to manually resolve the issue."

@@ -218,7 +218,7 @@ def MT_export_migration_reports():
     :return:
     """
     mod = check_methods()
-    f = open("/usr/lib/uos-sysmig-agent/.passwd.txt","r")
+    f = open("/usr/lib/migration-tools-agent/.passwd.txt","r")
     password = f.read()
     f.close()
     if mod:

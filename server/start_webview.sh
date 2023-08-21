@@ -1,2 +1,2 @@
 !/bin/sh
-python3 /usr/lib/uos-sysmig-server/start_webview.py
+python3 /usr/lib/migration-tools-server/start_webview.py
