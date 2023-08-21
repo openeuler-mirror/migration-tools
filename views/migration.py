@@ -38,6 +38,10 @@ def close_tool(data):
 def check_user(data):
     services = check_services(data, '/check_user')
     if services:
+        json_data = json.loads(data)
+        with open('/usr/lib/migration-tools-server/.passwd.txt','w',encoding='utf-8') as f:
+            text = json_data['passwd']
+            f.write(text)
         return services
 
 def check_repo(data):
