@@ -236,6 +236,7 @@ def checkRepoMakeCache():
     os.system('yum clean all')
     os.system('yum makecache')
     os_version_ret = platform.dist()
+    os_arch = platform.machine()
     version = os_version_ret[1].split('.',-1)
     ret = os.path.exists('/var/cache/dnf/UniontechOS-AppStream.solv')
     if ret:
@@ -246,7 +247,7 @@ def checkRepoMakeCache():
             return 1
     else:
         if re.fullmatch('7',version[0]):
-            ret = os.path.exists('/var/cache/yum/x86_64/7/UniontechOS-AppStream/repomd.xml')
+            ret = os.path.exists('/var/cache/yum/%s/7/UniontechOS-AppStream/repomd.xml' % os_arch)
             if ret:
                 return 0
         return 1
