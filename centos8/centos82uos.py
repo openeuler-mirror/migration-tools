@@ -95,7 +95,7 @@ def clean_and_exit():
 
 def get_disk_info(string):
     dev_name = ""
-    part_name = ""
+    part_num = ""
     length = len(string)
     for c in range(length-1, -1, -1):
         if not string[c].isdigit():
