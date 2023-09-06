@@ -194,12 +194,11 @@ def main():
     if os.path.exists(rpm_perl):
         os.remove(rpm_perl)
 
+    os.system("rpm -e --nodeps yum")
     if system_sync():
         subprocess.run('dnf -y groupinstall Minimal Install', shell=True)
-        conf_grub()
     else:
         print("Removing confilct package yum...")
-        os.system("rpm -e --nodeps yum")
         system_sync()
 
     
@@ -217,6 +216,7 @@ def main():
     if os.path.exists(yum_conflict_dir):
         shutil.rmtree(yum_conflict_dir)
     print("Installing yum...")
+    conf_grub()
     run_subprocess('dnf install -y yum'.split())
     
     print("System migration completed, rebooting system")
