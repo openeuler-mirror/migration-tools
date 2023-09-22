@@ -93,6 +93,42 @@ def swap_release(release):
     run_subprocess('rpm -ivh {}/*.rpm --nodeps --force'.format(tmp_dir).split())
 
 
+def set_grub_biosdev_rules():
+    """
+    Set grub bisodev rule which can be don`t modify network configuration names.
+    When the leapp has been made initrd, the function will set net.ifnames in /etc/default/grub.
+    Returns:
+    """
+    default_grub_path = "/etc/default/grub"
+    set_content = "net.ifnames=0  biosdevname=0"
+    if not os.path.exists(default_grub_path):
+        return
+    with open(default_grub_path, 'r') as gf:
+        gret = gf.readlines()
+        gf.close()
+    grub_content = ''
+    for i in range(len(gret)):
+        if "GRUB_CMDLINE_LINUX" in gret[i]:
+            cmdline_tmp = gret[i].split('"', -1)[1]
+            grub_content += 'GRUB_CMDLINE_LINUX="' + cmdline_tmp + ' ' + set_content + '"\n'
+            continue
+        grub_content += gret[i]
+    try:
+        if not os.path.exists(default_grub_path + '.disable'):
+            shutil.copyfile(default_grub_path, default_grub_path + '.disable')
+            os.remove(default_grub_path)
+        else:
+            print("grub file has been modified")
+            return
+    except Exception as e:
+        print(e)
+        return
+    with open(default_grub_path, 'w+') as wgf:
+        wgf.write(grub_content)
+        wgf.close()
+    return True
+
+
 def conf_grub():
     if os.path.isdir('/sys/firmware/efi'):
         old_kernel = '3.10.0'
@@ -194,12 +230,11 @@ def main():
     if os.path.exists(rpm_perl):
         os.remove(rpm_perl)
 
+    os.system("rpm -e --nodeps yum")
     if system_sync():
         subprocess.run('dnf -y groupinstall Minimal Install', shell=True)
-        conf_grub()
     else:
         print("Removing confilct package yum...")
-        os.system("rpm -e --nodeps yum")
         system_sync()
 
     
@@ -217,6 +252,8 @@ def main():
     if os.path.exists(yum_conflict_dir):
         shutil.rmtree(yum_conflict_dir)
     print("Installing yum...")
+    set_grub_biosdev_rules()
+    conf_grub()
     run_subprocess('dnf install -y yum'.split())
     
     print("System migration completed, rebooting system")
