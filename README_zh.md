@@ -1,7 +1,7 @@
 # migration-tools
 
 #### 介绍
-统信迁移工具是由统信公司自主研发，具有CentOS/RedHat 7、8系列系统迁移至OpenEuler系统功能的迁移工具。
+统信迁移工具是由统信公司自主研发，具有CentOS系列系统迁移至OpenEuler系统或UOS系统功能的迁移工具。
 
 #### 依赖
 
