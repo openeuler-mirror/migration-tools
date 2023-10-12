@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+# SPDX-License-Identifier:   MulanPubL-2.0-or-later
+
 # coding=utf-8
 '''''
 main function：主要实现把txt中的每行数据写入到excel中
