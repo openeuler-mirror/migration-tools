@@ -78,12 +78,11 @@ def check_pkg(pkg):
 
     paths = os.environ['PATH'].split(':')
     for path in paths:
-        if not os.path.isdir(path):
-            continue
-        for f in os.listdir(path):
-            if os.path.isfile(os.path.join(path, f)):
-                if f == pkg:
-                    return True
+        if  os.path.isdir(path):
+            for f in os.listdir(path):
+                if os.path.isfile(os.path.join(path, f)):
+                    if f == pkg:
+                        return True
     return False
 
 def clean_and_exit():
