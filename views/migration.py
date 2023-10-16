@@ -1,11 +1,10 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
-from flask import *
 import os
-
+from flask import *
 from client_requests import *
 from func.utils import *
+
 
 def check_services(data, url):
     info = post_client_data(data, url)
@@ -27,10 +26,12 @@ def check_os(data):
     if services:
         return services
 
+
 def check_storage(data):
     services = check_services(data, '/check_storage')
     if services:
         return services
+
 
 def close_tool(data):
     os.system('kill -9 `ps -ef | grep "start_webview.py" | grep -v grep | awk \'{print $2}\'`')
@@ -38,14 +39,16 @@ def close_tool(data):
     data_json = json.dumps(data)
     return data_json
 
+
 def check_user(data):
     services = check_services(data, '/check_user')
     if services:
         json_data = json.loads(data)
-        with open('/usr/lib/migration-tools-server/.passwd.txt','w',encoding='utf-8') as f:
+        with open('/usr/lib/migration-tools-server/.passwd.txt', 'w', encoding='utf-8') as f:
             text = json_data['passwd']
             f.write(text)
         return services
+
 
 def check_repo(data):
     services = check_services(data, '/check_repo')
