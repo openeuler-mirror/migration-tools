@@ -1,10 +1,8 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
-from flask import *
 import os
 import json
-
+from flask import *
 from func import check
 from func.share import *
 
@@ -24,6 +22,7 @@ mods = {
         'check_migration_progress': check.check_migration_progress,
         'migration_details': check.migration_details,
         }
+
 
 def check_methods():
     if request.method == 'POST':
