@@ -28,7 +28,6 @@ def run_subprocess(cmd):
         print(output)  # Print the output to console
         return output, process.returncode
     except subprocess.CalledProcessError as e:
-        #print(f"Command '{e.cmd}' failed with return code {e.returncode}.")
         print(e.stderr)  # Print the error output to console
         return e.stderr, e.returncode
 
@@ -86,6 +85,7 @@ def add_boot_option():
         run_subprocess(cmd.split())
     except Exception as e:
         print(e)
+
 
 def swap_release(release):
     tmp_dir = '/var/tmp'
@@ -163,6 +163,7 @@ def system_sync():
         return False
     return True
 
+
 def main():
     if not check_pkg("yum-utils"):
         print("please install yum-utils")
@@ -186,7 +187,6 @@ def main():
     repofile = "/etc/yum.repos.d/openeuler.repo"
     with open(repofile, 'w') as f:
         f.write(openeuler_repo)
-
 
     openEuler_release = 'openEuler-release'
     if not check_pkg(openEuler_release):
@@ -240,7 +240,6 @@ def main():
         print("Removing confilct package yum...")
         system_sync()
 
-    
     # boot cui
     print("set boot target to cui")
     cmd = 'systemctl set-default multi-user.target'
@@ -262,7 +261,6 @@ def main():
     print("System migration completed, rebooting system")
     os.system("reboot")
     
-
 
 if __name__ == '__main__':
     main()
