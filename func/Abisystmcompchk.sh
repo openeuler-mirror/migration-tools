@@ -1,11 +1,4 @@
 #!/bin/bash
-# 项目名称: abi结果自动化分析实现
-# 所属系统: UOS
-# 文件名称: Abisystemcompcheck
-# 功    能: 基于系统兼容性检查报告的自动化分析
-#         : 输出系统兼容百分比，非兼容包原因列表，兼容包列表等。
-# 作    者: lihaipeng
-
 ########################变量定义#################################
 
 LOCAL_DIR=/var/tmp/uos-migration/data
@@ -227,8 +220,7 @@ get_abi_comp_rest()
 			NUM1=0
 			#兼容性开关,0-兼容；1-不兼容
 			COMP_FLAG=0
-			#cat ./$abi_diff_file.tmp | while read line
-			while read line	
+			while read line
 			do
 				if [[ $line == *$DATA_LINE_1* ]];then 
                 			NUM2=$(( $NUM1 % 5 ))
@@ -262,7 +254,6 @@ get_abi_comp_rest()
 					then
 						abi_var_comp_2="${abi_diff_file%.*}|$line|兼容"
 					else
-                        			#echo "$abi_diff_file|$line|不规范，清确认！" >> $EXP_DIR/$ABI_DIFF_PKG_ERR
 						abi_var_incomp_2="$NAME|$COMP_TYPE|$data_line|$line"
 						echo $abi_var_incomp_2  >> $EXP_DIR/$ABI_INCOMPAT_PKG
 						#此时abi编译以来库文件或者二进制包不兼容，那么该rpm包不兼容
@@ -280,7 +271,6 @@ get_abi_comp_rest()
 						#abi检查结果中，rpm包以来的库文件或者二进制文件兼容
 						abi_var_comp_3="${abi_diff_file%.*}|$line|兼容"
                                         else
-                        			#echo "$abi_diff_file|$line|不规范，清确认！" >> $EXP_DIR/$ABI_DIFF_PKG_ERR
 						abi_var_incomp_3="$NAME|$COMP_TYPE|$data_line|$line|"
 						echo $abi_var_incomp_3  >> $EXP_DIR/$ABI_INCOMPAT_PKG
 						#此时abi编译以来库文件或者二进制包不兼容，那么该rpm包不兼容
@@ -333,11 +323,6 @@ get_abi_comp_rest()
 	ABI_INCOMP_NUM_TMP=`cat $EXP_DIR/$ABI_INCOMPAT_PKG | awk -F "|" '{print $1}' | sort | uniq | wc -l`
 	ABI_INCOMP_NUM=`expr $ABI_INCOMP_NUM_TMP - 2`
 	sed -i 's/INCOMP_PKG_NUM/'$ABI_INCOMP_NUM'/g' $EXP_DIR/$ABI_INCOMPAT_PKG
-
-	#cp -f $EXP_DIR/$ABI_COMPAT_PKG $EXP_DIR/$PKG_COMP_LIST_03 
-	#sed -i '/包名/d' $EXP_DIR/$PKG_COMP_LIST_03
-
-
 	echo "兼容包列表：$EXP_DIR/$ABI_COMPAT_PKG"
 	echo "非兼容包列表：$EXP_DIR/$ABI_INCOMPAT_PKG"
 	echo "-------------------------  获取abi兼容、非兼容包列表结束  -------------------------"
@@ -346,7 +331,6 @@ get_abi_comp_rest()
 #4. 获取系统基本信息
 get_system_info()
 {
-	#echo "====================Start enter get_system_info=============="
         #数据清理
         rm -f $EXP_DIR/$SYSTEM_INFO
 
@@ -381,15 +365,12 @@ get_system_info()
 	cur_sysinfo=${cur_sysinfo_2:1:$cur_sysinfo_len}
 
 	system_info_2_line2=${SYSTEM_INFO_2_LINE2//CUR_VERSION/$cur_sysinfo}
-	#system_info_2_line2=${system_info_2_line2_tmp//TRA_VERSION/$trans_sysinfo}
         echo $system_info_2_line2 >> $EXP_DIR/$SYSTEM_INFO
 
 	#获取内核版本
         cur_kernel_info=`uname -r`
-        #trans_kernel_info="******"
 
 	system_info_3_line3=${SYSTEM_INFO_3_LINE3//CUR_KERNEL_VERSION/$cur_kernel_info}
-	#system_info_3_line3=${system_info_3_line3_tmp//TRA_KERNEL_VERSION/$trans_kernel_info}
         echo $system_info_3_line3 >> $EXP_DIR/$SYSTEM_INFO
 	echo " " >> $EXP_DIR/$SYSTEM_INFO
 
@@ -409,19 +390,12 @@ get_system_info()
 
         abi_comp_pkg_num_tmp=`cat $EXP_DIR/$ABI_COMPAT_PKG | wc -l`
         cur_pkg_num=`expr $abi_comp_pkg_num_tmp - 1`
-        #cur_pkg_sum=`rpm -qa | wc -l`
-        #trans_pkg_sum=`rpm -qa | wc -l`
 
 	system_info_9_line9=${SYSTEM_INFO_9_LINE9//REPLACE_PKG_NUM/$cur_pkg_num}
-	#system_info_9_line9=${system_info_9_line9_tmp//INSTALL_PKG_NUM/$trans_pkg_sum}
         echo $system_info_9_line9 >> $EXP_DIR/$SYSTEM_INFO
 	echo " " >> $EXP_DIR/$SYSTEM_INFO
 
         echo $SYSTEM_INFO_11_LINE11 >> $EXP_DIR/$SYSTEM_INFO
-
-        #abi_comp_pkg_num_tmp=`cat $EXP_DIR/$ABI_COMPAT_PKG | wc -l`
-        #abi_comp_pkg_num=`expr $abi_comp_pkg_num_tmp - 1`
-	#system_info_12_line12=${SYSTEM_INFO_12_LINE12//COMP_NUM/$abi_comp_pkg_num}
 	system_info_12_line12=${SYSTEM_INFO_12_LINE12//COMP_NUM/$cur_pkg_num}
         echo $system_info_12_line12 >> $EXP_DIR/$SYSTEM_INFO
 
@@ -450,7 +424,6 @@ pkg_comp_rst()
         rm -f $EXP_DIR/$PKG_COMP_LIST_01
 
         pkg_sum_num=`cat $EXP_DIR/$UOS_PKG_RPMS_LIST | wc -l`
-        #pkg_num_inst=`cat $EXP_DIR/$UOS_PKG_RPMS_LIST | grep uelc20 | wc -l`
         pkg_num_inst_tmp=`cat $EXP_DIR/$ABI_COMPAT_PKG | wc -l`
 	pkg_num_inst=`expr $pkg_num_inst_tmp - 1`
 
@@ -476,8 +449,6 @@ pkg_comp_rst()
 	pkginfo_3_line3=${pkginfo_3_line3_tmp//UOS_VERSION/$trans_sysinfo_1}
         echo $pkginfo_3_line3 >> $EXP_DIR/$PKG_COMP_LIST_01
 
-	#cat $EXP_DIR/$UOS_PKG_RPMS_LIST | grep uelc20 > $EXP_DIR/$PKG_COMP_LIST_04	
-	#echo "==============End enter pkg_comp_rst========="
 }
 
 create_file_path
