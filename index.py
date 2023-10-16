@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 mods = {
         'check_environment': migration.check_environment,
-        'check_storage' : migration.check_storage,
+        'check_storage': migration.check_storage,
         'check_os': migration.check_os,
         'check_os_kernel': migration.check_os_kernel,
         'check_migration_progress': migration.check_migration_progress,
@@ -24,7 +24,7 @@ mods = {
         'check_user': migration.check_user,
         'close_tool': migration.close_tool,
         'export_migration_reports': migration.export_migration_reports,
-        'system_migration':migration.system_migration,
+        'system_migration': migration.system_migration,
         'migration_details': migration.migration_details,
         }
 
@@ -221,7 +221,7 @@ def MT_export_migration_reports():
     :return:
     """
     mod = check_methods()
-    f = open("/usr/lib/migration-tools-server/.passwd.txt","r")
+    f = open("/usr/lib/migration-tools-server/.passwd.txt", "r")
     password = f.read()
     f.close()
     if mod:
