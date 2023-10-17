@@ -42,7 +42,6 @@
 			<div id="env_id4" style="padding-left:500px;display: none;">
 				<img src="../static/images/u70.svg" width="13" height="13" /><label style="font-size:13px;font-family:”微软雅黑”;font-weight:bold;">检查失败，请重新检查</label>
 			</div>
-
 			<br/>
 		    <br/>
 			<div class="progress progress-striped active" style="margin-left: 85px;">
@@ -63,10 +62,8 @@
 		<button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
         <button id="next_id" onclick="save();"  data-locale="Next_Step" type="submit" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 1"><style>a{TEXT-DECORATION:none}</style>下一步</button>
     </div>
-
     </div>
 </div>
-
 <script type="text/javascript" src="static/js/admin/jquery.min.js"></script>
 <script type="text/javascript" src="static/js/admin/framework.js"></script>
 <script type="text/javascript" src="static/js/admin/jquery.zclip.min.js"></script>
@@ -74,7 +71,6 @@
 <script type="text/javascript" src="static/js/admin/save_alert.js"></script>
 <script type="text/javascript" src="static/js/admin/bootstrap.min.js"></script>
 <script type="text/javascript" src="static/js/admin/json.js"></script>
-
 <script>
     function check_environment() {
 		progress = setInterval("check_progress()",2000);
@@ -135,7 +131,7 @@
 					}
 				}
 			}
-        });	//ajax end
+        });
     }
 
 	function check_progress() {
@@ -153,7 +149,7 @@
 				pg.style.width=res.progress + "%";
 				document.getElementById('pg_info').innerHTML=res.progress + "%";
 			}
-        });	//ajax end
+        });
 	}
 
 	function export_test_reports() {
@@ -173,7 +169,7 @@
 			success: function(res) {
 
 			}
-        });	//ajax end
+        });
 	}
 
 	function save() {
@@ -183,9 +179,7 @@
 	function close_tool() {
             alert("确定关闭迁移软件吗?")
 	}
-	
 
 </script>
-
 </body>
 </html>
