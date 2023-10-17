@@ -92,7 +92,7 @@ def get_disk_info(string):
                 dev_name = string[0:c+1]
                 part_num = string[c+1:length]
             break
-    return dev_name,part_num
+    return dev_name, part_num
 
 
 def add_boot_option():
@@ -140,43 +140,42 @@ def process_special_pkgs():
 
 
 def title_conf(oldosname):
-    oldosname=oldosname.strip()
+    oldosname = oldosname.strip()
     path = '/boot/loader/entries'
-    #path='/root/a'
     if os.path.exists(path):
         file_list = os.listdir(path)
     else:
         return None
     fl = False
     for file in file_list:
-        fpath = os.path.join(path,file)
+        fpath = os.path.join(path, file)
         if os.path.isdir(fpath):
             continue
         else:
-            with open(fpath,'r') as fp:
+            with open(fpath, 'r') as fp:
                 strall = fp.read()
                 fp.close()
-            if re.search('uniontech',strall,re.IGNORECASE):
+            if re.search('uniontech', strall, re.IGNORECASE):
                 fl = True
     for file in file_list:
-        ustr=None
-        fpath = os.path.join(path,file)
+        ustr = None
+        fpath = os.path.join(path, file)
         if os.path.isdir(fpath):
             continue
         else:
-            with open(fpath,'r') as fp:
+            with open(fpath, 'r') as fp:
                 strall = fp.read()
                 fp.close()
-            if re.search(oldosname,strall,re.IGNORECASE):
+            if re.search(oldosname, strall, re.IGNORECASE):
                 if fl:
                     os.remove(fpath)
                     continue
                 else:
-                    ustr = re.sub(oldosname,"UniontechOS",strall,1,flags=re.IGNORECASE)
+                    ustr = re.sub(oldosname, "UniontechOS", strall, 1, flags=re.IGNORECASE)
             if re.search('8 \(Core\)',strall):
-                ustr = re.sub(' 8 ',' 20 ',ustr,1,flags=re.IGNORECASE)
-                ustr = re.sub("Core","kongzi",ustr,1,flags=re.IGNORECASE)
-                with open(fpath,'w') as ptitle:
+                ustr = re.sub(' 8 ', ' 20 ', ustr, 1, flags=re.IGNORECASE)
+                ustr = re.sub("Core", "kongzi", ustr, 1,flags=re.IGNORECASE)
+                with open(fpath, 'w') as ptitle:
                     ptitle.write(ustr)
                     ptitle.close()
 
@@ -232,7 +231,7 @@ def main_conf(osname):
     out1 = subprocess.check_output('rpm -qa --qf \
     "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\n" \
     | sort > "/var/tmp/uos-migration/UOS_migration_log/rpms-list-after.txt"', shell=True)
-    out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-after.txt"',shell=True)
+    out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-after.txt"', shell=True)
 
     logger.info("Switch complete.UniontechOS recommends rebooting this system.")
     return 0
