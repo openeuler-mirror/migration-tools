@@ -2,13 +2,11 @@
 # !/usr/bin/python
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
 import os
 import sys
 import json
 from func import share
 from views import migration
-
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
 app = Flask(__name__)
 

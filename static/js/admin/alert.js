@@ -1,7 +1,4 @@
 window.alert = function (message, title, callbak) {
-    /// <summary>
-    /// 关闭Alert弹出窗
-    /// </summary>
     (closeAlert = function () { $('#alert-window').remove(); })();
     var bg = $('<div class="alert-bg"></div>');
     var wnd = $('<div class="alert-wnd"><div class="alert-head"><center>'
@@ -22,5 +19,5 @@ function close_info() {
         data: $.toJSON(close_tool_data_json),
         success: function(res) {
         }
-    });	//ajax end
+    });
 }

@@ -1,7 +1,4 @@
 window.save_alert = function (message, title, callbak) {
-    /// <summary>
-    /// 关闭Alert弹出窗
-    /// </summary>
     (closeSaveAlert = function () { $('#alert-window').remove(); })();
     var bg = $('<div class="alert-bg"></div>');
     var wnd = $('<div class="alert-wnd"><div class="alert-head"><center>'
