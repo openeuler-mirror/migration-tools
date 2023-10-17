@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
 import webview
 import json
 from func.share import get_sysmig_conf
