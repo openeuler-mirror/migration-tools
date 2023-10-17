@@ -1,38 +1,35 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
 import os
 import subprocess
 import re
 import socket
 import sys
-import shutil
-import argparse
 import platform
 import logging
-
 from utils import *
 
 reposdir=''
+
 
 def local_disabled_release_repo():
     path = '/etc/yum.repos.d'
     if os.path.exists(path):
         file_list = os.listdir(path)
     for file in file_list:
-        fpath = os.path.join(path,file)
+        fpath = os.path.join(path, file)
         if os.path.isdir(fpath):
             continue
         else:
-            if re.fullmatch('switch-to-uos.repo',file,re.IGNORECASE):
+            if re.fullmatch('switch-to-uos.repo', file, re.IGNORECASE):
                 continue
-            elif not re.search('repo',file,re.IGNORECASE):
+            elif not re.search('repo', file, re.IGNORECASE):
                 continue
-            with open(fpath,'r') as fdst:
+            with open(fpath, 'r') as fdst:
                 allrepo = fdst.read()
                 fdst.close()
                 print(allrepo)
-                with open(fpath+'.disabled','w+') as fdst:
+                with open(fpath+'.disabled', 'w+') as fdst:
                     fdst.write('#This is a yum repository file that was disabled . <Migration to UiniontechOS>\n'+allrepo)
                     fdst.close()
                     os.remove(fpath)
@@ -40,16 +37,16 @@ def local_disabled_release_repo():
 
 def get_bad_packages():
     os_version_ret = platform.dist()
-    version = os_version_ret[1].split('.',-1)
+    version = os_version_ret[1].split('.', -1)
     local_os_version = version[0]
     badpackages = ''
     if '8' == local_os_version:
-        with open('func/8badpackage.txt','r') as bf:
+        with open('func/8badpackage.txt', 'r') as bf:
             for bad_package in bf:
                 badpackages = badpackages + ' ' + bad_package.strip()
             bf.close()
     else:
-        with open('func/7badpackage.txt','r') as bf:
+        with open('func/7badpackage.txt', 'r') as bf:
             for bad_package in bf:
                 badpackages = badpackages + ' ' + bad_package.strip()
             bf.close()
@@ -72,6 +69,7 @@ def check_pkg(pkg):
                 if f == pkg:
                     return True
     return False
+
 
 def clean_and_exit():
     global reposdir
@@ -99,7 +97,6 @@ def process_special_pkgs():
 
 
 def pre_system_rpms_info():
- # display rpms info before conversion
     print("Creating a list of RPMs installed before the switch")
     print("Verifying RPMs installed before the switch against RPM database")
     out1 = subprocess.check_output('rpm -qa --qf \
@@ -113,12 +110,12 @@ def pre_system_rpms_info():
         if re.match(hostname+'-rpms-(.*)\.log', f):
             print(f)
 
+
 def centos8_main(osname):
     global reposdir
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
-    #rq = time.strftime('%Y%m%d%H%M', time.localtime(time.time()))
     log_name = '/var/tmp/uos-migration/UOS_migration_log/log'
     logfile = log_name
     fh = logging.FileHandler(logfile, mode='w')
@@ -126,22 +123,17 @@ def centos8_main(osname):
     formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
     fh.setFormatter(formatter)
     logger.addHandler(fh)
-
-
     logger.info("Checking if the tool is executed by root user")
-    # check if the script is executed by root user
     if os.geteuid() != 0:
         logger.info("Please run the tool as root user.")
         sys.exit(1)
     badpackages = get_bad_packages()
-    # check required packages
     logger.info('Checking required packages')
-    for pkg in ['rpm','yum','curl']:
+    for pkg in ['rpm', 'yum', 'curl']:
         if not check_pkg(pkg):
             logger.info("Could not found "+pkg)
             sys.exit(1)
 
-    #sto system rpms info before migration
     pre_system_rpms_info()
 
     # check if the os old_version is supported
@@ -171,7 +163,7 @@ def centos8_main(osname):
     else:
         logger.info("Your are using an unsupported distribution.")
         sys.exit(1)
-    if not re.match('8',subver):
+    if not re.match('8', subver):
         logger.info("You appear to be running an unsupported distribution.")
         sys.exit(1)
 
@@ -179,7 +171,7 @@ def centos8_main(osname):
     if not check_pkg('/usr/libexec/platform-python'):
         logger.info('/usr/libexec/platform-python not found.')
         sys.exit(1)
-    base_packages=['basesystem','initscripts','uos-logos','plymouth','grub2','grubby']
+    base_packages = ['basesystem', 'initscripts', 'uos-logos', 'plymouth', 'grub2', 'grubby']
 
     logger.info("========= Checking: yum lock ===========")
     if os.path.exists('/var/run/yum.pid'):
@@ -195,14 +187,14 @@ def centos8_main(osname):
         sys.exit(1)
 
     # check dnf
-    if re.match('8\.',subver):
+    if re.match('8\.', subver):
         logger.info("========= Checking: dnf =========")
         logger.info("Identifying dnf modules that are enabled...")
         enabled_modules = str(
             subprocess.check_output("dnf module list --enabled | grep rhel | awk '{print $1}'", shell=True), 
             'utf-8')
         enabled_modules = enabled_modules.split('\n')[:-1]
-        unknown_mods=[]
+        unknown_mods = []
         if len(enabled_modules) > 0:
             for mod in enabled_modules:
                 if re.fullmatch('container-tools|llvm-toolset| perl-DBD-SQLite|perl-DBI|satellite-5-client|perl', mod):
@@ -214,10 +206,9 @@ def centos8_main(osname):
                 + ','.join(unknown_mods) \
                 + ' from a CentOS \'rhel\' stream to an UniontechOS equivalent.'\
                 )
-                opt = input('Do you want to continue and resolve it manually? (Yes or No)\n' )
+                opt = input('Do you want to continue and resolve it manually? (Yes or No)\n')
                 if opt != 'Yes':
                     sys.exit(1)
-
 
     logger.info("========= Looking for yumdownloader ==========")
     os.system('yum -y install uos-license-mini license-config ')
@@ -229,7 +220,7 @@ def centos8_main(osname):
         repos = 'rpm -qa '+osname+'*repos'
         old_version = subprocess.check_output(repos, shell=True)
         old_version = str(old_version, 'utf-8')[:-1]
-        subprocess.run('rpm -e --nodeps ' + old_version , shell=True)
+        subprocess.run('rpm -e --nodeps ' + old_version, shell=True)
 
     logger.info("Downloading uos release package...")
     dst_release = ['uos-release']
@@ -248,7 +239,6 @@ def centos8_main(osname):
         "and it may be in an unstable/unbootable state. To avoid further issues, " +\
         "the script has terminated.")
 
-
     logger.info("Switching old release package with Uniontech...")
     dst_rpms = [s+'*.rpm' for s in dst_release]
     oldkeys = osname+'-gpg-keys'
@@ -262,8 +252,8 @@ install '+ ' '.join(base_packages) + '\n\
 run\n\
 EOF'
     try:
-        fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
-        subprocess.run(cmd,stdout=fdout , shell=True)
+        fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt", 'a')
+        subprocess.run(cmd, stdout=fdout, shell=True)
         fdout.close()
     except:
         logger.info("Could not install base packages.Run 'yum distro-sync' to manually install them.")
@@ -273,9 +263,8 @@ EOF'
         logger.info("Updating initrd...")
         indexhtml ='rpm -e --nodeps ' + osname+'-indexhtml'
         os.system(indexhtml)
-        fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
-        subprocess.run('/usr/libexec/plymouth/plymouth-update-initrd',stdout=fdout,shell=True)
-        #run_cmd2file('/usr/libexec/plymouth/plymouth-update-initrd')
+        fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt", 'a')
+        subprocess.run('/usr/libexec/plymouth/plymouth-update-initrd', stdout=fdout, shell=True)
         fdout.close()
     logger.info("Switch successful. Syncing with UniontechOS repositories.")
     logger.debug('358')
@@ -283,12 +272,13 @@ EOF'
     if subver == '8.3':
         subprocess.run('yum -y downgrade crypto-policies --allowerasing', shell=True)
     try:
-        fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
-        subprocess.run('yum -y distro-sync', stdout=fdout ,shell=True)
+        fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt", 'a')
+        subprocess.run('yum -y distro-sync', stdout=fdout, shell=True)
         fdout.close()
     except:
         logger.info("error distro-sync migration ....")
     messageState('2')
+
 
 os_version_ret = platform.dist()
 osname = os_version_ret[0]

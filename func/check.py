@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
 import os
 import json
 import platform
@@ -9,8 +8,6 @@ import time
 import paramiko
 import subprocess
 from multiprocessing import Process
-
-
 from settings import *
 from func.utils import *
 from func.share import *
@@ -18,9 +15,10 @@ from func.Abitxt2xls import *
 
 os.chdir('/usr/lib/migration-tools-agent')
 
-def migInit_porgress():
+
+def mig_init_porgress():
     uelc_rpm = os.popen('rpm -qa|wc -l').readlines()
-    with open('/var/tmp/uos-migration/.rpms','w+') as fp:
+    with open('/var/tmp/uos-migration/.rpms', 'w+') as fp:
         fp.write(uelc_rpm[0])
         fp.close()
 
@@ -39,38 +37,41 @@ def init_dir():
         os.makedirs(MIGRATION_DATA_RPMS_DIR)
     
     if not os.path.exists(PRE_MIG):
-        with open(PRE_MIG,'w+') as fp:
+        with open(PRE_MIG, 'w+') as fp:
             fp.write(' ')
             fp.close()
     
     if not os.path.exists(PROGRESS):
-        with open(PROGRESS,'w+') as fp:
+        with open(PROGRESS, 'w+') as fp:
             fp.write(' ')
             fp.close()
 
     if not os.path.exists(MIGRATION_DATA_RPMS_3_INFO):
-        with open(MIGRATION_DATA_RPMS_3_INFO,'w+') as fp:
+        with open(MIGRATION_DATA_RPMS_3_INFO, 'w+') as fp:
             fp.write(' ')
             fp.close()
 
-    with open(pstate,'w+') as fp:
+    with open(pstate, 'w+') as fp:
         fp.write('0')
         fp.close()
     # 迁移进度
-    migInit_porgress()
+    mig_init_porgress()
 
 
 def check_os_type():
     return platform.system()
 
+
 def check_os_arch():
     return platform.machine()
+
 
 def check_os_kernel_release():
     return platform.release()
 
-def preSystemCheck():
-    with open(PRE_MIG,'w+') as pf:
+
+def pre_system_check():
+    with open(PRE_MIG, 'w+') as pf:
         os_version_ret = platform.dist()
         pf.write('原系统   :'+os_version_ret[0]+'\n')
         pf.write('系统类型 :'+check_os_type()+'\n')
@@ -89,8 +90,8 @@ def check_storage(data):
     # 避免centos7系统检测失败
     time.sleep(5)
     if stat:
-        ava_cache = format(stat.f_bavail * stat.f_frsize / 1024 // 1024 /1024, '.1f')
-        with open(PRE_MIG,'a+') as pf:
+        ava_cache = format(stat.f_bavail * stat.f_frsize / 1024 // 1024 / 1024, '.1f')
+        with open(PRE_MIG, 'a+') as pf:
             pf.write('/var/cache可用空间为'+ava_cache+'GB')
             pf.close()
         if float(ava_cache) >= CACHE_SPACE:
@@ -115,26 +116,26 @@ def check_os(data):
     uos_sysmig_conf = json.loads(getSysMigConf())
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     init_dir()
-    preSystemCheck()
+    pre_system_check()
     messageProgress('0')
     os_version_ret = platform.dist()
-    version = os_version_ret[1].split('.',-1)
+    version = os_version_ret[1].split('.', -1)
     local_os_version = os_version_ret[0]+version[0]
     state = 0
 
-    if re.match('.entos8',local_os_version):
+    if re.match('.entos8', local_os_version):
         data = '当前操作系统为CentOS 8'
-        return list_to_json(['ip', 'ret', 'data'],[agent_ip, state, data])
-    elif re.match('.entos7',local_os_version):
+        return list_to_json(['ip', 'ret', 'data'], [agent_ip, state, data])
+    elif re.match('.entos7', local_os_version):
         data = '当前操作系统为CentOS 7'
-        return list_to_json(['ip', 'ret', 'data'],[agent_ip, state, data])
+        return list_to_json(['ip', 'ret', 'data'], [agent_ip, state, data])
     else:
         state = 1
         error = '无法检测到当前系统，请检查/etc/os-release文件，确认后重试.'
-        return list_to_json(['ip', 'ret', 'error'],[agent_ip, state, error])
+        return list_to_json(['ip', 'ret', 'error'], [agent_ip, state, error])
 
 
-def check_SSHClent(user, passwd, ip, port):
+def check_ssh_client(user, passwd, ip, port):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     t = 0
@@ -149,7 +150,7 @@ def check_SSHClent(user, passwd, ip, port):
                 ret = stderr.read().decode()
                 ret = ret.split('\n')[:-1]
                 for i in range(len(ret)):
-                    if re.match('sudo',ret[i].strip()[0:4]):
+                    if re.match('sudo', ret[i].strip()[0:4]):
                         flag = False
                     strsudo = ret[i].strip()
                 if flag:
@@ -175,16 +176,16 @@ def check_user(data):
     log_info = "post check_user:" + str(data)
     print(log_info)
     json_data = json.loads(data)
-    with open('/usr/lib/migration-tools-agent/.passwd.txt','w',encoding='utf-8') as f:
+    with open('/usr/lib/migration-tools-agent/.passwd.txt', 'w', encoding='utf-8') as f:
         text = json_data['passwd']
         f.write(text)
     uos_sysmig_conf = json.loads(getSysMigConf())
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
-    re_data = check_SSHClent(json_data['user'], json_data['passwd'], agent_ip, 22)
+    re_data = check_ssh_client(json_data['user'], json_data['passwd'], agent_ip, 22)
     return re_data
 
 
-def init_remove_oldrepo():
+def init_remove_old_repo():
     backup_comment = '#This is a yum repository file that was disabled . <Migration to UiniontechOS> \
             \n'
     path = '/etc/yum.repos.d/'
@@ -193,29 +194,28 @@ def init_remove_oldrepo():
         path_file = path+'/'+repo
         if not os.path.isfile(path_file):
             continue
-        if not re.search('repo$',repo):
+        if not re.search('repo$', repo):
             continue
         with open(path_file, 'r') as fsrc:
             content = fsrc.read()
-            with open(path_file+'.disabled','w') as fdst:
+            with open(path_file+'.disabled', 'w') as fdst:
                 fdst.write(repo+'\n'+backup_comment+content)
                 fdst.close()
             fsrc.close()
         os.remove(path_file)
 
 
-#初始化repo文件
-def initRepoFile(baseurl):
+def init_repo_file(baseurl):
     os_version_ret = platform.dist()
-    version = os_version_ret[1].split('.',-1)
+    version = os_version_ret[1].split('.', -1)
     reposdir = '/etc/yum.repos.d/'
     h = 0
-    if re.match('file:',baseurl):
-        str0, path = baseurl.split('://',1)
+    if re.match('file:', baseurl):
+        str0, path = baseurl.split('://', 1)
         path = '/' + path.strip('/') + '/'
     else:
        h = 1
-    if re.fullmatch('8',version[0]):
+    if re.fullmatch('8', version[0]):
         path_appstream = baseurl+'/AppStream'
         path_baseos = baseurl+'/BaseOS'
         path_310 = baseurl+'/kernel-3.10'
@@ -229,27 +229,26 @@ def initRepoFile(baseurl):
         repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = '''+baseurl.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-3.10.0]\nname = UniontechOS Kernel-3.10.0\nbaseurl = '''+path_310.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n
         '''
     repofile = os.path.join(reposdir, 'switch-to-uos.repo')
-    with open(repofile,'w') as f_repo:
+    with open(repofile, 'w') as f_repo:
         f_repo.write(repostr_uos)
         f_repo.close()
 
 
-#检测repo文件创建缓存
-def checkRepoMakeCache():
+def check_repo_makecache():
     os.system('yum clean all')
     os.system('yum makecache')
     os_version_ret = platform.dist()
     os_arch = platform.machine()
-    version = os_version_ret[1].split('.',-1)
+    version = os_version_ret[1].split('.', -1)
     ret = os.path.exists('/var/cache/dnf/UniontechOS-AppStream.solv')
     if ret:
         ret = os.path.exists('/var/cache/dnf/UniontechOS-BaseOS.solv')
-        if ret or re.fullmatch('7',version[0]):
+        if ret or re.fullmatch('7', version[0]):
             return 0
         else:
             return 1
     else:
-        if re.fullmatch('7',version[0]):
+        if re.fullmatch('7', version[0]):
             ret = os.path.exists('/var/cache/yum/%s/7/UniontechOS-AppStream/repomd.xml' % os_arch)
             if ret:
                 return 0
@@ -264,27 +263,27 @@ def check_repo(data_j):
     keylist = None
     valuelist = None
     data = None
-    init_remove_oldrepo()
-    initRepoFile(baseurl)
-    state = checkRepoMakeCache()
+    init_remove_old_repo()
+    init_repo_file(baseurl)
+    state = check_repo_makecache()
 
     if state == 0:
-        keylist = ['ip','res','data']
-        valuelist = [AGENT_IP,state,'连接成功']
+        keylist = ['ip', 'res', 'data']
+        valuelist = [AGENT_IP, state, '连接成功']
     else:
         data = '下载失败，请检查您的软件源'
-        keylist = ['ip','res','error']
-        valuelist = [AGENT_IP,state,data]
-    return list_to_json(keylist,valuelist)
+        keylist = ['ip', 'res', 'error']
+        valuelist = [AGENT_IP, state, data]
+    return list_to_json(keylist, valuelist)
 
 
 def check_os_kernel(data):
     uos_sysmig_conf = json.loads(getSysMigConf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     platformInfo = platform.platform()
-    systemKernelVersion = platformInfo.split('-',-1)
+    systemKernelVersion = platformInfo.split('-', -1)
     kernel_version = systemKernelVersion[1]
-    return list_to_json(['ip','data'],[AGENT_IP,kernel_version])
+    return list_to_json(['ip', 'data'], [AGENT_IP, kernel_version])
 
 
 def check_repo_kernel(data):
@@ -307,7 +306,7 @@ def check_repo_kernel(data):
             if re.match('kernel', r) and re.search('uelc', r):
                 kernel_version = re.sub('kernel-', '', r)
                 kernel_version = re.sub('-.*$', '', kernel_version)
-                kernel_version=kernel_version.split(' ',-1)
+                kernel_version=kernel_version.split(' ', -1)
                 kernel = kernel_version[len(kernel_version)-1]
                 version_list.append(kernel.strip())
         cmd_419 = 'yum list kernel'
@@ -316,13 +315,12 @@ def check_repo_kernel(data):
             if re.match('kernel', r) and re.search('uelc', r):
                 kernel_version = re.sub('kernel-', '', r)
                 kernel_version = re.sub('-.*$', '', kernel_version)
-                kernel_version=kernel_version.split(' ',-1)
+                kernel_version=kernel_version.split(' ', -1)
                 kernel = kernel_version[len(kernel_version)-1]
                 version_list.append(kernel.strip())
     else:
         version_list = ''
     keylist = ['ip', 'data']
-    print(version_list)
     valuelist = [AGENT_IP, version_list]
     return list_to_json(keylist, valuelist)
 
@@ -353,7 +351,7 @@ def export_reports(data):
     return data
 
 
-def systemCheckRequires(conflist):
+def system_check_requires(conflist):
     os.system('rpm --rebuilddb')
     cmd = 'rpm -qa|xargs -i rpm -V --nordev --nomode  --nomtime  --nogroup --nouser  --nosize --nofiledigest --nolinkto --noscripts --nofiles --nodigest {} >>' + PRE_MIG
     rets = os.popen(cmd)
@@ -367,7 +365,7 @@ def systemCheckRequires(conflist):
 def fork_sh(cmd):
     try:
         fderr = open("/var/tmp/uos-migration/UOS_migration_log/err_log",'a')
-        subprocess.run(cmd, stderr=fderr , shell=True)
+        subprocess.run(cmd, stderr=fderr, shell=True)
         messageState('2')
         fderr.close()
     except:
@@ -379,61 +377,60 @@ def env():
     t = Process(target=fork_sh, args=(cmd,))
     t.start()
 
-##系统环境检查
+
 def check_environment(data_j):
     uos_sysmig_conf = json.loads(getSysMigConf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     state = None
-    #abi check
-    with open(pstate,'r+') as fp:
+    with open(pstate, 'r+') as fp:
         state = fp.readlines()
         fp.close()
         state = state[0]
-    if re.match('0',state):
+    if re.match('0', state):
         messageState('1')
-        if systemCheckRequires([]):
+        if system_check_requires([]):
             data = '1'
         env()
-    if re.match('1',state):
+    if re.match('1', state):
         data = '1'
-        keylist = ['ip','res','data']
-        valuelist = [AGENT_IP,'2',data]
-        return list_to_json(keylist,valuelist)
-    elif re.match('2',state):
+        keylist = ['ip', 'res', 'data']
+        valuelist = [AGENT_IP, '2', data]
+        return list_to_json(keylist, valuelist)
+    elif re.match('2', state):
         abi_txt2xls()
         messageState('3')
-    elif re.match('3',state) or re.match('9',state):
+    elif re.match('3', state) or re.match('9', state):
         data = '1'
         res = 0
-        keylist = ['ip','res','data']
-        valuelist = [AGENT_IP,res,data]
+        keylist = ['ip', 'res', 'data']
+        valuelist = [AGENT_IP, res, data]
         messageState('9')
-        return list_to_json(keylist,valuelist)
+        return list_to_json(keylist, valuelist)
     data = '1'
-    keylist = ['ip','res','data']
-    valuelist = [AGENT_IP,'2',data]
-    return list_to_json(keylist,valuelist)
+    keylist = ['ip', 'res', 'data']
+    valuelist = [AGENT_IP, '2', data]
+    return list_to_json(keylist, valuelist)
 
-# 检测进度
-def analysisProgress():
+
+def analysis_progress():
     path = '/var/tmp/uos-migration/data/uos/rpms'
     if os.path.exists(path):
         file_list = os.listdir(path)
     else:
         return None
-    h=noan=oked=1
+    h = noan = oked = 1
 
     for file in file_list:
-        path = re.sub('/$',"",path)
+        path = re.sub('/$', "", path)
         cur_path = os.path.join(path, file)
         if os.path.isdir(cur_path):
             continue
         else:
-            ret = file.split('.',-1)
+            ret = file.split('.', -1)
             fret = ret[len(ret)-1]
-            if re.fullmatch('rpm',fret):
+            if re.fullmatch('rpm', fret):
                 noan = noan + 1
-            elif re.fullmatch('oked',fret):
+            elif re.fullmatch('oked', fret):
                 oked = oked + 1
     data = (oked/(noan+oked))*98
     data = format(data, '.1f')
@@ -445,30 +442,30 @@ def check_progress(data):
     uos_sysmig_conf = json.loads(getSysMigConf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
 
-    with open(pstate,'r+') as fp:
+    with open(pstate, 'r+') as fp:
         state = fp.readlines()
         fp.close()
         state = state[0]
-    if  re.fullmatch('1',state):
-        if not analysisProgress():
+    if  re.fullmatch('1', state):
+        if not analysis_progress():
             messageProgress('0')
-        with open(progresslogdir,'r+') as fpro:
+        with open(progresslogdir, 'r+') as fpro:
             data = fpro.readlines()
             fpro.close()
-    elif re.fullmatch('0',state):
+    elif re.fullmatch('0', state):
         data = '0'
-    elif re.fullmatch('2',state):
+    elif re.fullmatch('2', state):
         data = '99'
-    elif re.fullmatch('3',state):
+    elif re.fullmatch('3', state):
         data = '100'
     else:
         data = '0'
-    keylist = ['ip','progress']
-    valuelist = [AGENT_IP,data]
-    return list_to_json(keylist,valuelist)
+    keylist = ['ip', 'progress']
+    valuelist = [AGENT_IP, data]
+    return list_to_json(keylist, valuelist)
 
 
-def ifnot_mig_kernel(kernel_version):
+def if_not_mig_kernel(kernel_version):
     with open('/etc/yum.conf', 'r') as f:
         content = f.read()
         f.close()
@@ -497,9 +494,9 @@ def mig_kernel(kernel_version):
         return 0
     else:
         repo = ''
-        if re.fullmatch('4.18.0',kernel_version):
+        if re.fullmatch('4.18.0', kernel_version):
             repo = 'UniontechOS-kernel-'+kernel_version.strip()
-        elif re.fullmatch('5.10.0',kernel_version):
+        elif re.fullmatch('5.10.0', kernel_version):
             repo = 'UniontechOS-kernel-'+kernel_version.strip()
         else:
             return 1
@@ -513,12 +510,12 @@ def mig_kernel(kernel_version):
         if  os.listdir(cwd):
             os.system('rpm -Uvh "/var/tmp/uos-migration/kernel/*" --nodeps --oldpackage')
         else:
-            ifnot_mig_kernel()
+            if_not_mig_kernel()
             return 1
 
 
 def migprogress():
-    with open(RPMS,'r+') as fpro:
+    with open(RPMS, 'r+') as fpro:
         data = fpro.read()
         fpro.close()
     return int(data)
@@ -529,14 +526,14 @@ def migration_details(data_j):
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     path = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
     if os.path.exists(path):
-        with open(path,'r') as lf:
+        with open(path, 'r') as lf:
            data = lf.read()
         lf.close()
     else:
         data = 'Init... ...'
-    keylist = ['ip','data']
-    valuelist = [AGENT_IP,data]
-    return list_to_json(keylist,valuelist)
+    keylist = ['ip', 'data']
+    valuelist = [AGENT_IP, data]
+    return list_to_json(keylist, valuelist)
 
 
 def readline_log():
@@ -545,18 +542,18 @@ def readline_log():
         return 0
     else:
         ln = 0
-        with open(path,'r') as rf:
+        with open(path, 'r') as rf:
             for line in rf:
                 ln = ln + 1
             rf.close()
         return ln
 
-##迁移进度
-def rpmsProgress():
+
+def rpms_progress():
     percent = 99
     uelc_rpm = os.popen('rpm -qa|grep uelc20|wc -l').readlines()
     all_rpms = os.popen('rpm -qa|wc -l').readlines()
-    rpms_progress  = percent * ( int(uelc_rpm[0].strip()) /  int(all_rpms[0].strip()))
+    rpms_progress = percent * (int(uelc_rpm[0].strip()) / int(all_rpms[0].strip()))
     rpms_progress = format(rpms_progress, '.1f')
     return rpms_progress
 
@@ -576,33 +573,33 @@ def mig_check_migration_progress():
 def check_migration_progress(data_j):
     uos_sysmig_conf = json.loads(getSysMigConf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
-    if not analysisProgress():
+    if not analysis_progress():
         messageProgress('0')
-    with open(pstate,'r+') as fp:
+    with open(pstate, 'r+') as fp:
         state = fp.readlines()
         fp.close()
         state = state[0]
 
-    if re.fullmatch('9',state):
+    if re.fullmatch('9', state):
         messageState('0')
     mig_check_migration_progress()
-    with open(progresslogdir,'r+') as fpro:
+    with open(progresslogdir, 'r+') as fpro:
         data = fpro.readlines()
-        keylist = ['ip','progress']
-        valuelist = [AGENT_IP,data]
+        keylist = ['ip', 'progress']
+        valuelist = [AGENT_IP, data]
         fpro.close()
 
-    keylist = ['ip','progress']
-    valuelist = [AGENT_IP,data]
-    return list_to_json(keylist,valuelist)
+    keylist = ['ip', 'progress']
+    valuelist = [AGENT_IP, data]
+    return list_to_json(keylist, valuelist)
 
 
 def Sysmig(data_j):
     os_version_ret = platform.dist()
-    version = os_version_ret[1].split('.',-1)
+    version = os_version_ret[1].split('.', -1)
     AGENT_OS = os_version_ret[0]+version[0]
     kernel_version = json.loads(data_j).get('kernel_version')
-    if re.fullmatch('8',version[0]):
+    if re.fullmatch('8', version[0]):
         cmd = 'python3 func/centos82uos.py'
         t = Process(target=run_cmd2file, args=(cmd,))
         t.start()
@@ -611,7 +608,7 @@ def Sysmig(data_j):
         if kernel_version == '0':
             run_cmd2file(ex_kernel)
             messageState('3')
-        elif kernel_version == '3.10.0' :
+        elif kernel_version == '3.10.0':
             run_cmd2file(ex_kernel)
             cmd_k = 'sh func/kernel.sh -k 3.10.0'
             run_cmd2file(cmd_k)
@@ -628,35 +625,35 @@ def system_migration(data_j):
     state = '1'
     res = '0'
     kernel_version = json.loads(data_j).get('kernel_version')
-    with open(pstate,'r+') as fp:
+    with open(pstate, 'r+') as fp:
         state = fp.readlines()
         fp.close()
     state = state[0]
-    if re.match('0',state):
+    if re.match('0', state):
         messageState('1')
-        ifnot_mig_kernel(kernel_version)
+        if_not_mig_kernel(kernel_version)
         t = Process(target=Sysmig, args=(data_j,))
         t.start()
     elif re.fullmatch('2',state):
         messageState('6')
         mig_kernel(kernel_version)
-        with open(PRE_MIG,'r') as fp:
+        with open(PRE_MIG, 'r') as fp:
             stros = fp.readlines()
             oldos = stros[0]
             fp.close()
-        oldos = oldos.split(':',1)
+        oldos = oldos.split(':', 1)
         main_conf(oldos[1]) 
         if os.path.exists('/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'):
             run_cmd2file('sh func/Abitranrept.sh')
             abi_txt2xls_after_mig()
         messageState('4')
-    elif re.fullmatch('4',state):
+    elif re.fullmatch('4', state):
         messageState('5')
         if os.path.exists('/var/tmp/uos-migration/UOS_migration_log/rpms-verified-after.txt'):
             res = '0'
         else:
             res = '-1'
-    elif re.fullmatch('3',state):
+    elif re.fullmatch('3', state):
         messageState('5')
         if os.path.exists('/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'):
             run_cmd2file('func/Abitranrept.sh')
@@ -665,20 +662,20 @@ def system_migration(data_j):
             res = '0'
         else:
             res = '-1'
-    elif re.fullmatch('5',state):
-        if re.fullmatch('-1',res):
+    elif re.fullmatch('5', state):
+        if re.fullmatch('-1', res):
             data =' 迁移失败。'
-            keylist = ['ip','res','error']
-            valuelist = [AGENT_IP,res,data]
-            return list_to_json(keylist,valuelist)
+            keylist = ['ip', 'res', 'error']
+            valuelist = [AGENT_IP, res, data]
+            return list_to_json(keylist, valuelist)
         else:
             data = '迁移成功。'
-        keylist = ['ip','res','data']
-        valuelist = [AGENT_IP,res,data]
-        return list_to_json(keylist,valuelist)
+        keylist = ['ip', 'res', 'data']
+        valuelist = [AGENT_IP, res, data]
+        return list_to_json(keylist, valuelist)
     
     res = '2'
     data = '......'
-    keylist = ['ip','res','data']
-    valuelist = [AGENT_IP,res,data]
-    return list_to_json(keylist,valuelist)
+    keylist = ['ip', 'res', 'data']
+    valuelist = [AGENT_IP, res, data]
+    return list_to_json(keylist ,valuelist)
