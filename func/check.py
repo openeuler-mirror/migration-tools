@@ -81,7 +81,7 @@ def pre_system_check():
 
 
 def check_storage(data):
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     path = '/var/cache'
     stat = os.statvfs(path)
@@ -113,7 +113,7 @@ def check_storage(data):
 
 
 def check_os(data):
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     init_dir()
     pre_system_check()
@@ -179,7 +179,7 @@ def check_user(data):
     with open('/usr/lib/migration-tools-agent/.passwd.txt', 'w', encoding='utf-8') as f:
         text = json_data['passwd']
         f.write(text)
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     re_data = check_ssh_client(json_data['user'], json_data['passwd'], agent_ip, 22)
     return re_data
@@ -257,7 +257,7 @@ def check_repo_makecache():
 
 #检测repo
 def check_repo(data_j):
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     baseurl = json.loads(data_j).get('repo_pwd')
     keylist = None
@@ -278,7 +278,7 @@ def check_repo(data_j):
 
 
 def check_os_kernel(data):
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     platformInfo = platform.platform()
     systemKernelVersion = platformInfo.split('-', -1)
@@ -287,7 +287,7 @@ def check_os_kernel(data):
 
 
 def check_repo_kernel(data):
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     version_list = []
     os_version_ret = platform.dist()
@@ -333,7 +333,7 @@ def export_reports(data):
     """
     json_data = json.loads(data)
     hostname = socket.gethostname()
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     ip = json.loads(uos_sysmig_conf).get('agentip').strip()
     now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
@@ -379,7 +379,7 @@ def env():
 
 
 def check_environment(data_j):
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     state = None
     with open(pstate, 'r+') as fp:
@@ -439,7 +439,7 @@ def analysis_progress():
 
 
 def check_progress(data):
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
 
     with open(pstate, 'r+') as fp:
@@ -507,14 +507,14 @@ def mig_kernel(kernel_version):
             os.system(downpackage)
 
         cwd = '/var/tmp/uos-migration/kernel/'
-        if  os.listdir(cwd):
+        if os.listdir(cwd):
             os.system('rpm -Uvh "/var/tmp/uos-migration/kernel/*" --nodeps --oldpackage')
         else:
             if_not_mig_kernel()
             return 1
 
 
-def migprogress():
+def mig_progress():
     with open(RPMS, 'r+') as fpro:
         data = fpro.read()
         fpro.close()
@@ -522,7 +522,7 @@ def migprogress():
 
 
 def migration_details(data_j):
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     path = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
     if os.path.exists(path):
@@ -560,7 +560,7 @@ def rpms_progress():
 
 def mig_check_migration_progress():
     percent = 98
-    rpms = migprogress()
+    rpms = mig_progress()
     lines = readline_log()
     lines = lines//4
     if lines >= rpms:
@@ -571,7 +571,7 @@ def mig_check_migration_progress():
 
 
 def check_migration_progress(data_j):
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     if not analysis_progress():
         messageProgress('0')
@@ -620,7 +620,7 @@ def Sysmig(data_j):
 
 
 def system_migration(data_j):
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     state = '1'
     res = '0'
@@ -634,7 +634,7 @@ def system_migration(data_j):
         if_not_mig_kernel(kernel_version)
         t = Process(target=Sysmig, args=(data_j,))
         t.start()
-    elif re.fullmatch('2',state):
+    elif re.fullmatch('2', state):
         messageState('6')
         mig_kernel(kernel_version)
         with open(PRE_MIG, 'r') as fp:
@@ -664,7 +664,7 @@ def system_migration(data_j):
             res = '-1'
     elif re.fullmatch('5', state):
         if re.fullmatch('-1', res):
-            data =' 迁移失败。'
+            data = '迁移失败。'
             keylist = ['ip', 'res', 'error']
             valuelist = [AGENT_IP, res, data]
             return list_to_json(keylist, valuelist)
@@ -678,4 +678,4 @@ def system_migration(data_j):
     data = '......'
     keylist = ['ip', 'res', 'data']
     valuelist = [AGENT_IP, res, data]
-    return list_to_json(keylist ,valuelist)
+    return list_to_json(keylist, valuelist)

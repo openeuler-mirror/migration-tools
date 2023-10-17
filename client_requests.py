@@ -2,10 +2,10 @@
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 import json
 import requests
-from func.share import getSysMigConf
+from func.share import get_sysmig_conf
 
 
-uos_sysmig_conf = json.loads(getSysMigConf())
+uos_sysmig_conf = json.loads(get_sysmig_conf())
 ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
 port = int(json.loads(uos_sysmig_conf).get('agentport').strip()[1:-1])
 

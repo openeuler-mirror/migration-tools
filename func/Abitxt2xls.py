@@ -26,7 +26,7 @@ def get_host_ip():
     查询本机ip地址
     :return:
     """
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     return ip
 

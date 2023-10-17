@@ -120,7 +120,7 @@ def mt_system_migration():
 
 if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    uos_sysmig_conf = json.loads(get_sysmig_conf())
     ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     port = int(json.loads(uos_sysmig_conf).get('agentport').strip()[1:-1])
     app.run(debug=True, host=ip, port=port)
