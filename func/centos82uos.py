@@ -277,10 +277,10 @@ EOF'
         fdout.close()
     except:
         logger.info("error distro-sync migration ....")
-    messageState('2')
+    message_state('2')
 
 
 os_version_ret = platform.dist()
 osname = os_version_ret[0]
 centos8_main(osname)
-sys.exit(messageState('2'))
+sys.exit(message_state('2'))

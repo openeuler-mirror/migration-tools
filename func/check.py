@@ -117,7 +117,7 @@ def check_os(data):
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     init_dir()
     pre_system_check()
-    messageProgress('0')
+    message_progress('0')
     os_version_ret = platform.dist()
     version = os_version_ret[1].split('.', -1)
     local_os_version = os_version_ret[0]+version[0]
@@ -366,7 +366,7 @@ def fork_sh(cmd):
     try:
         fderr = open("/var/tmp/uos-migration/UOS_migration_log/err_log",'a')
         subprocess.run(cmd, stderr=fderr, shell=True)
-        messageState('2')
+        message_state('2')
         fderr.close()
     except:
         return 0
@@ -387,7 +387,7 @@ def check_environment(data_j):
         fp.close()
         state = state[0]
     if re.match('0', state):
-        messageState('1')
+        message_state('1')
         if system_check_requires([]):
             data = '1'
         env()
@@ -398,13 +398,13 @@ def check_environment(data_j):
         return list_to_json(keylist, valuelist)
     elif re.match('2', state):
         abi_txt2xls()
-        messageState('3')
+        message_state('3')
     elif re.match('3', state) or re.match('9', state):
         data = '1'
         res = 0
         keylist = ['ip', 'res', 'data']
         valuelist = [AGENT_IP, res, data]
-        messageState('9')
+        message_state('9')
         return list_to_json(keylist, valuelist)
     data = '1'
     keylist = ['ip', 'res', 'data']
@@ -434,7 +434,7 @@ def analysis_progress():
                 oked = oked + 1
     data = (oked/(noan+oked))*98
     data = format(data, '.1f')
-    messageProgress(str(data))
+    message_progress(str(data))
     return data
 
 
@@ -448,7 +448,7 @@ def check_progress(data):
         state = state[0]
     if  re.fullmatch('1', state):
         if not analysis_progress():
-            messageProgress('0')
+            message_progress('0')
         with open(progresslogdir, 'r+') as fpro:
             data = fpro.readlines()
             fpro.close()
@@ -567,21 +567,21 @@ def mig_check_migration_progress():
         lines = rpms
     data = percent*(lines/rpms)
     data = format(data, '.1f')
-    messageProgress(data)
+    message_progress(data)
 
 
 def check_migration_progress(data_j):
     uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     if not analysis_progress():
-        messageProgress('0')
+        message_progress('0')
     with open(pstate, 'r+') as fp:
         state = fp.readlines()
         fp.close()
         state = state[0]
 
     if re.fullmatch('9', state):
-        messageState('0')
+        message_state('0')
     mig_check_migration_progress()
     with open(progresslogdir, 'r+') as fpro:
         data = fpro.readlines()
@@ -607,16 +607,16 @@ def Sysmig(data_j):
         ex_kernel = 'sh func/centos72uos.sh -e "kernel-devel* kernel-headers* kernel-tools* kernel* bpftool perf python-perf kernel-abi* kernel-modules kernel-core kmod-kvdo"'
         if kernel_version == '0':
             run_cmd2file(ex_kernel)
-            messageState('3')
+            message_state('3')
         elif kernel_version == '3.10.0':
             run_cmd2file(ex_kernel)
             cmd_k = 'sh func/kernel.sh -k 3.10.0'
             run_cmd2file(cmd_k)
-            messageState('3')
+            message_state('3')
         else:
             cmd = 'sh func/centos72uos.sh'
             run_cmd2file(cmd)
-            messageState('3')
+            message_state('3')
 
 
 def system_migration(data_j):
@@ -630,12 +630,12 @@ def system_migration(data_j):
         fp.close()
     state = state[0]
     if re.match('0', state):
-        messageState('1')
+        message_state('1')
         if_not_mig_kernel(kernel_version)
         t = Process(target=Sysmig, args=(data_j,))
         t.start()
     elif re.fullmatch('2', state):
-        messageState('6')
+        message_state('6')
         mig_kernel(kernel_version)
         with open(PRE_MIG, 'r') as fp:
             stros = fp.readlines()
@@ -646,15 +646,15 @@ def system_migration(data_j):
         if os.path.exists('/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'):
             run_cmd2file('sh func/Abitranrept.sh')
             abi_txt2xls_after_mig()
-        messageState('4')
+        message_state('4')
     elif re.fullmatch('4', state):
-        messageState('5')
+        message_state('5')
         if os.path.exists('/var/tmp/uos-migration/UOS_migration_log/rpms-verified-after.txt'):
             res = '0'
         else:
             res = '-1'
     elif re.fullmatch('3', state):
-        messageState('5')
+        message_state('5')
         if os.path.exists('/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'):
             run_cmd2file('func/Abitranrept.sh')
             abi_txt2xls_after_mig()
