@@ -9,7 +9,7 @@ import platform
 import logging
 from utils import *
 
-reposdir=''
+repos_dir=''
 
 
 def local_disabled_release_repo():
@@ -72,8 +72,8 @@ def check_pkg(pkg):
 
 
 def clean_and_exit():
-    global reposdir
-    repo_path = os.path.join(reposdir, 'switch-to-uos.repo')
+    global repos_dir
+    repo_path = os.path.join(repos_dir, 'switch-to-uos.repo')
     if os.path.exists(repo_path):
         os.remove(repo_path)
     sys.exit(1)
@@ -112,7 +112,7 @@ def pre_system_rpms_info():
 
 
 def centos8_main(osname):
-    global reposdir
+    global repos_dir
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)

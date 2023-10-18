@@ -23,7 +23,7 @@ def get_sysmig_conf():
                 if not line:
                     continue
                 if re.search('\[Agent\]',line):
-                    server=0
+                    server = 0
                     continue
                 elif re.search('\[Server\]',line):
                     server = None
@@ -62,17 +62,17 @@ def get_sysmig_conf():
                         else:
                             serverdatabase_port = ret.strip()
         cf.close()
-        keylist = ['id', 'agentip', 'serverip', 'agentport', 'serverport', 'baseurl', 'type', 'agentdatabase_ip',
+        k_list = ['id', 'agentip', 'serverip', 'agentport', 'serverport', 'baseurl', 'type', 'agentdatabase_ip',
                    'serverdatabase_ip', 'agentdatabase_port', 'serverdatabase_port']
-        valuelist = [cfid, agentip, serverip, agentport, serverport, baseurl, cftype, agentdatabase_ip,
+        v_list = [cfid, agentip, serverip, agentport, serverport, baseurl, cftype, agentdatabase_ip,
                      serverdatabase_ip, agentdatabase_port, serverdatabase_port]
-        return list_to_json(keylist, valuelist)
+        return list_to_json(k_list, v_list)
 
 
 def run_cmd2file(cmd):
     fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt", 'a')
-    fderr = open("/var/tmp/uos-migration/UOS_migration_log/err_log", 'a')
-    p = subprocess.Popen(cmd, stdout=fdout, stderr=fderr, shell=True)
+    f = open("/var/tmp/uos-migration/UOS_migration_log/err_log", 'a')
+    p = subprocess.Popen(cmd, stdout=fdout, stderr=f, shell=True)
     if p.poll():
        return
     p.wait()
@@ -101,12 +101,12 @@ def add_boot_option():
     disk_name = subprocess.check_output('mount | grep /boot/efi | awk \'{print $1}\'', shell=True)
     disk_name = str(disk_name, 'utf-8')
     disk_name = disk_name.split('\n')[0]
-    dev_name,part_num = get_disk_info(disk_name)
+    dev_name, part_num = get_disk_info(disk_name)
     if dev_name == "" or part_num == "":
         print("Parse /boot/efi disk info failed, update boot loader failed.")
         return
 
-    cmd=""
+    cmd = ""
     arch = platform.machine()
     if arch == "x86_64":
         cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubx86.efi" -L "Uniontech OS"'
@@ -120,10 +120,10 @@ def add_boot_option():
 
 def conf_grub():
     if os.path.isdir('/sys/firmware/efi'):
-        subprocess.run('grub2-mkconfig -o /boot/efi/EFI/uos/grub.cfg' ,shell=True)
+        subprocess.run('grub2-mkconfig -o /boot/efi/EFI/uos/grub.cfg', shell=True)
         add_boot_option()
     else:
-        subprocess.run('grub2-mkconfig -o /boot/grub2/grub.cfg',shell=True)
+        subprocess.run('grub2-mkconfig -o /boot/grub2/grub.cfg', shell=True)
 
 
 def process_special_pkgs():
@@ -174,7 +174,7 @@ def title_conf(oldosname):
                     ustr = re.sub(oldosname, "UniontechOS", strall, 1, flags=re.IGNORECASE)
             if re.search('8 \(Core\)',strall):
                 ustr = re.sub(' 8 ', ' 20 ', ustr, 1, flags=re.IGNORECASE)
-                ustr = re.sub("Core", "kongzi", ustr, 1,flags=re.IGNORECASE)
+                ustr = re.sub("Core", "kongzi", ustr, 1, flags=re.IGNORECASE)
                 with open(fpath, 'w') as ptitle:
                     ptitle.write(ustr)
                     ptitle.close()
@@ -200,7 +200,7 @@ def main_conf(osname):
             subprocess.run('dnf module reset -y '+mod, shell=True)
             if re.fullmatch('container-tools|go-toolset|jmc|llvm-toolset|rust-toolset', mod):
                 subprocess.run('dnf module install -y '+mod, shell=True)
-            elif mod =='virt':
+            elif mod == 'virt':
                 subprocess.run('dnf module install -y '+mod, shell=True)
             else:
                 logger.info("Unsure how to transform module"+mod)
