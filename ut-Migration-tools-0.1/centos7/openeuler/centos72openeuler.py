@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
 import os
 import platform
 import shutil
@@ -65,7 +64,7 @@ def add_boot_option():
     disk_name = disk_name.split('\n')[0]
     dev_name, part_num = get_disk_info(disk_name)
     if dev_name == "" or part_num == "":
-        # "Parse /boot/efi disk info failed, update boot loader failed.
+        # Parse /boot/efi disk info failed, update boot loader failed.
         return
 
     cmd = ""
@@ -139,8 +138,6 @@ def conf_grub():
             run_subprocess('rpm -e --nodeps kernel-{}'.format(old_kernel).split())
             run_subprocess('dnf install -y shim'.split())
         openEuler_path = '/boot/efi/EFI/openEuler'
-        if not os.path.exists(openEuler_path):
-            uos_path = '/boot/efi/EFI/openEuler'
         run_subprocess('grub2-mkconfig -o {}/grub.cfg'.format(openEuler_path).split())
         add_boot_option()
     else:
@@ -200,10 +197,9 @@ def main():
                                 'iwl7265-firmware', 'ivtv-firmware', 
                                 'sysvinit-tools', 'sg3_utils-libs']
     for package in remove_packages_nodeps:
-        nodeps_cmd = "rpm -q " + package+ " && rpm -e --nodeps " + package
+        nodeps_cmd = "rpm -q " + package + " && rpm -e --nodeps " + package
         os.system(nodeps_cmd)
 
-        dnf_path = '/usr/bin/dnf'
         install_dir = os.path.join(os.path.dirname('/var/tmp'), 'DNF')
         if not os.path.exists(install_dir):
             os.makedirs(install_dir)
