@@ -3,8 +3,8 @@
 import json
 
 
-def list_to_json(keylist, valuelist):
-    res = dict(zip(keylist, valuelist))
+def list_to_json(k_list, v_list):
+    res = dict(zip(k_list, v_list))
     res = json.dumps(res)
     return json.dumps(res)
 

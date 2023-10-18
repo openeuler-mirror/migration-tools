@@ -85,7 +85,7 @@ def check_storage(data):
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     path = '/var/cache'
     stat = os.statvfs(path)
-    CACHE_SPACE = 10.0
+    cache_space = 10.0
     state = 1
     # 避免centos7系统检测失败
     time.sleep(5)
@@ -94,22 +94,22 @@ def check_storage(data):
         with open(PRE_MIG, 'a+') as pf:
             pf.write('/var/cache可用空间为'+ava_cache+'GB')
             pf.close()
-        if float(ava_cache) >= CACHE_SPACE:
+        if float(ava_cache) >= cache_space:
             state = 0
-            keylist = ['ip', 'ret', 'data']
+            k_list = ['ip', 'ret', 'data']
             data = '可用空间为'+ava_cache+'GB'
-            valuelist = [agent_ip, state, data]
-            return list_to_json(keylist, valuelist)
+            v_list = [agent_ip, state, data]
+            return list_to_json(k_list, v_list)
         else:
-            keylist = ['ip', 'ret', 'error']
+            k_list = ['ip', 'ret', 'error']
             data = '可用空间为' + ava_cache + 'GB,请清理/var/cache的空间后重试。'
-            valuelist = [agent_ip, state, data]
-            return list_to_json(keylist, valuelist)
+            v_list = [agent_ip, state, data]
+            return list_to_json(k_list, v_list)
     else:
-        keylist = ['ip', 'ret', 'error']
+        k_list = ['ip', 'ret', 'error']
         data = '可用空间为'+ava_cache+'GB,请清理/var/cache的空间后重试。'
-        valuelist = [agent_ip, state, data]
-        return list_to_json(keylist, valuelist)
+        v_list = [agent_ip, state, data]
+        return list_to_json(k_list, v_list)
 
 
 def check_os(data):
@@ -208,7 +208,7 @@ def init_remove_old_repo():
 def init_repo_file(baseurl):
     os_version_ret = platform.dist()
     version = os_version_ret[1].split('.', -1)
-    reposdir = '/etc/yum.repos.d/'
+    repos_dir = '/etc/yum.repos.d/'
     h = 0
     if re.match('file:', baseurl):
         str0, path = baseurl.split('://', 1)
@@ -216,20 +216,20 @@ def init_repo_file(baseurl):
     else:
        h = 1
     if re.fullmatch('8', version[0]):
-        path_appstream = baseurl+'/AppStream'
-        path_baseos = baseurl+'/BaseOS'
-        path_310 = baseurl+'/kernel-3.10'
-        path_419 = baseurl+'/kernel419'
-        path_510 = baseurl+'/kernel510'
+        appstream = baseurl+'/AppStream'
+        baseos = baseurl+'/BaseOS'
+        kernel_310 = baseurl+'/kernel-3.10'
+        kernel_419 = baseurl+'/kernel419'
+        kernel_510 = baseurl+'/kernel510'
 
-        repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = '''+path_appstream.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-BaseOS]\nname = UniontechOS BaseOS\nbaseurl = '''+path_baseos.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-4.19.0]\nname = UniontechOS Kernel-4.19.0\nbaseurl = '''+path_419.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = '''+path_510.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n
+        repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = '''+appstream.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-BaseOS]\nname = UniontechOS BaseOS\nbaseurl = '''+baseos.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-4.19.0]\nname = UniontechOS Kernel-4.19.0\nbaseurl = '''+kernel_419.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = '''+kernel_510.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n
 '''
     else:
-        path_310 = baseurl+'/kernel-3.10'
-        repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = '''+baseurl.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-3.10.0]\nname = UniontechOS Kernel-3.10.0\nbaseurl = '''+path_310.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n
+        kernel_310 = baseurl+'/kernel-3.10'
+        repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = '''+baseurl.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-3.10.0]\nname = UniontechOS Kernel-3.10.0\nbaseurl = '''+kernel_310.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n
         '''
-    repofile = os.path.join(reposdir, 'switch-to-uos.repo')
-    with open(repofile, 'w') as f_repo:
+    repo_file = os.path.join(repos_dir, 'switch-to-uos.repo')
+    with open(repo_file, 'w') as f_repo:
         f_repo.write(repostr_uos)
         f_repo.close()
 
@@ -255,34 +255,29 @@ def check_repo_makecache():
         return 1
 
 
-#检测repo
 def check_repo(data_j):
     uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     baseurl = json.loads(data_j).get('repo_pwd')
-    keylist = None
-    valuelist = None
-    data = None
     init_remove_old_repo()
     init_repo_file(baseurl)
     state = check_repo_makecache()
-
     if state == 0:
-        keylist = ['ip', 'res', 'data']
-        valuelist = [AGENT_IP, state, '连接成功']
+        k_list = ['ip', 'res', 'data']
+        v_list = [AGENT_IP, state, '连接成功']
     else:
         data = '下载失败，请检查您的软件源'
-        keylist = ['ip', 'res', 'error']
-        valuelist = [AGENT_IP, state, data]
-    return list_to_json(keylist, valuelist)
+        k_list = ['ip', 'res', 'error']
+        v_list = [AGENT_IP, state, data]
+    return list_to_json(k_list, v_list)
 
 
 def check_os_kernel(data):
     uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
-    platformInfo = platform.platform()
-    systemKernelVersion = platformInfo.split('-', -1)
-    kernel_version = systemKernelVersion[1]
+    platform_info = platform.platform()
+    system_kernel_version = platform_info.split('-', -1)
+    kernel_version = system_kernel_version[1]
     return list_to_json(['ip', 'data'], [AGENT_IP, kernel_version])
 
 
@@ -306,7 +301,7 @@ def check_repo_kernel(data):
             if re.match('kernel', r) and re.search('uelc', r):
                 kernel_version = re.sub('kernel-', '', r)
                 kernel_version = re.sub('-.*$', '', kernel_version)
-                kernel_version=kernel_version.split(' ', -1)
+                kernel_version = kernel_version.split(' ', -1)
                 kernel = kernel_version[len(kernel_version)-1]
                 version_list.append(kernel.strip())
         cmd_419 = 'yum list kernel'
@@ -320,9 +315,9 @@ def check_repo_kernel(data):
                 version_list.append(kernel.strip())
     else:
         version_list = ''
-    keylist = ['ip', 'data']
-    valuelist = [AGENT_IP, version_list]
-    return list_to_json(keylist, valuelist)
+    k_list = ['ip', 'data']
+    v_list = [AGENT_IP, version_list]
+    return list_to_json(k_list, v_list)
 
 
 def export_reports(data):
@@ -364,10 +359,10 @@ def system_check_requires(conflist):
 
 def fork_sh(cmd):
     try:
-        fderr = open("/var/tmp/uos-migration/UOS_migration_log/err_log",'a')
-        subprocess.run(cmd, stderr=fderr, shell=True)
+        f = open("/var/tmp/uos-migration/UOS_migration_log/err_log", 'a')
+        subprocess.run(cmd, stderr=f, shell=True)
         message_state('2')
-        fderr.close()
+        f.close()
     except:
         return 0
 
@@ -381,7 +376,6 @@ def env():
 def check_environment(data_j):
     uos_sysmig_conf = json.loads(get_sysmig_conf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
-    state = None
     with open(pstate, 'r+') as fp:
         state = fp.readlines()
         fp.close()
@@ -393,23 +387,23 @@ def check_environment(data_j):
         env()
     if re.match('1', state):
         data = '1'
-        keylist = ['ip', 'res', 'data']
-        valuelist = [AGENT_IP, '2', data]
-        return list_to_json(keylist, valuelist)
+        k_list = ['ip', 'res', 'data']
+        v_list = [AGENT_IP, '2', data]
+        return list_to_json(k_list, v_list)
     elif re.match('2', state):
         abi_txt2xls()
         message_state('3')
     elif re.match('3', state) or re.match('9', state):
         data = '1'
         res = 0
-        keylist = ['ip', 'res', 'data']
-        valuelist = [AGENT_IP, res, data]
+        k_list = ['ip', 'res', 'data']
+        v_list = [AGENT_IP, res, data]
         message_state('9')
-        return list_to_json(keylist, valuelist)
+        return list_to_json(k_list, v_list)
     data = '1'
-    keylist = ['ip', 'res', 'data']
-    valuelist = [AGENT_IP, '2', data]
-    return list_to_json(keylist, valuelist)
+    k_list = ['ip', 'res', 'data']
+    v_list = [AGENT_IP, '2', data]
+    return list_to_json(k_list, v_list)
 
 
 def analysis_progress():
@@ -418,7 +412,7 @@ def analysis_progress():
         file_list = os.listdir(path)
     else:
         return None
-    h = noan = oked = 1
+    noan = oked = 1
 
     for file in file_list:
         path = re.sub('/$', "", path)
@@ -446,7 +440,7 @@ def check_progress(data):
         state = fp.readlines()
         fp.close()
         state = state[0]
-    if  re.fullmatch('1', state):
+    if re.fullmatch('1', state):
         if not analysis_progress():
             message_progress('0')
         with open(progresslogdir, 'r+') as fpro:
@@ -460,9 +454,9 @@ def check_progress(data):
         data = '100'
     else:
         data = '0'
-    keylist = ['ip', 'progress']
-    valuelist = [AGENT_IP, data]
-    return list_to_json(keylist, valuelist)
+    k_list = ['ip', 'progress']
+    v_list = [AGENT_IP, data]
+    return list_to_json(k_list, v_list)
 
 
 def if_not_mig_kernel(kernel_version):
@@ -488,12 +482,11 @@ def mig_kernel(kernel_version):
     ret = os.listdir(cwd)
     for i in ret:
         os.unlink(cwd+i)
-    cmd = ' rpm -qa | grep "kernel\|bpftool\|perf" |xargs -i rpm -q --qf "%{NAME}\\n" {}'
+    cmd = 'rpm -qa | grep "kernel\|bpftool\|perf" |xargs -i rpm -q --qf "%{NAME}\\n" {}'
     ret = os.popen(cmd).readlines()
     if kernel_version == '0':
         return 0
     else:
-        repo = ''
         if re.fullmatch('4.18.0', kernel_version):
             repo = 'UniontechOS-kernel-'+kernel_version.strip()
         elif re.fullmatch('5.10.0', kernel_version):
@@ -531,9 +524,9 @@ def migration_details(data_j):
         lf.close()
     else:
         data = 'Init... ...'
-    keylist = ['ip', 'data']
-    valuelist = [AGENT_IP, data]
-    return list_to_json(keylist, valuelist)
+    k_list = ['ip', 'data']
+    v_list = [AGENT_IP, data]
+    return list_to_json(k_list, v_list)
 
 
 def readline_log():
@@ -585,13 +578,11 @@ def check_migration_progress(data_j):
     mig_check_migration_progress()
     with open(progresslogdir, 'r+') as fpro:
         data = fpro.readlines()
-        keylist = ['ip', 'progress']
-        valuelist = [AGENT_IP, data]
         fpro.close()
 
-    keylist = ['ip', 'progress']
-    valuelist = [AGENT_IP, data]
-    return list_to_json(keylist, valuelist)
+    k_list = ['ip', 'progress']
+    v_list = [AGENT_IP, data]
+    return list_to_json(k_list, v_list)
 
 
 def Sysmig(data_j):
@@ -603,7 +594,7 @@ def Sysmig(data_j):
         cmd = 'python3 func/centos82uos.py'
         t = Process(target=run_cmd2file, args=(cmd,))
         t.start()
-    elif re.search('centos7',AGENT_OS):
+    elif re.search('centos7', AGENT_OS):
         ex_kernel = 'sh func/centos72uos.sh -e "kernel-devel* kernel-headers* kernel-tools* kernel* bpftool perf python-perf kernel-abi* kernel-modules kernel-core kmod-kvdo"'
         if kernel_version == '0':
             run_cmd2file(ex_kernel)
@@ -665,17 +656,17 @@ def system_migration(data_j):
     elif re.fullmatch('5', state):
         if re.fullmatch('-1', res):
             data = '迁移失败。'
-            keylist = ['ip', 'res', 'error']
-            valuelist = [AGENT_IP, res, data]
-            return list_to_json(keylist, valuelist)
+            k_list = ['ip', 'res', 'error']
+            v_list = [AGENT_IP, res, data]
+            return list_to_json(k_list, v_list)
         else:
             data = '迁移成功。'
-        keylist = ['ip', 'res', 'data']
-        valuelist = [AGENT_IP, res, data]
-        return list_to_json(keylist, valuelist)
+        k_list = ['ip', 'res', 'data']
+        v_list = [AGENT_IP, res, data]
+        return list_to_json(k_list, v_list)
     
     res = '2'
     data = '......'
-    keylist = ['ip', 'res', 'data']
-    valuelist = [AGENT_IP, res, data]
-    return list_to_json(keylist, valuelist)
+    k_list = ['ip', 'res', 'data']
+    v_list = [AGENT_IP, res, data]
+    return list_to_json(k_list, v_list)
