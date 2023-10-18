@@ -10,14 +10,14 @@ from func.utils import list_to_json
 
 
 def get_sysmig_conf():
-    confpath = '/etc/migration-tools/migration-tools.conf'
-    if not os.path.exists(confpath):
+    conf_path = '/etc/migration-tools/migration-tools.conf'
+    if not os.path.exists(conf_path):
         return None
     else:
         cfid = agentip = serverip = agentport = serverport = baseurl = cftype = agentdatabase_ip \
             = serverdatabase_ip = agentdatabase_port = serverdatabase_port = ''
         server = None
-        with open(confpath, 'r') as cf:
+        with open(conf_path, 'r') as cf:
             for line in cf:
                 line = line.strip().strip('\n')
                 if not line:
@@ -139,8 +139,8 @@ def process_special_pkgs():
     subprocess.run('rpm -e $(rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS | awk \'{print $1}\')', shell=True)
 
 
-def title_conf(oldosname):
-    oldosname = oldosname.strip()
+def title_conf(ols_os_name):
+    ols_os_name = ols_os_name.strip()
     path = '/boot/loader/entries'
     if os.path.exists(path):
         file_list = os.listdir(path)
@@ -166,12 +166,12 @@ def title_conf(oldosname):
             with open(fpath, 'r') as fp:
                 strall = fp.read()
                 fp.close()
-            if re.search(oldosname, strall, re.IGNORECASE):
+            if re.search(ols_os_name, strall, re.IGNORECASE):
                 if fl:
                     os.remove(fpath)
                     continue
                 else:
-                    ustr = re.sub(oldosname, "UniontechOS", strall, 1, flags=re.IGNORECASE)
+                    ustr = re.sub(ols_os_name, "UniontechOS", strall, 1, flags=re.IGNORECASE)
             if re.search('8 \(Core\)',strall):
                 ustr = re.sub(' 8 ', ' 20 ', ustr, 1, flags=re.IGNORECASE)
                 ustr = re.sub("Core", "kongzi", ustr, 1, flags=re.IGNORECASE)

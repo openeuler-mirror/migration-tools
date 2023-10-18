@@ -9,7 +9,7 @@ import platform
 import logging
 from utils import *
 
-repos_dir=''
+repos_dir = ''
 
 
 def local_disabled_release_repo():
@@ -26,11 +26,10 @@ def local_disabled_release_repo():
             elif not re.search('repo', file, re.IGNORECASE):
                 continue
             with open(fpath, 'r') as fdst:
-                allrepo = fdst.read()
+                repos = fdst.read()
                 fdst.close()
-                print(allrepo)
                 with open(fpath+'.disabled', 'w+') as fdst:
-                    fdst.write('#This is a yum repository file that was disabled . <Migration to UiniontechOS>\n'+allrepo)
+                    fdst.write('#This is a yum repository file that was disabled . <Migration to UiniontechOS>\n'+repos)
                     fdst.close()
                     os.remove(fpath)
 
@@ -39,18 +38,18 @@ def get_bad_packages():
     os_version_ret = platform.dist()
     version = os_version_ret[1].split('.', -1)
     local_os_version = version[0]
-    badpackages = ''
+    bad_pkgs = ''
     if '8' == local_os_version:
         with open('func/8badpackage.txt', 'r') as bf:
             for bad_package in bf:
-                badpackages = badpackages + ' ' + bad_package.strip()
+                bad_pkgs = bad_pkgs + ' ' + bad_package.strip()
             bf.close()
     else:
         with open('func/7badpackage.txt', 'r') as bf:
             for bad_package in bf:
-                badpackages = badpackages + ' ' + bad_package.strip()
+                bad_pkgs = bad_pkgs + ' ' + bad_package.strip()
             bf.close()
-    return badpackages
+    return bad_pkgs
 
 
 def check_pkg(pkg):
@@ -85,7 +84,7 @@ def process_special_pkgs():
     subprocess.run('rpm -q centos-logos-httpd && dnf swap -y centos-logos-httpd uos-logos-httpd', shell=True)				
     print("redhat-lsb is replaced by system-lsb on UniontechOS")
     subprocess.run('rpm -q redhat-lsb-core && dnf swap -y redhat-lsb-core system-lsb-core', shell=True)
-    subprocess.run('rpm -q redhat-lsb-submod-security && dnf swap -y redhat-lsb-submod-security system-lsb-submod-security',shell=True)
+    subprocess.run('rpm -q redhat-lsb-submod-security && dnf swap -y redhat-lsb-submod-security system-lsb-submod-security', shell=True)
     print("rhn related packages is not provided by UniontechOS")
     subprocess.run('rpm -q rhn-client-tools && dnf -y remove rhn-client-tools python3-rhn-client-tools python3-rhnlib', shell=True)		
     print("subscription-manager related packages is not provided by UniontechOS")
@@ -102,7 +101,7 @@ def pre_system_rpms_info():
     out1 = subprocess.check_output('rpm -qa --qf \
            "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\\n" \
            | sort > "/var/tmp/uos-migration/UOS_migration_log/rpms-list-before.txt"', shell=True)
-    out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-before.txt"',shell=True)
+    out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-before.txt"', shell=True)
     files = os.listdir('/var/tmp/uos-migration/')
     hostname = socket.gethostname()
     print("Review the output of following files:")
@@ -127,7 +126,7 @@ def centos8_main(osname):
     if os.geteuid() != 0:
         logger.info("Please run the tool as root user.")
         sys.exit(1)
-    badpackages = get_bad_packages()
+    bad_pkgs = get_bad_packages()
     logger.info('Checking required packages')
     for pkg in ['rpm', 'yum', 'curl']:
         if not check_pkg(pkg):
@@ -247,7 +246,7 @@ def centos8_main(osname):
     local_disabled_release_repo()
     logger.info("Installing base packages for UniontechOS...")
     cmd='yum shell -y <<EOF\n\
-remove '+ badpackages +'\n\
+remove '+ bad_pkgs +'\n\
 install '+ ' '.join(base_packages) + '\n\
 run\n\
 EOF'
