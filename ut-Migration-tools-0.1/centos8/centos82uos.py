@@ -52,7 +52,7 @@ libreport-centos libreport-plugin-mantisbt libreport-plugin-rhtsupport python3-s
 python-oauth sl-logos yum-rhn-plugin'
 
 
-reposdir=''
+repos_dir=''
 
 
 def run_cmd(args):
@@ -87,8 +87,8 @@ def check_pkg(pkg):
     return False
 
 def clean_and_exit():
-    global reposdir
-    repo_path = os.path.join(reposdir, 'switch-to-uos.repo')
+    global repos_dir
+    repo_path = os.path.join(repos_dir, 'switch-to-uos.repo')
     if os.path.exists(repo_path):
         os.remove(repo_path)
     sys.exit(1)
@@ -131,7 +131,7 @@ def add_boot_option():
         print("Use efibootmgr update boot loader failed, please update boot loader manually.")
 
 def main(reinstall_all_rpms=False, verify_all_rpms=False):
-    global reposdir
+    global repos_dir
 
     # check if the script is executed by root user
     print("Checking if the tool is executed by root user")
@@ -239,9 +239,9 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
 
     print("========= Finding your repository directory =========")
     if re.match('8\.',subver):
-        dir = dnf.Base().conf.get_reposdir
+        dir = dnf.Base().conf.get_repos_dir
         if os.path.isdir(dir):
-            reposdir = dir
+            repos_dir = dir
         else:
             print("repository directory not found")
             sys.exit(1)
@@ -256,13 +256,13 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
     print("Repositories enabled before update include:")
     print(enabled_repos)
 
-    if len(reposdir) == 0:
+    if len(repos_dir) == 0:
         print("Could not locate your repository directory.")
         sys.exit(1)
 
     if re.match('8\.',subver):
-        repofile = os.path.join(reposdir, 'switch-to-uos.repo')
-        with open(repofile, 'w') as f:
+        repo_file = os.path.join(repos_dir, 'switch-to-uos.repo')
+        with open(repo_file, 'w') as f:
             f.write(repostr_uos)
 
     os.system("sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*")
