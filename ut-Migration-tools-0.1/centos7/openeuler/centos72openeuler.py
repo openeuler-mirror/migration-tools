@@ -184,8 +184,8 @@ def main():
     # disable centos repository
     os.system("yum-config-manager --disable base updates extras")
 
-    repofile = "/etc/yum.repos.d/openeuler.repo"
-    with open(repofile, 'w') as f:
+    repo_file = "/etc/yum.repos.d/openeuler.repo"
+    with open(repo_file, 'w') as f:
         f.write(openeuler_repo)
 
     openEuler_release = 'openEuler-release'

@@ -80,7 +80,7 @@ restore_repos() {
             tail -n+2 "${repo}" > "${destination}"
         fi
     done
-    rm "${reposdir}/${repo_file}"
+    rm "${repos_dir}/${repo_file}"
     exit_message "Could not install UOS Server Enterprise-C 20 packages.
 Your repositories have been restored to your previous configuration."
 }
@@ -161,20 +161,20 @@ fi
 ##寻找存储库目录
 echo "Finding your repository directory..."
 
-reposdir=$(python2 -c "
+repos_dir=$(python2 -c "
 import yum
 import os
 
-for dir in yum.YumBase().doConfigSetup(init_plugins=False).reposdir:
+for dir in yum.YumBase().doConfigSetup(init_plugins=False).repos_dir:
     if os.path.isdir(dir):
         print dir
         break
 ")
 
-if [ -z "${reposdir}" ]; then
+if [ -z "${repos_dir}" ]; then
     exit_message "Could not locate your repository directory."
 fi
-cd "$reposdir"
+cd "$repos_dir"
 echo "Downloading UOS Server Enterprise-C 20 yum repository file..."
 if ! curl -o "switch-to-UOS.repo" "${yum_url}/${repo_file}"; then
     exit_message "Could not download $repo_file from $yum_url.
@@ -234,7 +234,7 @@ if [[ "redhat" =~ "old_release" ]];then
 else
 	yum -y remove centos-indexhtml*
 fi
-rm -f "${reposdir}/switch-to-UOS.repo"
+rm -f "${repos_dir}/switch-to-UOS.repo"
 # At this point, the switch is completed.
 trap - ERR
 
