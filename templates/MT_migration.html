@@ -63,7 +63,7 @@
 	$(document).ready(function() {
 		progress = setInterval("check_progress()",2000);
 		log_info = setInterval("migration_details()",2000);
-		setInterval("system_migration()",36000);
+		system_migration()
     });
 
 	function system_migration() {
