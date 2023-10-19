@@ -112,7 +112,12 @@
                     document.getElementById('info_id').style.display = "none"
                     document.getElementById('faild_id').style.display = ""
                 }else{
-                    window.location = '/MT_repo?valus='+ info
+                    var pending_migration = document.getElementById("pending_migration").value;
+                    if (pending_migration == "uos") {
+                        window.location = '/MT_repo?valus='+ info
+                    }else{
+                        window.location = '/MT_system_migration?valus='+ pending_migration
+                    }
                 }
             }
         });
