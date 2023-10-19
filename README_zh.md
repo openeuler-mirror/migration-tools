@@ -51,4 +51,4 @@
 
 ## 开源许可证
 
-migration-tools 在 [MulanPubL-2.0-or-later](LICENSE.txt)下发布。
+migration-tools 在 [MulanPubL-2.0-or-later](LICENSE)下发布。
