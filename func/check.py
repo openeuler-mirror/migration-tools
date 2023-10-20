@@ -602,11 +602,20 @@ def start_sysmig(data_j):
             message_state('3')
 
 
+def mig_euler():
+    cmd = "python3 /usr/lib/migration-tools-agent/ut-Migration-tools-0.1/centos7/openeuler/centos72openeuler.py"
+    os.system(cmd)
+    return
+
+
 def system_migration(data_j):
     uos_sysmig_conf = json.loads(get_sysmig_conf())
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     res = '0'
     kernel_version = json.loads(data_j).get('kernel_version')
+    if kernel_version == 'euler':
+        mig_euler()
+        return
     with open(pstate, 'r+') as fp:
         state = fp.readlines()
         fp.close()
