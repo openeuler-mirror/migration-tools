@@ -4,6 +4,7 @@ import os
 import platform
 import shutil
 import subprocess
+from func.check import check_migration_progress
 
 
 openeuler_repo = '''[openeuler]
@@ -95,6 +96,7 @@ def swap_release(release):
     tmp_dir = '/var/tmp'
     rpme_release = 'rpm -qf /etc/os-release | xargs -i rpm -e --nodeps {}'
     os.system(rpme_release)
+    check_migration_progress('8')
     cmd = 'yumdownloader {} --destdir {}'.format(release, tmp_dir)
     run_subprocess(cmd.split())
     run_subprocess('rpm -ivh {}/*.rpm --nodeps --force'.format(tmp_dir).split())
@@ -167,6 +169,12 @@ def system_sync():
 
 
 def main():
+    mig_log = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
+    if not os.path.exists(mig_log):
+        os.system('mkdir -p /var/tmp/uos-migration/UOS_migration_log/')
+        os.system('touch /var/tmp/uos-migration/UOS_migration_log/mig_log.txt')
+
+    check_migration_progress('5')
     if not check_pkg("yum-utils"):
         print("please install yum-utils", file=print_log)
         return
@@ -194,10 +202,10 @@ def main():
     if not check_pkg(openEuler_release):
         print("swaping release", file=print_log)
         swap_release(openEuler_release)
-
+    check_migration_progress('10')
     # install basic packages
     os.system("yum install -y gdbm-help")
-
+    check_migration_progress('15')
     remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos', 
                                 'iwl7265-firmware', 'ivtv-firmware', 
                                 'sysvinit-tools', 'sg3_utils-libs']
@@ -210,10 +218,11 @@ def main():
             os.makedirs(install_dir)
         else:
             shutil.rmtree(install_dir)
+    check_migration_progress('30')
     install_cmd = 'yum install -y systemd python3-libdnf libreport-filesystem python3-gpg libmodulemd deltarpm python3-hawkey \
                     python3-libcomps python3-rpm util-linux --installroot={}'.format(install_dir)
     os.system(install_cmd)
-
+    check_migration_progress('40')
     # download dnf
     download_dnf = '/usr/bin/yumdownloader {} --destdir={}'.format('dnf python3-dnf dnf-help', os.path.join(install_dir, 'root'))
     os.system(download_dnf)
@@ -228,6 +237,7 @@ def main():
                 '--exclude="sys" --exclude="run" --exclude="lost+found" --exclude="mnt" --exclude="proc" ' \
                 '--exclude="dev" --exclude="media" --exclude="etc" --exclude="root" '.format(install_dir)
     subprocess.run(rsync, shell=True)
+    check_migration_progress('50')
 
     rpm_perl = '/etc/rpm/macros.perl'
     os.system('rpm --rebuilddb')
@@ -240,7 +250,7 @@ def main():
     else:
         print("Removing confilct package yum...", file=print_log)
         system_sync()
-
+    check_migration_progress('60')
     # boot cui
     print("set boot target to cui", file=print_log)
     cmd = 'systemctl set-default multi-user.target'
@@ -250,14 +260,16 @@ def main():
         cmd = 'ln -s /usr/bin/python3.7 /usr/bin/python3'
         print("Create symlink for python3", file=print_log)
         run_subprocess(cmd.split())
-
+    check_migration_progress('70')
     yum_conflict_dir = '/etc/yum/'
     if os.path.exists(yum_conflict_dir):
         shutil.rmtree(yum_conflict_dir)
     print("Installing yum...", file=print_log)
     set_grub_biosdev_rules()
     conf_grub()
+    check_migration_progress('80')
     run_subprocess('dnf install -y yum'.split())
+    check_migration_progress('100')
 
     print("System migration completed, rebooting system", file=print_log)
     print_log.close()
