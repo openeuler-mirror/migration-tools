@@ -89,7 +89,7 @@
 					console.log("迁移进行中")
 				}
 			}
-        });	//ajax end
+        });
     };
 
 	function check_progress() {
@@ -106,8 +106,11 @@
 				res=$.evalJSON(res);
 				pg.style.width=res.progress + "%";
 				document.getElementById('pg_info').innerHTML=res.progress + "%";
+				if (res.progress == "100") {
+					setTimeout(function () { window.location.href="/MT_migration_results" + arr_info + 0 }, 3000);
+				}
 			}
-        });	//ajax end
+        });
 	}
 
 	function migration_details() {
@@ -124,7 +127,7 @@
 				res=$.evalJSON(res);
 				document.getElementById('log_info').innerHTML=res.data
 			}
-        });	//ajax end
+        });
 	}
 
 	function showInfo() {
