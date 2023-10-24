@@ -4,7 +4,6 @@ import os
 import platform
 import shutil
 import subprocess
-from func.check import check_migration_progress
 
 
 openeuler_repo = '''[openeuler]
@@ -18,6 +17,12 @@ if not os.path.exists(mig_log):
     os.system('mkdir -p /var/tmp/uos-migration/UOS_migration_log/')
     os.system('touch /var/tmp/uos-migration/UOS_migration_log/mig_log.txt')
 print_log = open(mig_log, 'w')
+
+
+def check_migration_progress(message):
+    with open('/var/tmp/uos-migration/.progress', 'w') as fp:
+        fp.write(message)
+        fp.close()
 
 
 def run_subprocess(cmd):
