@@ -108,7 +108,7 @@ python3 centos7/openeuler/centos72openeuler.py
 systemctl stop firewalld
 ```
 
-- 安装epel-release（部分依赖包含在epel源中）``
+- 安装epel-release（部分依赖包含在epel源中）
 
 ``` shell
 yum install epel-release -y
