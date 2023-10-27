@@ -196,6 +196,8 @@ def main():
         print('please install dnf', file=print_log)
         return
 
+    remove_rpm_nodeps = 'rpm -e python-enum34 python-backports --nodeps'
+    os.system(remove_rpm_nodeps)
     # disable centos repository
     os.system("yum-config-manager --disable base updates extras")
 
