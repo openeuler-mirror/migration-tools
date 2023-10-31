@@ -65,7 +65,7 @@
     </div>
         <br/>
     <div id="info_id" style="display: none;"><img src="../static/images/login.gif" width="13" height="13" style="padding-left:0px;"/><label style="font-size:13px;font-family:”微软雅黑”;font-weight:bold;">正在验证用户名和密码......</label></div>
-        <div id="faild_id" style="display: none;"><img id="os_res" name="0" src="../static/images/u70.svg" width="13" height="13" style="padding-left:0px;"/><label id="os_info1" style="font-size:13px;font-family:”微软雅黑”;font-weight:bold;">验证失败，请重新输入用户名密码</label></div>
+        <div id="failedId" style="display: none;"><img id="os_res" name="0" src="../static/images/u70.svg" width="13" height="13" style="padding-left:0px;"/><label id="os_info1" style="font-size:13px;font-family:”微软雅黑”;font-weight:bold;">验证失败，请重新输入用户名密码</label></div>
     </br>
     </br>
     </br>
@@ -92,7 +92,7 @@
 
     function save() {
         document.getElementById('info_id').style.display = ""
-        document.getElementById('faild_id').style.display = "none"
+        document.getElementById('failedId').style.display = "none"
         var check_user_data_json={"mod":"check_user"};
         check_user_data_json.user = document.getElementById("uname_id").value;
         check_user_data_json.passwd = document.getElementById("machine_password").value;
@@ -110,7 +110,7 @@
                 retinfo=$.evalJSON(res);
                 if (retinfo.res == 1) {
                     document.getElementById('info_id').style.display = "none"
-                    document.getElementById('faild_id').style.display = ""
+                    document.getElementById('failedId').style.display = ""
                 }else{
                     var pending_migration = document.getElementById("pending_migration").value;
                     if (pending_migration == "uos") {
