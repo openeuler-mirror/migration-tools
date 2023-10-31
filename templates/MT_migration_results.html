@@ -140,7 +140,7 @@
         export_analysis_data_json.ip="tasks"
         export_analysis_data_json.export="UOS_analysis_report"
         export_analysis_data_json.name="UOS_migration_completed_report"
-	var url = window.location.search;
+	    var url = window.location.search;
         export_analysis_data_json.info = url.split(",")[0].split("=")[1]
         $.ajax({
 			async:true,

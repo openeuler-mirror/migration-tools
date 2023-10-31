@@ -61,8 +61,8 @@
 <script type="text/javascript" src="static/js/admin/json.js"></script>
 <script>
 	$(document).ready(function() {
-		progress = setInterval("check_progress()",2000);
-		log_info = setInterval("migration_details()",2000);
+		var progress = setInterval("check_progress()",2000);
+		var log_info = setInterval("migration_details()",2000);
 		system_migration()
     });
 
@@ -70,8 +70,8 @@
 		var url = window.location.search;
 		kernel_version = url.split(",")[1]
         var system_migration_data_json={"mod":"system_migration"};
-            system_migration_data_json.ip="tasks"
-            system_migration_data_json.kernel_version=kernel_version
+        system_migration_data_json.ip="tasks"
+        system_migration_data_json.kernel_version=kernel_version
         var arr_info = window.location.search;
         $.ajax({
 			async:true,
