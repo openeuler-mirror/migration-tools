@@ -195,8 +195,8 @@ def main():
     if not check_pkg('dnf'):
         print('please install dnf', file=print_log)
         return
-    paramiko_rpm_pwd = ""
-    os.system('rpm -Uvh %s --force')
+    paramiko_rpm_pwd = "/usr/lib/migration-tools-agent/agent-requires/paramiko/*.rpm"
+    os.system('rpm -Uvh %s --force' % paramiko_rpm_pwd)
     remove_rpm_nodeps = 'rpm -e python-enum34 python-backports --nodeps'
     os.system(remove_rpm_nodeps)
     # disable centos repository
