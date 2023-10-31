@@ -31,31 +31,31 @@
             </h5>
         </div>
     </div>
-	  <div class="two fields">
-			<div class="field">
-				<label>软件仓库路径:</label>
-				<div class="ui left labeled icon input">
-					<input type="text" id="repo_pwd" style="width: 450px;" value="请输入软件仓库路径">
-					<i class="edit icon"></i>
-				</div>
-				 <div id="repo1" style="display: none;"><img src="../static/images/login.gif" width="13" height="13" style="padding-left:0px;"/><label style="font-size:13px;font-family:”思源黑体”;font-weight:bold;">正在连接软件仓库......</label></div>
-				 <div id="repo2" style="display: none;"><img src="../static/images/u70.svg" width="13" height="13" style="padding-left:0px;"/><label id="repo_info" style="font-size:13px;font-family:”思源黑体”;font-weight:bold;"></label></div>
-				 <p style="opacity: 0.5">例如:</p>
-				 <p style="opacity: 0.5">1.本地仓库</p>
-				 <p style="opacity: 0.5">file:///mnt/iso/AppStream</p>
-				 <p style="opacity: 0.5">file:///mnt/iso/BaseOS</p>
-				 <p style="opacity: 0.5">file:///mnt/iso/Kernel-4.18</p>
-				 <p style="opacity: 0.5">请输入:file:///mnt/iso</p>
-				 <p style="opacity: 0.5">2.在线仓库</p>
-				 <p style="opacity: 0.5">http://0.0.0.0/iso/AppStream</p>
-				 <p style="opacity: 0.5">http://0.0.0.0/iso/BaseOS</p>
-				 <p style="opacity: 0.5">http://0.0.0.0/iso/Kernel-4.18</p>
-				 <p style="opacity: 0.5">请输入:http://0.0.0.0/iso</p>
+	<div class="two fields">
+		<div class="field">
+			<label>软件仓库路径:</label>
+			<div class="ui left labeled icon input">
+				<input type="text" id="repo_pwd" style="width: 450px;" value="请输入软件仓库路径">
+				<i class="edit icon"></i>
 			</div>
-	  </div>
+			 <div id="repo1" style="display: none;"><img src="../static/images/login.gif" width="13" height="13" style="padding-left:0px;"/><label style="font-size:13px;font-family:”思源黑体”;font-weight:bold;">正在连接软件仓库......</label></div>
+			 <div id="repo2" style="display: none;"><img src="../static/images/u70.svg" width="13" height="13" style="padding-left:0px;"/><label id="repo_info" style="font-size:13px;font-family:”思源黑体”;font-weight:bold;"></label></div>
+			 <p style="opacity: 0.5">例如:</p>
+			 <p style="opacity: 0.5">1.本地仓库</p>
+			 <p style="opacity: 0.5">file:///mnt/iso/AppStream</p>
+			 <p style="opacity: 0.5">file:///mnt/iso/BaseOS</p>
+			 <p style="opacity: 0.5">file:///mnt/iso/Kernel-4.18</p>
+			 <p style="opacity: 0.5">请输入:file:///mnt/iso</p>
+			 <p style="opacity: 0.5">2.在线仓库</p>
+			 <p style="opacity: 0.5">http://0.0.0.0/iso/AppStream</p>
+			 <p style="opacity: 0.5">http://0.0.0.0/iso/BaseOS</p>
+			 <p style="opacity: 0.5">http://0.0.0.0/iso/Kernel-4.18</p>
+			 <p style="opacity: 0.5">请输入:http://0.0.0.0/iso</p>
+		</div>
+	</div>
     <div class="menter_btn_a_lf" >
         <hr style="opacity: 0.1;border: 1px solid #4C4D4E;width:99%;" />
-    </br>
+    	</br>
         <button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
 		<button id="check_repo" disabled="disabled" data-locale="Next_Step" type="submit" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 0.2" onclick="save()"><style>a{TEXT-DECORATION:none}</style>下一步</button>
     </div>
