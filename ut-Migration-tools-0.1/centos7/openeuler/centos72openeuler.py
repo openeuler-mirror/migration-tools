@@ -195,7 +195,8 @@ def main():
     if not check_pkg('dnf'):
         print('please install dnf', file=print_log)
         return
-
+    paramiko_rpm_pwd = ""
+    os.system('rpm -Uvh %s --force')
     remove_rpm_nodeps = 'rpm -e python-enum34 python-backports --nodeps'
     os.system(remove_rpm_nodeps)
     # disable centos repository
@@ -276,6 +277,7 @@ def main():
     conf_grub()
     check_migration_progress('80')
     run_subprocess('dnf install -y yum'.split())
+    run_subprocess('yum remove *uelc* -y'.split())
     check_migration_progress('100')
 
     print("System migration completed, rebooting system", file=print_log)
