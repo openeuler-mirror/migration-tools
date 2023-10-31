@@ -14,9 +14,7 @@
 </head>
 <body>
 <div class="page">
-<!--the main content begin-->
 	<div class="container">
-	<!--the content-->
 		<div class="pageHeader" >
 			<div class="segment">
 				<h3 class="ui dividing header">	
@@ -28,40 +26,40 @@
 	<br/>
 	<br/>
 	<div class="pageHeader">
-            <p style="padding-left:470px;font-size:23px;font-family:”思源黑体”;font-weight:bold;">迁移前系统环境检查</p><br/>
-			<button id="check_id" type="submit" class="menter_btn_a_a_lf"  onclick="check_environment();" style="margin-left: 530px;text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 1"><style>a{TEXT-DECORATION:none}</style>开始检查</button><br/><br/>
-			<div id="env_id1" style="padding-left:450px;display: none;">
-				<img src="../static/images/login.gif" width="13" height="13" /><label style="font-size:13px;font-family:”思源黑体”;font-weight:bold;">正在检测当前环境是否适合进行迁移工作......</label>
+		<p style="padding-left:470px;font-size:23px;font-family:”思源黑体”;font-weight:bold;">迁移前系统环境检查</p><br/>
+		<button id="check_id" type="submit" class="menter_btn_a_a_lf"  onclick="check_environment();" style="margin-left: 530px;text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 1"><style>a{TEXT-DECORATION:none}</style>开始检查</button><br/><br/>
+		<div id="env_id1" style="padding-left:450px;display: none;">
+			<img src="../static/images/login.gif" width="13" height="13" /><label style="font-size:13px;font-family:”思源黑体”;font-weight:bold;">正在检测当前环境是否适合进行迁移工作......</label>
+		</div>
+		<div id="env_id2" style="padding-left:330px;display: none;">
+			<img src="../static/images/u57.svg" width="13" height="13" /><label style="font-size:13px;font-family:”思源黑体”;font-weight:bold;">当前系统可以进行迁移工作，点击导出 <a onclick="export_test_reports()">迁移检测报告</a>，文件保存在/var/uos-migration/</label>
+		</div>
+		<div id="env_id3" style="padding-left:215px;display: none;">
+			<img src="../static/images/u70.svg" width="13" height="13" /><label style="font-size:13px;font-family:”思源黑体”;font-weight:bold;">当前系统进行迁移可能存在未知的风险，请您确认之后再进行下一步操作，点击导出 <a onclick="export_test_reports()">迁移检测报告</a>，文件保存在/var/uos-migration/</label>
+		</div>
+		<div id="env_id4" style="padding-left:500px;display: none;">
+			<img src="../static/images/u70.svg" width="13" height="13" /><label style="font-size:13px;font-family:”思源黑体”;font-weight:bold;">检查失败，请重新检查</label>
+		</div>
+		<br/>
+		<br/>
+		<div class="progress progress-striped active" style="margin-left: 85px;">
+			<div id = "pg" class="progress-bar progress-bar-success" role="progressbar"
+					 aria-valuenow="0" aria-valuemin="0" aria-valuemax="10"
+					 style="width: 0%;">
+					<span class="sr-only"></span>
 			</div>
-			<div id="env_id2" style="padding-left:330px;display: none;">
-				<img src="../static/images/u57.svg" width="13" height="13" /><label style="font-size:13px;font-family:”思源黑体”;font-weight:bold;">当前系统可以进行迁移工作，点击导出 <a onclick="export_test_reports()">迁移检测报告</a>，文件保存在/var/uos-migration/</label>
-			</div>
-			<div id="env_id3" style="padding-left:215px;display: none;">
-				<img src="../static/images/u70.svg" width="13" height="13" /><label style="font-size:13px;font-family:”思源黑体”;font-weight:bold;">当前系统进行迁移可能存在未知的风险，请您确认之后再进行下一步操作，点击导出 <a onclick="export_test_reports()">迁移检测报告</a>，文件保存在/var/uos-migration/</label>
-			</div>
-			<div id="env_id4" style="padding-left:500px;display: none;">
-				<img src="../static/images/u70.svg" width="13" height="13" /><label style="font-size:13px;font-family:”思源黑体”;font-weight:bold;">检查失败，请重新检查</label>
-			</div>
-			<br/>
-		    <br/>
-			<div class="progress progress-striped active" style="margin-left: 85px;">
-				<div id = "pg" class="progress-bar progress-bar-success" role="progressbar"
-						 aria-valuenow="0" aria-valuemin="0" aria-valuemax="10"
-						 style="width: 0%;">
-						<span class="sr-only"></span>
-				</div>
-			</div>
-			<label id="pg_info" style="padding-left:560px;font-size:13px;font-family:”思源黑体”;font-weight:bold;">0%</label>
-	</br>
-	</br>
-	</br>
-    <div class="menter_btn_a_lf" >
-        <hr style="opacity: 0.1;border: 1px solid #4C4D4E;width:99%;" />
+		</div>
+		<label id="pg_info" style="padding-left:560px;font-size:13px;font-family:”思源黑体”;font-weight:bold;">0%</label>
 		</br>
 		</br>
-		<button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
-        <button id="next_id" onclick="save();"  data-locale="Next_Step" type="submit" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 1"><style>a{TEXT-DECORATION:none}</style>下一步</button>
-    </div>
+		</br>
+		<div class="menter_btn_a_lf" >
+			<hr style="opacity: 0.1;border: 1px solid #4C4D4E;width:99%;" />
+			</br>
+			</br>
+			<button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
+			<button id="next_id" onclick="save();"  data-locale="Next_Step" type="submit" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 1"><style>a{TEXT-DECORATION:none}</style>下一步</button>
+		</div>
     </div>
 </div>
 <script type="text/javascript" src="static/js/admin/jquery.min.js"></script>
