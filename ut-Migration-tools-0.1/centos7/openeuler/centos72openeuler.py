@@ -5,7 +5,7 @@ import platform
 import shutil
 import subprocess
 import logging
-from settings import MIG_LOG
+from settings import MIG_LOG, OPENEULER_REPO
 
 
 if not os.path.exists(MIG_LOG):
@@ -18,13 +18,6 @@ handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-
-openeuler_repo = '''[openeuler]
-name = openeuler
-baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-20.03-LTS-SP1/everything/$basearch
-enabled = 1
-gpgcheck = 0
-'''
 
 
 def check_migration_progress(message):
@@ -212,7 +205,7 @@ def main():
 
     repo_file = "/etc/yum.repos.d/openeuler.repo"
     with open(repo_file, 'w') as f:
-        f.write(openeuler_repo)
+        f.write(OPENEULER_REPO)
 
     openEuler_release = 'openEuler-release'
     if not check_pkg(openEuler_release):
