@@ -19,3 +19,9 @@ PRE_MIG_DIR = '/var/tmp/uos-migration/UOS_analysis_report'
 
 RPMS = '/var/tmp/uos-migration/.rpms'
 MIG_LOG = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
+OPENEULER_REPO = '''[openeuler]
+name = openeuler
+baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-20.03-LTS-SP1/everything/$basearch
+enabled = 1
+gpgcheck = 0
+'''
