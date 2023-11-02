@@ -4,7 +4,20 @@ import os
 import platform
 import shutil
 import subprocess
+import logging
 
+
+mig_log = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
+if not os.path.exists(mig_log):
+    os.system('mkdir -p /var/tmp/uos-migration/UOS_migration_log/')
+    os.system('touch /var/tmp/uos-migration/UOS_migration_log/mig_log.txt')
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.INFO)
+handler = logging.FileHandler(mig_log)
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 openeuler_repo = '''[openeuler]
 name = openeuler
@@ -12,11 +25,6 @@ baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-20.03-LTS-SP1/
 enabled = 1
 gpgcheck = 0
 '''
-mig_log = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
-if not os.path.exists(mig_log):
-    os.system('mkdir -p /var/tmp/uos-migration/UOS_migration_log/')
-    os.system('touch /var/tmp/uos-migration/UOS_migration_log/mig_log.txt')
-print_log = open(mig_log, 'w')
 
 
 def check_migration_progress(message):
@@ -35,10 +43,10 @@ def run_subprocess(cmd):
             check=True    # Check for non-zero return code and raise exception if found
         )
         output = process.stdout
-        print(output, file=print_log)  # Print the output to console
+        logger.info(output)
         return output, process.returncode
     except subprocess.CalledProcessError as e:
-        print(e.stderr, file=print_log)  # Print the error output to console
+        logger.error(e.stderr)
         return e.stderr, e.returncode
 
 
@@ -94,7 +102,7 @@ def add_boot_option():
     try:
         run_subprocess(cmd.split())
     except Exception as e:
-        print(e, file=print_log)
+        logger.error(e)
 
 
 def swap_release(release):
@@ -132,10 +140,10 @@ def set_grub_biosdev_rules():
             shutil.copyfile(default_grub_path, default_grub_path + '.disable')
             os.remove(default_grub_path)
         else:
-            print("grub file has been modified", file=print_log)
+            logger.info("grub file has been modified")
             return
     except Exception as e:
-        print(e, file=print_log)
+        logger.error(e)
         return
     with open(default_grub_path, 'w+') as wgf:
         wgf.write(grub_content)
@@ -159,7 +167,7 @@ def conf_grub():
             run_subprocess('mv /boot/grub2/grubenv /boot/grub2/grubenv-bak'.split())
             run_subprocess('cat /boot/grub2/grubenv-bak > /boot/grub2/grubenv'.split())
         except Exception as e:
-            print(e, file=print_log)
+            logger.error(e)
 
 
 def system_sync():
@@ -181,19 +189,19 @@ def main():
 
     check_migration_progress('5')
     if not check_pkg("yum-utils"):
-        print("please install yum-utils", file=print_log)
+        logger.error("please install yum-utils")
         return
 
     if not check_pkg('rsync'):
-        print('please install rsync', file=print_log)
+        logger.error('please install rsync')
         return
     
     if not check_pkg('python3'):
-        print('please install python3', file=print_log)
+        logger.error('please install python3')
         return
 
     if not check_pkg('dnf'):
-        print('please install dnf', file=print_log)
+        logger.error('please install dnf')
         return
     paramiko_rpm_pwd = "/usr/lib/migration-tools-agent/agent-requires/paramiko/*.rpm"
     os.system('rpm -Uvh %s --force' % paramiko_rpm_pwd)
@@ -208,7 +216,7 @@ def main():
 
     openEuler_release = 'openEuler-release'
     if not check_pkg(openEuler_release):
-        print("swaping release", file=print_log)
+        logger.info("swaping release")
         swap_release(openEuler_release)
     check_migration_progress('10')
     # install basic packages
@@ -256,23 +264,23 @@ def main():
     if system_sync():
         subprocess.run('dnf -y groupinstall Minimal Install', shell=True)
     else:
-        print("Removing confilct package yum...", file=print_log)
+        logger.info("Removing confilct package yum...")
         system_sync()
     check_migration_progress('60')
     # boot cui
-    print("set boot target to cui", file=print_log)
+    logger.info("set boot target to cui")
     cmd = 'systemctl set-default multi-user.target'
     run_subprocess(cmd.split())
     
     if not os.path.exists('/usr/bin/python3'):
         cmd = 'ln -s /usr/bin/python3.7 /usr/bin/python3'
-        print("Create symlink for python3", file=print_log)
+        logger.info("Create symlink for python3")
         run_subprocess(cmd.split())
     check_migration_progress('70')
     yum_conflict_dir = '/etc/yum/'
     if os.path.exists(yum_conflict_dir):
         shutil.rmtree(yum_conflict_dir)
-    print("Installing yum...", file=print_log)
+    logger.info("Installing yum...")
     set_grub_biosdev_rules()
     conf_grub()
     check_migration_progress('80')
@@ -280,8 +288,7 @@ def main():
     run_subprocess('yum remove *uelc* -y'.split())
     check_migration_progress('100')
 
-    print("System migration completed, rebooting system", file=print_log)
-    print_log.close()
+    logger.info("System migration completed, rebooting system")
     os.system("reboot")
     
 
