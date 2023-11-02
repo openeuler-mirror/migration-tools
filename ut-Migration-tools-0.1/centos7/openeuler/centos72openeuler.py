@@ -46,7 +46,7 @@ def run_subprocess(cmd):
 def check_pkg(rpm):
     _, ret = run_subprocess('rpm -q {}'.format(rpm).split())
     if ret:
-        return
+        return None
     return True
 
 
@@ -76,8 +76,7 @@ def add_boot_option():
     disk_name = disk_name.split('\n')[0]
     dev_name, part_num = get_disk_info(disk_name)
     if dev_name == "" or part_num == "":
-        # Parse /boot/efi disk info failed, update boot loader failed.
-        return
+        return None
 
     cmd = ""
     arch = platform.machine()
@@ -117,7 +116,7 @@ def set_grub_biosdev_rules():
     default_grub_path = "/etc/default/grub"
     set_content = "net.ifnames=0  biosdevname=0"
     if not os.path.exists(default_grub_path):
-        return
+        return None
     with open(default_grub_path, 'r') as gf:
         gret = gf.readlines()
         gf.close()
@@ -134,10 +133,10 @@ def set_grub_biosdev_rules():
             os.remove(default_grub_path)
         else:
             logger.info("grub file has been modified")
-            return
+            return None
     except Exception as e:
         logger.error(e)
-        return
+        return None
     with open(default_grub_path, 'w+') as wgf:
         wgf.write(grub_content)
         wgf.close()
@@ -183,19 +182,19 @@ def main():
     check_migration_progress('5')
     if not check_pkg("yum-utils"):
         logger.error("please install yum-utils")
-        return
+        return None
 
     if not check_pkg('rsync'):
         logger.error('please install rsync')
-        return
+        return None
     
     if not check_pkg('python3'):
         logger.error('please install python3')
-        return
+        return None
 
     if not check_pkg('dnf'):
         logger.error('please install dnf')
-        return
+        return None
     paramiko_rpm_pwd = "/usr/lib/migration-tools-agent/agent-requires/paramiko/*.rpm"
     os.system('rpm -Uvh %s --force' % paramiko_rpm_pwd)
     remove_rpm_nodeps = 'rpm -e python-enum34 python-backports --nodeps'
