@@ -18,3 +18,4 @@ PRE_MIG = '/var/tmp/uos-migration/UOS_analysis_report/rpmva-before.txt'
 PRE_MIG_DIR = '/var/tmp/uos-migration/UOS_analysis_report'
 
 RPMS = '/var/tmp/uos-migration/.rpms'
+MIG_LOG = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'

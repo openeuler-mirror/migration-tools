@@ -5,15 +5,15 @@ import platform
 import shutil
 import subprocess
 import logging
+from settings import MIG_LOG
 
 
-mig_log = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
-if not os.path.exists(mig_log):
+if not os.path.exists(MIG_LOG):
     os.system('mkdir -p /var/tmp/uos-migration/UOS_migration_log/')
     os.system('touch /var/tmp/uos-migration/UOS_migration_log/mig_log.txt')
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
-handler = logging.FileHandler(mig_log)
+handler = logging.FileHandler(MIG_LOG)
 handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
