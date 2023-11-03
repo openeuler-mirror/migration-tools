@@ -5,30 +5,16 @@ import json
 from flask import *
 from func import check
 from func.share import *
+from urls import agent_mods
 
 app = Flask(__name__)
-
-mods = {
-        'check_storage': check.check_storage,
-        'check_environment': check.check_environment,
-        'check_os': check.check_os,
-        'check_user': check.check_user,
-        'check_repo': check.check_repo,
-        'check_os_kernel': check.check_os_kernel,
-        'check_repo_kernel': check.check_repo_kernel,
-        'check_progress': check.check_progress,
-        'export_migration_reports': check.export_reports,
-        'system_migration': check.system_migration,
-        'check_migration_progress': check.check_migration_progress,
-        'migration_details': check.migration_details,
-        }
 
 
 def check_methods():
     if request.method == 'POST':
         data = request.get_data()
         json_data = json.loads(data)
-        mod = mods.get(json_data['mod'])
+        mod = agent_mods.get(json_data['mod'])
         if mod:
             response_str = mod(data)
             return response_str
