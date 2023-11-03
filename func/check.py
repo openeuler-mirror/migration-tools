@@ -21,6 +21,7 @@ def mig_init_porgress():
     with open('/var/tmp/uos-migration/.rpms', 'w+') as fp:
         fp.write(uelc_rpm[0])
         fp.close()
+    return None
 
 
 def init_dir():
@@ -56,6 +57,7 @@ def init_dir():
         fp.close()
     # 迁移进度
     mig_init_porgress()
+    return None
 
 
 def check_os_type():
@@ -78,6 +80,7 @@ def pre_system_check():
         pf.write('系统内核 :'+check_os_kernel_release()+'\n')
         pf.write('系统架构 : '+check_os_arch()+'\n')
         pf.close()
+    return None
 
 
 def check_storage(data):
@@ -203,6 +206,7 @@ def init_remove_old_repo():
                 fdst.close()
             fsrc.close()
         os.remove(path_file)
+    return None
 
 
 def init_repo_file(baseurl):
@@ -225,6 +229,7 @@ def init_repo_file(baseurl):
     with open(repo_file, 'w') as f_repo:
         f_repo.write(repostr_uos)
         f_repo.close()
+    return None
 
 
 def check_repo_makecache():
@@ -348,6 +353,7 @@ def system_check_requires(conflist):
             conflist.append(ret)
         if len(conflist) > 1:
             return conflist
+    return None
 
 
 def fork_sh(cmd):
@@ -356,6 +362,7 @@ def fork_sh(cmd):
         subprocess.run(cmd, stderr=f, shell=True)
         message_state('2')
         f.close()
+        return None
     except:
         return 0
 
@@ -364,6 +371,7 @@ def env():
     cmd = 'sh func/Abisystmcompchk.sh'
     t = Process(target=fork_sh, args=(cmd,))
     t.start()
+    return None
 
 
 def check_environment(data_j):
@@ -468,6 +476,7 @@ def if_not_mig_kernel(kernel_version):
         with open('/etc/yum.conf', 'a+') as f:
             f.write(kernel_patterns)
             f.close()
+    return None
 
 
 def mig_kernel(kernel_version):
@@ -554,6 +563,7 @@ def mig_check_migration_progress():
     data = percent*(lines/rpms)
     data = format(data, '.1f')
     message_progress(data)
+    return None
 
 
 def check_migration_progress(data_j):
@@ -601,12 +611,13 @@ def start_sysmig(data_j):
             cmd = 'sh func/centos72uos.sh'
             run_cmd2file(cmd)
             message_state('3')
+    return None
 
 
 def mig_euler():
     cmd = "python3 /usr/lib/migration-tools-agent/ut-Migration-tools-0.1/centos7/openeuler/centos72openeuler.py"
     os.system(cmd)
-    return
+    return None
 
 
 def system_migration(data_j):
@@ -616,7 +627,7 @@ def system_migration(data_j):
     kernel_version = json.loads(data_j).get('kernel_version')
     if kernel_version == 'euler':
         mig_euler()
-        return
+        return None
     with open(pstate, 'r+') as fp:
         state = fp.readlines()
         fp.close()
