@@ -25,3 +25,15 @@ baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-20.03-LTS-SP1/
 enabled = 1
 gpgcheck = 0
 '''
+
+report_path_bef = "/var/tmp/uos-migration/UOS_analysis_report/"
+report_path_ago = '/var/tmp/uos-migration/UOS_migration_log/'
+txtFileName = '/var/tmp/uos-migration/data/exp-rst/abi-compat-pkg.txt'
+txtFileName1 = '/var/tmp/uos-migration/data/exp-rst/abi-incompat-pkg.txt'
+SysInfoFile = '/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'
+SysInfoFile_after = '/var/tmp/uos-migration/data/exp-rst/trans-end-sysinfo.txt'
+PkgCompFile1 = '/var/tmp/uos-migration/data/exp-rst/pkginfo_1.txt'
+PkgCompFile2 = '/var/tmp/uos-migration/data/exp-rst/pkginfo_2.txt'
+PkgCompFile3 = '/var/tmp/uos-migration/data/exp-rst/pkginfo_3.txt'
+PkgCompFile4 = '/var/tmp/uos-migration/data/exp-rst/pkginfo_4.txt'
+PkgCompFile1_after = '/var/tmp/uos-migration/data/exp-rst/pkginfo_1_trans.txt'
