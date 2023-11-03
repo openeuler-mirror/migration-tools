@@ -6,25 +6,9 @@ import os
 import sys
 import json
 from func import share
-from views import migration
+from urls import *
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
 app = Flask(__name__)
-
-mods = {
-        'check_environment': migration.check_environment,
-        'check_storage': migration.check_storage,
-        'check_os': migration.check_os,
-        'check_os_kernel': migration.check_os_kernel,
-        'check_migration_progress': migration.check_migration_progress,
-        'check_progress': migration.check_progress,
-        'check_repo': migration.check_repo,
-        'check_repo_kernel': migration.check_repo_kernel,
-        'check_user': migration.check_user,
-        'close_tool': migration.close_tool,
-        'export_migration_reports': migration.export_migration_reports,
-        'system_migration': migration.system_migration,
-        'migration_details': migration.migration_details,
-        }
 
 
 def check_methods():
