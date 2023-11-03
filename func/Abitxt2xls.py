@@ -6,19 +6,8 @@ import json
 import socket
 import xlwt
 from func.share import *
-
-
-report_path_bef = "/var/tmp/uos-migration/UOS_analysis_report/"
-report_path_ago = '/var/tmp/uos-migration/UOS_migration_log/'
-txtFileName = '/var/tmp/uos-migration/data/exp-rst/abi-compat-pkg.txt'
-txtFileName1 = '/var/tmp/uos-migration/data/exp-rst/abi-incompat-pkg.txt'
-SysInfoFile = '/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'
-SysInfoFile_after = '/var/tmp/uos-migration/data/exp-rst/trans-end-sysinfo.txt'
-PkgCompFile1 = '/var/tmp/uos-migration/data/exp-rst/pkginfo_1.txt'
-PkgCompFile2 = '/var/tmp/uos-migration/data/exp-rst/pkginfo_2.txt'
-PkgCompFile3 = '/var/tmp/uos-migration/data/exp-rst/pkginfo_3.txt'
-PkgCompFile4 = '/var/tmp/uos-migration/data/exp-rst/pkginfo_4.txt'
-PkgCompFile1_after = '/var/tmp/uos-migration/data/exp-rst/pkginfo_1_trans.txt'
+from settings import (report_path_bef, report_path_ago, txtFileName, txtFileName1, SysInfoFile, SysInfoFile_after,
+                      PkgCompFile1, PkgCompFile2, PkgCompFile3, PkgCompFile4, PkgCompFile1_after)
 
 
 def get_host_ip():
