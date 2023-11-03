@@ -21,3 +21,4 @@ def message_state(message):
         fp.write(message)
         fp.close()
     return None
+
