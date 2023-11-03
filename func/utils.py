@@ -13,9 +13,11 @@ def message_progress(message):
     with open('/var/tmp/uos-migration/.progress', 'w') as fp:
         fp.write(message)
         fp.close()
+    return None
 
 
 def message_state(message):
     with open('/var/tmp/uos-migration/.state', 'w') as fp:
         fp.write(message)
         fp.close()
+    return None

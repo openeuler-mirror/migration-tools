@@ -32,6 +32,7 @@ def local_disabled_release_repo():
                     fdst.write('#This is a yum repository file that was disabled . <Migration to UiniontechOS>\n'+repos)
                     fdst.close()
                     os.remove(fpath)
+    return None
 
 
 def get_bad_packages():
@@ -76,6 +77,7 @@ def clean_and_exit():
     if os.path.exists(repo_path):
         os.remove(repo_path)
     sys.exit(1)
+    return None
 
 
 def process_special_pkgs():
@@ -93,6 +95,7 @@ def process_special_pkgs():
     subprocess.run('rpm -q python3-syspurpose && dnf -y remove python3-syspurpose', shell=True)
     print("remove centos gpg-pubkey")
     subprocess.run('rpm -e $(rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS | awk \'{print $1}\')', shell=True)
+    return None
 
 
 def pre_system_rpms_info():
@@ -108,6 +111,7 @@ def pre_system_rpms_info():
     for f in files:
         if re.match(hostname+'-rpms-(.*)\.log', f):
             print(f)
+    return None
 
 
 def centos8_main(osname):
@@ -277,6 +281,7 @@ EOF'
     except:
         logger.info("error distro-sync migration ....")
     message_state('2')
+    return None
 
 
 os_version_ret = platform.dist()

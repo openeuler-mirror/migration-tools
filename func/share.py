@@ -74,9 +74,9 @@ def run_cmd2file(cmd):
     f = open("/var/tmp/uos-migration/UOS_migration_log/err_log", 'a')
     p = subprocess.Popen(cmd, stdout=fdout, stderr=f, shell=True)
     if p.poll():
-       return
+       return None
     p.wait()
-    return
+    return None
 
 
 def get_disk_info(string):
@@ -104,7 +104,7 @@ def add_boot_option():
     dev_name, part_num = get_disk_info(disk_name)
     if dev_name == "" or part_num == "":
         print("Parse /boot/efi disk info failed, update boot loader failed.")
-        return
+        return None
 
     cmd = ""
     arch = platform.machine()
@@ -116,6 +116,7 @@ def add_boot_option():
         subprocess.check_call(cmd, shell=True)
     except:
         print("Use efibootmgr update boot loader failed, please update boot loader manually.")
+    return None
 
 
 def conf_grub():
@@ -124,6 +125,7 @@ def conf_grub():
         add_boot_option()
     else:
         subprocess.run('grub2-mkconfig -o /boot/grub2/grub.cfg', shell=True)
+    return None
 
 
 def process_special_pkgs():
@@ -137,6 +139,7 @@ def process_special_pkgs():
     subprocess.run('rpm -q subscription-manager && dnf -y remove subscription-manager', shell=True)
     subprocess.run('rpm -q python3-syspurpose && dnf -y remove python3-syspurpose', shell=True)
     subprocess.run('rpm -e $(rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS | awk \'{print $1}\')', shell=True)
+    return None
 
 
 def title_conf(ols_os_name):
@@ -178,6 +181,7 @@ def title_conf(ols_os_name):
                 with open(fpath, 'w') as ptitle:
                     ptitle.write(ustr)
                     ptitle.close()
+    return None
 
 
 def main_conf(osname):
