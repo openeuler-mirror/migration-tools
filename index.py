@@ -22,7 +22,7 @@ def check_methods():
 
 
 @app.route('/', methods=['GET', 'POST'])
-def MT_index():
+def index():
     """
     跳转起始界面
     :return:
@@ -31,7 +31,7 @@ def MT_index():
 
 
 @app.route('/MT_agreement', methods=['GET', 'POST'])
-def MT_agreement():
+def agreement():
     """
     跳转协议许可界面
     :return:
@@ -40,7 +40,7 @@ def MT_agreement():
 
 
 @app.route('/MT_note', methods=['GET', 'POST'])
-def MT_note():
+def note():
     """
     跳转用户需知界面
     :return:
@@ -49,7 +49,7 @@ def MT_note():
 
 
 @app.route('/MT_check_env', methods=['GET', 'POST'])
-def MT_check_env():
+def check_env():
     """
     跳转系统环境检查界面
     :return:
@@ -58,7 +58,7 @@ def MT_check_env():
 
 
 @app.route('/MT_check_os', methods=['GET', 'POST'])
-def MT_check_os():
+def check_os():
     """
     检测系统版本
     :return:
@@ -71,7 +71,7 @@ def MT_check_os():
 
 
 @app.route('/MT_check_storage', methods=['GET', 'POST'])
-def MT_check_storage():
+def check_storage():
     """
     检测/var/cache空间大小
     :return:
@@ -84,7 +84,7 @@ def MT_check_storage():
 
 
 @app.route('/MT_close_tool', methods=['GET', 'POST'])
-def MT_close_tool():
+def close_tool():
     """
     关闭迁移工具
     :return:
@@ -95,7 +95,7 @@ def MT_close_tool():
 
 
 @app.route('/MT_check_user', methods=['GET', 'POST'])
-def MT_check_user():
+def check_user():
     """
     检测用户账户
     :return:
@@ -108,7 +108,7 @@ def MT_check_user():
 
 
 @app.route('/MT_repo', methods=['GET', 'POST'])
-def MT_repo():
+def check_repo():
     """
     跳转软件仓库界面
     :return:
@@ -117,7 +117,7 @@ def MT_repo():
 
 
 @app.route('/MT_check_repo', methods=['GET', 'POST'])
-def MT_check_repo():
+def check_repo():
     """
     检测软件仓库
     :return:
@@ -128,7 +128,7 @@ def MT_check_repo():
 
 
 @app.route('/MT_kernel', methods=['GET', 'POST'])
-def MT_kernel():
+def check_kernel():
     """
     跳转检测内核界面
     :return:
@@ -137,7 +137,7 @@ def MT_kernel():
 
 
 @app.route('/MT_check_os_kernel', methods=['GET', 'POST'])
-def MT_check_os_kernel():
+def check_os_kernel():
     """
     检测系统内核版本
     :return:
@@ -150,7 +150,7 @@ def MT_check_os_kernel():
 
 
 @app.route('/MT_repo_kernel', methods=['GET', 'POST'])
-def MT_repo_kernel():
+def repo_kernel():
     """
     检测软件仓库内核版本
     :return:
@@ -163,7 +163,7 @@ def MT_repo_kernel():
 
 
 @app.route('/Mt_environment', methods=['GET', 'POST'])
-def Mt_environment():
+def environment():
     """
     跳转迁移前环境检测界面
     :return:
@@ -172,7 +172,7 @@ def Mt_environment():
 
 
 @app.route('/MT_check_environment', methods=['GET', 'POST'])
-def MT_check_environment():
+def check_environment():
     """
     迁移前系统环境检查
     :return:
@@ -184,7 +184,7 @@ def MT_check_environment():
 
 
 @app.route('/MT_check_progress', methods=['GET', 'POST'])
-def MT_check_progress():
+def check_progress():
     """
     环境检测进度检测
     :return:
@@ -197,7 +197,7 @@ def MT_check_progress():
 
 
 @app.route('/MT_export_migration_reports', methods=['GET', 'POST'])
-def MT_export_migration_reports():
+def export_migration_reports():
     """
     导出迁移检测报告
     :return:
@@ -230,7 +230,7 @@ def MT_export_migration_reports():
 
 
 @app.route('/MT_migration', methods=['GET', 'POST'])
-def MT_migration():
+def migration():
     """
     跳转迁移中界面
     :return:
@@ -239,7 +239,7 @@ def MT_migration():
 
 
 @app.route('/MT_migration_progress', methods=['GET', 'POST'])
-def MT_migration_progress():
+def migration_progress():
     """
     迁移进度
     :return:
@@ -252,7 +252,7 @@ def MT_migration_progress():
 
 
 @app.route('/MT_system_migration', methods=['GET', 'POST'])
-def MT_system_migration():
+def system_migration():
     """
     迁移状态
     :return:
@@ -265,7 +265,7 @@ def MT_system_migration():
 
 
 @app.route('/MT_migration_results', methods=['GET', 'POST'])
-def MT_migration_results():
+def migration_results():
     """
     跳转迁移完成界面
     :return:
@@ -274,7 +274,7 @@ def MT_migration_results():
 
 
 @app.route('/MT_system_migration_info', methods=['GET', 'POST'])
-def MT_system_migration_info():
+def system_migration_info():
     """
     迁移日志
     :return:
