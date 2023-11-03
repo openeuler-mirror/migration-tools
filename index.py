@@ -6,7 +6,7 @@ import os
 import sys
 import json
 from func import share
-from urls import *
+from urls import server_mods
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
 app = Flask(__name__)
 
@@ -15,7 +15,7 @@ def check_methods():
     if request.method == 'POST':
         data = request.get_data()
         json_data = json.loads(data)
-        mod = mods.get(json_data['mod'])
+        mod = server_mods.get(json_data['mod'])
         if mod:
             response_str = mod(data)
             return response_str
