@@ -88,6 +88,7 @@ def check_storage(data):
     cache_space = 10.0
     state = 1
     # 避免centos7系统检测失败
+    ava_cache = 0
     time.sleep(5)
     if stat:
         ava_cache = format(stat.f_bavail * stat.f_frsize / 1024 // 1024 / 1024, '.1f')
