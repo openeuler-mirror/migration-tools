@@ -71,7 +71,7 @@ scp -r /usr/lib/migration-tools-server/agent-rpm/el8 root@xx.xx.xx.xx:/root
 
 #### 迁移openeuler系统
 
->**注意:** openeuler系统目前仅支持单独使用脚本迁移
+>**注意:** openeuler系统可选使用脚本迁移或通过工具用户权限检测界面目标系统标签选择euler进行下一步即可
 
 - 从server端分发迁移脚本至agent端
 
@@ -163,8 +163,8 @@ systemctl restart migration-tools-agent
 
 ![环境检测](./figures/环境检测.png)
 
-- 用户检测页面会检查用户名以及密码，推荐使用root用户，点击下一步开始检测，检测完成后自动进入repo源配置页面
-![用户检测](./figures/用户检测.png)
+- 用户检测页面会检查用户名以及密码，推荐使用root用户，默认为迁移uos，如想迁移euler，目标系统选择euler即可，点击下一步开始检测，检测完成后自动进入repo源配置页面，如果目标系统选择euler，点击下一步直接进入迁移环节。
+![用户检测](./figures/用户检测和目标系统.png)
 
 repo源配置页面
 
