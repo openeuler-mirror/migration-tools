@@ -101,10 +101,10 @@ def process_special_pkgs():
 def pre_system_rpms_info():
     print("Creating a list of RPMs installed before the switch")
     print("Verifying RPMs installed before the switch against RPM database")
-    out1 = subprocess.check_output('rpm -qa --qf \
+    subprocess.check_output('rpm -qa --qf \
            "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\\n" \
            | sort > "/var/tmp/uos-migration/UOS_migration_log/rpms-list-before.txt"', shell=True)
-    out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-before.txt"', shell=True)
+    subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-before.txt"', shell=True)
     files = os.listdir('/var/tmp/uos-migration/')
     hostname = socket.gethostname()
     print("Review the output of following files:")
@@ -228,7 +228,7 @@ def centos8_main(osname):
     logger.info("Downloading uos release package...")
     dst_release = ['uos-release']
     try:
-        stat = subprocess.check_output("yumdownloader "+' '.join(dst_release), shell=True)
+        subprocess.check_output("yumdownloader "+' '.join(dst_release), shell=True)
         if not check_pkg('yumdownloader'):
             subprocess.run("yum -y install yum-utils --disablerepo C* || true", shell=True)
         if not check_pkg('yumdownloader'):

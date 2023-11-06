@@ -29,7 +29,6 @@ def get_sysmig_conf():
                     server = None
                     continue
                 else:
-                    p = ret = ''
                     if re.match('\=',line):
                         continue
                     else:
@@ -232,10 +231,10 @@ def main_conf(osname):
 
     logger.info("Creating a list of RPMs installed after the switch")
     logger.info("Verifying RPMs installed after the switch against RPM database")
-    out1 = subprocess.check_output('rpm -qa --qf \
+    subprocess.check_output('rpm -qa --qf \
     "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\n" \
     | sort > "/var/tmp/uos-migration/UOS_migration_log/rpms-list-after.txt"', shell=True)
-    out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-after.txt"', shell=True)
+    subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-after.txt"', shell=True)
 
     logger.info("Switch complete.UniontechOS recommends rebooting this system.")
     return 0
