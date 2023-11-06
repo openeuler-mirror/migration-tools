@@ -28,3 +28,42 @@ class DBHelper:
             self.cursor.close()
             self.connect.close()
         return True
+
+    def execute(self, sql):
+        """
+        传入查询 修改 删除sql语句
+        :param sql:
+        :return:self.cursor
+        """
+        self.connectDatabase()
+        # 处理显示的数据
+        try:
+            self.cursor.execute(sql)
+            self.connect.commit()
+        except Exception as e:
+            print('%s执行失败：%s' % (sql, e))
+        else:
+            self.close()
+            print('%s 执行成功' % sql)
+            data = self.cursor
+            return data
+
+    def insert(self, sql, val):
+        """
+        传入sql语句
+        :param sql:
+        :return:self.cursor
+        如果想获取查询数据需要fetchall()
+        """
+        self.connectDatabase()
+        # 处理显示的数据
+        try:
+            self.cursor.executemany(sql, val)
+            self.connect.commit()
+        except Exception as e:
+            print('%s执行失败：%s' % (sql, e))
+        else:
+            self.close()
+            print('%s 执行成功' % sql)
+            data = self.cursor
+            return data
