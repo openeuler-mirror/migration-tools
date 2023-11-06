@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 import os
-from flask import *
 from client_requests import *
 from func.utils import *
 
