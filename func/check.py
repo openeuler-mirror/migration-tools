@@ -485,7 +485,6 @@ def mig_kernel(kernel_version):
     for i in ret:
         os.unlink(cwd+i)
     cmd = 'rpm -qa | grep "kernel\|bpftool\|perf" |xargs -i rpm -q --qf "%{NAME}\\n" {}'
-    ret = os.popen(cmd).readlines()
     if kernel_version == '0':
         return 0
     else:
