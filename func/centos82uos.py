@@ -139,7 +139,6 @@ def centos8_main(osname):
 
     pre_system_rpms_info()
 
-    # check if the os old_version is supported
     logger.info("========= Checking: distribution =========")
     old_version = subprocess.check_output("rpm -q --whatprovides /etc/redhat-release", shell=True)
     old_version = str(old_version, 'utf-8')

@@ -32,8 +32,8 @@ def run_subprocess(cmd):
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            shell=False,  # Avoid using shell=True
-            check=True    # Check for non-zero return code and raise exception if found
+            shell=False,
+            check=True
         )
         output = process.stdout
         logger.info(output)
@@ -199,7 +199,6 @@ def main():
     os.system('rpm -Uvh %s --force' % paramiko_rpm_pwd)
     remove_rpm_nodeps = 'rpm -e python-enum34 python-backports --nodeps'
     os.system(remove_rpm_nodeps)
-    # disable centos repository
     os.system("yum-config-manager --disable base updates extras")
 
     repo_file = "/etc/yum.repos.d/openeuler.repo"
@@ -211,12 +210,10 @@ def main():
         logger.info("swaping release")
         swap_release(openEuler_release)
     check_migration_progress('10')
-    # install basic packages
     os.system("yum install -y gdbm-help")
     check_migration_progress('15')
-    remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos', 
-                                'iwl7265-firmware', 'ivtv-firmware', 
-                                'sysvinit-tools', 'sg3_utils-libs']
+    remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos', 'iwl7265-firmware', 'ivtv-firmware',
+                              'sysvinit-tools', 'sg3_utils-libs']
     for package in remove_packages_nodeps:
         nodeps_cmd = "rpm -q " + package + " && rpm -e --nodeps " + package
         os.system(nodeps_cmd)
@@ -231,16 +228,12 @@ def main():
                     python3-libcomps python3-rpm util-linux --installroot={}'.format(install_dir)
     os.system(install_cmd)
     check_migration_progress('40')
-    # download dnf
     download_dnf = '/usr/bin/yumdownloader {} --destdir={}'.format('dnf python3-dnf dnf-help', os.path.join(install_dir, 'root'))
     os.system(download_dnf)
 
-    # rebuild dnfdb
     subprocess.run("/sbin/chroot /var/DNF /bin/bash -c 'rpm --rebuilddb'", shell=True)
-    # install dnf 
     subprocess.run("/sbin/chroot /var/DNF /bin/bash -c 'rpm -ivh /root/*'", shell=True)
 
-    # sync files
     rsync = '/usr/bin/rsync -a {}/ / --exclude="var/lib/rpm" --exclude="var/cache/yum" --exclude="tmp" ' \
                 '--exclude="sys" --exclude="run" --exclude="lost+found" --exclude="mnt" --exclude="proc" ' \
                 '--exclude="dev" --exclude="media" --exclude="etc" --exclude="root" '.format(install_dir)
@@ -259,7 +252,6 @@ def main():
         logger.info("Removing confilct package yum...")
         system_sync()
     check_migration_progress('60')
-    # boot cui
     logger.info("set boot target to cui")
     cmd = 'systemctl set-default multi-user.target'
     run_subprocess(cmd.split())
