@@ -5,6 +5,9 @@ import platform
 import shutil
 import subprocess
 import logging
+import sys
+os.chdir('/usr/lib/migration-tools-agent')
+sys.path.append('/usr/lib/migration-tools-agent')
 from settings import MIG_LOG, OPENEULER_REPO
 
 
@@ -169,6 +172,8 @@ def conf_grub():
 def system_sync():
     subprocess.run('rpm --rebuilddb', shell=True)
     subprocess.run('dnf clean all', shell=True)
+    remove_rpm_nodeps = 'rpm -e python-enum34 --nodeps'
+    subprocess.run(remove_rpm_nodeps, shell=True)
     cmd = 'dnf -y distro-sync --allowerasing --skip-broken'
     subprocess.run(cmd, shell=True)
     _, ret = run_subprocess('rpm -q kernel | grep oe1'.split())
@@ -201,7 +206,7 @@ def main():
         return None
     paramiko_rpm_pwd = "/usr/lib/migration-tools-agent/agent-requires/paramiko/*.rpm"
     os.system('rpm -Uvh %s --force' % paramiko_rpm_pwd)
-    remove_rpm_nodeps = 'rpm -e python-enum34 python-backports --nodeps'
+    remove_rpm_nodeps = 'rpm -e python-backports --nodeps'
     os.system(remove_rpm_nodeps)
     os.system("yum-config-manager --disable base updates extras")
 
