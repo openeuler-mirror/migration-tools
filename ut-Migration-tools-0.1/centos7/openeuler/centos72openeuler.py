@@ -24,6 +24,7 @@ def check_migration_progress(message):
     with open('/var/tmp/uos-migration/.progress', 'w') as fp:
         fp.write(message)
         fp.close()
+    return None
 
 
 def run_subprocess(cmd):
@@ -95,6 +96,7 @@ def add_boot_option():
         run_subprocess(cmd.split())
     except Exception as e:
         logger.error(e)
+    return None
 
 
 def swap_release(release):
@@ -105,6 +107,7 @@ def swap_release(release):
     cmd = 'yumdownloader {} --destdir {}'.format(release, tmp_dir)
     run_subprocess(cmd.split())
     run_subprocess('rpm -ivh {}/*.rpm --nodeps --force'.format(tmp_dir).split())
+    return None
 
 
 def set_grub_biosdev_rules():
@@ -160,6 +163,7 @@ def conf_grub():
             run_subprocess('cat /boot/grub2/grubenv-bak > /boot/grub2/grubenv'.split())
         except Exception as e:
             logger.error(e)
+    return None
 
 
 def system_sync():
@@ -274,6 +278,7 @@ def main():
 
     logger.info("System migration completed, rebooting system")
     os.system("reboot")
+    return True
     
 
 if __name__ == '__main__':
