@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>管理首页 | 统信迁移工具</title>
+    <link type="text/css" rel="stylesheet" href="static/css/admin/framework.css" />
+	<link href="static/css/admin/style.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="static/css/admin/main.css" />
+	<link rel="stylesheet" href="static/css/admin/bootstrap.css">
+	<script src="static/css/admin/jquery.min.js"></script>
+	<script src="static/css/admin/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="page">
+	<div class="container">
+		<div class="pageHeader" >
+			<div class="segment">
+				<h3 class="ui dividing header">	
+					<img src="static/images/logo.png" style="width: 120px; height: 50px;"/>
+  					<label style="padding-left:320px;font-size:28px;">统信服务器系统迁移软件</label>
+				</h3>
+			</div>				
+		</div>
+	<br/>
+	<br/>
+	<div class="pageHeader">
+		<br/>
+		<p style="padding-left:85px;font-size:18px;font-family:”思源黑体”;font-weight:bold;">迁移中，请稍后......</p><br/>
+		<div class="progress progress-striped active" style="margin-left: 85px;">
+			<div id = "pg" class="progress-bar progress-bar-success" role="progressbar"
+					 aria-valuenow="0" aria-valuemin="0" aria-valuemax="10"
+					 style="width: 0%;">
+					<span class="sr-only"></span>
+			</div>
+		</div>
+		<span style="padding-left:85px;font-size:13px;"><label id="pg_info">0%</label></span>
+		<span style="padding-left:15px;font-size:13px;"><font color="blue" onclick="showInfo();">查看详情</font></span>
+		<img src="../static/images/u122.svg" width="11" height="8" onclick="showInfo();" id="showId" name="1" style="display: inline-block;"/>
+		<br/>
+		<div id="showInfoId" style="position: relative;padding-left:81px;display: none;">
+			<img src="../static/images/u11.svg" width="920" height="220" style="padding-left:0px;"/>
+			<div class="pr-agreement" style="position: absolute;top: 0px; padding-left:220px;width: 673px" >
+			<span id="log_info" >log</span>
+			</div>
+		</div>
+    <div class="menter_btn_a_lf" >
+        <hr style="opacity: 0.1;border: 1px solid #4C4D4E;width:99%;" />
+		</br>
+    </div>
+    </div>
+</div>
+<script type="text/javascript" src="static/js/admin/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/admin/framework.js"></script>
+<script type="text/javascript" src="static/js/admin/jquery.zclip.min.js"></script>
+<script type="text/javascript" src="static/js/admin/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/admin/json.js"></script>
+<script>
+	$(document).ready(function() {
+		var progress = setInterval("check_progress()",2000);
+		var log_info = setInterval("migration_details()",2000);
+		system_migration()
+    });
+
+	function system_migration() {
+		var url = window.location.search;
+		kernel_version = url.split(",")[1]
+        var system_migration_data_json={"mod":"system_migration"};
+        system_migration_data_json.ip="tasks"
+        system_migration_data_json.kernel_version=kernel_version
+        var arr_info = window.location.search;
+        $.ajax({
+			async:true,
+			type: 'post',
+			dataType: 'json',
+			url: 'MT_system_migration',
+			data: $.toJSON(system_migration_data_json),
+			success: function(res) {
+				res=$.evalJSON(res);
+				if (res.res == -1) {
+					setTimeout(function () { window.location.href="/MT_migration_results" + arr_info + 1 }, 3000);
+				} else if (res.res == 0) {
+					setTimeout(function () { window.location.href="/MT_migration_results" + arr_info + 0 }, 3000);
+				} else if (res.res == 2) {
+					console.log("迁移进行中")
+				}
+			}
+        });
+    };
+
+	function check_progress() {
+		var check_progress_data_json={"mod":"check_migration_progress"};
+        check_progress_data_json.ip="tasks"
+        var pg = document.getElementById('pg')
+        $.ajax({
+			async:true,
+			type: 'post',
+			dataType: 'json',
+			url: 'MT_migration_progress',
+			data: $.toJSON(check_progress_data_json),
+			success: function(res) {
+				res=$.evalJSON(res);
+				pg.style.width=res.progress + "%";
+				document.getElementById('pg_info').innerHTML=res.progress + "%";
+				if (res.progress == "100") {
+					setTimeout(function () { window.location.href="/MT_migration_results" + arr_info + 0 }, 3000);
+				}
+			}
+        });
+	}
+
+	function migration_details() {
+		var migration_details_data_json={"mod":"migration_details"};
+        migration_details_data_json.ip="tasks"
+        var pg = document.getElementById('pg')
+        $.ajax({
+			async:true,
+			type: 'post',
+			dataType: 'json',
+			url: 'MT_system_migration_info',
+			data: $.toJSON(migration_details_data_json),
+			success: function(res) {
+				res=$.evalJSON(res);
+				document.getElementById('log_info').innerHTML=res.data
+			}
+        });
+	}
+
+	function showInfo() {
+		var showId = document.getElementById('showId');
+		var showInfoId = document.getElementById('showInfoId');
+		if (showId.name == '1') {
+			showId.name = '0'
+			showInfoId.style.display = ""
+			var current = 0;
+			current = (current+180)%360;
+			showId.style.transform = 'rotate('+current+'deg)';
+		} else if (showId.name == '0') {
+			showId.name = '1'
+			showInfoId.style.display = "none"
+			var current = 180;
+			current = (current+180)%360;
+			showId.style.transform = 'rotate('+current+'deg)';
+		}
+	}
+	
+</script>
+</body>
+</html>

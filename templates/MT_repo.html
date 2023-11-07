@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>管理首页 | 统信迁移工具</title>
+    <link type="text/css" rel="stylesheet" href="static/css/admin/framework.css" />
+	<link href="static/css/admin/style.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="static/css/admin/main.css" />
+	<link type="text/css" rel="stylesheet" href="static/css/admin/alert.css" />
+</head>
+<body>
+<div class="page">
+	<div class="container">
+		<div class="pageHeader" >
+			<div class="segment">
+				<h3 class="ui dividing header">	
+					<img src="static/images/logo.png" style="width: 120px; height: 50px;"/>				
+  					<label style="padding-left:320px;font-size:28px;">统信服务器系统迁移软件</label>
+				</h3>
+			</div>				
+		</div>
+	<div class="pageHeader">
+        <div class="segment">
+            <h5 class="ui dividing  header">
+  		        <i class="large edit alternate icon"></i>
+  		        <div class="content">检查软件仓库路径</div>
+            </h5>
+        </div>
+    </div>
+	<div class="two fields">
+		<div class="field">
+			<label>软件仓库路径:</label>
+			<div class="ui left labeled icon input">
+				<input type="text" id="repo_pwd" style="width: 450px;" value="请输入软件仓库路径">
+				<i class="edit icon"></i>
+			</div>
+			<div id="repo1" style="display: none;"><img src="../static/images/login.gif" width="13" height="13" style="padding-left:0px;"/><label style="font-size:13px;font-family:”思源黑体”;font-weight:bold;">正在连接软件仓库......</label></div>
+			<div id="repo2" style="display: none;"><img src="../static/images/u70.svg" width="13" height="13" style="padding-left:0px;"/><label id="repo_info" style="font-size:13px;font-family:”思源黑体”;font-weight:bold;"></label></div>
+			<p style="opacity: 0.5">例如:</p>
+			<p style="opacity: 0.5">1.本地仓库</p>
+			<p style="opacity: 0.5">file:///mnt/iso/AppStream</p>
+			<p style="opacity: 0.5">file:///mnt/iso/BaseOS</p>
+			<p style="opacity: 0.5">file:///mnt/iso/Kernel-4.18</p>
+			<p style="opacity: 0.5">请输入:file:///mnt/iso</p>
+			<p style="opacity: 0.5">2.在线仓库</p>
+			<p style="opacity: 0.5">http://0.0.0.0/iso/AppStream</p>
+			<p style="opacity: 0.5">http://0.0.0.0/iso/BaseOS</p>
+			<p style="opacity: 0.5">http://0.0.0.0/iso/Kernel-4.18</p>
+			<p style="opacity: 0.5">请输入:http://0.0.0.0/iso</p>
+		</div>
+	</div>
+    <div class="menter_btn_a_lf" >
+        <hr style="opacity: 0.1;border: 1px solid #4C4D4E;width:99%;" />
+    	</br>
+        <button onclick="close_tool();" data-toggle="modal" data-target="#exampleModal" type="submit" class="menter_btn_a_a_lf" data-locale="Exit" style="text-align: center; line-height: 37px; color:black; font-size:18px;"><style>a{TEXT-DECORATION:none}</style>取消</button>
+		<button id="check_repo" disabled="disabled" data-locale="Next_Step" type="submit" class="menter_btn_a_a_lf" name="" style="text-align: center; line-height: 37px; color:black; font-size:18px;opacity: 0.2" onclick="save()"><style>a{TEXT-DECORATION:none}</style>下一步</button>
+    </div>
+    </div>
+</div>
+<script type="text/javascript" src="static/js/admin/jquery.min.js"></script>
+<script type="text/javascript" src="static/js/admin/framework.js"></script>
+<script type="text/javascript" src="static/js/admin/jquery.zclip.min.js"></script>
+<script type="text/javascript" src="static/js/admin/alert.js"></script>
+<link type="text/css" rel="stylesheet" href="static/css/admin/alert.css" />
+<script type="text/javascript" src="static/js/admin/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/admin/json.js"></script>
+<script>
+    window.onload = function(){
+        $("#loading").hide();
+    }
+
+    function save() {
+        document.getElementById("repo2").style.display = "none"
+        document.getElementById("check_repo").setAttribute("disabled", true);
+        document.getElementById("check_repo").style.opacity = "0.2"
+        var check_repo_data_json={"mod":"check_repo"};
+        check_repo_data_json.repo_pwd = document.getElementById("repo_pwd").value;
+        check_repo_data_json.ip = "tasks"
+        document.getElementById("repo1").style.display = ""
+        $.ajax({
+            async:true,
+            type: 'post',
+            dataType: 'json',
+            url: 'MT_check_repo',
+            data: $.toJSON(check_repo_data_json),
+	        success: function(res) {
+                res=$.evalJSON(res);
+                if (res.res == 1) {
+	                document.getElementById("repo1").style.display = "none"
+                    document.getElementById("check_repo").removeAttribute("disabled");
+                    document.getElementById("check_repo").style.opacity = "1"
+                    document.getElementById("repo2").style.display = ""
+                    document.getElementById("repo_info").innerHTML = res.error
+				}else{
+					agent_passwd = window.location.search;
+					window.location = '/MT_kernel' + agent_passwd;
+                }
+			}
+     	});
+	}
+
+    function close_tool() {
+        alert("确定关闭迁移软件吗");
+    }
+
+	$("#repo_pwd").bind("input propertychange",function(event){
+		if ($("#repo_pwd").val() != "") {
+			document.getElementById('check_repo').style.opacity = 1
+			document.getElementById('check_repo').removeAttribute("disabled");
+		}
+    });
+
+</script>
+</body>
+</html>
