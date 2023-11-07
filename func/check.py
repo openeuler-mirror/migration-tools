@@ -55,7 +55,6 @@ def init_dir():
     with open(pstate, 'w+') as fp:
         fp.write('0')
         fp.close()
-    # 迁移进度
     mig_init_porgress()
     return None
 
@@ -90,7 +89,6 @@ def check_storage(data):
     stat = os.statvfs(path)
     cache_space = 10.0
     state = 1
-    # 避免centos7系统检测失败
     ava_cache = 0
     time.sleep(5)
     if stat:
@@ -219,7 +217,6 @@ def init_repo_file(baseurl):
         baseos = baseurl+'/BaseOS'
         kernel_419 = baseurl+'/kernel419'
         kernel_510 = baseurl+'/kernel510'
-
         repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = '''+appstream.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-BaseOS]\nname = UniontechOS BaseOS\nbaseurl = '''+baseos.strip('\n')+'''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-4.19.0]\nname = UniontechOS Kernel-4.19.0\nbaseurl = '''+kernel_419.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = '''+kernel_510.strip('\n')+'''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n
 '''
     else:
@@ -346,7 +343,8 @@ def export_reports(data):
 
 def system_check_requires(conflist):
     os.system('rpm --rebuilddb')
-    cmd = 'rpm -qa|xargs -i rpm -V --nordev --nomode  --nomtime  --nogroup --nouser  --nosize --nofiledigest --nolinkto --noscripts --nofiles --nodigest {} >>' + PRE_MIG
+    cmd = ('rpm -qa|xargs -i rpm -V --nordev --nomode  --nomtime  --nogroup --nouser  --nosize '
+           '--nofiledigest --nolinkto --noscripts --nofiles --nodigest {} >>') + PRE_MIG
     rets = os.popen(cmd)
     if rets:
         for ret in rets.readlines():
@@ -472,7 +470,8 @@ def if_not_mig_kernel(kernel_version):
         f.write(content)
         f.close()
     if kernel_version == '0':
-        kernel_patterns = 'exclude= kernel* kernel-tools python3-perf kernel-headers kernel-devel bpftool perf kernel-core kmod-kvdo kpatch glibc-headers \n'
+        kernel_patterns = ('exclude= kernel* kernel-tools python3-perf kernel-headers kernel-devel '
+                           'bpftool perf kernel-core kmod-kvdo kpatch glibc-headers \n')
         with open('/etc/yum.conf', 'a+') as f:
             f.write(kernel_patterns)
             f.close()
@@ -597,7 +596,8 @@ def start_sysmig(data_j):
         t = Process(target=run_cmd2file, args=(cmd,))
         t.start()
     elif re.search('centos7', agent_os):
-        ex_kernel = 'sh func/centos72uos.sh -e "kernel-devel* kernel-headers* kernel-tools* kernel* bpftool perf python-perf kernel-abi* kernel-modules kernel-core kmod-kvdo"'
+        ex_kernel = ('sh func/centos72uos.sh -e "kernel-devel* kernel-headers* kernel-tools* kernel* '
+                     'bpftool perf python-perf kernel-abi* kernel-modules kernel-core kmod-kvdo"')
         if kernel_version == '0':
             run_cmd2file(ex_kernel)
             message_state('3')

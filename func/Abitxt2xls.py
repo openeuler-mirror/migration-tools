@@ -21,7 +21,6 @@ def get_host_ip():
 
 
 def accord_line_write(txt_line_file, sheet_line, line_num, column_num):
-    # 通过列的形式写入文件
     with open(txt_line_file, 'r') as line_f:
         x = line_num 
         y = column_num
@@ -36,7 +35,6 @@ def accord_line_write(txt_line_file, sheet_line, line_num, column_num):
 
 
 def accord_column_write(txt_column_file, sheet_column, line_num, column_num):
-    # 通过行的形式写入文件
     with open(txt_column_file, 'r') as column_f:
         x = line_num 
         y = column_num
@@ -53,13 +51,11 @@ def system_info(check_file):
     accord_line_write(SysInfoFile, sheet_sysinfo, 0, 0)
 
 
-# sheet1-系统基本信息
 def system_info_after(sys):
     sheet_sysinfo = sys.add_sheet("系统基本信息")
     accord_line_write(SysInfoFile_after, sheet_sysinfo, 0, 0)
 
 
-# sheet2-软件包对比
 def pkg_comp(pkg):
     sheet_pkgcomp = pkg.add_sheet("软件包对比")
     accord_line_write(PkgCompFile1, sheet_pkgcomp, 0, 0)
@@ -67,7 +63,6 @@ def pkg_comp(pkg):
     accord_column_write(PkgCompFile4, sheet_pkgcomp, 3, 1)
 
 
-# sheet2-软件包对比
 def pkg_comp_after(pkg):
     sheet_pkgcomp = pkg.add_sheet("软件包对比")
     accord_line_write(PkgCompFile1_after, sheet_pkgcomp, 0, 0)
@@ -76,20 +71,17 @@ def pkg_comp_after(pkg):
     accord_column_write(PkgCompFile4, sheet_pkgcomp, 3, 2)
 
 
-# sheet4-ABI兼容
 def abi_incomp_info(file_incomp):
     sheet_comp = file_incomp.add_sheet("ABI兼容")
     accord_line_write(txtFileName, sheet_comp, 0, 0)
 
 
-# sheet5-ABI不兼容
 def abi_comp_pkg(file_comp):
     sheet_incomp = file_comp.add_sheet("ABI不兼容")
     accord_line_write(txtFileName1, sheet_incomp, 0, 0)
 
 
 def abi_txt2xls():
-    # 兼容性检查报告名规则：UOS_migration_log_10.0.2.3_cy.server_202110192140.xls
     host_ip = get_host_ip()
     hostname = socket.gethostname()
     excel_file_name = "UOS_migration_log_"+host_ip+"_"+hostname+"_"+datetime.datetime.now().strftime('%Y%m%d%H%M')+".xls"
@@ -108,7 +100,8 @@ def abi_txt2xls():
 def abi_txt2xls_after_mig():
     host_ip = get_host_ip()
     hostname = socket.gethostname()
-    excel_file_name_after = "UOS_migration_log_"+host_ip+"_"+hostname+"_"+datetime.datetime.now().strftime('%Y%m%d%H%M')+".xls"
+    excel_file_name_after = ("UOS_migration_log_"+host_ip+"_"+hostname+"_"+datetime.datetime.now()
+                             .strftime('%Y%m%d%H%M')+".xls")
     report_name_after = report_path_ago+excel_file_name_after
 
     if os.path.exists(report_name_after):
