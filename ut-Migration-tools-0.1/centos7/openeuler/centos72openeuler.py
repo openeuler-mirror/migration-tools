@@ -204,7 +204,8 @@ def main():
     if not check_pkg('dnf'):
         logger.error('please install dnf')
         return None
-    paramiko_rpm_pwd = "/usr/lib/migration-tools-agent/agent-requires/paramiko/*.rpm"
+    os_arch = platform.machine()
+    paramiko_rpm_pwd = "/usr/lib/migration-tools-agent/agent-requires/paramiko/%s/*.rpm" % os_arch
     os.system('rpm -Uvh %s --force' % paramiko_rpm_pwd)
     remove_rpm_nodeps = 'rpm -e python-backports --nodeps'
     os.system(remove_rpm_nodeps)
