@@ -381,8 +381,7 @@ def check_environment(data_j):
         state = state[0]
     if re.match('0', state):
         message_state('1')
-        if system_check_requires([]):
-            data = '1'
+        system_check_requires([])
         env()
     if re.match('1', state):
         data = '1'
@@ -534,10 +533,8 @@ def readline_log():
     if not os.path.exists(path):
         return 0
     else:
-        ln = 0
         with open(path, 'r') as rf:
-            for line in rf:
-                ln = ln + 1
+            ln = len(rf.readlines())
             rf.close()
         return ln
 
