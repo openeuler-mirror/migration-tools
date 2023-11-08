@@ -278,7 +278,7 @@ def main():
     conf_grub()
     check_migration_progress('80')
     run_subprocess('dnf install -y yum'.split())
-    run_subprocess('yum remove *uelc* -y'.split())
+    run_subprocess('dnf remove *uelc* -y'.split())
     check_migration_progress('100')
 
     logger.info("System migration completed, rebooting system")
