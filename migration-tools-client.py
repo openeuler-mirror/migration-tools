@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 import json
-from flask import Flask, render_template, request, Response
+from flask import Flask, request, Response
 from func.share import *
 from urls import agent_mods
 
