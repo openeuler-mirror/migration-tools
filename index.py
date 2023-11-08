@@ -107,7 +107,7 @@ def check_user():
 
 
 @app.route('/MT_repo', methods=['GET', 'POST'])
-def check_repo():
+def repo():
     """
     跳转软件仓库界面
     :return:
