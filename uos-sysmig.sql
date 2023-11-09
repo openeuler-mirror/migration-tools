@@ -81,6 +81,39 @@ LOCK TABLES `task_stream` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `agent_task`
+--
+
+DROP TABLE IF EXISTS `agent_task`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `agent_task` (
+  `agent_id` int NOT NULL,
+  `agent_ip` varchar(256) DEFAULT NULL,
+  `task_id` int DEFAULT NULL,
+  `task_stream_id` int DEFAULT NULL,
+  `task_code` varchar(256) DEFAULT NULL,
+  `task_type` int DEFAULT NULL,
+  `task_status` int DEFAULT NULL,
+  `task_progress` int DEFAULT NULL,
+  `task_CreateTime` timestamp NULL DEFAULT NULL,
+  `task_Updatetime` timestamp NULL DEFAULT NULL,
+  `task_data` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`agent_id`),
+  KEY `task_id` (`task_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `agent_task`
+--
+
+LOCK TABLES `agent_task` WRITE;
+/*!40000 ALTER TABLE `agent_task` DISABLE KEYS */;
+/*!40000 ALTER TABLE `agent_task` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `cur_task`
 --
 

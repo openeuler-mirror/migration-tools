@@ -63,3 +63,18 @@ def create_task_stream(agent_ip):
     time = datetime.now().strftime('%Y-%-m-%d %H:%M:%S')
     values = ((agent_ip, agent_id, stream_status, time, time),)
     DBHelper().insert(create_task_stream_sql, values)
+    
+    create_cur_task_sql = "insert into cur_task(task_status,stream_CreateTime,stream_Updatetime," \
+                          "agent_ip) values (%s, %s, %s, %s);"
+    values = (('None', time, time, agent_ip),)
+    DBHelper().insert(create_cur_task_sql, values)
+
+    get_task_id = "select max(task_id) task_id from cur_task"
+    task_id = DBHelper().execute(get_task_id).fetchone()
+    task_stream_id_sql = "select task_stream_id from task_stream where agent_ip='%s'" % agent_ip
+    task_stream_id = DBHelper().execute(task_stream_id_sql).fetchone()
+    values = ((agent_id, agent_ip, task_id[0], 0, 0, time, time, task_stream_id[0], "00"),)
+    create_agent_task_sql = "insert into agent_task(agent_id,agent_ip,task_id,task_status,task_progress," \
+                            "task_CreateTime,task_Updatetime,task_stream_id,task_data) values " \
+                            "(%s, %s, %s, %s, %s, %s, %s, %s, %s);"
+    DBHelper().insert(create_agent_task_sql, values)
