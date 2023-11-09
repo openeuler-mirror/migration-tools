@@ -1,4 +1,5 @@
 import json
+from connect_sql import DBHelper
 
 def import_host_info(data):
     """
@@ -19,3 +20,4 @@ def import_host_info(data):
         agent_username = i.get('agent_hostname')
         agent_passwd = i.get('agent_password')
         val = ((agent_ip, agent_username, agent_passwd),)
+        DBHelper().insert(sql, val)
