@@ -27,6 +27,7 @@ mods = {
         'system_migration': migration.system_migration,
         'migration_details': migration.migration_details,
         'import_host_info': server.import_host_info,
+        'host_info_display': server.host_info_display,
         }
 
 @app.route('/import_host_info', methods=['GET', 'POST'])
@@ -38,6 +39,18 @@ def import_host_info():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
+
+
+@app.route('/host_info_display', methods=['GET', 'POST'])
+def host_info_display():
+    """
+    显示主机信息
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
 
 def check_methods():
     if request.method == 'POST':

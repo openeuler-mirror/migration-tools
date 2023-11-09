@@ -38,7 +38,6 @@ def import_host_info(data):
     return data_json
 
 
-
 def get_agent_id(agent_ip):
     """
     获取agent_id
@@ -78,3 +77,59 @@ def create_task_stream(agent_ip):
                             "task_CreateTime,task_Updatetime,task_stream_id,task_data) values " \
                             "(%s, %s, %s, %s, %s, %s, %s, %s, %s);"
     DBHelper().insert(create_agent_task_sql, values)
+
+
+def pagebreak(data, page, size):
+    """
+    页面数据分页
+    :param data:
+    :return:
+    """
+    page_start = (page - 1) * size
+    page_end = page * size
+    result = data[page_start:page_end]
+
+    return result
+
+def host_info_display(data):
+    """
+    显示主机信息
+    agent_ip,hostname,agent_online_status,agent_os,agent_arch,
+    agent_history_faild_reason,task_CreateTime,task_status
+    :return:
+    """
+    page = json.loads(data).get('page')
+    size = json.loads(data).get('size')
+    sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_arch," \
+          "agent_history_faild_reason from agent_info;"
+    data = DBHelper().execute(sql).fetchall()
+    data = list(data)
+    for i in range(0, len(data)):
+        data[i] = list(data[i])
+        agent_task = "select task_CreateTime,task_data from agent_task where agent_ip = '%s';" % data[i][0]
+        get_agent_task = DBHelper().execute(agent_task).fetchall()
+        get_agent_task = list(get_agent_task)
+
+        if not get_agent_task:
+            data[i] += ["", ""]
+        else:
+            task_CreateTime = get_agent_task[0][0].strftime('%Y-%-m-%d %H:%M:%S')
+            task_status = get_agent_task[0][1]
+            data[i].append(task_CreateTime)
+            data[i].append(task_status)
+
+    res = {}
+    res['num'] = len(data)
+    info_list = []
+    info_dict_keys_list = ['agent_ip', 'hostname', 'agent_online_status', 'agent_os', 'agent_arch',
+                           'failure_reasons', 'task_CreateTime', 'task_status']
+    for i in data:
+        info_list.append(dict(zip(info_dict_keys_list, i)))
+
+    page_list = pagebreak(info_list, page, size)
+    res['info'] = page_list
+    res['page'] = page
+    res['size'] = size
+
+    json_res = json.dumps(res)
+    return json_res
