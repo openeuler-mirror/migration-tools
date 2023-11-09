@@ -3,7 +3,7 @@
 
 import webview
 import json
-from func.share import getSysMigConf
+from sysmig_agent.share import getSysMigConf
 
 uos_sysmig_conf = json.loads(getSysMigConf())
 ip = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]

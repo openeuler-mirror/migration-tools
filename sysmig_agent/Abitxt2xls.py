@@ -5,7 +5,7 @@ import datetime
 import json
 import socket
 import xlwt
-from func.share import *
+from sysmig_agent.share import *
 
 
 report_path_bef = "/var/tmp/uos-migration/UOS_analysis_report/"

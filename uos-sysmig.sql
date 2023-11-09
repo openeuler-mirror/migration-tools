@@ -81,6 +81,32 @@ LOCK TABLES `task_stream` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `cur_task`
+--
+
+DROP TABLE IF EXISTS `cur_task`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cur_task` (
+  `task_id` int NOT NULL AUTO_INCREMENT,
+  `task_status` varchar(256) DEFAULT NULL,
+  `stream_CreateTime` timestamp NULL DEFAULT NULL,
+  `stream_Updatetime` varchar(45) DEFAULT NULL,
+  `agent_ip` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`task_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cur_task`
+--
+
+LOCK TABLES `cur_task` WRITE;
+/*!40000 ALTER TABLE `cur_task` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cur_task` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping routines for database 'uossysmig'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

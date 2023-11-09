@@ -12,9 +12,9 @@ from multiprocessing import Process
 
 
 from settings import *
-from func.utils import *
-from func.share import *
-from func.Abitxt2xls import *
+from sysmig_agent.utils import *
+from sysmig_agent.share import *
+from sysmig_agent.Abitxt2xls import *
 
 os.chdir('/usr/lib/migration-tools-agent')
 
@@ -375,7 +375,7 @@ def fork_sh(cmd):
 
 
 def env():
-    cmd = 'sh func/Abisystmcompchk.sh'
+    cmd = 'sh sysmig_agent/Abisystmcompchk.sh'
     t = Process(target=fork_sh, args=(cmd,))
     t.start()
 
@@ -603,21 +603,21 @@ def Sysmig(data_j):
     AGENT_OS = os_version_ret[0]+version[0]
     kernel_version = json.loads(data_j).get('kernel_version')
     if re.fullmatch('8',version[0]):
-        cmd = 'python3 func/centos82uos.py'
+        cmd = 'python3 sysmig_agent/centos82uos.py'
         t = Process(target=run_cmd2file, args=(cmd,))
         t.start()
     elif re.search('centos7',AGENT_OS):
-        ex_kernel = 'sh func/centos72uos.sh -e "kernel-devel* kernel-headers* kernel-tools* kernel* bpftool perf python-perf kernel-abi* kernel-modules kernel-core kmod-kvdo"'
+        ex_kernel = 'sh sysmig_agent/centos72uos.sh -e "kernel-devel* kernel-headers* kernel-tools* kernel* bpftool perf python-perf kernel-abi* kernel-modules kernel-core kmod-kvdo"'
         if kernel_version == '0':
             run_cmd2file(ex_kernel)
             messageState('3')
         elif kernel_version == '3.10.0' :
             run_cmd2file(ex_kernel)
-            cmd_k = 'sh func/kernel.sh -k 3.10.0'
+            cmd_k = 'sh sysmig_agent/kernel.sh -k 3.10.0'
             run_cmd2file(cmd_k)
             messageState('3')
         else:
-            cmd = 'sh func/centos72uos.sh'
+            cmd = 'sh sysmig_agent/centos72uos.sh'
             run_cmd2file(cmd)
             messageState('3')
 
@@ -647,7 +647,7 @@ def system_migration(data_j):
         oldos = oldos.split(':',1)
         main_conf(oldos[1]) 
         if os.path.exists('/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'):
-            run_cmd2file('sh func/Abitranrept.sh')
+            run_cmd2file('sh sysmig_agent/Abitranrept.sh')
             abi_txt2xls_after_mig()
         messageState('4')
     elif re.fullmatch('4',state):
@@ -659,7 +659,7 @@ def system_migration(data_j):
     elif re.fullmatch('3',state):
         messageState('5')
         if os.path.exists('/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'):
-            run_cmd2file('func/Abitranrept.sh')
+            run_cmd2file('sysmig_agent/Abitranrept.sh')
             abi_txt2xls_after_mig()
         if os.path.exists('/var/tmp/uos-migration/UOS_migration_log/rpms-list-after.txt'):
             res = '0'
