@@ -6,7 +6,7 @@
 import os
 import sys
 import json
-from func import share
+from sysmig_agent import share
 from views import migration, server
 
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response

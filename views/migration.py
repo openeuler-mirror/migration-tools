@@ -3,7 +3,7 @@
 import os
 from flask import *
 from client_requests import *
-from func.utils import *
+from sysmig_agent.utils import *
 
 
 def check_services(data, url):

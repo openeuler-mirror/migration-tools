@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 
 from connect_sql import DBHelper
+from sysmig_agent.share import getSysMigConf
 
 def import_host_info(data):
     """
@@ -23,7 +24,18 @@ def import_host_info(data):
         agent_passwd = i.get('agent_password')
         val = ((agent_ip, agent_username, agent_passwd),)
         DBHelper().insert(sql, val)
+        create_task_stream(agent_ip)
 
+    time = datetime.now().strftime('%Y-%-m-%d %H:%M:%S')
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    ip = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
+    host_report_sql = "insert into report_info(agent_ip,create_time,report_name,report_type) values (%s, %s, %s, %s);"
+    host_report_sql_val = ((ip, time, '迁移主机列表_%s' % time, '主机列表'),)
+    DBHelper().insert(host_report_sql, host_report_sql_val)
+    # TODO: 用户权限检测
+    
+    data_json = json.dumps(data)
+    return data_json
 
 
 

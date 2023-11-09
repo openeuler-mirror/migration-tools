@@ -44,12 +44,12 @@ def get_bad_packages():
     local_os_version = version[0]
     badpackages = ''
     if '8' == local_os_version:
-        with open('func/8badpackage.txt','r') as bf:
+        with open('sysmig_agent/8badpackage.txt','r') as bf:
             for bad_package in bf:
                 badpackages = badpackages + ' ' + bad_package.strip()
             bf.close()
     else:
-        with open('func/7badpackage.txt','r') as bf:
+        with open('sysmig_agent/7badpackage.txt','r') as bf:
             for bad_package in bf:
                 badpackages = badpackages + ' ' + bad_package.strip()
             bf.close()

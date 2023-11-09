@@ -2,7 +2,7 @@
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 import json
 import requests
-from func.share import getSysMigConf
+from sysmig_agent.share import getSysMigConf
 
 
 uos_sysmig_conf = json.loads(getSysMigConf())

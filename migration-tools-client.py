@@ -3,8 +3,8 @@
 import os
 import json
 from flask import *
-from func import check
-from func.share import *
+from sysmig_agent import check
+from sysmig_agent.share import *
 
 app = Flask(__name__)
 

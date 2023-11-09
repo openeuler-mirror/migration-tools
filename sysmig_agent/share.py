@@ -8,7 +8,7 @@ import re
 import shutil
 import subprocess
 
-from func.utils import list_to_json
+from sysmig_agent.utils import list_to_json
 
 def getSysMigConf():
     confpath = '/etc/migration-tools/migration-tools.conf'
