@@ -133,3 +133,32 @@ def host_info_display(data):
 
     json_res = json.dumps(res)
     return json_res
+
+
+def modify_task_stream(data):
+    """
+    修改任务流状态
+    :return:
+    """
+    task_id = json.loads(data).get('task_id')
+    get_task_status_sql = "select task_status,task_stream_id from agent_task where task_id='%s';" % task_id
+    info = DBHelper().execute(get_task_status_sql).fetchone()
+    task_status = info[0]
+    task_stream_id = info[1]
+    if task_status == 0:
+        task_status = 'None'
+    elif task_status == 1:
+        task_status = 'Doing'
+    elif task_status == 2:
+        task_status = 'Done'
+    else:
+        task_status = 'Cancel'
+    time = datetime.now()
+    modify_task_status_sql = "update cur_task set task_status='%s',stream_Updatetime='%s' " \
+                             "where task_id ='%s';" % (task_status, time, task_id)
+    DBHelper().execute(modify_task_status_sql)
+
+    modify_task_stream_sql = "update task_stream set stream_status='%s',stream_Updatetime='%s' " \
+                             "where task_stream_id='%s';" % (task_status, time, task_stream_id)
+    DBHelper().execute(modify_task_stream_sql)
+    return 'success'
