@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+
 from connect_sql import DBHelper
 
 def import_host_info(data):
@@ -21,3 +23,31 @@ def import_host_info(data):
         agent_passwd = i.get('agent_password')
         val = ((agent_ip, agent_username, agent_passwd),)
         DBHelper().insert(sql, val)
+
+
+
+
+def get_agent_id(agent_ip):
+    """
+    获取agent_id
+    :param agent_ip:
+    :return:
+    """
+    sql = "select agent_id from agent_info where agent_ip='%s'" % agent_ip
+    get_agent_id = DBHelper().execute(sql).fetchall()
+    return get_agent_id[0][0]
+
+
+def create_task_stream(agent_ip):
+    """
+    创建任务流
+    :return:
+    """
+    create_task_stream_sql = "insert into task_stream(agent_ip,agent_id,stream_status," \
+                             "stream_CreateTime,stream_Updatetime) values (%s, %s, %s, %s, %s);"
+
+    stream_status = 'None'
+    agent_id = get_agent_id(agent_ip)
+    time = datetime.now().strftime('%Y-%-m-%d %H:%M:%S')
+    values = ((agent_ip, agent_id, stream_status, time, time),)
+    DBHelper().insert(create_task_stream_sql, values)
