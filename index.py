@@ -7,7 +7,7 @@ import os
 import sys
 import json
 from func import share
-from views import migration
+from views import migration, server
 
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
 app = Flask(__name__)
@@ -26,8 +26,18 @@ mods = {
         'export_migration_reports': migration.export_migration_reports,
         'system_migration': migration.system_migration,
         'migration_details': migration.migration_details,
+        'import_host_info': server.import_host_info,
         }
 
+@app.route('/import_host_info', methods=['GET', 'POST'])
+def import_host_info():
+    """
+    导入主机信息
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
 
 def check_methods():
     if request.method == 'POST':
