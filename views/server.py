@@ -162,3 +162,24 @@ def modify_task_stream(data):
                              "where task_stream_id='%s';" % (task_status, time, task_stream_id)
     DBHelper().execute(modify_task_stream_sql)
     return 'success'
+
+
+def delete_host_info(data):
+    """
+    删除主机信息
+    :return:
+    """
+    data = json.loads(data)
+    for i in data.get('agent_ip'):
+        sql = "delete from agent_info where agent_ip='%s';" % i
+        DBHelper().execute(sql)
+        sql = "delete from agent_task where agent_ip='%s';" % i
+        DBHelper().execute(sql)
+        sql = "delete from task_stream where agent_ip='%s';" % i
+        DBHelper().execute(sql)
+        sql = "delete from cur_task where agent_ip='%s';" % i
+        DBHelper().execute(sql)
+
+    res = {'data': 'success'}
+    json_res = json.dumps(res)
+    return json_res
