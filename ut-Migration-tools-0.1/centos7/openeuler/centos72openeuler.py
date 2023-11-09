@@ -8,7 +8,7 @@ import logging
 import sys
 os.chdir('/usr/lib/migration-tools-agent')
 sys.path.append('/usr/lib/migration-tools-agent')
-from settings import MIG_LOG, OPENEULER_REPO
+from settings import MIG_LOG, OPENEULER_REPO, DNF_PATH
 
 
 if not os.path.exists(MIG_LOG):
@@ -227,26 +227,24 @@ def main():
     for package in remove_packages_nodeps:
         nodeps_cmd = "rpm -q " + package + " && rpm -e --nodeps " + package
         os.system(nodeps_cmd)
-
-        install_dir = os.path.join(os.path.dirname('/var/tmp'), 'DNF')
-        if not os.path.exists(install_dir):
-            os.makedirs(install_dir)
-        else:
-            shutil.rmtree(install_dir)
+    if not os.path.exists(DNF_PATH):
+        os.makedirs(DNF_PATH)
+    else:
+        shutil.rmtree(DNF_PATH)
     check_migration_progress('30')
     install_cmd = 'yum install -y systemd python3-libdnf libreport-filesystem python3-gpg libmodulemd deltarpm python3-hawkey \
-                    python3-libcomps python3-rpm util-linux --installroot={}'.format(install_dir)
+                    python3-libcomps python3-rpm util-linux --installroot={}'.format(DNF_PATH)
     os.system(install_cmd)
     check_migration_progress('40')
-    download_dnf = '/usr/bin/yumdownloader {} --destdir={}'.format('dnf python3-dnf dnf-help', os.path.join(install_dir, 'root'))
+    download_dnf = '/usr/bin/yumdownloader {} --destdir={}'.format('dnf python3-dnf dnf-help', os.path.join(DNF_PATH, 'root'))
     os.system(download_dnf)
 
-    subprocess.run("/sbin/chroot /var/DNF /bin/bash -c 'rpm --rebuilddb'", shell=True)
-    subprocess.run("/sbin/chroot /var/DNF /bin/bash -c 'rpm -ivh /root/*'", shell=True)
+    subprocess.run("/sbin/chroot {} /bin/bash -c 'rpm --rebuilddb'".format(DNF_PATH), shell=True)
+    subprocess.run("/sbin/chroot {} /bin/bash -c 'rpm -ivh /root/*'".format(DNF_PATH), shell=True)
 
     rsync = '/usr/bin/rsync -a {}/ / --exclude="var/lib/rpm" --exclude="var/cache/yum" --exclude="tmp" ' \
                 '--exclude="sys" --exclude="run" --exclude="lost+found" --exclude="mnt" --exclude="proc" ' \
-                '--exclude="dev" --exclude="media" --exclude="etc" --exclude="root" '.format(install_dir)
+                '--exclude="dev" --exclude="media" --exclude="etc" --exclude="root" '.format(DNF_PATH)
     subprocess.run(rsync, shell=True)
     check_migration_progress('50')
 
