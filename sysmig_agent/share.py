@@ -45,6 +45,17 @@ def sql_online_statue(statue, task_id):
     except:
         pass
 
+
+def sql_mig_statue(statue):
+    # sql = "UPDATE agent_task SET task_statues = {} , task_Updatetime = NOW() WHERE task_id = '{}';".format(statue, task_id)
+    sql = "UPDATE agent_task SET task_data = '{}' , task_Updatetime = NOW() WHERE agent_ip = '{}';".format(statue,
+                                                                                                           get_local_ip())
+    try:
+        ret = DBHelper().execute(sql)
+    except:
+        pass
+    
+
 def sql_show_tables():
     sql = "SELECT task_progress,task_data FROM agent_task WHERE agent_ip = '{}';".format(get_local_ip())
     ret_sql_msg_info = DBHelper().execute(sql)
