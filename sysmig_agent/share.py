@@ -368,3 +368,36 @@ def main_conf(osname):
 
     logger.info("Switch complete.UniontechOS recommends rebooting this system.")
     return 0
+
+
+def sql_os_newversion(localos):
+    sql = "UPDATE agent_info SET agent_migration_os = '{}' WHERE agent_ip = '{}';".format(localos, get_local_ip())
+    try:
+        ret = DBHelper().execute(sql)
+    except:
+        pass
+
+
+def get_new_osversion():
+    new_os = '统信服务器操作系统V20({})'
+    path = '/etc/os-version'
+    if os.path.exists(path):
+        with open(path,'r') as v:
+            ret = v.readlines()
+            localos=ostype=''
+            for i in range(len(ret)):
+                if not ret[i]:
+                    continue
+                if 'MinorVersion' in ret[i]:
+                    strminor = str(ret[i])
+                    _, localos = strminor.split('=',1)
+                if 'EditionName[zh_CN]' in ret[i]:
+                    strminor = str(ret[i])
+                    _, ostype = strminor.split('=',1)
+                    ostype = re.sub('[^a-zA-Z]+','',ostype)
+            localos = localos.strip().strip('\n') + ostype.strip().strip('\n')
+            localos = new_os.format(localos.strip().strip('\n'))
+            sql_os_newversion(localos)
+
+    else:
+        sql_os_newversion('NULL')
