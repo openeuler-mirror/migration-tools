@@ -210,3 +210,14 @@ def get_mig_state(task_id):
             return str(state)
     except:
         return None
+
+
+def get_old_osnameversion():
+    sql = "SELECT agent_os FROM agent_info WHERE agent_ip = '{}' ;".format(get_local_ip())
+    ret_sql_msg_info = DBHelper().execute(sql)
+    try:
+        state = ret_sql_msg_info.fetchall()[0][0]
+        if len(state):
+            return str(state)
+    except:
+        return None
