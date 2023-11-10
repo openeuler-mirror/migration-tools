@@ -30,6 +30,21 @@ def sql_abi_progress(data):
         pass
 
 
+def sql_online_statue(statue, task_id):
+    """
+    sql：agent主机的在线状态更新
+    :param statue: 0：在线; 1：离线
+    :param task_id:agent的json内的task_id
+    :return:
+    """
+    # sql = "UPDATE agent_info SET agent_online_status = {} WHERE agent_ip = {};".format(statue, get_local_ip())
+    sql = "UPDATE agent_info SET agent_online_status = {} WHERE agent_ip = (SELECT agent_ip FROM agent_task WHERE task_id = '{}');".format(
+        statue, task_id)
+    try:
+        ret = DBHelper().execute(sql)
+    except:
+        pass
+
 def sql_show_tables():
     sql = "SELECT task_progress,task_data FROM agent_task WHERE agent_ip = '{}';".format(get_local_ip())
     ret_sql_msg_info = DBHelper().execute(sql)
