@@ -59,7 +59,7 @@ usage() {
 have_program() {
     hash "$1" >/dev/null 2>&1
 }
-##命令未找到。请安装或添加到您的路径，然后重试。
+
 dep_check() {
     if ! have_program "$1"; then
         exit_message "'${1}' command not found. Please install or add it to your PATH and try again."
@@ -68,7 +68,6 @@ dep_check() {
 
 exit_message() {
     echo "$1"
-#    echo "For assistance, please email <${contact_email}>."
     exit 1
 } >&2
 
@@ -85,8 +84,7 @@ restore_repos() {
 Your repositories have been restored to your previous configuration."
 }
 
-yum install -y uos-license-mini license-config 
-## Start of script
+yum install -y uos-license-mini license-config
 
 while getopts "h" option; do
     case "$option" in
@@ -95,7 +93,7 @@ while getopts "h" option; do
 
     esac
 done
-## id  -u是root的id号,必须是root执行
+
 if [ "$(id -u)" -ne 0 ]; then
     exit_message "You must run this script as root.
 Try running 'su -c ${0}'."
@@ -138,7 +136,7 @@ case "$rhel_version" in
         base_packages=("${base_packages[@]}" plymouth grub2 grubby kernel* uos-rpm-config hypervvssd hypervfcopyd hypervkvpd kmod-kvdo compat-gnome-desktop* ) 
         ;;
     6*)
- #       repo_file=public-yum-ol6.repo
+
         new_releases=(uos-release-server)
         base_packages=("${base_packages[@]}" plymouth grub grubby kernel*)
         ;;
@@ -158,7 +156,7 @@ if ! have_program yumdownloader; then
     yum -y install yum-utils || true
     dep_check yumdownloader
 fi
-##寻找存储库目录
+
 echo "Finding your repository directory..."
 
 repos_dir=$(python2 -c "
@@ -192,9 +190,6 @@ if [[ "centos" =~ "old_release" ]];then
 	while read -r repo; do
     	if [ -f "$repo" ]; then
         	cat - "$repo" > "$repo".disabled <<EOF
-# This is a yum repository file that was disabled by
-# ${0##*/}, a script to convert CentOS to UOS Server Enterprise-C 20.
-# Please see $yum_url for more information.
 
 EOF
        		tmpfile=$(mktemp repo.XXXXX)
@@ -218,13 +213,8 @@ if ! yumdownloader "${new_releases[@]}"; then
 fi
 
 
-
-#################  使用uos-release-server默认软件源##
-#: '
 yum -y downgrade python-urlgrabber 
 yum -y install python-urlgrabber 
-#'
-#####################################################
 
 echo "Switching old release package with UOS Server Enterprise-C 20..."
 rpm -i --force '*.rpm'
@@ -235,16 +225,14 @@ else
 	yum -y remove centos-indexhtml*
 fi
 rm -f "${repos_dir}/switch-to-UOS.repo"
-# At this point, the switch is completed.
+
 trap - ERR
 
 
 echo "Installing base packages for UOS Server Enterprise-C 20..."
 sed  -i  "s/^enabled =.*/enabled = 0/g"  /etc/yum.repos.d/UniontechOS.repo
 
-#rpm  -e   rpm-build
-# rpm  -e   system-rpm-config
-#rpm  -e  redhat-rpm-config
+
 if ! yum shell -y <<EOF
 remove ${bad_packages[@]}
 install ${base_packages[@]}
@@ -277,7 +265,6 @@ for  x  in  $yumdb;do
 done
 
 
-# vmlinuz-3.10.0-1062.18.1.uelc20.4.x86_64
 case "$rhel_version" in
     7*)
         if [ -d /sys/firmware/efi ]; then
@@ -295,7 +282,6 @@ rpm  -e  ${old_rhel}
 
 
 
-#In order to specify the installation kernel, add parameters
 if [ -n "$1" ]
 then
         kernel_dir=/mnt/iso/kernel-$1
