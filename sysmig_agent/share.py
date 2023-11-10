@@ -484,3 +484,31 @@ def run_subprocess(cmd="", print_cmd=True, print_output=True):
     return_code = process.poll()
     return output, return_code
 
+
+
+def os_storage():
+    """
+    判断系统剩余空间大小
+    :return: GB
+    """
+    path = '/var/cache'
+    stat = os.statvfs(path)
+    CACHE_SPACE = 10.0
+    state = 1
+    ava_cache = format(stat.f_bavail * stat.f_frsize / 1024 // 1024 / 1024, '.1f')
+    if stat:
+        # with open(PRE_MIG,'a+') as pf:
+        #     pf.write('/var/cache可用空间为'+ava_cache+'GB')
+        #     pf.close()
+        if float(ava_cache) >= CACHE_SPACE:
+            state = 0
+            return ava_cache
+            # data = '可用空间为'+ava_cache+'GB'
+        else:
+            return ava_cache
+            # data = '可用空间为' + ava_cache + 'GB,请清理/var/cache的空间后重试。'
+    else:
+        return ava_cache
+        # data = '可用空间为'+ava_cache+'GB,请清理/var/cache的空间后重试。'
+        # return list_to_json(keylist,valuelist)
+
