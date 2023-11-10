@@ -7,8 +7,19 @@ import platform
 import re
 import shutil
 import subprocess
-
+import socket
 from sysmig_agent.utils import list_to_json
+
+
+def get_local_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+        return ip
+    finally:
+        s.close()
+
 
 def getSysMigConf():
     confpath = '/etc/migration-tools/migration-tools.conf'
