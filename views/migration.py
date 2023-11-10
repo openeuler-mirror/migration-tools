@@ -1,9 +1,22 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 import os
+
+from connect_sql import DBHelper
+from logger import *
+
 from flask import *
 from client_requests import *
 from sysmig_agent.utils import *
+
+
+def check_info(data):
+    """
+    检测系统版本和空间大小
+    :param data:
+    :return:
+    """
+    return 'success'
 
 
 def check_services(data, url):
