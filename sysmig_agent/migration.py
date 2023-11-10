@@ -221,3 +221,17 @@ def get_old_osnameversion():
             return str(state)
     except:
         return None
+
+
+def get_old_osname():
+    nv = get_old_osnameversion()
+    oldosname = re.sub(r'[0-9]', '', nv)
+    return oldosname
+
+
+def get_old_osversion():
+    nv = get_old_osnameversion()
+    oldosversion = re.sub(r'[A-Z,a-z]', '', nv)
+    return oldosversion
+
+
