@@ -29,8 +29,19 @@ mods = {
         'host_info_display': server.host_info_display,
         'sql_task': server.modify_task_stream,
         'delete_host_info': server.delete_host_info,
+        'check_info': migration.check_info,
         }
 
+
+def check_methods():
+    if request.method == 'POST':
+        data = request.get_data()
+        json_data = json.loads(data)
+        mod = mods.get(json_data['mod'])
+        if mod:
+            response_str = mod(data)
+            return response_str
+        
 
 @app.route('/import_host_info', methods=['GET', 'POST'])
 def import_host_info():
@@ -76,14 +87,15 @@ def delete_host_info():
         return Response(mod, content_type='application/json')
 
 
-def check_methods():
-    if request.method == 'POST':
-        data = request.get_data()
-        json_data = json.loads(data)
-        mod = mods.get(json_data['mod'])
-        if mod:
-            response_str = mod(data)
-            return response_str
+@app.route('/check_info', methods=['GET', 'POST'])
+def check_info():
+    """
+    检测系统版本和空间大小
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
 
 
 @app.route('/', methods=['GET', 'POST'])
