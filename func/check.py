@@ -59,25 +59,13 @@ def init_dir():
     return None
 
 
-def check_os_type():
-    return platform.system()
-
-
-def check_os_arch():
-    return platform.machine()
-
-
-def check_os_kernel_release():
-    return platform.release()
-
-
 def pre_system_check():
     with open(PRE_MIG, 'w+') as pf:
         os_version_ret = platform.dist()
         pf.write('原系统   :'+os_version_ret[0]+'\n')
-        pf.write('系统类型 :'+check_os_type()+'\n')
-        pf.write('系统内核 :'+check_os_kernel_release()+'\n')
-        pf.write('系统架构 : '+check_os_arch()+'\n')
+        pf.write('系统类型 :'+platform.system()+'\n')
+        pf.write('系统内核 :'+platform.release()+'\n')
+        pf.write('系统架构 : '+platform.machine()+'\n')
         pf.close()
     return None
 
