@@ -437,3 +437,50 @@ def get_new_osversion():
 
     else:
         sql_os_newversion('NULL')
+
+
+def run_subprocess(cmd="", print_cmd=True, print_output=True):
+    """Call the passed command and optionally log the called command (print_cmd=True) and its
+    output (print_output=True). Switching off printing the command can be useful in case it contains
+    a password in plain text.
+    """
+    cwdo = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
+    cwde = '/var/tmp/uos-migration/UOS_migration_log/mig_err.txt'
+    # fderr = open(cwde, 'a')
+    # from logging import *
+    # if print_cmd:
+    #     log.debug("Calling command '%s'" % cmd)
+
+    # Python 2.6 has a bug in shlex that interprets certain characters in a string as
+    # a NULL character. This is a workaround that encodes the string to avoid the issue.
+    if print_output:
+        fdout = open(cwdo, 'a')
+        fderr = open(cwde, 'a')
+    if sys.version_info[0] == 2 and sys.version_info[1] == 6:
+        cmd = cmd.encode("ascii")
+    # cmd = shlex.split(cmd, False)
+    process = subprocess.Popen(
+        cmd,
+        # stdout=subprocess.PIPE,
+        # stderr=subprocess.STDOUT,
+        stdout=fdout,
+        stderr=fderr,
+        bufsize=1,
+        shell=True
+    )
+    output = ""
+    try:
+        for line in iter(process.stdout.readline, b""):
+            output += line.decode()
+    except:
+        pass
+
+    #            loggerinst.info(line.decode().rstrip("\n"))
+
+    # Call communicate() to wait for the process to terminate so that we can get the return code by poll().
+    # It's just for py2.6, py2.7+/3 doesn't need this.
+    process.communicate()
+
+    return_code = process.poll()
+    return output, return_code
+
