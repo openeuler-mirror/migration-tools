@@ -1,14 +1,17 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 
-import logging
 import os
-import platform
+import sys
+import json
 import re
-import shutil
 import subprocess
+import shutil
 import socket
-from sysmig_agent.utils import list_to_json
+import platform
+import logging
+
+sys.path.append("..")
 from connect_sql import DBHelper
 
 def get_local_ip():
@@ -192,17 +195,19 @@ def get_disk_info(string):
 
 
 def add_boot_option():
-    print("Current system is uefi, add boot option to boot manager.")
-    subprocess.run('which efibootmgr > /dev/null 2>&1 || dnf install -y efibootmgr', shell=True)
+    """
+    Current system is uefi, add boot option to boot manager.
+    """
+    subprocess.run('which efibootmgr > /dev/null 2>&1 || yum install -y efibootmgr', shell=True)
     disk_name = subprocess.check_output('mount | grep /boot/efi | awk \'{print $1}\'', shell=True)
     disk_name = str(disk_name, 'utf-8')
     disk_name = disk_name.split('\n')[0]
-    dev_name,part_num = get_disk_info(disk_name)
+    dev_name, part_num = get_disk_info(disk_name)
     if dev_name == "" or part_num == "":
-        print("Parse /boot/efi disk info failed, update boot loader failed.")
+        # "Parse /boot/efi disk info failed, update boot loader failed.
         return
 
-    cmd=""
+    cmd = ""
     arch = platform.machine()
     if arch == "x86_64":
         cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubx86.efi" -L "Uniontech OS"'
@@ -294,6 +299,18 @@ def title_conf(oldosname):
                         break
                 title = 'title UniontechOS Linux ' + brackets + ' 20 (kongzi)'
                 open(fpath, 'w').write(strall.replace(line, title))
+
+
+def json_list_to_json(keylist, valuelist):
+    res = dict(zip(keylist, valuelist))
+    #    logdss.info (res)
+    return json.dumps(res)
+
+def list_to_json(keylist, valuelist):
+    res = dict(zip(keylist, valuelist))
+    res = json.dumps(res)
+    #    logdss.info (res)
+    return json.dumps(res)
 
 
 def main_conf(osname):
