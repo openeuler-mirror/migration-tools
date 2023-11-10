@@ -103,3 +103,21 @@ def Sysmig(kernel_version):
             run_cmd2file(cmd)
             sql_mig_statue('3')
 
+
+def ifnot_mig_kernel(kernel_version):
+    with open('/etc/yum.conf', 'r') as f:
+        content = f.read()
+        f.close()
+    if re.search(r'^distroverpkg=', content, re.MULTILINE):
+        content = re.sub(r"\n(distroverpkg=)", r"\n#\1", content)
+    if re.search(r'bugtracker_url=', content, re.MULTILINE):
+        content = re.sub(r"\n(bugtracker_url=)", r"\n#\1", content)
+    with open('/etc/yum.conf', 'w') as f:
+        f.write(content)
+        f.close()
+    if kernel_version == '0' or kernel_version == '3.10.0':
+        kernel_patterns = 'exclude= kernel* kernel-tools python3-perf kernel-headers kernel-devel bpftool perf kernel-core kmod-kvdo kpatch glibc-headers \n'
+        with open('/etc/yum.conf', 'a+') as f:
+            f.write(kernel_patterns)
+            f.close()
+
