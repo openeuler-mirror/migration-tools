@@ -64,3 +64,42 @@ def mig_check_migration_progress():
     data = percent * (lines / rpms)
     data = format(data, '.1f')
     return data
+
+
+
+def up_to_date_sql_migrate():
+    data = mig_check_migration_progress()
+    sql_show_tables()
+    sql = "UPDATE agent_task SET task_progress = {} ,task_Updatetime = NOW() WHERE agent_ip = '{}';".format(data, get_local_ip())
+    try:
+        ret = DBHelper().execute(sql)
+    except:
+        pass
+    return 0
+
+
+def Sysmig(kernel_version):
+    os_version_ret = platform.dist()
+    version = os_version_ret[1].split('.',-1)
+    AGENT_OS = os_version_ret[0]+version[0]
+    data = state =0
+    if re.fullmatch('8',version[0]):
+        cmd = 'python3 func/centos82uos.py'
+        run_cmd2file(cmd)
+        # t = Process(target=run_cmd2file, args=(cmd,))
+        # t.start()
+    elif re.search('centos7',AGENT_OS):
+        ex_kernel = 'sh func/centos72uos.sh -e "kernel-devel* kernel-headers* kernel-tools* kernel* bpftool perf python-perf kernel-abi* kernel-modules kernel-core kmod-kvdo"'
+        if kernel_version == '0':
+            run_cmd2file(ex_kernel)
+            sql_mig_statue('3')
+        elif kernel_version == '3.10.0':
+            run_cmd2file(ex_kernel)
+            cmd_k = 'sh func/kernel.sh -k 3.10.0'
+            run_cmd2file(cmd_k)
+            sql_mig_statue('3')
+        else:
+            cmd = 'sh func/centos72uos.sh'
+            run_cmd2file(cmd)
+            sql_mig_statue('3')
+
