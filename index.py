@@ -31,6 +31,7 @@ mods = {
         'delete_host_info': server.delete_host_info,
         'check_info': migration.check_info,
         'check_kernel': migration.check_kernel,
+        'get_kernel_data': server.get_kernel_data,
         }
 
 
@@ -103,6 +104,17 @@ def check_info():
 def check_kernel():
     """
     下发检测agent内核版本和软件仓库内核版本
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/get_kernel_data', methods=['GET', 'POST'])
+def get_kernel_data():
+    """
+    获取系统内核和仓库内核版本
     :return:
     """
     mod = check_methods()
