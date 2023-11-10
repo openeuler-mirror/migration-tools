@@ -235,3 +235,54 @@ def get_old_osversion():
     return oldosversion
 
 
+
+def mig_system_migration(kernel_version):
+    res = '0'
+    #state = str(get_mig_state())
+    state = 0
+    print('-GET MIG STATE-'+state)
+    if '0' == state:
+        sql_mig_statue('1')
+        ifnot_mig_kernel(kernel_version)
+        # t = Process(target=Sysmig, args=(kernel_version,))
+        # t.start()
+        Sysmig(kernel_version)
+    elif '2' == state:
+        sql_mig_statue('6')
+        mig_kernel(kernel_version)
+        with open(PRE_MIG, 'r') as fp:
+            stros = fp.readlines()
+            oldos = stros[0]
+            fp.close()
+        oldos = oldos.split(':',1)
+        main_conf(oldos[1])
+        if os.path.exists('/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'):
+            run_cmd2file('sh func/Abitranrept.sh')
+            # abi_txt2xls_trans()
+        sql_mig_statue('4')
+    elif '4' == state:
+        sql_mig_statue('5')
+        if os.path.exists('/var/tmp/uos-migration/UOS_migration_log/rpms-verified-after.txt'):
+            res = '0'
+        else:
+            res = '-1'
+    elif '3' == state:
+        sql_mig_statue('5')
+        if os.path.exists('/var/tmp/uos-migration/data/exp-rst/systeminfo.txt'):
+            run_cmd2file('func/Abitranrept.sh')
+            # abi_txt2xls_trans()
+        if os.path.exists('/var/tmp/uos-migration/UOS_migration_log/rpms-list-after.txt'):
+            res = '0'
+        else:
+            res = '-1'
+    elif '5' == state:
+        if '-1' == res :
+            data =' 迁移失败。'
+            keylist = ['ip','res','error']
+            return 3
+        else:
+            data = '迁移成功。'
+        return 2
+    return 1
+
+
