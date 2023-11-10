@@ -10,6 +10,25 @@ from client_requests import *
 from sysmig_agent.utils import *
 
 
+def get_agent_ip(data, sql, url):
+    """
+    获取agent_ip地址
+    :return:
+    """
+    agent_info = DBHelper().execute(sql).fetchall()
+    data = json.loads(data)
+    for i in agent_info:
+        task_status_sql = "select task_status from agent_task where agent_ip='%s'" % list(i)[0]
+        task_status = DBHelper().execute(task_status_sql).fetchall()[0][0]
+        if task_status == 0 or task_status == 2:
+            update_sql = "update agent_task set task_progress=0,task_status=1 where agent_ip='%s'" % list(i)[0]
+            DBHelper().execute(update_sql)
+            get_task_id_sql = "select task_id from cur_task where agent_ip='%s'" % list(i)[0]
+            task_id = DBHelper().execute(get_task_id_sql).fetchall()
+            data['task_id'] = task_id[0][0]
+            json_data = json.dumps(data)
+
+
 def check_info(data):
     """
     检测系统版本和空间大小
