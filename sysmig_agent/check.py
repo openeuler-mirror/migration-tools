@@ -18,12 +18,6 @@ from sysmig_agent.Abitxt2xls import *
 
 os.chdir('/usr/lib/migration-tools-agent')
 
-def migInit_porgress():
-    uelc_rpm = os.popen('rpm -qa|wc -l').readlines()
-    with open('/var/tmp/uos-migration/.rpms','w+') as fp:
-        fp.write(uelc_rpm[0])
-        fp.close()
-
 
 def init_dir():
     if not os.path.isdir(PRE_MIG_DIR):
@@ -517,13 +511,6 @@ def mig_kernel(kernel_version):
             return 1
 
 
-def migprogress():
-    with open(RPMS,'r+') as fpro:
-        data = fpro.read()
-        fpro.close()
-    return int(data)
-
-
 def migration_details(data_j):
     uos_sysmig_conf = json.loads(getSysMigConf())
     AGENT_IP = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
@@ -539,18 +526,6 @@ def migration_details(data_j):
     return list_to_json(keylist,valuelist)
 
 
-def readline_log():
-    path = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
-    if not os.path.exists(path):
-        return 0
-    else:
-        ln = 0
-        with open(path,'r') as rf:
-            for line in rf:
-                ln = ln + 1
-            rf.close()
-        return ln
-
 ##迁移进度
 def rpmsProgress():
     percent = 99
@@ -559,18 +534,6 @@ def rpmsProgress():
     rpms_progress  = percent * ( int(uelc_rpm[0].strip()) /  int(all_rpms[0].strip()))
     rpms_progress = format(rpms_progress, '.1f')
     return rpms_progress
-
-
-def mig_check_migration_progress():
-    percent = 98
-    rpms = migprogress()
-    lines = readline_log()
-    lines = lines//4
-    if lines >= rpms:
-        lines = rpms
-    data = percent*(lines/rpms)
-    data = format(data, '.1f')
-    messageProgress(data)
 
 
 def check_migration_progress(data_j):
