@@ -8,6 +8,32 @@ from logger import *
 from flask import *
 from client_requests import *
 from sysmig_agent.utils import *
+from interaction import splice_url
+
+
+migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
+
+def send_task_to_agent(data, url, ip):
+    """
+    向agent下发任务
+    :param data:
+    :param url:
+    :param ip:
+    :return:
+    """
+    log_info = "post " + url + ":" + str(data)
+    migration_log.info(log_info)
+    info = splice_url(data, url, ip)
+    if info.status_code == 200:
+        migration_log.info(info.text)
+    elif info is None or info.status_code == 404:
+        sql = "update agent_info set agent_online_status=1 where agent_ip ='%s';" % ip
+        DBHelper().execute(sql)
+        migration_log.error("%s:请求失败,agent端没有启动" % ip)
+    elif info.status_code != 404 and info.status_code != 200:
+        sql = "update agent_info set agent_online_status=1 where agent_ip ='%s';" % ip
+        DBHelper().execute(sql)
+        migration_log.error("%s:请求失败，错误状态码为%s" % (ip, info.status_code))
 
 
 def get_agent_ip(data, sql, url):
@@ -35,6 +61,8 @@ def check_info(data):
     :param data:
     :return:
     """
+    sql = "select agent_ip from agent_info where agent_online_status = 0;"
+    get_agent_ip(data, sql, '/check_info')
     return 'success'
 
 
