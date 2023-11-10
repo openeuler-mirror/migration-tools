@@ -212,3 +212,56 @@ def get_kernel_data(data):
 
     json_res = json.dumps(res)
     return json_res
+
+
+def get_repo_data(data):
+    """
+    定时检查软件仓库检测结果
+    :return:
+    """
+    task_status_sql = "select agent_id from agent_task where task_status=2"
+    get_task_status = DBHelper().execute(task_status_sql).fetchall()
+    if len(get_task_status) == 0:
+        data = {"centos7_x86": "", "centos8_x86": "", "centos7_aarch64": "", "centos8_aarch64": ""}
+        json_data = json.dumps(data)
+        return json_data
+    else:
+        centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
+                          "and agent_arch='x86_64' and repo_status=1;"
+
+        centos8_x86_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
+                          "and agent_arch='x86_64' and repo_status=1;"
+
+        centos7_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
+                              "and agent_arch='aarch64' and repo_status=1;"
+
+        centos8_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
+                              "and agent_arch='aarch64' and repo_status=1;"
+
+        data = {}
+        get_centos7_x86_status = DBHelper().execute(centos7_x86_sql).fetchall()
+        if len(get_centos7_x86_status) == 0:
+            data['centos7_x86'] = 'success'
+        else:
+            data['centos7_x86'] = 'faild'
+
+        get_centos8_x86_status = DBHelper().execute(centos8_x86_sql).fetchall()
+        if len(get_centos8_x86_status) == 0:
+            data['centos8_x86'] = 'success'
+        else:
+            data['centos8_x86'] = 'faild'
+
+        get_centos7_aarch64_status = DBHelper().execute(centos7_aarch64_sql).fetchall()
+        if len(get_centos7_aarch64_status) == 0:
+            data['centos7_aarch64'] = 'success'
+        else:
+            data['centos7_aarch64'] = 'faild'
+
+        get_centos8_aarch64_status = DBHelper().execute(centos8_aarch64_sql).fetchall()
+        if len(get_centos8_aarch64_status) == 0:
+            data['centos8_aarch64'] = 'success'
+        else:
+            data['centos8_aarch64'] = 'faild'
+
+        json_data = json.dumps(data)
+        return json_data
