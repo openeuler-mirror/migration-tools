@@ -201,3 +201,12 @@ def init_log_dir():
     migInit_porgress()
 
 
+def get_mig_state(task_id):
+    sql = "SELECT task_data FROM agent_task WHERE task_id = {} ;".format(task_id)
+    ret_sql_msg_info = DBHelper().execute(sql)
+    try:
+        state = ret_sql_msg_info.fetchall()[0][0]
+        if len(state):
+            return str(state)
+    except:
+        return None
