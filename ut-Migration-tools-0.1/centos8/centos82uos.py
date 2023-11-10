@@ -99,20 +99,17 @@ def add_boot_option():
 def main(reinstall_all_rpms=False, verify_all_rpms=False):
     global repos_dir
 
-    # check if the script is executed by root user
     print("Checking if the tool is executed by root user")
     if os.geteuid() != 0:
         print("Please run the tool as root user.")
         sys.exit(1)
 
-    # check required packages
     print('Checking required packages')
     for pkg in ['rpm', 'yum', 'curl']:
         if not check_pkg(pkg):
             print("Could not found "+pkg)
             sys.exit(1)
 
-    # display rpms info before conversion
     if verify_all_rpms:
         print("Creating a list of RPMs installed before the switch")
         print("Verifying RPMs installed before the switch against RPM database")
@@ -127,7 +124,6 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
             if re.match(hostname+'-rpms-(.*)\.log', f):
                 print(f)
 
-    # check if the os old_version is supported
     print("========= Checking: distribution =========")
     old_version = subprocess.check_output("rpm -q --whatprovides /etc/redhat-release", shell=True)
     old_version = str(old_version, 'utf-8')
@@ -177,7 +173,6 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
                 print('Please kill it and run the tool again.')
         sys.exit(1)
 
-    # check dnf
     if re.match('8\.', subver):
         print("========= Checking: dnf =========")
         print("Identifying dnf modules that are enabled...")
@@ -308,7 +303,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
     subprocess.run(install_baseurl, shell=True)
     os.remove('/etc/yum.repos.d/UniontechOS.repo')
 
-    repositories={}
+    repositories = {}
     if re.match('8\.', subver):
         repositories['AppStream'] = 'REPO AppStream'
         repositories['BaseOS'] = 'REPO BaseOS'
