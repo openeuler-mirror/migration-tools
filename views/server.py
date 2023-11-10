@@ -183,3 +183,32 @@ def delete_host_info(data):
     res = {'data': 'success'}
     json_res = json.dumps(res)
     return json_res
+
+
+def get_kernel_data(data):
+    """
+    获取系统内核和仓库内核版本
+    :return:
+    """
+    get_kernel_version_sql = 'select agent_ip,agent_kernel,agent_repo_kernel from agent_info where ' \
+                             'agent_online_status=0 and repo_status=0 and agent_storage>=10 and ' \
+                             'agent_migration_os is null;'
+    data = DBHelper().execute(get_kernel_version_sql).fetchall()
+    res = {}
+    info_list = []
+    info_dict_keys_list = ['agent_ip', 'agent_kernel', 'agent_repo_kernel']
+    if len(data) != 0:
+        for i in data:
+            if i[1] and i[2]:
+                kernel_arr = ('不迁移内核' + ',' + i[2]).split(',')
+                kernel_list = list(i)
+                kernel_list[2] = kernel_arr
+            else:
+                kernel_list = [list(i)[0], '', '']
+            info_list.append(dict(zip(info_dict_keys_list, kernel_list)))
+
+    res['info'] = info_list
+    res['num'] = len(info_list)
+
+    json_res = json.dumps(res)
+    return json_res
