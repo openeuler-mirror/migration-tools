@@ -28,7 +28,9 @@ mods = {
         'import_host_info': server.import_host_info,
         'host_info_display': server.host_info_display,
         'sql_task': server.modify_task_stream,
+        'delete_host_info': server.delete_host_info,
         }
+
 
 @app.route('/import_host_info', methods=['GET', 'POST'])
 def import_host_info():
@@ -56,6 +58,17 @@ def host_info_display():
 def modify_task_stream():
     """
     修改任务流
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/delete_host_info', methods=['GET', 'POST'])
+def delete_host_info():
+    """
+    删除迁移主机
     :return:
     """
     mod = check_methods()
