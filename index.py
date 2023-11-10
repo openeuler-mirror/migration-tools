@@ -18,7 +18,6 @@ mods = {
         'check_os_kernel': migration.check_os_kernel,
         'check_migration_progress': migration.check_migration_progress,
         'check_progress': migration.check_progress,
-        'check_repo': migration.check_repo,
         'check_repo_kernel': migration.check_repo_kernel,
         'check_user': migration.check_user,
         'close_tool': migration.close_tool,
@@ -32,6 +31,7 @@ mods = {
         'check_info': migration.check_info,
         'check_kernel': migration.check_kernel,
         'get_kernel_data': server.get_kernel_data,
+        'check_repo': migration.check_repo,
         }
 
 
@@ -115,6 +115,17 @@ def check_kernel():
 def get_kernel_data():
     """
     获取系统内核和仓库内核版本
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/check_repo', methods=['GET', 'POST'])
+def check_repo():
+    """
+    检测平台软件仓库
     :return:
     """
     mod = check_methods()
