@@ -20,12 +20,21 @@ def get_local_ip():
     finally:
         s.close()
 
+
+
 def sql_abi_progress(data):
     sql = "UPDATE agent_task SET task_progress = {} ,task_Updatetime = NOW() WHERE agent_ip = '{}';".format(data, get_local_ip())
     try:
         ret = DBHelper().execute(sql)
     except:
         pass
+
+
+def abi_file_connect(sql_r):
+    abi_sql = "INSERT INTO agent_ABI_check_result VALUES('"+ get_local_ip()+"'," + sql_r + ',NOW());'
+    s = DBHelper()
+    ret_sql_msg = s.execute(abi_sql)
+
 
 def getSysMigConf():
     confpath = '/etc/migration-tools/migration-tools.conf'
