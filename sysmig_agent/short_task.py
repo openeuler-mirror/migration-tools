@@ -77,3 +77,29 @@ def os_repo_kernel():
                     else:
                         str_kernel = str_kernel + ',' + kernel_version.strip()
     return str_kernel
+
+
+
+def check_kernel(data):
+    task_id = json.loads(data).get('task_id')
+    # 更新SQL任务开始状态
+    sql_task_statue('1', task_id)
+    # 发送消息给Server更新任务流状态
+    post_server('task_start', task_id )
+    # agent kernel
+    agent_kernel = os_kernel()
+    # agent repo kernel
+    agent_repo_kernel = os_repo_kernel()
+    agent_ip = get_local_ip()
+    statue = 1
+    sql = "UPDATE agent_info SET agent_kernel = '{}',agent_repo_kernel = '{}' WHERE agent_ip = '{}';".format(
+        agent_kernel, agent_repo_kernel, agent_ip)
+    try:
+        DBHelper().execute(sql)
+        statue = 2
+    except:
+        statue = 3
+        sql_task_statue(statue, task_id)
+    sql_task_statue(statue, task_id)
+    post_server('task_close', task_id)
+    return 's'
