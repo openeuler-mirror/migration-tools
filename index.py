@@ -30,6 +30,7 @@ mods = {
         'sql_task': server.modify_task_stream,
         'delete_host_info': server.delete_host_info,
         'check_info': migration.check_info,
+        'check_kernel': migration.check_kernel,
         }
 
 
@@ -91,6 +92,17 @@ def delete_host_info():
 def check_info():
     """
     检测系统版本和空间大小
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/check_kernel', methods=['GET', 'POST'])
+def check_kernel():
+    """
+    下发检测agent内核版本和软件仓库内核版本
     :return:
     """
     mod = check_methods()

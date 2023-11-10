@@ -53,6 +53,7 @@ def get_agent_ip(data, sql, url):
             task_id = DBHelper().execute(get_task_id_sql).fetchall()
             data['task_id'] = task_id[0][0]
             json_data = json.dumps(data)
+            send_task_to_agent(json_data, url, list(i)[0])
 
 
 def check_info(data):
@@ -63,6 +64,17 @@ def check_info(data):
     """
     sql = "select agent_ip from agent_info where agent_online_status = 0;"
     get_agent_ip(data, sql, '/check_info')
+    return 'success'
+
+
+def check_kernel(data):
+    """
+    检测agent内核版本和软件仓库内核版本
+    :param data:
+    :return:
+    """
+    sql = "select agent_ip from agent_info where agent_online_status=0 and agent_storage>=10 and repo_status=0;"
+    get_agent_ip(data, sql, '/check_kernel')
     return 'success'
 
 
