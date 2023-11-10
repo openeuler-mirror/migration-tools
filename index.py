@@ -32,6 +32,7 @@ mods = {
         'check_kernel': migration.check_kernel,
         'get_kernel_data': server.get_kernel_data,
         'check_repo': migration.check_repo,
+        'get_repo_data': server.get_repo_data,
         }
 
 
@@ -126,6 +127,17 @@ def get_kernel_data():
 def check_repo():
     """
     检测平台软件仓库
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/get_repo_data', methods=['GET', 'POST'])
+def get_repo_data():
+    """
+    定时检查软件仓库检测结果
     :return:
     """
     mod = check_methods()
