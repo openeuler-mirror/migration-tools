@@ -107,7 +107,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
 
     # check required packages
     print('Checking required packages')
-    for pkg in ['rpm','yum','curl']:
+    for pkg in ['rpm', 'yum', 'curl']:
         if not check_pkg(pkg):
             print("Could not found "+pkg)
             sys.exit(1)
@@ -116,10 +116,10 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
     if verify_all_rpms:
         print("Creating a list of RPMs installed before the switch")
         print("Verifying RPMs installed before the switch against RPM database")
-        out1 = subprocess.check_output('rpm -qa --qf \
+        subprocess.check_output('rpm -qa --qf \
                "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\\n" \
                | sort > "/var/tmp/$(hostname)-rpms-list-before.log"', shell=True)
-        out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/$(hostname)-rpms-verified-before.log"',shell=True)
+        subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/$(hostname)-rpms-verified-before.log"', shell=True)
         files = os.listdir('/var/tmp/')
         hostname = socket.gethostname()
         print("Review the output of following files:")
@@ -164,7 +164,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         print('/usr/libexec/platform-python not found.')
         sys.exit(1)
 
-    base_packages=['basesystem','initscripts','uos-logos','plymouth','grub2','grubby']
+    base_packages = ['basesystem', 'initscripts', 'uos-logos', 'plymouth', 'grub2', 'grubby']
 
     print("========= Checking: yum lock ===========")
     if os.path.exists('/var/run/yum.pid'):
@@ -178,14 +178,14 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         sys.exit(1)
 
     # check dnf
-    if re.match('8\.',subver):
+    if re.match('8\.', subver):
         print("========= Checking: dnf =========")
         print("Identifying dnf modules that are enabled...")
         enabled_modules = str(
             subprocess.check_output("dnf module list --enabled | grep rhel | awk '{print $1}'", shell=True), 
             'utf-8')
         enabled_modules = enabled_modules.split('\n')[:-1]
-        unknown_mods=[]
+        unknown_mods = []
         if len(enabled_modules) > 0:
             for mod in enabled_modules:
                 if re.fullmatch('container-tools|llvm-toolset| perl-DBD-SQLite|perl-DBI|satellite-5-client|perl', mod):
@@ -224,7 +224,7 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
         print("Could not locate your repository directory.")
         sys.exit(1)
 
-    if re.match('8\.',subver):
+    if re.match('8\.', subver):
         repo_file = os.path.join(repos_dir, 'switch-to-uos.repo')
         with open(repo_file, 'w') as f:
             f.write(repostr_uos)
@@ -290,12 +290,11 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
     print("Downloading uos release package...")   
     dst_release = ['uos-release']
     try:
-        stat = subprocess.check_output("yumdownloader "+' '.join(dst_release), shell=True)
+        subprocess.check_output("yumdownloader "+' '.join(dst_release), shell=True)
         pass
     except Exception:
         print("Could not download the following packages from " + yum_url)
         print('\n'.join(dst_release))
-        print()
         print("Are you behind a proxy? If so, make sure the 'http_proxy' environmen")
         print("variable is set with your proxy address.")
         print("An error occurred while attempting to switch this system to Uniontech" + \
@@ -308,7 +307,6 @@ def main(reinstall_all_rpms=False, verify_all_rpms=False):
     subprocess.run('rpm -i --force ' + ' '.join(dst_rpms) + ' --nodeps', shell=True)
     subprocess.run(install_baseurl, shell=True)
     os.remove('/etc/yum.repos.d/UniontechOS.repo')
-    # switch completed
 
     repositories={}
     if re.match('8\.', subver):
@@ -350,7 +348,7 @@ EOF'
     if subver == '8.3':
         subprocess.run('yum -y downgrade crypto-policies --allowerasing', shell=True)
 
-    out_std, out_err, retval = run_cmd(["yum","list","kernel-headers"])
+    out_std, out_err, retval = run_cmd(["yum", "list", "kernel-headers"])
     if retval != 0:
         print("Unable to find kernel-headers in repository")
         sys.exit(1)
@@ -362,13 +360,13 @@ EOF'
         Check the output of 'yum distro-sync' to manually resolve the issue.")
         sys.exit(1)
 
-    if re.match('8\.',subver):
+    if re.match('8\.', subver):
         if len(enabled_modules) > 0:
             for mod in enabled_modules:
                 subprocess.run('dnf module reset -y '+mod, shell=True)
                 if re.fullmatch('container-tools|go-toolset|jmc|llvm-toolset|rust-toolset', mod):
                     subprocess.run('dnf module install -y '+mod+':uelc20', shell=True)
-                elif mod =='virt':
+                elif mod == 'virt':
                     subprocess.run('dnf module install -y '+mod+':uelc', shell=True)
                 else:
                     print("Unsure how to transform module"+mod)
@@ -424,7 +422,7 @@ EOF'
         if len(centos_rpms) > 0:
             print("Reinstalling RPMs:")
             print(' '.join(centos_rpms))
-            subprocess.run('yum --assumeyes reinstall '+ ' '.join(centos_rpms), shell=True)
+            subprocess.run('yum --assumeyes reinstall ' + ' '.join(centos_rpms), shell=True)
 
         non_uos_rpms = subprocess.check_output('rpm -qa --qf "%{NAME}-%{VERSION}-%{RELEASE}|%{VENDOR}|%{PACKAGER}\\n" \
         |grep -v Uniontech', shell=True)
@@ -448,10 +446,10 @@ EOF'
     if verify_all_rpms:
         print("Creating a list of RPMs installed after the switch")
         print("Verifying RPMs installed after the switch against RPM database")
-        out1 = subprocess.check_output('rpm -qa --qf \
+        subprocess.check_output('rpm -qa --qf \
         "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\\n" \
         | sort > "/var/tmp/$(hostname)-rpms-list-after.log"', shell=True)
-        out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/$(hostname)-rpms-verified-after.log"',shell=True)
+        subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/$(hostname)-rpms-verified-after.log"',shell=True)
         files = os.listdir('/var/tmp/')
         hostname = socket.gethostname()
         print("Review the output of following files:")
