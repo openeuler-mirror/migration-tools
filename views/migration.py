@@ -123,9 +123,18 @@ def check_user(data):
 
 
 def check_repo(data):
-    services = check_services(data, '/check_repo')
-    if services:
-        return services
+    """
+    检测平台软件仓库
+    :param data:
+    :return:
+    """
+    sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_storage >= 10;"
+    agent_ip_list = DBHelper().execute(sql)
+    for i in agent_ip_list:
+        repo_status_sql = "update agent_info set repo_status='2' where agent_ip='%s'" % list(i)[0]
+        DBHelper().execute(repo_status_sql)
+    get_agent_ip(data, sql, '/check_repo')
+    return 'success'
 
 
 def check_os_kernel(data):
