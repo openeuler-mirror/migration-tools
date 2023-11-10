@@ -79,6 +79,32 @@ def abi_file_connect(sql_r):
     s = DBHelper()
     ret_sql_msg = s.execute(abi_sql)
 
+def local_disabled_release_repo():
+    """
+    将系统内存在的repository文件置为不可用，只保留switch-to-uos.repo
+    :return:
+    """
+    path = '/etc/yum.repos.d'
+    if os.path.exists(path):
+        file_list = os.listdir(path)
+    for file in file_list:
+        fpath = os.path.join(path, file)
+        if os.path.isdir(fpath):
+            continue
+        else:
+            if re.fullmatch('switch-to-uos.repo', file, re.IGNORECASE):
+                continue
+            elif not re.search('repo', file, re.IGNORECASE):
+                continue
+            with open(fpath, 'r') as fdst:
+                allrepo = fdst.read()
+                fdst.close()
+                with open(fpath + '.disabled', 'w+') as fdst:
+                    fdst.write(
+                        '#This is a yum repository file that was disabled . <Migration to UiniontechOS>\n' + allrepo)
+                    fdst.close()
+                    os.remove(fpath)
+
 
 def getSysMigConf():
     confpath = '/etc/migration-tools/migration-tools.conf'
