@@ -121,3 +121,53 @@ def ifnot_mig_kernel(kernel_version):
             f.write(kernel_patterns)
             f.close()
 
+def disable_exclude():
+    with open('/etc/yum.conf', 'r') as f:
+        content = f.read()
+        f.close()
+    if re.search(r'^exclude=', content, re.MULTILINE):
+        content = re.sub(r"\n(exclude=)", r"\n#\1", content)
+        #content = re.sub(r"\nexclude=", r"\n#exclude=", content)
+    with open('/etc/yum.conf','w+') as f:
+        f.write(content)
+        f.close()
+
+
+# migration kernel
+def mig_kernel(kernel_version):
+    disable_exclude()
+    cwd = '/var/tmp/uos-migration/kernel/'
+    if not os.path.exists(cwd):
+        os.mkdir(cwd)
+    ret = os.listdir(cwd)
+    for i in ret:
+        os.unlink(cwd+i)
+    cmd = ' rpm -qa | grep "kernel\|bpftool\|perf" |xargs -i rpm -q --qf "%{NAME}\\n" {}'
+    if '0' == kernel_version:
+        return None
+    else:
+        repo = ''
+        if '4.18.0' == kernel_version:
+            repo = 'UniontechOS-kernel-'+kernel_version.strip()
+        elif '5.10.0' == kernel_version:
+            repo = 'UniontechOS-kernel-'+kernel_version.strip()
+        elif '3.10.0' == kernel_version:
+            repo = 'UniontechOS-kernel-' + kernel_version.strip()
+        else:
+            return 1
+        down_cmd = 'yumdownloader  --destdir "/var/tmp/uos-migration/kernel" --enablerepo '+repo
+        ret = os.popen(cmd).readlines()
+        for i in ret:
+            downpackage = down_cmd+' '+i.strip()+'-'+kernel_version.strip()
+            # os.system(downpackage)
+            run_subprocess(downpackage)
+
+        cwd = '/var/tmp/uos-migration/kernel/'
+        if os.listdir(cwd):
+            cmd = 'rpm -Uvh "{}*" --nodeps --oldpackage'.format(cwd)
+            # os.system(cmd)
+            run_subprocess(cmd)
+        else:
+            # loggen.debug('Can not download kernel .')
+            #log.err
+            return 1
