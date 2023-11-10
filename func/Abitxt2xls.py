@@ -31,7 +31,6 @@ def accord_line_write(txt_line_file, sheet_line, line_num, column_num):
                 y += 1
             x += 1
             y = 0
-    line_f.close()
 
 
 def accord_column_write(txt_column_file, sheet_column, line_num, column_num):
@@ -43,7 +42,6 @@ def accord_column_write(txt_column_file, sheet_column, line_num, column_num):
             for value in line.strip().split("|"):
                 sheet_column.write(x, y, value)
                 x += 1
-    column_f.close()
 
 
 def system_info(check_file):
