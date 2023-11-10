@@ -106,6 +106,8 @@ def local_disabled_release_repo():
                     os.remove(fpath)
 
 
+
+
 def getSysMigConf():
     confpath = '/etc/migration-tools/migration-tools.conf'
     if not os.path.exists(confpath):
@@ -234,45 +236,64 @@ def process_special_pkgs():
 
 
 def title_conf(oldosname):
-    oldosname=oldosname.strip()
+    """
+    Change the boot start option after system migration
+    :param oldosname:old system name
+    :return:
+    """
+    oldosname = oldosname.strip()
+    if oldosname == 'redhat':
+        capital = 'Red Hat'
+    elif oldosname == 'centos':
+        capital = 'CentOS'
     path = '/boot/loader/entries'
-    #path='/root/a'
+    # path='/root/a'
     if os.path.exists(path):
         file_list = os.listdir(path)
     else:
         return None
     fl = False
     for file in file_list:
-        fpath = os.path.join(path,file)
+        fpath = os.path.join(path, file)
         if os.path.isdir(fpath):
             continue
         else:
-            with open(fpath,'r') as fp:
+            with open(fpath, 'r') as fp:
                 strall = fp.read()
                 fp.close()
-            if re.search('uniontech',strall,re.IGNORECASE):
+            if re.search('uniontech', strall, re.IGNORECASE):
                 fl = True
     for file in file_list:
-        ustr=None
-        fpath = os.path.join(path,file)
+        ustr = None
+        brackets = ""
+        fpath = os.path.join(path, file)
         if os.path.isdir(fpath):
             continue
         else:
-            with open(fpath,'r') as fp:
+            with open(fpath, 'r') as fp:
                 strall = fp.read()
                 fp.close()
-            if re.search(oldosname,strall,re.IGNORECASE):
+            '''
+            if re.search(oldosname, strall, re.IGNORECASE):
                 if fl:
                     os.remove(fpath)
                     continue
                 else:
-                    ustr = re.sub(oldosname,"UniontechOS",strall,1,flags=re.IGNORECASE)
-            if re.search('8 \(Core\)',strall):
-                ustr = re.sub(' 8 ',' 20 ',ustr,1,flags=re.IGNORECASE)
-                ustr = re.sub("Core","kongzi",ustr,1,flags=re.IGNORECASE)
-                with open(fpath,'w') as ptitle:
-                    ptitle.write(ustr)
-                    ptitle.close()
+                    print(strall,capital)
+                    ustr = re.sub(capital, "UniontechOS", strall, 1, flags=re.IGNORECASE)
+            '''
+            if re.search(capital, strall):
+                line = strall.split('\n', -1)[0]
+                for char in range(len(line)):
+                    if line[char] == '(':
+                        p = char
+                        continue
+                    if line[char] == ')':
+                        e = char+1
+                        brackets = line[p:e]
+                        break
+                title = 'title UniontechOS Linux ' + brackets + ' 20 (kongzi)'
+                open(fpath, 'w').write(strall.replace(line, title))
 
 
 def main_conf(osname):
