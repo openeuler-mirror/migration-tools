@@ -30,6 +30,13 @@ def sql_abi_progress(data):
         pass
 
 
+def sql_show_tables():
+    sql = "SELECT task_progress,task_data FROM agent_task WHERE agent_ip = '{}';".format(get_local_ip())
+    ret_sql_msg_info = DBHelper().execute(sql)
+    if ret_sql_msg_info:
+        print(str(ret_sql_msg_info.fetchall()) + '\n')
+
+
 def abi_file_connect(sql_r):
     abi_sql = "INSERT INTO agent_ABI_check_result VALUES('"+ get_local_ip()+"'," + sql_r + ',NOW());'
     s = DBHelper()
