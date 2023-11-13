@@ -114,3 +114,21 @@ def abi_check_sys():
 
 ######################## add for test end ########################
 ######################## add for test end ########################
+
+#20220107 add by lihp
+#20220112 modify by lihp: add deal kernel migration fail
+def platform_release(Flag):
+    if Flag == '0':
+        cmd = "rpm -qa | grep kernel | grep -E 'an7|an8|el7|el8'"
+    else:
+        cmd = "rpm -qa | grep kernel | grep -E 'el7|el8|an7|an8|uelc'"
+    kernel_version=''
+    for line in os.popen(cmd):
+        pattern = re.compile(r'^[-+]?[-0-9]\d*\.\d*|[-+]?\.?[0-9]\d*$')
+        if pattern.match(line[7]):
+            kernel_version = line.split('-',1)[1]
+            if 'uelc' in line:
+                break
+            elif 'oe1' in line:
+                break
+    return kernel_version.rsplit('.', 1)[0]
