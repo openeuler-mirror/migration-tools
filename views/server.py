@@ -293,3 +293,33 @@ def get_environment_data(data):
 
     json_res = json.dumps(res)
     return json_res
+
+
+def get_repo_arch_info(data):
+    """
+    获取软件仓库架构和系统信息
+    :param data:
+    :return:
+    """
+    sql = "select agent_os,agent_arch from agent_info where agent_online_status='0' and agent_storage>='10' " \
+          "and agent_migration_os is null;"
+    get_info = DBHelper().execute(sql).fetchall()
+    get_info_list = []
+    for i in get_info:
+        get_info_list.append(list(i))
+    
+    for i in get_info_list :
+        if i[0] == 'redhat7':
+            i[0] = 'centos7'
+        if i[0] == 'redhat8':
+            i[0] = 'centos8'
+
+    info_list = []
+    info_dict_keys_list = ['agent_os', 'agent_arch']
+    for i in get_info_list:
+        info_list.append(dict(zip(info_dict_keys_list, i)))
+
+    res = {}
+    res['info'] = info_list
+    json_res = json.dumps(res)
+    return json_res

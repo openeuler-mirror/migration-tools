@@ -34,6 +34,7 @@ mods = {
         'get_repo_data': server.get_repo_data,
         'check_environment':migration.check_environment,
         'get_environment_data': server.get_environment_data,
+        'get_repo_arch_info': server.get_repo_arch_info,
         }
 
 
