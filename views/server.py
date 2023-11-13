@@ -353,6 +353,7 @@ def get_storage_num(data):
 
 reports_type = {
     "migration_detection": reports.migration_detection,
+    "migration_logs": reports.migration_logs,
 }
 
 def export_reports(data):
