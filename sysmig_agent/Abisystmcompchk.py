@@ -322,6 +322,7 @@ def get_system_pkg_name(flag, mig_logger):
             return False
 
 
+
 class myThread (threading.Thread):
     def __init__(self, threadID, name, q, lock, fpw, fpr, q_query, log):
         threading.Thread.__init__(self)
@@ -338,7 +339,6 @@ class myThread (threading.Thread):
         process_data(self.name, self.q, self.lock, self.fpw, self.fpr, self.q_query, self.log)
         self.log.info ("Exit the thread" + self.name)
 
-
 def is_binwary_file(filename):
     TEXT_BOMS = {
         codecs.BOM_UTF16_BE,
@@ -352,3 +352,108 @@ def is_binwary_file(filename):
         initial_bytes = file.read(CHUNKSIZE)
         file.close
     return not any(initial_bytes.startswith(bom) for bom in TEXT_BOMS) and b'\0' in initial_bytes
+
+def incomp_binwary_desc(binwary_file):
+    if binwary_file.endswith('.so'):
+        incomp_info_desc = '库差异'
+    elif binwary_file.endswith('.exec'):
+        incomp_info_desc = '可执行文件'
+    elif binwary_file.endswith('.mod'):
+        incomp_info_desc = '视频文件'
+    else:
+        incomp_info_desc = '二进制差异'
+    return incomp_info_desc
+
+def deal_files_list(fwincomp, fwcomp, cur_file_list, trn_file_list, rpm_full_pkg_name, list_log):
+    #compatiable
+    comp_flag=1
+    link_flag = '0'
+    cur_file_deal = ''
+
+    rpm_pkg_dir = local_dir + 'uos/rpms'
+    rpm_pkg_name = rpm_full_pkg_name.rsplit('-',2)[0]
+    pkg_version = rpm_full_pkg_name.rsplit('-',2)[1]
+
+    for cur_file_name in cur_file_list:
+
+        cur_file_binwary = cur_file_name.strip('\n')
+
+        if not os.path.exists(cur_file_binwary):
+            continue
+
+        if os.path.isdir(cur_file_binwary):
+            continue
+
+        if '.' in cur_file_binwary.rsplit('/',1)[1]:
+            if '.'+cur_file_binwary.rsplit('.',1)[1] in suffix_list:
+                continue
+
+        if not is_ELFfile(cur_file_binwary, list_log):
+            continue
+
+        if is_binwary_file(cur_file_binwary):
+            trn_file_deal = rpm_pkg_dir + cur_file_binwary
+            if not os.path.exists(trn_file_deal):
+                continue
+
+            #link file realpath
+            if os.path.islink(cur_file_binwary):
+                cur_file_deal = os.path.realpath(cur_file_binwary)
+                if cur_file_name in trn_file_list:
+                    trn_file_deal_tmp = rpm_pkg_dir + cur_file_binwary
+                    trn_file_deal = os.path.realpath(trn_file_deal_tmp)
+                    link_flag = '1'
+                else:
+                    continue
+            else:
+                if link_flag:
+                    link_flag = '0'
+                    continue
+                if cur_file_name in trn_file_list:
+                    trn_file_deal = rpm_pkg_dir + cur_file_binwary
+                    cur_file_deal = cur_file_binwary
+                else:
+                    continue
+
+            abidiff_rst_list = list(os.popen('abidiff  %s %s' %(trn_file_deal, cur_file_binwary)))
+            if len(abidiff_rst_list):
+                i = 0
+                if cur_file_binwary.endswith('.exec'):
+                    while i < 2:
+                        for line in abidiff_rst_list[i].split(':',1)[1].split(','):
+                            if line.split(' ', 2)[1] != '0':
+                                bin_name = cur_file_name.strip('\n').rsplit('/', 1)[1]
+                                compatiablity='N'
+                                incomp_reason = incomp_binwary_desc(bin_name)
+                                diff_detail = abidiff_rst_list[i].split(':', 1)[1]
+                                fwincomp.write(rpm_pkg_name+','+bin_name+','+pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
+                                comp_flag = 0
+                        i = i + 1
+                #20220112 lihp: add if branch
+                elif abidiff_rst_list[0].startswith('ELF SONAME'):
+                    i = i + 1
+                    while i < 2:
+                        for line in abidiff_rst_list[i].split(':',1)[1].split(','):
+                            if line.split(' ', 2)[1] != '0':
+                                bin_name = cur_file_name.strip('\n').rsplit('/', 1)[1]
+                                compatiablity='N'
+                                incomp_reason = incomp_binwary_desc(bin_name)
+                                diff_detail = abidiff_rst_list[i].split(':', 1)[1]
+                                fwincomp.write(rpm_pkg_name+','+bin_name+','+pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
+                                comp_flag = 0
+                        i = i + 1
+                else:
+                    while i < 4:
+                        for line in abidiff_rst_list[i].split(':',1)[1].split(','):
+                            if line.split(' ', 2)[1] != '0':
+                                bin_name = cur_file_name.strip('\n').rsplit('/', 1)[1]
+                                compatiablity='N'
+                                incomp_reason = incomp_binwary_desc(bin_name)
+                                diff_detail = abidiff_rst_list[i].split(':', 1)[1]
+                                fwincomp.write(rpm_pkg_name+','+bin_name+','+pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
+                                comp_flag = 0
+                        i = i + 1
+            else:
+                continue
+    if comp_flag:
+        fwcomp.write(rpm_pkg_name + ',' + ',' + ',' + 'Y,' + ',' + '\n')
