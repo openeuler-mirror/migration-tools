@@ -134,3 +134,19 @@ def timed_task_migrate(task_id, kernel_version):
         time_task_m.shutdown()
         sql_task_statue('3', task_id)
 
+
+def get_abi_info():
+    if q.empty():
+        return None
+#    print("Full :", q.full())
+#    print("Empty :", q.empty())
+#    print("QSize:", q.qsize())
+    size = int(q.qsize())
+    i=0
+    msg = ''
+    while i < size:
+        i += 1
+        msg = q.get()
+    return msg
+#    if not q.empty():
+
