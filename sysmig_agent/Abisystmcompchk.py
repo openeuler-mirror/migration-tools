@@ -320,3 +320,35 @@ def get_system_pkg_name(flag, mig_logger):
         else:
             mig_logger.info('The current system is UOS, not support migration, please check !!!')
             return False
+
+
+class myThread (threading.Thread):
+    def __init__(self, threadID, name, q, lock, fpw, fpr, q_query, log):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.q = q
+        self.lock = lock
+        self.fpw = fpw
+        self.fpr = fpr
+        self.q_query = q_query
+        self.log = log
+    def run(self):
+        self.log.info ("Open the thread" + self.name)
+        process_data(self.name, self.q, self.lock, self.fpw, self.fpr, self.q_query, self.log)
+        self.log.info ("Exit the thread" + self.name)
+
+
+def is_binwary_file(filename):
+    TEXT_BOMS = {
+        codecs.BOM_UTF16_BE,
+        codecs.BOM_UTF16_LE,
+        codecs.BOM_UTF32_BE,
+        codecs.BOM_UTF32_LE,
+        codecs.BOM_UTF8,
+            }
+    with open(filename, 'rb') as file:
+        CHUNKSIZE = 8192
+        initial_bytes = file.read(CHUNKSIZE)
+        file.close
+    return not any(initial_bytes.startswith(bom) for bom in TEXT_BOMS) and b'\0' in initial_bytes
