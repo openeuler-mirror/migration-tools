@@ -204,6 +204,17 @@ def export_reports():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/get_page_data', methods=['GET', 'POST'])
+def get_page_data():
+    """
+    定时获取可用空间页面数据
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def MT_index():
     """
