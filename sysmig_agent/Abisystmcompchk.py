@@ -516,3 +516,15 @@ def get_system_pkg_list(migbeflist):
         return newlist
     else:
         return False
+
+
+def incomp_pkg_num():
+    tmp=''
+    num=0
+    for line in open(abi_incomp_chk, 'r').readlines():
+        tmp_01 = line.split(',')[0]
+        if tmp!=tmp_01:
+            num = num + 1
+        tmp = line.split(',')[0]
+    return num
+
