@@ -180,6 +180,17 @@ def get_repo_arch_info():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/get_storage_num', methods=['GET', 'POST'])
+def get_storage_num():
+    """
+    获取可用空间足够和不足数量
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def MT_index():
     """
