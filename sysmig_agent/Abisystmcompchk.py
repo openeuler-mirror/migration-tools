@@ -132,3 +132,32 @@ def platform_release(Flag):
             elif 'oe1' in line:
                 break
     return kernel_version.rsplit('.', 1)[0]
+
+
+#Create agent ABI check result file
+def agent_ABI_check_result():
+    string = ',,,Y,,\n'
+
+    #mycopyfile(abi_incomp_chk, agent_abi_check_result, abi_log)
+    facp = open(agent_abi_check_result, 'w')
+    for line in open(abi_incomp_chk):
+
+        tmp01 = line.split(',', 5)
+        tmp = tmp01[4]
+
+        if tmp == '库差异':
+            str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',1,'+tmp01[5]
+        elif tmp == '二进制差异':
+            str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',2,'+tmp01[5]
+        elif tmp == '可执行文件差异':
+            str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',3,'+tmp01[5]
+        elif tmp == '视频文件差异':
+            str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',4,'+tmp01[5]
+
+        facp.write(str_01)
+    facp.close()
+
+    fp = open(agent_abi_check_result, 'a')
+    for rpm_name in open(abi_comp_chk):
+        fp.write(rpm_name.split(',')[0] + string)
+    fp.close()
