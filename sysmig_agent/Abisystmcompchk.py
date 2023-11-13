@@ -567,3 +567,64 @@ def get_migration_sys_info():
 
     return behind_list_info
 
+
+#Create data list for write to .xls of sheet[0]
+#ge：['1|1|CentOS Linux 8 (Core)', '2|1|4.18.0-147.el8.x86_64', '4|1|26.4GB', '5|1|x86_64', '8|1|1278', '11|1|1', '12|1|2', '13|1|2']
+def get_cur_sys_info_list():
+    list_info = []
+    before_sys_info = exp_rst_dir + 'before-system-info.txt'
+    sys_version_tmp = exp_rst_dir + 'sys-version-tmp'
+
+    #Used after system migration
+    with open(sys_version_tmp, 'w') as file_object:
+        file_object.write(get_cur_sys_version())
+
+    #current system version, write sheet[0]:1-row,1-column
+    cur_sys_info = '1|1|' + get_cur_sys_version()
+    list_info.append(cur_sys_info)
+
+    #current kernel version, write sheet[0]:2-row,1-column
+    #20220107 modify lihp: get kernel version of migrate before
+    #cur_kernel_verison = '2|1|' + platform.release()
+    cur_kernel_verison = '2|1|' + platform_release('0')
+    list_info.append(cur_kernel_verison)
+
+    #/var/cache available space,write sheet[0]:4-row,1-column
+    cur_var_cache = '4|1|' + os_storage() + 'GB'
+    list_info.append(cur_var_cache)
+
+    #system architecture, write sheet[0]:5-row,1-line
+    cur_arch = '5|1|' + platform.processor()
+    list_info.append(cur_arch)
+
+    #Be replaced rpm packages number,write sheet[0]:8-row,1-column
+    with open(migration_system_total, 'r') as fr:
+        replace_pkgs_num = str(len(fr.readlines()))
+    list_info.append('8|1|' + replace_pkgs_num)
+
+    #Compatible with the number, write sheet[0]:11-row,1-column
+    with open(abi_comp_chk, 'r') as fc:
+        comp_num_int = len(fc.readlines())
+        comp_num = '11|1|' + str(comp_num_int)
+    list_info.append(comp_num)
+
+    #Icompatible with the number,write sheet[0]:12-row,1-column
+    incomp_num = '12|1|' + str(incomp_pkg_num())
+    list_info.append(incomp_num)
+
+    #The total number of packages，write sheet[0]:13-row,1-column
+    sum_num = comp_num_int + incomp_pkg_num()
+    list_info.append('13|1|' + str(sum_num))
+
+    #write to file,report generation after migration
+    with open(before_sys_info, 'w') as fpbsi:
+        fpbsi.write(cur_sys_info + '\n')
+        fpbsi.write(cur_kernel_verison + '\n')
+        fpbsi.write(cur_var_cache + '\n')
+        fpbsi.write(cur_arch + '\n')
+        fpbsi.write('8|1|' + replace_pkgs_num + '\n')
+        fpbsi.write(comp_num + '\n')
+        fpbsi.write(incomp_num + '\n')
+        fpbsi.write('13|1|' + str(sum_num) + '\n')
+
+    return list_info
