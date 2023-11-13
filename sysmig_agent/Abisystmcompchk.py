@@ -457,3 +457,38 @@ def deal_files_list(fwincomp, fwcomp, cur_file_list, trn_file_list, rpm_full_pkg
                 continue
     if comp_flag:
         fwcomp.write(rpm_pkg_name + ',' + ',' + ',' + 'Y,' + ',' + '\n')
+
+
+def process_data(threadName, q, queueLock, incompfw, compfw, Queue, pro_log):
+    global exitFlag
+    global total_rpm_nums
+    global percentage
+    global deal_rpm_num
+    status = '1'
+
+    rpm_pkg_path = local_dir + 'uos/rpms/'
+
+    abisys =str(abi_check_sys())
+    while not exitFlag:
+        queueLock.acquire()
+        if not workQueue.empty():
+            rpm_full_name=q.get()
+            rpm_pkg_name=rpm_full_name.rsplit('-',2)[0]
+            rpm_path_name=rpm_pkg_path + rpm_full_name
+            if '7' == abisys:
+                print('----------7-0---------')
+                list_file_cur=list(os.popen('rpm -ql  %s ' %(rpm_pkg_name)))
+                list_file_trn=list(os.popen('rpm -qpl  %s ' %(rpm_path_name)))
+            else:
+                list_file_cur=list(os.popen('rpm -ql --noartifact  %s ' %(rpm_pkg_name)))
+                list_file_trn=list(os.popen('rpm -qpl --noartifact  %s ' %(rpm_path_name)))
+            os.system('rpm2cpio %s | cpio -idmv' %(rpm_full_name))
+            deal_files_list(incompfw, compfw, list_file_cur, list_file_trn, rpm_full_name, pro_log)
+            deal_rpm_num = deal_rpm_num + 1
+            percentage = ("%d" % (deal_rpm_num/total_rpm_nums*100))
+            msg_tup = (percentage, status)
+            Queue.put(msg_tup)
+            pro_log.info('message tup queue:' + str(msg_tup))
+            queueLock.release()
+        else:
+            queueLock.release()
