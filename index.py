@@ -168,6 +168,17 @@ def get_environment_data():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/get_repo_arch_info', methods=['GET', 'POST'])
+def get_repo_arch_info():
+    """
+    获取软件仓库架构和系统信息
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def MT_index():
     """
