@@ -898,3 +898,24 @@ def migrate_before_abi_chk(q_query, task_status):
 
     return '0'
 
+
+#Check the environment after the migration and generate a detection report
+def migrate_behind_abi_chk():
+    i=0
+    Flag='1'
+
+    log = logger_init()
+
+    current_install_uos_list = get_system_pkg_name(Flag, log)
+    if not current_install_uos_list:
+        return False
+
+    migrate_behind_report_name = create_migrate_report_name(Flag, log)
+    if not migrate_behind_report_name:
+        return False
+
+    while i < 4:
+        write_migrate_report_rst =switch_write_migrate_report(migrate_behind_report_name, i, Flag)
+        i = i + 1
+
+    return '0'
