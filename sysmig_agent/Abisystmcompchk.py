@@ -676,3 +676,15 @@ def create_migrate_report_name(flag, logg):
 
     #Rename the real report name
     return mycopyfile(migrate_path_name_sample, migrate_name, logg)
+
+
+def write_row_and_column(report_name_rc, value_list, index):
+
+    row_column_rb = xlrd.open_workbook(report_name_rc, formatting_info=True)
+    r_sheet = row_column_rb.sheet_by_index(index)
+    row_column_wb = copy(row_column_rb)
+    row_column_sheet = row_column_wb.get_sheet(index)
+
+    for data in value_list:
+        row_column_sheet.write(int(data.split('|')[0]),int(data.split('|')[1]),data.split('|')[2])
+    row_column_wb.save(report_name_rc)
