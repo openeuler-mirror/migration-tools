@@ -642,3 +642,37 @@ def mycopyfile(srcfile, dstfile, logger):
 
     return dstfile
 
+
+#Generate report name
+def create_migrate_report_name(flag, logg):
+
+    migrate_before_report_path = '/var/tmp/uos-migration/UOS_analysis_report/'
+    migrate_behind_report_path = '/var/tmp/uos-migration/UOS_migration_completed_report/'
+
+    migrate_report_before_sample_name = 'UOS_migration_report_HOSTIP_HOSTNAME_YYYYMMDDHHMM-BEFORE.xls'
+    migrate_report_behind_sample_name = 'UOS_migration_report_HOSTIP_HOSTNAME_YYYYMMDDHHMM-BEHIND.xls'
+
+    hostip = get_local_ip()
+    hostname = socket.gethostname()
+    hosttime = datetime.datetime.now().strftime('%Y%m%d%H%M')
+    abs_path = os.path.abspath('sysmig_agent/txts/')
+
+    if not os.path.exists(migrate_behind_report_path):
+        os.makedirs(migrate_behind_report_path)
+
+    #migration before
+    if flag=='0':
+        migrate_name_01 = migrate_report_before_sample_name.replace('HOSTIP', hostip)
+        migrate_name_02 = migrate_name_01.replace('HOSTNAME', hostname)
+        migrate_name = migrate_before_report_path + migrate_name_02.replace('YYYYMMDDHHMM-BEFORE', hosttime)
+        migrate_path_name_sample = abs_path + '/' +  migrate_report_before_sample_name
+
+    #migration behind
+    elif flag=='1':
+        migrate_name_01 = migrate_report_behind_sample_name.replace('HOSTIP', hostip)
+        migrate_name_02 = migrate_name_01.replace('HOSTNAME', hostname)
+        migrate_name = migrate_behind_report_path + migrate_name_02.replace('YYYYMMDDHHMM-BEHIND', hosttime)
+        migrate_path_name_sample = abs_path + '/' + migrate_report_behind_sample_name
+
+    #Rename the real report name
+    return mycopyfile(migrate_path_name_sample, migrate_name, logg)
