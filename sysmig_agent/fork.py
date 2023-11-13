@@ -150,3 +150,51 @@ def get_abi_info():
     return msg
 #    if not q.empty():
 
+
+def process_time_task_abi(task_id):
+    # 定时任务启动并更新进度
+    timed_task_abi(task_id)
+    # abi结果接入数据库内
+    abi_file_sql(abi_file)
+    # p_timed_task = Process(target=timed_task_abi, args=(task_id,))
+    # p_timed_task.start()
+    # p_timed_task.join()
+
+
+def structure_task():
+    # 先获得mysql的任务
+    ret_task = get_sql_task()
+    if not ret_task:
+        print('agent_task is None..')
+        pass
+    # 判断任务类型
+    print(ret_task)
+    if 1 == ret_task:
+        # 调用ABI权重比函数
+        ret_data = abi_check_priority()
+        # 更新mysql的任务状态
+        put_sql_task(ret_data)
+
+
+
+# ABI对比结果文件，存放数据库内
+def abi_file_sql(path):
+    with open(path, 'r') as p:
+        ret = p.readlines()
+        p.close()
+    for i in range(len(ret)):
+        info = ret[i].split(',', 5)
+        info_str = ''
+        for n in range(len(info)):
+            if n < 9:
+                sinfo = ''
+                if info[n].strip().strip('\n'):
+                    sinfo = info[n].strip().strip('\n')
+                    info_str =  info_str+"'{}'".format(sinfo)
+                else:
+                    sinfo='NULL'
+                    info_str =  info_str+"{}".format(sinfo)
+            if n != (len(info)-1):
+                info_str = info_str+','
+        abi_file_connect(info_str)
+
