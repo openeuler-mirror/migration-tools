@@ -10,7 +10,7 @@ import shutil
 import argparse
 import platform
 import logging
-
+from sysmig_agent.share import *
 from utils import *
 
 reposdir=''

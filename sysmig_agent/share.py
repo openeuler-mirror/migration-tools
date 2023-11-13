@@ -1,14 +1,152 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 
-import logging
 import os
-import platform
+import sys
+import json
 import re
-import shutil
 import subprocess
+import shutil
+import socket
+import platform
+import logging
 
-from sysmig_agent.utils import list_to_json
+sys.path.append("..")
+from connect_sql import DBHelper
+
+defaultencoding = 'utf-8'
+# logdss = Logger('./logdss.log',logging.DEBUG,logging.DEBUG)
+new_os = '统信服务器操作系统V20({})'
+AGENT_DIR = '/var/tmp/uos-migration/'
+PRE_MIG = '/var/tmp/uos-migration/UOS_analysis_report/rpmva-before.txt'
+PRE_MIG_DIR = '/var/tmp/uos-migration/UOS_analysis_report'
+MIGRATION_DIR = '/var/tmp/uos-migration/UOS_migration_log'
+MIGRATION_REPORT_DIR = '/var/tmp/uos-migration/UOS_migration_completed_report'
+
+
+PROGRESS = '/var/tmp/uos-migration/.progress'
+RPMS = '/var/tmp/uos-migration/.rpms'
+MIGRATION_KERNEL = '/var/tmp/uos-migration/kernel'
+MIGRATION_LOG = '/var/tmp/uos-migration/UOS_migration_log/log'
+MIGRATION_DATA_RPMS_DIR = '/var/tmp/uos-migration/data/exp-rst'
+MIGRATION_DATA_RPMS_3_INFO = '/var/tmp/uos-migration/data/exp-rst/pkginfo_3.txt'
+pstate = '/var/tmp/uos-migration/.state'
+
+abi_file = '/var/tmp/uos-migration/data/exp-rst/agent_ABI_check_result.csv'
+#Abi
+local_dir = '/var/tmp/uos-migration/data/'
+exp_rst_dir = local_dir+'exp-rst/'
+
+current_system_unique = exp_rst_dir + 'current-system-unique.csv'
+migration_system_install = exp_rst_dir + 'migration-system-install.csv'
+migration_system_total = exp_rst_dir + 'migration-system-total.csv'
+abi_comp_chk = exp_rst_dir + 'abi-comp-chk.csv'
+abi_incomp_chk = exp_rst_dir + 'abi-incomp-chk.csv'
+exitFlag = 0
+total_rpm_nums = 0
+percentage = ''
+deal_rpm_num = 0
+agent_abi_check_result = exp_rst_dir + 'agent_ABI_check_result.csv'
+suffix_list = ['.mo', '.gz', '.xml', '.conf', '.png', '.page', '.woff', '.ttf', '.pyc', '.typelib', '.pdf', '.ppt', '.txt', '.ico', '.icc', '.tcc', '.gif', '.oga', '.rom', '.jpg', '.dict', '.webm', '.pyc', '.wav', '.ucode', '.ttc', '.gresource', '.otf', '.t1', '.db', '.elc', '.cache', '.fd', '.iso', '.efi', '.mmdb', '.bz2', '.img', '.bin', '.fw', '.cis', '.itb', '.inp', '.sbcf', '.ddc', '.sfi', '.bseq', '.mfa2', '.chk', '.mgc', '.stub', '.dfu', '.dat', '.sys', '.bts', '.dlmem', '.brd', '.hwm', '.pwd', '.pwi', '.exe', '.der', '.p12', '.ogg', '.signed', '.dafsa', '.gpg', '.tri', '.x86_64']
+
+
+
+def get_local_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+        return ip
+    finally:
+        s.close()
+
+
+
+def sql_abi_progress(data):
+    sql = "UPDATE agent_task SET task_progress = {} ,task_Updatetime = NOW() WHERE agent_ip = '{}';".format(data, get_local_ip())
+    try:
+        ret = DBHelper().execute(sql)
+    except:
+        pass
+
+
+def sql_online_statue(statue, task_id):
+    """
+    sql：agent主机的在线状态更新
+    :param statue: 0：在线; 1：离线
+    :param task_id:agent的json内的task_id
+    :return:
+    """
+    # sql = "UPDATE agent_info SET agent_online_status = {} WHERE agent_ip = {};".format(statue, get_local_ip())
+    sql = "UPDATE agent_info SET agent_online_status = {} WHERE agent_ip = (SELECT agent_ip FROM agent_task WHERE task_id = '{}');".format(
+        statue, task_id)
+    try:
+        ret = DBHelper().execute(sql)
+    except:
+        pass
+
+
+def sql_mig_statue(statue):
+    # sql = "UPDATE agent_task SET task_statues = {} , task_Updatetime = NOW() WHERE task_id = '{}';".format(statue, task_id)
+    sql = "UPDATE agent_task SET task_data = '{}' , task_Updatetime = NOW() WHERE agent_ip = '{}';".format(statue,
+                                                                                                           get_local_ip())
+    try:
+        ret = DBHelper().execute(sql)
+    except:
+        pass
+
+
+def sql_task_statue(statue, task_id = None):
+    if task_id:
+        sql = "UPDATE agent_task SET task_status = {} , task_Updatetime = NOW() WHERE task_id = '{}';".format(statue, task_id)
+    else:
+        sql = "UPDATE agent_task SET task_status = {} , task_Updatetime = NOW() WHERE agent_ip = '{}';".format(statue, get_local_ip())
+    try:
+        ret = DBHelper().execute(sql)
+    except Exception :
+        pass
+
+
+def sql_show_tables():
+    sql = "SELECT task_progress,task_data FROM agent_task WHERE agent_ip = '{}';".format(get_local_ip())
+    ret_sql_msg_info = DBHelper().execute(sql)
+    if ret_sql_msg_info:
+        print(str(ret_sql_msg_info.fetchall()) + '\n')
+
+
+def abi_file_connect(sql_r):
+    abi_sql = "INSERT INTO agent_ABI_check_result VALUES('"+ get_local_ip()+"'," + sql_r + ',NOW());'
+    s = DBHelper()
+    ret_sql_msg = s.execute(abi_sql)
+
+def local_disabled_release_repo():
+    """
+    将系统内存在的repository文件置为不可用，只保留switch-to-uos.repo
+    :return:
+    """
+    path = '/etc/yum.repos.d'
+    if os.path.exists(path):
+        file_list = os.listdir(path)
+    for file in file_list:
+        fpath = os.path.join(path, file)
+        if os.path.isdir(fpath):
+            continue
+        else:
+            if re.fullmatch('switch-to-uos.repo', file, re.IGNORECASE):
+                continue
+            elif not re.search('repo', file, re.IGNORECASE):
+                continue
+            with open(fpath, 'r') as fdst:
+                allrepo = fdst.read()
+                fdst.close()
+                with open(fpath + '.disabled', 'w+') as fdst:
+                    fdst.write(
+                        '#This is a yum repository file that was disabled . <Migration to UiniontechOS>\n' + allrepo)
+                    fdst.close()
+                    os.remove(fpath)
+
+
+
 
 def getSysMigConf():
     confpath = '/etc/migration-tools/migration-tools.conf'
@@ -94,17 +232,19 @@ def get_disk_info(string):
 
 
 def add_boot_option():
-    print("Current system is uefi, add boot option to boot manager.")
-    subprocess.run('which efibootmgr > /dev/null 2>&1 || dnf install -y efibootmgr', shell=True)
+    """
+    Current system is uefi, add boot option to boot manager.
+    """
+    subprocess.run('which efibootmgr > /dev/null 2>&1 || yum install -y efibootmgr', shell=True)
     disk_name = subprocess.check_output('mount | grep /boot/efi | awk \'{print $1}\'', shell=True)
     disk_name = str(disk_name, 'utf-8')
     disk_name = disk_name.split('\n')[0]
-    dev_name,part_num = get_disk_info(disk_name)
+    dev_name, part_num = get_disk_info(disk_name)
     if dev_name == "" or part_num == "":
-        print("Parse /boot/efi disk info failed, update boot loader failed.")
+        # "Parse /boot/efi disk info failed, update boot loader failed.
         return
 
-    cmd=""
+    cmd = ""
     arch = platform.machine()
     if arch == "x86_64":
         cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubx86.efi" -L "Uniontech OS"'
@@ -138,45 +278,76 @@ def process_special_pkgs():
 
 
 def title_conf(oldosname):
-    oldosname=oldosname.strip()
+    """
+    Change the boot start option after system migration
+    :param oldosname:old system name
+    :return:
+    """
+    oldosname = oldosname.strip()
+    if oldosname == 'redhat':
+        capital = 'Red Hat'
+    elif oldosname == 'centos':
+        capital = 'CentOS'
     path = '/boot/loader/entries'
-    #path='/root/a'
+    # path='/root/a'
     if os.path.exists(path):
         file_list = os.listdir(path)
     else:
         return None
     fl = False
     for file in file_list:
-        fpath = os.path.join(path,file)
+        fpath = os.path.join(path, file)
         if os.path.isdir(fpath):
             continue
         else:
-            with open(fpath,'r') as fp:
+            with open(fpath, 'r') as fp:
                 strall = fp.read()
                 fp.close()
-            if re.search('uniontech',strall,re.IGNORECASE):
+            if re.search('uniontech', strall, re.IGNORECASE):
                 fl = True
     for file in file_list:
-        ustr=None
-        fpath = os.path.join(path,file)
+        ustr = None
+        brackets = ""
+        fpath = os.path.join(path, file)
         if os.path.isdir(fpath):
             continue
         else:
-            with open(fpath,'r') as fp:
+            with open(fpath, 'r') as fp:
                 strall = fp.read()
                 fp.close()
-            if re.search(oldosname,strall,re.IGNORECASE):
+            '''
+            if re.search(oldosname, strall, re.IGNORECASE):
                 if fl:
                     os.remove(fpath)
                     continue
                 else:
-                    ustr = re.sub(oldosname,"UniontechOS",strall,1,flags=re.IGNORECASE)
-            if re.search('8 \(Core\)',strall):
-                ustr = re.sub(' 8 ',' 20 ',ustr,1,flags=re.IGNORECASE)
-                ustr = re.sub("Core","kongzi",ustr,1,flags=re.IGNORECASE)
-                with open(fpath,'w') as ptitle:
-                    ptitle.write(ustr)
-                    ptitle.close()
+                    print(strall,capital)
+                    ustr = re.sub(capital, "UniontechOS", strall, 1, flags=re.IGNORECASE)
+            '''
+            if re.search(capital, strall):
+                line = strall.split('\n', -1)[0]
+                for char in range(len(line)):
+                    if line[char] == '(':
+                        p = char
+                        continue
+                    if line[char] == ')':
+                        e = char+1
+                        brackets = line[p:e]
+                        break
+                title = 'title UniontechOS Linux ' + brackets + ' 20 (kongzi)'
+                open(fpath, 'w').write(strall.replace(line, title))
+
+
+def json_list_to_json(keylist, valuelist):
+    res = dict(zip(keylist, valuelist))
+    #    logdss.info (res)
+    return json.dumps(res)
+
+def list_to_json(keylist, valuelist):
+    res = dict(zip(keylist, valuelist))
+    res = json.dumps(res)
+    #    logdss.info (res)
+    return json.dumps(res)
 
 
 def main_conf(osname):
@@ -234,3 +405,110 @@ def main_conf(osname):
 
     logger.info("Switch complete.UniontechOS recommends rebooting this system.")
     return 0
+
+
+def sql_os_newversion(localos):
+    sql = "UPDATE agent_info SET agent_migration_os = '{}' WHERE agent_ip = '{}';".format(localos, get_local_ip())
+    try:
+        ret = DBHelper().execute(sql)
+    except:
+        pass
+
+
+def get_new_osversion():
+    path = '/etc/os-version'
+    if os.path.exists(path):
+        with open(path,'r') as v:
+            ret = v.readlines()
+            localos=ostype=''
+            for i in range(len(ret)):
+                if not ret[i]:
+                    continue
+                if 'MinorVersion' in ret[i]:
+                    strminor = str(ret[i])
+                    _, localos = strminor.split('=',1)
+                if 'EditionName[zh_CN]' in ret[i]:
+                    strminor = str(ret[i])
+                    _, ostype = strminor.split('=',1)
+                    ostype = re.sub('[^a-zA-Z]+','',ostype)
+            localos = localos.strip().strip('\n') + ostype.strip().strip('\n')
+            localos = new_os.format(localos.strip().strip('\n'))
+            sql_os_newversion(localos)
+
+    else:
+        sql_os_newversion('NULL')
+
+
+def run_subprocess(cmd="", print_cmd=True, print_output=True):
+    """Call the passed command and optionally log the called command (print_cmd=True) and its
+    output (print_output=True). Switching off printing the command can be useful in case it contains
+    a password in plain text.
+    """
+    cwdo = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
+    cwde = '/var/tmp/uos-migration/UOS_migration_log/mig_err.txt'
+    # fderr = open(cwde, 'a')
+    # from logging import *
+    # if print_cmd:
+    #     log.debug("Calling command '%s'" % cmd)
+
+    # Python 2.6 has a bug in shlex that interprets certain characters in a string as
+    # a NULL character. This is a workaround that encodes the string to avoid the issue.
+    if print_output:
+        fdout = open(cwdo, 'a')
+        fderr = open(cwde, 'a')
+    if sys.version_info[0] == 2 and sys.version_info[1] == 6:
+        cmd = cmd.encode("ascii")
+    # cmd = shlex.split(cmd, False)
+    process = subprocess.Popen(
+        cmd,
+        # stdout=subprocess.PIPE,
+        # stderr=subprocess.STDOUT,
+        stdout=fdout,
+        stderr=fderr,
+        bufsize=1,
+        shell=True
+    )
+    output = ""
+    try:
+        for line in iter(process.stdout.readline, b""):
+            output += line.decode()
+    except:
+        pass
+
+    #            loggerinst.info(line.decode().rstrip("\n"))
+
+    # Call communicate() to wait for the process to terminate so that we can get the return code by poll().
+    # It's just for py2.6, py2.7+/3 doesn't need this.
+    process.communicate()
+
+    return_code = process.poll()
+    return output, return_code
+
+
+
+def os_storage():
+    """
+    判断系统剩余空间大小
+    :return: GB
+    """
+    path = '/var/cache'
+    stat = os.statvfs(path)
+    CACHE_SPACE = 10.0
+    state = 1
+    ava_cache = format(stat.f_bavail * stat.f_frsize / 1024 // 1024 / 1024, '.1f')
+    if stat:
+        # with open(PRE_MIG,'a+') as pf:
+        #     pf.write('/var/cache可用空间为'+ava_cache+'GB')
+        #     pf.close()
+        if float(ava_cache) >= CACHE_SPACE:
+            state = 0
+            return ava_cache
+            # data = '可用空间为'+ava_cache+'GB'
+        else:
+            return ava_cache
+            # data = '可用空间为' + ava_cache + 'GB,请清理/var/cache的空间后重试。'
+    else:
+        return ava_cache
+        # data = '可用空间为'+ava_cache+'GB,请清理/var/cache的空间后重试。'
+        # return list_to_json(keylist,valuelist)
+
