@@ -628,3 +628,17 @@ def get_cur_sys_info_list():
         fpbsi.write('13|1|' + str(sum_num) + '\n')
 
     return list_info
+
+
+def mycopyfile(srcfile, dstfile, logger):
+    if not os.path.exists(srcfile):
+        logger.info("Please check!!!! src file not exit:" +  srcfile)
+        return False
+    else:
+        fpath,fname=os.path.split(dstfile)
+        if not os.path.exists(fpath):
+            os.makedirs(fpath)
+        copyfile(srcfile,dstfile)
+
+    return dstfile
+
