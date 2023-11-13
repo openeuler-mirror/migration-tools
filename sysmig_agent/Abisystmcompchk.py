@@ -688,3 +688,47 @@ def write_row_and_column(report_name_rc, value_list, index):
     for data in value_list:
         row_column_sheet.write(int(data.split('|')[0]),int(data.split('|')[1]),data.split('|')[2])
     row_column_wb.save(report_name_rc)
+
+
+def write_column_by_column(report_name_cc, column_value_list, row, column, index):
+
+    column_column_rb = xlrd.open_workbook(report_name_cc, formatting_info=True)
+    r_sheet = column_column_rb.sheet_by_index(index)
+    column_column_wb = copy(column_column_rb)
+    column_column_sheet = column_column_wb.get_sheet(index)
+
+    row_cc = row
+    for column_data in column_value_list:
+        column_column_sheet.write(row_cc, column, column_data.replace('\n','').split(',')[0])
+        row_cc = row_cc + 1
+
+    column_column_wb.save(report_name_cc)
+
+def write_row_by_row(report_name_rr, row_value_list, row, column, index):
+
+    row_row_rb = xlrd.open_workbook(report_name_rr, formatting_info=True)
+    r_sheet = row_row_rb.sheet_by_index(index)
+    row_row_wb = copy(row_row_rb)
+    row_row_sheet = row_row_wb.get_sheet(index)
+
+    before_summary_info = r_sheet.row_values(0)[0].replace('INCOMP_NUM', str(incomp_pkg_num()))
+    row_row_sheet.write(0, 0, before_summary_info)
+
+    row_rr = row
+    column_rr = column
+    for row_data in row_value_list:
+        row_list = row_data.replace('\n','').split(',')
+        i = column
+        column_rr = column
+        while i < (len(row_list) - 1):
+            if i==2 or i==3:
+                i = i + 1
+                continue
+            elif i==5:
+                row_row_sheet.write(row_rr, column_rr, row_list[i]+','+row_list[i+1])
+            else:
+                row_row_sheet.write(row_rr, column_rr, row_list[i])
+            i = i + 1
+            column_rr = column_rr + 1
+        row_rr = row_rr + 1
+    row_row_wb.save(report_name_rr)
