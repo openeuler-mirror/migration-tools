@@ -323,3 +323,24 @@ def get_repo_arch_info(data):
     res['info'] = info_list
     json_res = json.dumps(res)
     return json_res
+
+
+def get_storage_num(data):
+    """
+    获取可用空间足够和不足数量
+    :param data:
+    :return:
+    """
+    success_num_sql = "select agent_ip from agent_info where agent_online_status='0' and agent_storage>='10' " \
+                      "and agent_migration_os is null;"
+    get_success_num = DBHelper().execute(success_num_sql).fetchall()
+
+    faild_num_sql = "select agent_ip from agent_info where agent_online_status='0' and agent_storage<'10' " \
+                    "and agent_migration_os is null;"
+    get_faild_num = DBHelper().execute(faild_num_sql).fetchall()
+
+    success = len(get_success_num)
+    faild = len(get_faild_num)
+    data = {'success': success, 'faild': faild}
+    json_data = json.dumps(data)
+    return json_data
