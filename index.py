@@ -33,6 +33,7 @@ mods = {
         'check_repo': migration.check_repo,
         'get_repo_data': server.get_repo_data,
         'check_environment':migration.check_environment,
+        'get_environment_data': server.get_environment_data,
         }
 
 
@@ -149,6 +150,17 @@ def get_repo_data():
 def check_environment():
     """
     agent迁移前环境检查任务
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/get_environment_data', methods=['GET', 'POST'])
+def get_environment_data():
+    """
+    获取环境检查进度本
     :return:
     """
     mod = check_methods()
@@ -295,27 +307,6 @@ def MT_repo_kernel():
         return Response(mod, content_type='application/json')
 
     return render_template('MT_kernel.html')
-
-
-@app.route('/Mt_environment', methods=['GET', 'POST'])
-def Mt_environment():
-    """
-    跳转迁移前环境检测界面
-    :return:
-    """
-    return render_template('MT_check_environment.html')
-
-
-@app.route('/MT_check_environment', methods=['GET', 'POST'])
-def MT_check_environment():
-    """
-    迁移前系统环境检查
-    :return:
-    """
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-    return render_template('MT_check_environment.html')
 
 
 @app.route('/MT_check_progress', methods=['GET', 'POST'])
