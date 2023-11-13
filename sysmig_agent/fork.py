@@ -38,3 +38,26 @@ def up_to_date_sql_abi():
     # 获取abi progress 更新数据库内
     sql_abi_progress(abi_process)
     return 0
+
+
+# ABI系统检测
+def timed_task_abi(task_id):
+    time_task = BackgroundScheduler(timezone='Asia/Shanghai')
+    task_id=str(task_id)
+    p = time_task.add_job(up_to_date_sql_abi, 'interval', seconds=3)
+    time_task.start()
+    try:
+        task_statue='1'
+        p_abi = Process(target=migrate_before_abi_chk, args=(q,task_statue,))
+        p_abi.start()
+        p_abi.join()
+        # Determine whether the message queue is dead or empty to end the timer
+        while not q.empty():
+            continue
+        time_task.shutdown()
+    except (KeyboardInterrupt, SystemExit):
+        # Not strictly necessary if daemonic mode is enabled but should be done if possible
+        time_task.shutdown()
+        print('Exit The Job!')
+
+
