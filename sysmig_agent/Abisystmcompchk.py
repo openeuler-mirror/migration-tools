@@ -231,3 +231,92 @@ def get_migrate_behind_rpm_pkg():
     return rpm_pkg_list
 
 
+# Get the current system package
+def get_system_pkg_name(flag, mig_logger):
+    dist = '.uelc20'
+    rpm_pkg_list = ''
+    rpm_pkg_oth = []
+
+    if not os.path.exists(exp_rst_dir):
+        os.makedirs(exp_rst_dir)
+
+    migration_before_uelc20_rpm = exp_rst_dir + 'migration-before-uelc20-rpm.csv'
+    migration_before_eln_rpm = exp_rst_dir + 'migration-before-eln-rpm.csv'
+
+    ts = rpm.TransactionSet()
+    mi = ts.dbMatch()
+
+    # migration before filter dist of '.uelc20'
+    if flag == '0':
+        if os.path.exists(migration_before_uelc20_rpm):
+            os.remove(migration_before_uelc20_rpm)
+        if os.path.exists(migration_before_eln_rpm):
+            os.remove(migration_before_eln_rpm)
+
+        fbfu = open(migration_before_uelc20_rpm, 'w')
+        fbfe = open(migration_before_eln_rpm, 'w')
+        if system_version_id() == '7':
+            for rpm_pkg in mi:
+                if dist in rpm_pkg['release'].decode():
+                    fbfu.write(rpm_pkg['name'].decode() + '\n')
+                else:
+                    fbfe.write(rpm_pkg['name'].decode() + '\n')
+                    rpm_pkg_list = rpm_pkg_list + ' ' + rpm_pkg['name'].decode()
+        else:
+            for rpm_pkg in mi:
+                if dist in rpm_pkg['release']:
+                    fbfu.write(rpm_pkg['name'] + '\n')
+                else:
+                    fbfe.write(rpm_pkg['name'] + '\n')
+                    rpm_pkg_list = rpm_pkg_list + ' ' + rpm_pkg['name']
+        fbfu.close()
+        fbfe.close()
+        return rpm_pkg_list
+
+    # migration behind filter dist of '.uelc20'
+    elif flag == '1':
+        if os.path.exists(migration_before_uelc20_rpm):
+            with open(migration_before_uelc20_rpm, 'r') as fbfu:
+                fbfu_list = fbfu.readlines()
+
+            if os.path.exists(migration_system_install):
+                os.remove(migration_system_install)
+
+            fbhe = open(migration_system_install, 'w')
+            rst = str(abi_check_sys())
+            if rst == '7':
+                for rpm_pkg in mi:
+                    if dist in rpm_pkg['release'].decode():
+                        if rpm_pkg['name'].decode() not in fbfu_list:
+                            fbhe.write(rpm_pkg['name'].decode() + '\n')
+            elif rst == '8':
+                for rpm_pkg in mi:
+                    if dist in rpm_pkg['release']:
+                        if rpm_pkg['name'] not in fbfu_list:
+                            fbhe.write(rpm_pkg['name'] + '\n')
+            else:
+                mig_logger.info('migrate behind not exit verison id  !!!')
+            fbhe.close()
+        else:
+            mig_logger.info('file not exit:' + migration_before_uelc20_rpm)
+            mig_logger.info('Please do migration before system compation check !!!')
+            return False
+        return True
+
+    elif flag == '2':
+        if system_version_id() == '7':
+            for rpm_name in mi:
+                if dist not in rpm_name['release'].decode():
+                    rpm_pkg_oth.append(rpm_name['name'].decode())
+                    dist_flag = '1'
+        else:
+            for rpm_name in mi:
+                if dist not in rpm_name['release']:
+                    rpm_pkg_oth.append(rpm_name['name'])
+                    dist_flag = '1'
+
+        if dist_flag == '1':
+            return rpm_pkg_oth
+        else:
+            mig_logger.info('The current system is UOS, not support migration, please check !!!')
+            return False
