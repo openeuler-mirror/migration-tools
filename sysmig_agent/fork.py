@@ -61,3 +61,76 @@ def timed_task_abi(task_id):
         print('Exit The Job!')
 
 
+# 系统迁移 定时任务更新进度
+def timed_task_migrate(task_id, kernel_version):
+    time_task_m = BackgroundScheduler(timezone='Asia/Shanghai')
+    p = time_task_m.add_job(up_to_date_sql_migrate, 'interval', seconds=3)
+    migInit_porgress()
+    time_task_m.start()
+    try:
+        while 8 > int(str(get_mig_state(task_id))[1]):
+            state = str(get_mig_state(task_id))[1]
+            if str(get_mig_state(task_id))[0] == '1':
+                ##
+                ## error , too many request systen migration
+                time_task_m.shutdown()
+                return 'error'
+            old_os_name = get_old_osname()
+            if '0' == state:
+                sql_mig_statue('10')
+                if ifnot_mig_kernel(kernel_version):
+                    sql_mig_statue('18')
+                t = Process(target=centos8_main, args=(old_os_name, task_id,))
+                t.start()
+                t.join()
+            elif '2' == state:
+                sql_mig_statue('12')
+                ## skip broken
+                skip = 0
+                t = Process(target=mig_distro_sync, args=(skip, task_id,))
+                t.start()
+                t.join()
+            elif '3' == state:
+                # Breakpoint
+                sql_mig_statue('05')
+            elif '4' == state:
+                sql_mig_statue('14')
+                mig_kernel(kernel_version)
+                main_conf(old_os_name)
+                # Migration report
+                try:
+                    migrate_behind_abi_chk()
+                except:
+                    # Generate analysis report error
+                    pass
+                sql_mig_statue('05')
+            elif '5' == state:
+                sql_mig_statue('15')
+                # Migration state weight : 90
+                res = mig_whether_success()
+
+                # new system regen sql
+                get_new_osversion()
+                # tar.gz type
+                targz_mig_dir_log()
+                targz_mig_dir_report()
+                sql_abi_progress(100)
+                if 80 > int(res):
+                    sql_task_statue('3', task_id)
+                    sql_mig_statue('08')
+                    return 1
+                    # data = ' 迁移失败。'
+                else:
+                    sql_task_statue('2', task_id)
+                    sql_mig_statue('09')
+                    time_task_m.shutdown()
+                    return 0
+                    # data = '迁移成功。'
+            time.sleep(3)  # 其他任务是独立的线程执行
+        time_task_m.shutdown()
+        return 0
+    except (KeyboardInterrupt, SystemExit):
+        # Not strictly necessary if daemonic mode is enabled but should be done if possible
+        time_task_m.shutdown()
+        sql_task_statue('3', task_id)
+
