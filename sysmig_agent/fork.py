@@ -226,3 +226,16 @@ def mig_modify_statue(task_id):
         sql_mig_statue(ret)
     # loggea
     '''
+
+
+
+def get_info_version(data):
+    info = json.loads(data).get('info')
+    for i in range(len(info)):
+        agent_info = json.dumps(info[i])
+        ip = json.loads(agent_info).get('agent_ip')
+        agent_ip = get_local_ip()
+        if ip == agent_ip:
+            version = json.loads(agent_info).get('kernel_version')
+            return version
+
