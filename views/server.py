@@ -1,8 +1,13 @@
 import json
+import os
 from datetime import datetime
 
 from connect_sql import DBHelper
 from sysmig_agent.share import getSysMigConf
+from views import reports
+from logger import *
+
+migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 
 def import_host_info(data):
     """
@@ -344,3 +349,29 @@ def get_storage_num(data):
     data = {'success': success, 'faild': faild}
     json_data = json.dumps(data)
     return json_data
+
+
+reports_type = {
+    "migration_detection": reports.migration_detection,
+}
+
+def export_reports(data):
+    """
+    导出各种报告
+    :param data:
+    :return:
+    """
+    data = json.loads(data)
+    report_type = reports_type.get(data.get('reports_type'))
+    if report_type:
+        mkdir_log_pwd = "/var/uos-migration/"
+        isExists = os.path.exists(mkdir_log_pwd)
+        if not isExists:
+            try:
+                os.makedirs(mkdir_log_pwd)
+                migration_log.info(mkdir_log_pwd)
+            except:
+                migration_log.war("export report mkdir war:%s" % mkdir_log_pwd)
+
+        report_type(data)
+    return 'success'
