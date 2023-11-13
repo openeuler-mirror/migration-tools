@@ -161,3 +161,22 @@ def agent_ABI_check_result():
     for rpm_name in open(abi_comp_chk):
         fp.write(rpm_name.split(',')[0] + string)
     fp.close()
+
+
+def logger_init():
+    log_file = 'Abisystmcompchk.log' + '.' + datetime.datetime.now().strftime('%Y%m%d%H%M')
+    log_path = '/var/tmp/uos-migration/UOS_migration_log/'
+    if not os.path.exists(log_path):
+        os.makedirs(log_path)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    log_name = log_path + log_file
+    logfile = log_name
+    fh = logging.FileHandler(logfile, mode='w')
+    fh.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+
+    return logger
