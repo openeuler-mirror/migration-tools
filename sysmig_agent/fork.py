@@ -226,3 +226,33 @@ def mig_modify_statue(task_id):
         sql_mig_statue(ret)
     # loggea
     '''
+
+
+
+def get_info_version(data):
+    info = json.loads(data).get('info')
+    for i in range(len(info)):
+        agent_info = json.dumps(info[i])
+        ip = json.loads(agent_info).get('agent_ip')
+        agent_ip = get_local_ip()
+        if ip == agent_ip:
+            version = json.loads(agent_info).get('kernel_version')
+            return version
+
+
+def system_migration(data):
+    kernel_version = get_info_version(data)
+    if not kernel_version:
+        kernel_version = '0'
+    task_id = json.loads(data).get('task_id')
+    # 更新SQL任务状态
+    sql_task_statue('1', task_id)
+    # 发送消息给Server更新任务流状态
+    post_server('task_start', task_id)
+    # The migration status is modified, and the breakpoint continues
+    mig_modify_statue(task_id)
+    #sql_mig_statue('00')
+    # MIGRATION MAIN
+    timed_task_migrate(task_id, kernel_version)
+    post_server('task_close', task_id)
+
