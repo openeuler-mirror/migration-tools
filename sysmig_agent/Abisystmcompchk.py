@@ -818,3 +818,15 @@ def switch_write_migrate_report(report_name, num, flag):
         with open(abi_incomp_chk, 'r') as fr_incomp:
             column_incomp_list = fr_incomp.readlines()
         write_row_by_row(report_name, column_incomp_list, 2, 0, num)
+
+
+def get_system_unique_pkg(current_pkg_list, download_pkg_list):
+    # clean history data
+    if os.path.exists(current_system_unique):
+        os.remove(current_system_unique)
+
+    fcw = open(current_system_unique, 'w')
+    for data in set(current_pkg_list).difference(set(download_pkg_list)):
+        fcw.write(data + '\n')
+    fcw.close()
+
