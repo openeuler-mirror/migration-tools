@@ -528,3 +528,21 @@ def incomp_pkg_num():
         tmp = line.split(',')[0]
     return num
 
+
+def system_version_id():
+    fp = open('/etc/os-release', 'r')
+    for line in fp:
+        if 'VERSION_ID' in line:
+            break
+    fp.close()
+    return line.split('=', 1)[1].replace('"', '').replace('\n', '')
+
+
+def get_cur_sys_version():
+    fp = open('/etc/os-release', 'r')
+    for line in fp:
+        if 'PRETTY_NAME' in line:
+            break
+    fp.close()
+    return line.split('=', 1)[1].replace('"', '').replace('\n', '')
+
