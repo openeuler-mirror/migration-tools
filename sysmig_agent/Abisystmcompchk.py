@@ -546,3 +546,24 @@ def get_cur_sys_version():
     fp.close()
     return line.split('=', 1)[1].replace('"', '').replace('\n', '')
 
+
+def get_migration_sys_info():
+
+    behind_sys_info = exp_rst_dir + 'before-system-info.txt'
+    with open(behind_sys_info, 'r') as file_object:
+        behind_list_info = file_object.readlines()
+
+    migration_sys_info = '1|2|' + get_cur_sys_version()
+    behind_list_info.append(migration_sys_info)
+
+    #20220107 modify lihp: get kernel version
+    #migration_kernel_verison = '2|2|' + platform.release()
+    migration_kernel_verison = '2|2|' + platform_release('1')
+    behind_list_info.append(migration_kernel_verison)
+
+    with open(migration_system_install, 'r') as frm:
+        install_pkgs_num = str(len(frm.readlines()))
+    behind_list_info.append('8|2|' + install_pkgs_num)
+
+    return behind_list_info
+
