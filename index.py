@@ -36,6 +36,7 @@ mods = {
         'get_environment_data': server.get_environment_data,
         'get_repo_arch_info': server.get_repo_arch_info,
         'get_storage_num': server.get_storage_num,
+        'export_reports': server.export_reports,
         }
 
 
