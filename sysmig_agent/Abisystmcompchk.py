@@ -492,3 +492,27 @@ def process_data(threadName, q, queueLock, incompfw, compfw, Queue, pro_log):
             queueLock.release()
         else:
             queueLock.release()
+
+
+def get_system_pkg_list(migbeflist):
+    download_rpm_nums = 0
+    migration_rpm_pkg_path = local_dir + 'uos/rpms'
+
+    #clean history data
+    if os.path.exists(migration_system_total):
+        os.remove(migration_system_total)
+
+    ftw = open(migration_system_total, 'w')
+    items = os.listdir(migration_rpm_pkg_path)
+    newlist = []
+    for names in items:
+        if names.endswith(".rpm"):
+            ftw.write(names.rsplit('-',1)[0].rsplit('-',1)[0] + '\n')
+            migbeflist.append(names.rsplit('-',1)[0].rsplit('-',1)[0])
+            newlist.append(names)
+            download_rpm_nums = download_rpm_nums + 1
+    ftw.close()
+    if download_rpm_nums:
+        return newlist
+    else:
+        return False
