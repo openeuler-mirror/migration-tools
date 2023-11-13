@@ -88,9 +88,21 @@ def check_services(data, url):
 
 
 def check_environment(data):
-    services = check_services(data, '/check_environment')
-    if services:
-        return services
+    """
+    agent迁移前环境检查任务
+    :param data:
+    :return:
+    """
+    agent_ip_list = json.loads(data).get('agent_ip')
+    data = json.loads(data)
+    url = '/check_environment'
+    for i in agent_ip_list:
+        get_task_id_sql = "select task_id from cur_task where agent_ip='%s'" % i
+        task_id = DBHelper().execute(get_task_id_sql).fetchall()
+        data['task_id'] = task_id[0][0]
+        json_data = json.dumps(data)
+        send_task_to_agent(json_data, url, i)
+    return 'success'
 
 
 def check_os(data):
