@@ -192,6 +192,17 @@ def get_storage_num():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/export_reports', methods=['GET', 'POST'])
+def export_reports():
+    """
+    导出迁移检测报告
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def MT_index():
     """
