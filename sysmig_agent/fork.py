@@ -256,3 +256,13 @@ def system_migration(data):
     timed_task_migrate(task_id, kernel_version)
     post_server('task_close', task_id)
 
+
+def if_env_check(data):
+    agent_ips = list(json.loads(data).get('agent_ip'))
+    for n in range(len(agent_ips)):
+        ip = str(agent_ips[n])
+        if ip == get_local_ip():
+            return True
+    return False
+
+
