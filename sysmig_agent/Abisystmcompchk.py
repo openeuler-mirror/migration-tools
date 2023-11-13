@@ -919,3 +919,49 @@ def migrate_behind_abi_chk():
         i = i + 1
 
     return '0'
+
+
+def MutilThread(nameList, Query, muth_logger):
+    global exitFlag
+
+    # Default number of cpus
+    thread_num = int(cpu_count() * 1.5)
+
+    threadList = ["Thread-%d" % (num) for num in range(0, thread_num)]
+
+    threads = []
+    threadID = 10
+    # threadID = 1
+
+    fw = open(abi_incomp_chk, 'w')
+    fr = open(abi_comp_chk, 'w')
+
+    # Creating new thread
+    for tName in threadList:
+        thread = myThread(threadID, tName, workQueue, queueLock, fw, fr, Query, muth_logger)
+        thread.start()
+        threads.append(thread)
+        threadID += 1
+
+    # Fill in the queue
+    queueLock.acquire()
+    for word in nameList:
+        workQueue.put(word)
+    queueLock.release()
+
+    # Waiting queue clear
+    while not workQueue.empty():
+        pass
+
+    # Notifies the thread that it is time to exit
+    exitFlag = 1
+
+    # Wait for all threads to complete
+    for t in threads:
+        t.join()
+    muth_logger.info('==========     Exit main thread......     ==========')
+
+    fw.close()
+    fr.close()
+
+    return True
