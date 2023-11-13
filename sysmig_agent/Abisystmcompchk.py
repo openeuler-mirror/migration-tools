@@ -202,3 +202,32 @@ def is_ELFfile(filepath, logger):
         # logger.info(str(e))
         pass
     return False
+
+
+#Get migration behind rpm list, filter dist of '.uelc20'
+def get_migrate_behind_rpm_pkg():
+    dist='.uelc20'
+    migration_before_uelc20_rpm = exp_rst_dir + 'migration-before-uelc20-rpm.csv'
+    migration_behind_uelc20_rpm = exp_rst_dir + 'migration-behind-uelc20-rpm.csv'
+
+    rpm_pkg_list=[]
+
+    ts = rpm.TransactionSet()
+    mi = ts.dbMatch()
+
+    fhu = open(migration_behind_uelc20_rpm, 'w')
+    if system_version_id() == '7':
+        for rpm_pkg in mi:
+            if dist in rpm_pkg['release'].decode():
+                fhu.write(rpm_pkg['name'].decode()+'\n')
+                rpm_pkg_list.append(rpm_pkg['name'].decode())
+    else:
+        for rpm_pkg in mi:
+            if dist in rpm_pkg['release']:
+                fhu.write(rpm_pkg['name']+'\n')
+                rpm_pkg_list.append(rpm_pkg['name'])
+    fcw.close()
+
+    return rpm_pkg_list
+
+
