@@ -180,3 +180,25 @@ def logger_init():
     logger.addHandler(fh)
 
     return logger
+
+
+# Check whether it is an ELF file
+def is_ELFfile(filepath, logger):
+    if not os.path.exists(filepath):
+        logger.info('file not exit:' + filepath)
+        return False
+    try:
+        FileStates = os.stat(filepath)
+        FileMode = FileStates[stat.ST_MODE]
+        if not stat.S_ISREG(FileMode) or stat.S_ISLNK(FileMode):
+            return False
+        with open(filepath, 'rb') as f:
+            header = (bytearray(f.read(4)[1:4])).decode(encoding="utf-8")
+            # logger.info("header is {}".format(header))
+            if header in ["ELF"]:
+                return True
+    except UnicodeDecodeError as e:
+        # logger.info("is_ELFfile UnicodeDecodeError {}".format(filepath))
+        # logger.info(str(e))
+        pass
+    return False
