@@ -12,7 +12,6 @@ from flask import Flask, render_template, url_for, request, redirect, make_respo
 app = Flask(__name__)
 
 mods = {
-        'check_environment': migration.check_environment,
         'check_storage': migration.check_storage,
         'check_os': migration.check_os,
         'check_os_kernel': migration.check_os_kernel,
@@ -33,6 +32,7 @@ mods = {
         'get_kernel_data': server.get_kernel_data,
         'check_repo': migration.check_repo,
         'get_repo_data': server.get_repo_data,
+        'check_environment':migration.check_environment,
         }
 
 
@@ -138,6 +138,17 @@ def check_repo():
 def get_repo_data():
     """
     定时检查软件仓库检测结果
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/check_environment', methods=['GET', 'POST'])
+def check_environment():
+    """
+    agent迁移前环境检查任务
     :return:
     """
     mod = check_methods()
