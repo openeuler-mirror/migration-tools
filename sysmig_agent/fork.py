@@ -198,3 +198,31 @@ def abi_file_sql(path):
                 info_str = info_str+','
         abi_file_connect(info_str)
 
+
+def check_environment(data):
+    task_id = json.loads(data).get('task_id')
+    # 更新SQL任务状态
+    sql_task_statue('1', task_id)
+    # 发送消息给Server更新任务流状态
+    post_server('task_start', task_id)
+    process_time_task_abi(task_id)
+    # tar.gz types abi report
+    targz_mig_dir_abi()
+    sql_task_statue('2', task_id)
+    post_server('task_close', task_id)
+
+
+# 初始化进度阶段
+def mig_modify_statue(task_id):
+    if not get_mig_state(task_id):
+        sql_mig_statue('00')
+        '''
+    else:
+        # Too many migration requests
+        # If you need to continue the migration, please change the task_data of the Mysql
+        return 1
+        ret = get_mig_state(task_id)
+        ret = re.sub('[0-9]', '0', ret[0]) + ret[1]
+        sql_mig_statue(ret)
+    # loggea
+    '''
