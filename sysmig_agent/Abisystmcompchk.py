@@ -732,3 +732,43 @@ def write_row_by_row(report_name_rr, row_value_list, row, column, index):
             column_rr = column_rr + 1
         row_rr = row_rr + 1
     row_row_wb.save(report_name_rr)
+
+
+def write_summary_data(report_name_summary, index, flag):
+    summary_rb = xlrd.open_workbook(report_name_summary, formatting_info=True)
+    r_sheet = summary_rb.sheet_by_index(index)
+    summary_wb = copy(summary_rb)
+    summary_sheet = summary_wb.get_sheet(index)
+
+    if flag == '0':
+        with open(abi_comp_chk, 'r') as fs:
+            comp_num = len(fs.readlines())
+        before_summary_num = comp_num + incomp_pkg_num()
+
+        before_summary_info = r_sheet.row_values(0)[0].replace('REPLACE_NUM', str(before_summary_num))
+        summary_sheet.write(0, 0, before_summary_info)
+        summary_sheet.write(2, 0, get_cur_sys_version())
+
+    elif flag == '1':
+        migrbef_sysver = exp_rst_dir + 'sys-version-tmp'
+
+        with open(abi_comp_chk, 'r') as fsp:
+            comp_num = len(fsp.readlines())
+
+        with open(migration_system_install, 'r') as fsmp:
+            install_comp_num = str(len(fsmp.readlines()))
+        behind_summary_num = comp_num + incomp_pkg_num()
+
+        with open(migrbef_sysver, 'r') as file_object:
+            sys_version = file_object.read()
+
+        # 20220107 modify lihp: keep the history data
+        # os.remove(migrbef_sysver)
+
+        behind_summary_info_tmp = r_sheet.row_values(0)[0].replace('REPLACE_NUM', str(behind_summary_num))
+        behind_summary_info = behind_summary_info_tmp.replace('INSTALL_NUM', install_comp_num)
+        summary_sheet.write(0, 0, behind_summary_info)
+        summary_sheet.write(2, 0, sys_version)
+        summary_sheet.write(2, 2, get_cur_sys_version())
+
+    summary_wb.save(report_name_summary)
