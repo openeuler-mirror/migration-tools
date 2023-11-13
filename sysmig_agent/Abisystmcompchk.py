@@ -830,3 +830,71 @@ def get_system_unique_pkg(current_pkg_list, download_pkg_list):
         fcw.write(data + '\n')
     fcw.close()
 
+
+#Check the environment before migration and generate a detection report
+def migrate_before_abi_chk(q_query, task_status):
+    i=0
+    Flag='0'
+    Oth='2'
+    global percentage
+    global total_rpm_nums
+    task_status_error = '2'
+    migration_download_list = []
+
+    log = logger_init()
+    log.info('==============  START TIME ：'+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+' ==============')
+
+    download_path = local_dir + 'uos/rpms'
+    current_packages_string = get_system_pkg_name(Flag, log)
+    if not current_packages_string:
+        msg_tup = ('0', task_status_error)
+        q_query.put(msg_tup)
+        log.info('The current progress exit:' + str(msg_tup))
+        #return False
+
+    os.system('yumdownloader --destdir=%s%s --skip-broken' %(download_path, current_packages_string))
+
+    download_list = get_system_pkg_list(migration_download_list)
+    if not download_list:
+        log.info('yumdownloader rpm pakcages failed ...')
+        msg_tup = ('0', task_status_error)
+        q_query.put(msg_tup)
+        log.info('The current progress exit:' + str(msg_tup))
+        #return False
+    total_rpm_nums = len(download_list)
+
+    current_list = get_system_pkg_name(Oth, log)
+    if not current_list:
+        msg_tup = ('0', task_status)
+        q_query.put(msg_tup)
+        log.info('The current progress exit:' + str(msg_tup_error))
+        #return False
+
+    get_system_unique_pkg(list(current_list), migration_download_list)
+
+    cur_dir = os.getcwd()
+    os.chdir(download_path)
+    rst = MutilThread(download_list, q_query, log)
+    os.chdir(cur_dir)
+
+    agent_ABI_check_result()
+
+    migrate_before_report_name = create_migrate_report_name(Flag, log)
+    if not migrate_before_report_name:
+        msg_tup = ('0', task_status)
+        q_query.put(msg_tup)
+        log.info('The current progress exit:' + str(msg_tup))
+        #return False
+
+    while i < 4:
+        write_migrate_report_rst =switch_write_migrate_report(migrate_before_report_name, i, Flag)
+        i = i + 1
+
+    task_status = '0'
+    msg_tup = (percentage, task_status)
+    q_query.put(msg_tup)
+    log.info('The current progress has been completed:' + str(msg_tup))
+    log.info('==============  END TIME ：'+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+' ==============')
+
+    return '0'
+
