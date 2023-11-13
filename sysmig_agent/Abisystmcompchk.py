@@ -772,3 +772,49 @@ def write_summary_data(report_name_summary, index, flag):
         summary_sheet.write(2, 2, get_cur_sys_version())
 
     summary_wb.save(report_name_summary)
+
+
+# Deal report of sheet by num value
+def switch_write_migrate_report(report_name, num, flag):
+    # sheet[0]-system info: write data:row|column|value
+    if num == 0:
+        if flag == '0':
+            migration_value_list = get_cur_sys_info_list()
+        elif flag == '1':
+            migration_value_list = get_migration_sys_info()
+        write_row_and_column(report_name, migration_value_list, num)
+    # sheet[1]-rpm package
+    elif num == 1:
+        with open(current_system_unique, 'r') as fr_cur:
+            column_cur_list = fr_cur.readlines()
+        write_column_by_column(report_name, column_cur_list, 3, 0, num)
+
+        if flag == '0':
+            # sheet[1]:2-column
+            with open(migration_system_total, 'r') as fr_migr:
+                column_migr_list = fr_migr.readlines()
+            write_column_by_column(report_name, column_migr_list, 3, 1, num)
+        elif flag == '1':
+            # sheet[1]:2-column
+            with open(migration_system_install, 'r') as fr_migr:
+                column_migr_list = fr_migr.readlines()
+            write_column_by_column(report_name, column_migr_list, 3, 1, num)
+
+            # sheet[1]:3-row
+            with open(migration_system_total, 'r') as fr_migr:
+                column_migr_list = fr_migr.readlines()
+            write_column_by_column(report_name, column_migr_list, 3, 2, num)
+
+        # summary data write to sheet[1]
+        write_summary_data(report_name, num, flag)
+
+    # sheet[2]-ABI compartion
+    elif num == 2:
+        with open(abi_comp_chk, 'r') as fr_comp:
+            column_comp_list = fr_comp.readlines()
+        write_column_by_column(report_name, column_comp_list, 1, 0, num)
+    # sheet[3]-ABI Incompartion
+    elif num == 3:
+        with open(abi_incomp_chk, 'r') as fr_incomp:
+            column_incomp_list = fr_incomp.readlines()
+        write_row_by_row(report_name, column_incomp_list, 2, 0, num)
