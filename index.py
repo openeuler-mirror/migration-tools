@@ -216,6 +216,17 @@ def get_page_data():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/system_migration', methods=['GET', 'POST'])
+def system_migration():
+    """
+    agent系统迁移
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def MT_index():
     """
