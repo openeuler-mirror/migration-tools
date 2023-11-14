@@ -40,6 +40,7 @@ mods = {
         'system_migration': migration.system_migration,
         'get_system_migration_data': server.get_system_migration_data,
         'get_download_center_data': server.get_download_center_data,
+        'migration_records': server.migration_records,
         }
 
 

@@ -478,3 +478,41 @@ def get_download_center_data(data):
 
     json_res = json.dumps(res)
     return json_res
+
+
+def migration_records(data):
+    """
+    获取迁移成功记录数据
+    :return:
+    """
+    page = json.loads(data).get('page')
+    size = json.loads(data).get('size')
+    sql = "select agent_ip,hostname,agent_os,agent_migration_os,agent_arch from agent_info " \
+          "where agent_migration_os is not null;"
+    data = DBHelper().execute(sql).fetchall()
+    data = list(data)
+    for i in range(0, len(data)):
+        data[i] = list(data[i])
+        task_update_time_sql = "select task_Updatetime from agent_task where agent_ip='%s'" % data[i][0]
+        get_task_update_time = DBHelper().execute(task_update_time_sql).fetchall()
+        get_task_update_time = list(get_task_update_time)
+        if get_task_update_time == []:
+            data[i] += [""]
+        else:
+            get_task_update_time = get_task_update_time[0][0].strftime('%Y-%-m-%d %H:%M:%S')
+            data[i].append(get_task_update_time)
+
+    res = {}
+    res['num'] = len(data)
+    info_list = []
+    info_dict_keys_list = ['agent_ip', 'hostname', 'agent_os', 'agent_migration_os', 'agent_arch', 'create_time']
+    for i in data:
+        info_list.append(dict(zip(info_dict_keys_list, i)))
+
+    page_list = pagebreak(info_list, page, size)
+    res['info'] = page_list
+    res['page'] = page
+    res['size'] = size
+
+    json_res = json.dumps(res)
+    return json_res
