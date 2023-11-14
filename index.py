@@ -21,7 +21,6 @@ mods = {
         'check_user': migration.check_user,
         'close_tool': migration.close_tool,
         'export_migration_reports': migration.export_migration_reports,
-        'system_migration': migration.system_migration,
         'migration_details': migration.migration_details,
         'import_host_info': server.import_host_info,
         'host_info_display': server.host_info_display,
@@ -38,6 +37,7 @@ mods = {
         'get_storage_num': server.get_storage_num,
         'export_reports': server.export_reports,
         'get_page_data': server.get_page_data,
+        'system_migration': migration.system_migration,
         }
 
 

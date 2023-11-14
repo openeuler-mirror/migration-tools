@@ -180,9 +180,21 @@ def export_migration_reports(data):
 
 
 def system_migration(data):
-    services = check_services(data, '/system_migration')
-    if services:
-        return services
+    """
+    agent系统迁移
+    :param data:
+    :return:
+    """
+    agent_ip_list = json.loads(data).get('info')
+    data = json.loads(data)
+    url = '/system_migration'
+    for i in agent_ip_list:
+        get_task_id_sql = "select task_id from cur_task where agent_ip='%s'" % i.get('agent_ip')
+        task_id = DBHelper().execute(get_task_id_sql).fetchall()
+        data['task_id'] = task_id[0][0]
+        json_data = json.dumps(data)
+        send_task_to_agent(json_data, url, i.get('agent_ip'))
+    return 'success'
 
 
 def migration_details(data):
