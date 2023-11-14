@@ -376,3 +376,39 @@ def export_reports(data):
 
         report_type(data)
     return 'success'
+
+
+def get_page_data(data):
+    """
+    定时获取可用空间页面数据
+    agent_ip,hostname,agent_online_status,agent_os,agent_storage,agent_arch,task_CreateTime
+    :return:
+    """
+    sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_storage,agent_arch,agent_id from " \
+          "agent_info where agent_online_status = 0 and agent_migration_os is null;"
+    data = DBHelper().execute(sql).fetchall()
+    data = list(data)
+    for i in range(0, len(data)):
+        data[i] = list(data[i])
+        data[i][4] = str(data[i][4]) + 'GB'
+        task_CreateTime = "select task_CreateTime from agent_task where agent_ip = '%s';" % data[i][0]
+        get_task_CreateTime = DBHelper().execute(task_CreateTime).fetchall()
+        get_task_CreateTime = list(get_task_CreateTime)
+        if get_task_CreateTime == []:
+            data[i] += [""]
+        else:
+            task_Createtime = get_task_CreateTime[0][0].strftime('%Y-%-m-%d %H:%M:%S')
+            data[i].append(task_Createtime)
+
+    res = {}
+    res['num'] = len(data)
+    info_list = []
+    info_dict_keys_list = ['agent_ip', 'hostname', 'agent_online_status', 'agent_os', 'agent_storage',
+                           'agent_arch', 'agent_id', 'task_CreateTime']
+    for i in data:
+        info_list.append(dict(zip(info_dict_keys_list, i)))
+
+    res['info'] = info_list
+
+    json_res = json.dumps(res)
+    return json_res
