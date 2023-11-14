@@ -251,6 +251,17 @@ def get_download_center_data():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/migration_records', methods=['GET', 'POST'])
+def migration_records():
+    """
+    获取迁移记录数据
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def MT_index():
     """
