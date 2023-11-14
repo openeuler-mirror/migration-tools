@@ -15,6 +15,25 @@ from utils import *
 
 reposdir=''
 
+
+def get_bad_packages():
+    os_version_ret = platform.dist()
+    version = os_version_ret[1].split('.', -1)
+    local_os_version = version[0]
+    badpackages = ''
+    if '8' == local_os_version:
+        with open('sysmig_agent/8badpackage.txt', 'r') as bf:
+            for bad_package in bf:
+                badpackages = badpackages + ' ' + bad_package.strip()
+            bf.close()
+    elif '7' == local_os_version:
+        with open('sysmig_agent/7badpackage.txt', 'r') as bf:
+            for bad_package in bf:
+                badpackages = badpackages + ' ' + bad_package.strip()
+            bf.close()
+    return badpackages
+
+
 def local_disabled_release_repo():
     path = '/etc/yum.repos.d'
     if os.path.exists(path):
@@ -37,23 +56,6 @@ def local_disabled_release_repo():
                     fdst.close()
                     os.remove(fpath)
 
-
-def get_bad_packages():
-    os_version_ret = platform.dist()
-    version = os_version_ret[1].split('.',-1)
-    local_os_version = version[0]
-    badpackages = ''
-    if '8' == local_os_version:
-        with open('sysmig_agent/8badpackage.txt','r') as bf:
-            for bad_package in bf:
-                badpackages = badpackages + ' ' + bad_package.strip()
-            bf.close()
-    else:
-        with open('sysmig_agent/7badpackage.txt','r') as bf:
-            for bad_package in bf:
-                badpackages = badpackages + ' ' + bad_package.strip()
-            bf.close()
-    return badpackages
 
 
 def check_pkg(pkg):
@@ -79,6 +81,22 @@ def clean_and_exit():
     if os.path.exists(repo_path):
         os.remove(repo_path)
     sys.exit(1)
+
+
+def get_disk_info(string):
+    dev_name = ""
+    part_name = ""
+    length = len(string)
+    for c in range(length - 1, -1, -1):
+        if not string[c].isdigit():
+            if string.find('nvme') != -1:
+                dev_name = string[0:c]
+                part_num = string[c + 1:length]
+            else:
+                dev_name = string[0:c + 1]
+                part_num = string[c + 1:length]
+            break
+    return dev_name, part_num
 
 
 def process_special_pkgs():
