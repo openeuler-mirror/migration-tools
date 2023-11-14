@@ -143,18 +143,25 @@ def get_agent_os():
 def init_remove_oldrepo():
     backup_comment = '#This is a yum repository file that was disabled . <Migration to UiniontechOS> \
             \n'
-    path = '/etc/yum.repos.d/'
+    os_version_ret = platform.dist()
+    version = os_version_ret[1].split('.', -1)
+    AGENT_OS = os_version_ret[0] + version[0]
+    if re.search('7', AGENT_OS):
+        path = '/etc/yum.repos.d/'
+    else:
+        # path = dnf.Base().conf.get_reposdir
+        path = '/etc/yum.repos.d/'
     repos = os.listdir(path)
     for repo in repos:
-        path_file = path+'/'+repo
+        path_file = path + '/' + repo
         if not os.path.isfile(path_file):
             continue
-        if not re.search('repo$',repo):
+        if not re.search('repo$', repo):
             continue
         with open(path_file, 'r') as fsrc:
             content = fsrc.read()
-            with open(path_file+'.disabled','w') as fdst:
-                fdst.write(repo+'\n'+backup_comment+content)
+            with open(path_file + '.disabled', 'w') as fdst:
+                fdst.write(backup_comment + content)
                 fdst.close()
             fsrc.close()
         os.remove(path_file)
