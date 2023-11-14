@@ -227,6 +227,17 @@ def system_migration():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/get_system_migration_data', methods=['GET', 'POST'])
+def get_system_migration_data():
+    """
+    获取agent迁移进度
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def MT_index():
     """
