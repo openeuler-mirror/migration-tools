@@ -263,6 +263,17 @@ def migration_records():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/get_migrated_hosts', methods=['GET', 'POST'])
+def get_migrated_hosts():
+    """
+    获取迁移主机列表数据
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def MT_index():
     """
