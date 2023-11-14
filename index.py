@@ -38,6 +38,7 @@ mods = {
         'export_reports': server.export_reports,
         'get_page_data': server.get_page_data,
         'system_migration': migration.system_migration,
+        'get_system_migration_data': server.get_system_migration_data,
         }
 
 
