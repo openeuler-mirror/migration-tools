@@ -239,6 +239,17 @@ def get_system_migration_data():
         return Response(mod, content_type='application/json')
 
 
+@app.route('/get_download_center_data', methods=['GET', 'POST'])
+def get_download_center_data():
+    """
+    获取下载中心数据
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def MT_index():
     """
