@@ -440,3 +440,41 @@ def get_system_migration_data(data):
 
     json_res = json.dumps(res)
     return json_res
+
+
+def get_download_center_data(data):
+    """
+    获取下载中心数据
+    :return:
+    """
+    page = json.loads(data).get('page')
+    size = json.loads(data).get('size')
+    download_center_data_sql = "select * from report_info;"
+    info = DBHelper().execute(download_center_data_sql).fetchall()
+    info = list(info)
+    res = {}
+    res['num'] = len(info)
+    info_list = []
+    info_dict_keys_list = ['report_generation_time', 'report_name', 'report_type', 'agent_ip',
+                           'hostname', 'agent_os', 'agent_arch']
+    for i in range(0, len(info)):
+        info[i] = list(info[i])
+        info[i][0] = info[i][0].strftime('%Y-%-m-%d %H:%M:%S')
+        agent_ip = info[i][3]
+        agent_info_sql = "select hostname,agent_os,agent_arch from agent_info where agent_ip='%s';" % agent_ip
+        agent_info = DBHelper().execute(agent_info_sql).fetchall()
+        if not agent_info:
+            info[i] += ["", "", ""]
+        else:
+            agent_info = list(agent_info[0])
+            info[i] += agent_info
+    for i in info:
+        info_list.append(dict(zip(info_dict_keys_list, i)))
+
+    page_list = pagebreak(info_list, page, size)
+    res['info'] = page_list
+    res['page'] = page
+    res['size'] = size
+
+    json_res = json.dumps(res)
+    return json_res
