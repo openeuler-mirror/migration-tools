@@ -7,6 +7,8 @@ from sysmig_agent.share import getSysMigConf
 from views import reports
 from logger import *
 
+
+os.chdir('/usr/lib/uos-sysmig-server')
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 
 def import_host_info(data):
