@@ -93,6 +93,13 @@ def targz_mig_dir_abi():
         sql_migration_log(report_name, report_type)
 
 
+def targz_mig_dir_log():
+    if os.path.exists(MIGRATION_DIR):
+        report_type = '迁移日志'
+        report_name = _targz_dir(MIGRATION_DIR)
+        sql_migration_log(report_name, report_type)
+
+
 
 def _targz_dir(path):
     import tarfile
