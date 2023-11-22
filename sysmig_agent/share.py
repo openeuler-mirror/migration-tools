@@ -4,12 +4,14 @@
 import os
 import sys
 import json
+import sqlite3
 import re
 import subprocess
 import shutil
 import socket
 import platform
 import logging
+from datetime import datetime
 
 sys.path.append("..")
 from connect_sql import DBHelper
@@ -82,6 +84,38 @@ def sql_migration_log(report_name, report_type):
         ret = DBHelper().execute(sql)
     except:
         pass
+
+
+
+def _targz_dir(path):
+    import tarfile
+    '''
+    :param path: 存放的文件夹路径
+    :return:失败返回错误码
+    '''
+    hostname = socket.gethostname()
+    ip = get_local_ip()
+    now = datetime.now().strftime('%Y%m%d%H%M%S')
+    tar_name = path + "_%s" % ip + "_%s" % hostname + "_%s" % now
+    tar_type = '.tar.gz'
+    compression = "tar -zcvf " + tar_name + tar_type + " %s" % path
+    print(compression)
+    # filepwd = '/var/tmp/uos-migration'
+    filepwd = AGENT_DIR
+    tar = tarfile.open(tar_name + tar_type, "w:gz")
+    # 创建压缩包
+    for root, dir, files in os.walk(path):
+        root_ = os.path.relpath(root, start=filepwd)
+        print('root:'+str(root)+'dir'+str(dir)+'_root:'+str(root_))
+        for file in files:
+            fullpath = os.path.join(root, file)
+            tar.add(fullpath, arcname=os.path.join(root_, file))
+            # tar.add(fullpath, arcname=os.path.basename(filepwd))
+    tar.close()
+    # _, recode = run_subprocess(compression)
+    # store migration log information in database
+    return tar_name
+
 
 
 def sql_online_statue(statue, task_id):
