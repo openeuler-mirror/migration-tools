@@ -161,22 +161,6 @@ def process_time_task_abi(task_id):
     # p_timed_task.join()
 
 
-def structure_task():
-    # 先获得mysql的任务
-    ret_task = get_sql_task()
-    if not ret_task:
-        print('agent_task is None..')
-        pass
-    # 判断任务类型
-    print(ret_task)
-    if 1 == ret_task:
-        # 调用ABI权重比函数
-        ret_data = abi_check_priority()
-        # 更新mysql的任务状态
-        put_sql_task(ret_data)
-
-
-
 # ABI对比结果文件，存放数据库内
 def abi_file_sql(path):
     with open(path, 'r') as p:
