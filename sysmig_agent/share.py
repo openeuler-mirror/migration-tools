@@ -70,6 +70,20 @@ def sql_abi_progress(data):
         pass
 
 
+def sql_migration_log(report_name, report_type):
+    print(report_name)
+    name = report_name.split('/', -1)
+    print('name' + str(name))
+    name = name[len(name) - 1]
+    print('name' + name)
+    sql = " INSERT INTO report_info ( agent_ip , create_time , report_name , report_type ) VALUES \
+    ('{}',NOW(),'{}','{}')".format(get_local_ip(), name, report_type)
+    try:
+        ret = DBHelper().execute(sql)
+    except:
+        pass
+
+
 def sql_online_statue(statue, task_id):
     """
     sql：agent主机的在线状态更新
