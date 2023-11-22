@@ -43,10 +43,10 @@ def def_grub_set(grubset=True):
             gp.write(line)
 
 
-def get_bad_packages():
-    os_version_ret = platform.dist()
-    version = os_version_ret[1].split('.', -1)
-    local_os_version = version[0]
+def get_bad_packages(old_os_version):
+    #os_version_ret = platform.dist()
+    #version = os_version_ret[1].split('.', -1)
+    local_os_version = old_os_version[0]
     badpackages = ''
     if '8' == local_os_version:
         with open('sysmig_agent/8badpackage.txt', 'r') as bf:
@@ -164,7 +164,6 @@ def centos8_main(osname,task_id):
     # if os.geteuid() != 0:
     #     logger.info("Please run the tool as root user.")
     #     sys.exit(1)
-    badpackages = get_bad_packages()
     # check required packages
     logger.info('Checking required packages')
     for pkg in ['rpm', 'yum', 'curl']:
@@ -203,6 +202,8 @@ def centos8_main(osname,task_id):
     else:
         logger.info("Your are using an unsupported distribution.")
         sys.exit(1)
+    if 'server' == subver:
+        subver='7'
     if re.match('7', subver):
         logger.info("Your system will be migrated from CentOS7 to UniontechOS")
     elif re.match('20', subver):
@@ -212,7 +213,6 @@ def centos8_main(osname,task_id):
     logger.info("========= Checking: required python packages =========")
     if not check_pkg('/usr/libexec/platform-python'):
         logger.info('/usr/libexec/platform-python not found.')
-    base_packages = ['basesystem', 'initscripts', 'uos-logos', 'plymouth', 'grub2', 'grubby']
 
     logger.info("========= Checking: yum lock ===========")
     if os.path.exists('/var/run/yum.pid'):
@@ -231,7 +231,7 @@ def centos8_main(osname,task_id):
             return None
 
     # check dnf
-    if re.match('8\.', subver):
+    if '8' in subver:
         logger.info("========= Checking: dnf =========")
         logger.info("Identifying dnf modules that are enabled...")
         enabled_modules = str(
@@ -239,6 +239,8 @@ def centos8_main(osname,task_id):
             'utf-8')
         enabled_modules = enabled_modules.split('\n')[:-1]
         unknown_mods = []
+        cmd = 'dnf module reset -y llvm-toolset'
+        run_subprocess(cmd)
         if len(enabled_modules) > 0:
             for mod in enabled_modules:
                 if re.fullmatch('container-tools|llvm-toolset| perl-DBD-SQLite|perl-DBI|satellite-5-client|perl', mod):
@@ -296,19 +298,7 @@ def centos8_main(osname,task_id):
     local_disabled_release_repo()
     # mig_kernel(kernel_version)
     logger.info("Installing base packages for UniontechOS...")
-    cmd = 'yum shell -y <<EOF\n\
-remove ' + badpackages + '\n\
-install ' + ' '.join(base_packages) + '\n\
-run\n\
-EOF'
-
-    _, code = run_subprocess(cmd)
-    if code != 0:
-        logger.info("Could not install base packages.Run 'yum distro-sync' to manually install them..{}.".format(code))
-        sql_mig_statue('38')
-        #sql_task_statue(3)
-        sql_task_statue(3, task_id)
-        return None
+    base_change(task_id,subver)
     '''
     try:
         cwd = '/var/tmp/uos-migration/UOS_migration_log'
@@ -338,6 +328,27 @@ EOF'
     if subver == '8.3':
         subprocess.run('yum -y downgrade crypto-policies --allowerasing', shell=True)
     sql_mig_statue('02')
+
+
+
+def base_change(task_id, old_os_version):
+    badpackages = get_bad_packages(old_os_version)
+    base_packages = ['basesystem', 'initscripts', 'uos-logos', 'plymouth', 'grub2', 'grubby']
+    cmd = 'yum shell -y <<EOF\n\
+remove ' + badpackages + '\n\
+install ' + ' '.join(base_packages) + '\n\
+run\n\
+EOF'
+
+    _, code = run_subprocess(cmd)
+    if code != 0:
+        logger.info("Could not install base packages.Run 'yum distro-sync' to manually install them..{}.".format(code))
+        sql_mig_statue('38')
+        #sql_task_statue(3)
+        sql_task_statue(3, task_id)
+        return None
+    def_grub_set()
+
 
 
 
