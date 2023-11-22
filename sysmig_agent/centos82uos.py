@@ -16,6 +16,33 @@ from utils import *
 reposdir=''
 
 
+def def_grub_set(grubset=True):
+    gpath = '/etc/default/grub'
+    if not grubset:
+        migration_log.info("Use contos grub config now.")
+        return
+    if not os.path.exists(gpath):
+        migration_log.error("Please Check your grub path.")
+        return
+    line = ''
+    with open(gpath, 'r') as g:
+        gret = g.readlines()
+        rall = g.read()
+        g.close()
+        with open(gpath+'.bak', 'w') as g:
+            g.write(rall)
+        for i in range(len(gret)):
+            if "GRUB_DISABLE_SUBMENU=" in gret[i]:
+                line = line + "GRUB_DISABLE_SUBMENU=false\n"
+            elif "GRUB_TERMINAL_OUTPUT=" in gret[i]:
+                line = line + "GRUB_TERMINAL_OUTPUT=gfxterm\n"
+            else:
+                line = line + gret[i]
+        os.remove(gpath)
+        with open(gpath, 'w') as gp:
+            gp.write(line)
+
+
 def get_bad_packages():
     os_version_ret = platform.dist()
     version = os_version_ret[1].split('.', -1)
