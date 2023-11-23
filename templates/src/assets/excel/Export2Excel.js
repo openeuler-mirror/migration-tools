@@ -90,3 +90,28 @@ function s2ab(s) {
     for (let i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
     return buf;
 }
+
+export function export_table_to_excel(id) {
+    let theTable = document.getElementById(id);
+    let oo = generateArray(theTable);
+    let ranges = oo[1];
+
+    /* original data */
+    let data = oo[0];
+    let ws_name = "SheetJS";
+
+
+    let wb = new Workbook(), ws = sheet_from_array_of_arrays(data);
+
+    /* add ranges to worksheet */
+    // ws['!cols'] = ['apple', 'banan'];
+    ws['!merges'] = ranges;
+
+    /* add worksheet to workbook */
+    wb.SheetNames.push(ws_name);
+    wb.Sheets[ws_name] = ws;
+
+    let wbout = XLSX.write(wb, {bookType: 'xlsx', bookSST: false, type: 'binary'});
+
+    saveAs(new Blob([s2ab(wbout)], {type: "application/octet-stream"}), "test.xlsx")
+}
