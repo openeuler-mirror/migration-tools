@@ -1,6 +1,6 @@
 import requests
 import json
-from sysmig_agent.share import getSysMigConf
+from miscellaneous import getSysMigConf
 
 headers = {'content-type': 'application/json'}
 
