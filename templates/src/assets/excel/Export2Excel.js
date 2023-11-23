@@ -119,3 +119,23 @@ export function export_table_to_excel(id) {
 function formatJson(jsonData) {
     // console.log(jsonData)
 }
+
+export function export_json_to_excel(th, jsonData, defaultTitle) {
+
+    /* original data */
+
+    let data = jsonData;
+    data.unshift(th);
+    let ws_name = "SheetJS";
+
+    let wb = new Workbook(), ws = sheet_from_array_of_arrays(data);
+
+
+    /* add worksheet to workbook */
+    wb.SheetNames.push(ws_name);
+    wb.Sheets[ws_name] = ws;
+
+    let wbout = XLSX.write(wb, {bookType: 'xlsx', bookSST: false, type: 'binary'});
+    let title = defaultTitle || '列表';
+    saveAs(new Blob([s2ab(wbout)], {type: "application/octet-stream"}), title + ".xlsx")
+}
