@@ -8,13 +8,15 @@ import os
 import json
 
 app = Flask(__name__)
+os.chdir('/usr/lib/uos-sysmig-agent')
+migration = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
+
 
 mods = {
         'check_info': post_task,
         'check_repo': post_task,
         'check_kernel': post_task,
         }
-
 
 
 def check_methods():
