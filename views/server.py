@@ -14,6 +14,21 @@ os.chdir('/usr/lib/uos-sysmig-server')
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 
 
+def agent_rpm_issued(data):
+    """
+    agent安装rpm软件包
+    :return:
+    """
+    agent = os.system("sshpass -p %s ssh %s@%s yum install -y uos-sysmig-agent" % (str(data[2], encoding="utf-8"), data[1], data[0]))
+    cp_uos_sysmig_conf = os.system("sshpass -p %s scp -r /etc/uos-sysmig/uos-sysmig.conf %s@%s:/etc/uos-sysmig/uos-sysmig.conf" %
+                                   (str(data[2], encoding="utf-8"), data[1], data[0]))
+    restart_server = os.system("sshpass -p %s ssh %s@%s systemctl restart uos-sysmig-agent" % (str(data[2], encoding="utf-8"), data[1], data[0]))
+    if agent == 0 and restart_server == 0 and cp_uos_sysmig_conf == 0:
+        return 'success'
+    else:
+        return 'faild'
+
+
 def check_user():
     """
     检测账户权限
