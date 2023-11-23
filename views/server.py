@@ -1,5 +1,7 @@
 import json
 import os
+import re
+import paramiko
 from datetime import datetime
 
 from connect_sql import DBHelper
@@ -10,6 +12,50 @@ from logger import *
 
 os.chdir('/usr/lib/uos-sysmig-server')
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
+
+
+def check_user():
+    """
+    检测账户权限
+    :return:
+    """
+    sql = "select agent_ip, agent_username, AES_DECRYPT(agent_passwd, 'coco') from agent_info where agent_online_status='0';"
+    data = DBHelper().execute(sql).fetchall()
+    success_num = 0
+    port = 22
+    for value in data:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+            ssh.connect(value[0], username=value[1], password=str(value[2], encoding="utf-8"), port=port)
+            if value[1] != "root":
+                stdin, stdout, stderr = ssh.exec_command('sudo -v')
+                flag = True
+                ret = stderr.read().decode()
+                ret = ret.split('\n')[:-1]
+                for i in range(len(ret)):
+                    if re.match('sudo', ret[i].strip()[0:4]):
+                        flag = False
+                if flag:
+                    if ret != 'sudo':
+                        update_agent_online_status(value[0])
+
+            ssh.close()
+            data = agent_rpm_issued(value)
+            if data == 'success':
+                success_num += 1
+            else:
+                update_agent_online_status(value[0])
+        except:
+            migration_log.error("error:" + value[0] + value[1] + str(value[2], encoding="utf-8") + str(port))
+            update_agent_online_status(value[0])
+
+    res = {"data": "success", "num": success_num}
+    if success_num == 0:
+        res = {"data": "faild"}
+    del success_num 
+    return res
+
 
 def import_host_info(data):
     """
@@ -40,7 +86,7 @@ def import_host_info(data):
     host_report_sql_val = ((ip, time, '迁移主机列表_%s' % time, '主机列表'),)
     DBHelper().insert(host_report_sql, host_report_sql_val)
     # TODO: 用户权限检测
-    
+    data = check_user()
     data_json = json.dumps(data)
     return data_json
 
