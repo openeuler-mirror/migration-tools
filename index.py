@@ -32,6 +32,7 @@ mods = {
         'get_download_center_data': server.get_download_center_data,
         'migration_records': server.migration_records,
         'get_migrated_hosts': server.get_migrated_hosts,
+        'close_tool': server.close_tool,
         }
 
 
@@ -272,6 +273,17 @@ def MT_index():
     :return:
     """
     return render_template('MT_agreement.html')
+
+
+@app.route('/close_tool', methods=['GET', 'POST'])
+def close_tool():
+    """
+    关闭迁移软件
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
 
 
 if __name__ == '__main__':
