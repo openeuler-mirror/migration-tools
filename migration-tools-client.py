@@ -1,32 +1,26 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
+from flask import Flask, render_template, url_for, request, Response
+from miscellaneous import *
+from sysmig_agent.share import getSysMigConf
+from sysmig_agent.fork import post_task
 import os
 import json
-from flask import *
-from sysmig_agent import check
-from sysmig_agent.share import *
 
 app = Flask(__name__)
 
 mods = {
-        'check_storage': check.check_storage,
-        'check_environment': check.check_environment,
-        'check_os': check.check_os,
-        'check_user': check.check_user,
-        'check_repo': check.check_repo,
-        'check_os_kernel': check.check_os_kernel,
-        'check_repo_kernel': check.check_repo_kernel,
-        'check_progress': check.check_progress,
-        'export_migration_reports': check.export_reports,
-        'system_migration': check.system_migration,
-        'check_migration_progress': check.check_migration_progress,
-        'migration_details': check.migration_details,
+        'check_info': post_task,
+        'check_repo': post_task,
+        'check_kernel': post_task,
         }
+
 
 
 def check_methods():
     if request.method == 'POST':
         data = request.get_data()
+        migration.info(data)
         json_data = json.loads(data)
         mod = mods.get(json_data['mod'])
         if mod:
@@ -34,78 +28,22 @@ def check_methods():
             return response_str
 
 
-@app.route('/check_environment', methods=['GET', 'POST'])
-def mt_check_environment():
+@app.route('/check_info', methods=['GET', 'POST'])
+def mt_check_info():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
 
 
-@app.route('/check_storage', methods=['GET', 'POST'])
-def mt_check_storage():
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/check_os', methods=['GET', 'POST'])
-def mt_check_os():
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/check_progress', methods=['GET', 'POST'])
-def mt_check_progress():
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/check_user', methods=['GET', 'POST'])
-def mt_check_user():
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/check_repo', methods=['GEt', 'POST'])
+@app.route('/check_repo', methods=['GET', 'POST'])
 def mt_check_repo():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
 
 
-@app.route('/check_os_kernel', methods=['GET', 'POST'])
-def mt_check_os_kernel():
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/check_repo_kernel', methods=['GET', 'POST'])
-def mt_check_repo_kernel():
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/check_migration_progress', methods=['GET', 'POST'])
-def mt_check_migration_progress():
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/export_migration_reports', methods=['GET', 'POST'])
-def mt_export_migration_reports():
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/migration_details', methods=['GET', 'POST'])
-def mt_migration_details():
+@app.route('/check_kernel', methods=['GET', 'POST'])
+def mt_check_kernel():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
