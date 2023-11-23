@@ -29,6 +29,18 @@ def agent_rpm_issued(data):
         return 'faild'
 
 
+def close_tool(data):
+    """
+    关闭迁移软件
+    :param data:
+    :return:
+    """
+    os.system('kill -9 `ps -ef | grep "start_webview.py" | grep -v grep | awk \'{print $2}\'`')
+    data = {"data": "success"}
+    data_json = json.dumps(data)
+    return data_json
+
+
 def check_user():
     """
     检测账户权限
