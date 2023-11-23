@@ -342,7 +342,6 @@ EOF'
 
     _, code = run_subprocess(cmd)
     if code != 0:
-        logger.info("Could not install base packages.Run 'yum distro-sync' to manually install them..{}.".format(code))
         sql_mig_statue('38')
         #sql_task_statue(3)
         sql_task_statue(3, task_id)
