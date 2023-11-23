@@ -77,3 +77,9 @@ function sheet_from_array_of_arrays(data, opts) {
     if (range.s.c < 10000000) ws['!ref'] = XLSX.utils.encode_range(range);
     return ws;
 }
+
+function Workbook() {
+    if (!(this instanceof Workbook)) return new Workbook();
+    this.SheetNames = [];
+    this.Sheets = {};
+}
