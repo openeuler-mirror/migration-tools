@@ -85,7 +85,6 @@ def import_host_info(data):
     host_report_sql = "insert into report_info(agent_ip,create_time,report_name,report_type) values (%s, %s, %s, %s);"
     host_report_sql_val = ((ip, time, '迁移主机列表_%s' % time, '主机列表'),)
     DBHelper().insert(host_report_sql, host_report_sql_val)
-    # TODO: 用户权限检测
     data = check_user()
     data_json = json.dumps(data)
     return data_json
@@ -607,3 +606,13 @@ def get_migrated_hosts(data):
 
     json_res = json.dumps(res)
     return json_res
+
+
+def update_agent_online_status(data):
+    """
+    修改agent状态
+    :param data:
+    :return:
+    """
+    sql = "update agent_info set agent_online_status = 1 where agent_ip = '%s';" % data
+    DBHelper().execute(sql)
