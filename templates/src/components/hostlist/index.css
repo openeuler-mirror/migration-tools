@@ -1,3 +1,6 @@
 .head-2 {
     color: #102b6a;
   }
+  .el-pagination {
+    margin-top: 20px;
+  }
