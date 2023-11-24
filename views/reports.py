@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from datetime import datetime
 
 from logger import *
 from connect_sql import DBHelper
@@ -88,5 +89,33 @@ def export_host_info(data):
     df.columns = ['主机IP', '主机名', '在线状态', '操作系统类型', '架构',  '历史失败原因', '迁移时间', '迁移状态']
     time = datetime.now().strftime('%Y-%-m-%d %H:%M:%S')
     xls = "/var/uos-migration/主机列表_%s.xls" % time
+    df.to_excel(xls)
+    return 'success'
+
+
+def migration_success_list(data):
+    """
+    迁移成功主机列表
+    :param data:
+    :return:
+    """
+    sql = "select agent_ip,hostname,agent_os,agent_migration_os,agent_arch from agent_info " \
+          "where agent_migration_os is not null;"
+    data = DBHelper().execute(sql).fetchall()
+    data = list(data)
+    for i in range(0, len(data)):
+        data[i] = list(data[i])
+        task_update_time_sql = "select task_Updatetime from agent_task where agent_ip='%s'" % data[i][0]
+        get_task_update_time = DBHelper().execute(task_update_time_sql).fetchall()
+        get_task_update_time = list(get_task_update_time)
+        if get_task_update_time == []:
+            data[i] += [""]
+        else:
+            task_Updatetime = get_task_update_time[0][0].strftime('%Y-%-m-%d %H:%M:%S')
+            data[i].append(task_Updatetime)
+    df = pd.DataFrame(data)
+    df.columns = ['主机ip', '主机名', '迁移前OS版本', '迁移后OS版本', '架构', '迁移时间']
+    time = datetime.now().strftime('%Y-%-m-%d %H:%M:%S')
+    xls = "/var/uos-migration/迁移成功主机列表_%s.xls" % time
     df.to_excel(xls)
     return 'success'
