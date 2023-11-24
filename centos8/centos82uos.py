@@ -73,8 +73,7 @@ def check_pkg(pkg):
     if pkg.split('/')[0] == '':
         if os.path.exists(pkg):
             return True
-        else:
-            return False
+        return False
 
     paths = os.environ['PATH'].split(':')
     for path in paths:
