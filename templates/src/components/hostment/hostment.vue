@@ -34,6 +34,24 @@
       </el-col>
     </el-row>
 
+    <el-card class="center">
+
+      <el-row class="center-1">
+        <el-col :span="20" class="num">{{ this.total }}项</el-col>
+        <el-col :span="2">
+          <el-button type="primary" plain @click="exportData()" icon="el-icon-upload"  size="small "
+            >全部导出</el-button
+          >
+
+        </el-col>
+        <el-col :span="2">
+          <el-button type="primary" plain @click="gohostlist()"  icon=" el-icon-position"  size="small "
+            >全部迁移</el-button
+          >
+        </el-col>
+      </el-row>
+
+    </el-card>
   </div>
 </template>
 
