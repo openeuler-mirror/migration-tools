@@ -101,6 +101,25 @@
             <el-col v-if="scope.row.task_status.slice(-1) == '8'">迁移失败</el-col>
           </template>
         </el-table-column>
+        <el-table-column
+          prop="failure_reasons"
+          label="历史失败原因"
+          align="center"
+          :formatter="formatState"
+        >
+        </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              plain
+              @click="gohostlist1(scope.row)"
+              :disabled="item(scope.row)"
+               icon=" el-icon-position"  size="small "
+              >迁移</el-button
+            >
+          </template>
+        </el-table-column>
       </el-table>
 
     </el-card>
