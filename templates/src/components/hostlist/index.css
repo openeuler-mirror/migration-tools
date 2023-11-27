@@ -12,3 +12,6 @@
     justify-content: flex-end;
     margin-left: 18px;
   }
+  .col {
+    margin-right: 10px;
+  }
