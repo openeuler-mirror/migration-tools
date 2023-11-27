@@ -48,3 +48,7 @@
     /* align-items: center; */
     justify-content: flex-end;
   }
+  .footer div {
+    padding-top: 1px;
+    margin-right: 10px;
+  }
