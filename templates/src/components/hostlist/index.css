@@ -4,6 +4,11 @@
   .el-pagination {
     margin-top: 20px;
   }
-  .center-1{
+  .center-1 {
     padding-left:22px ;
+  }
+  .center-1-2 {
+    display: flex;
+    justify-content: flex-end;
+    margin-left: 18px;
   }
