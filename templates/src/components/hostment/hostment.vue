@@ -51,6 +51,34 @@
         </el-col>
       </el-row>
 
+      <el-table
+        ref="multipleTable"
+        :data="tableData"
+        tooltip-effect="dark"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+        align="center"
+      >
+        <el-table-column type="selection" width="55" align="center">
+        </el-table-column>
+
+        <el-table-column label="迁移时间" align="center">
+          <template slot-scope="scope">
+            {{ timeTranslate(scope.row.task_CreateTime) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="agent_ip" label="主机IP" align="center" :formatter="formatState">
+        </el-table-column>
+        <el-table-column prop="hostname" label="主机名" align="center" :formatter="formatState">
+        </el-table-column>
+        <el-table-column label="在线状态" align="center" :formatter="formatState">
+          <template slot-scope="scope">
+            <el-col v-if="scope.row.agent_online_status == 0">在线</el-col>
+            <el-col v-if="scope.row.agent_online_status == 1">离线</el-col>
+          </template>
+        </el-table-column>
+      </el-table>
+
     </el-card>
   </div>
 </template>
