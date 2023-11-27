@@ -29,3 +29,6 @@
     /* background: paleturquoise; */
     border-left: 4px solid #2b4490;
   }
+  .el-row {
+    margin-top: 15px;
+  }
