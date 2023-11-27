@@ -35,3 +35,16 @@
   .el-table {
     margin-top: 20px;
   }
+  .center {
+    margin-top: 30px;
+  }
+  .footer {
+    background-color: #eee;
+    width: 100%;
+    height: 70px;
+    position: absolute;
+    top: 84vh;
+    display: flex;
+    /* align-items: center; */
+    justify-content: flex-end;
+  }
