@@ -23,3 +23,9 @@
     align-items: center;
     margin-bottom:8px ;
   }
+  .head-1 {
+    width: 9px;
+    height: 20px;
+    /* background: paleturquoise; */
+    border-left: 4px solid #2b4490;
+  }
