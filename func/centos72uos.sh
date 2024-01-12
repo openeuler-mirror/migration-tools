@@ -311,6 +311,6 @@ fi
 
 rpm -qa --qf \
     "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\n" \
-    | sort > "/var/tmp/uos-migration/UOS_migration_log/rpms-list-after.txt
+    | sort > "/var/tmp/uos-migration/UOS_migration_log/rpms-list-after.txt"
 
 echo "Switch complete. UOS Server Enterprise-C 20 recommends rebooting this system."
