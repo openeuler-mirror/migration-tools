@@ -26,7 +26,6 @@ logger.addHandler(handler)
 def check_migration_progress(message):
     with open('/var/tmp/uos-migration/.progress', 'w') as fp:
         fp.write(message)
-        fp.close()
     return None
 
 
@@ -50,7 +49,7 @@ def run_subprocess(cmd):
 def check_pkg(rpm):
     _, ret = run_subprocess('rpm -q {}'.format(rpm).split())
     if ret:
-        return None
+        return False
     return True
 
 
