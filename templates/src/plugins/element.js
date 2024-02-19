@@ -50,6 +50,25 @@ import {
   Badge,
   Card,
   Rate,
+  Steps,
+  Step,
+  Carousel,
+  CarouselItem,
+  Collapse,
+  CollapseItem,
+  Cascader,
+  ColorPicker,
+  Transfer,
+  Container,
+  Header,
+  Aside,
+  Main,
+  Footer,
+  Timeline,
+  TimelineItem,
+  Link,
+  Divider,
+  Image,
 } from 'element-ui';
 
 Vue.use(Pagination);
@@ -102,3 +121,22 @@ Vue.use(Spinner);
 Vue.use(Badge);
 Vue.use(Card);
 Vue.use(Rate);
+Vue.use(Steps);
+Vue.use(Step);
+Vue.use(Carousel);
+Vue.use(CarouselItem);
+Vue.use(Collapse);
+Vue.use(CollapseItem);
+Vue.use(Cascader);
+Vue.use(ColorPicker);
+Vue.use(Transfer);
+Vue.use(Container);
+Vue.use(Header);
+Vue.use(Aside);
+Vue.use(Main);
+Vue.use(Footer);
+Vue.use(Timeline);
+Vue.use(TimelineItem);
+Vue.use(Link);
+Vue.use(Divider);
+Vue.use(Image);
