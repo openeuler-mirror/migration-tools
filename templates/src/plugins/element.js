@@ -69,6 +69,14 @@ import {
   Link,
   Divider,
   Image,
+  Calendar,
+  Backtop,
+  PageHeader,
+  CascaderPanel,
+  Loading,
+  MessageBox,
+  Message,
+  Notification
 } from 'element-ui';
 
 Vue.use(Pagination);
@@ -140,3 +148,17 @@ Vue.use(TimelineItem);
 Vue.use(Link);
 Vue.use(Divider);
 Vue.use(Image);
+Vue.use(Calendar);
+Vue.use(Backtop);
+Vue.use(PageHeader);
+Vue.use(CascaderPanel);
+
+Vue.use(Loading.directive);
+
+Vue.prototype.$loading = Loading.service;
+Vue.prototype.$msgbox = MessageBox;
+Vue.prototype.$alert = MessageBox.alert;
+Vue.prototype.$confirm = MessageBox.confirm;
+Vue.prototype.$prompt = MessageBox.prompt;
+Vue.prototype.$notify = Notification;
+Vue.prototype.$message = Message;
