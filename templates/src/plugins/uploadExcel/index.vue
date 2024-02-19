@@ -1,7 +1,8 @@
 <template>
-  <span >
+  <span class="box">
     导入主机
     <input
+      class="input-file"
       type="file"
       @change="exportData"
       accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
@@ -45,6 +46,12 @@ export default {
         var outdata;
         var reader = new FileReader();
         reader.onload = function (e) {
+          var bytes = new Uint8Array(reader.result);
+          var length = bytes.byteLength;
+          for (var i = 0; i < length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+
           wb = XLSX.read(binary, {
             type: "binary",
           });
@@ -62,6 +69,10 @@ export default {
 </script>
  
 <style>
+.input-file {
+  display: none;
+}
+
 .input {
   width: 230px;
 }
