@@ -161,6 +161,9 @@ export default {
       multipleSelection: [],
     };
   },
+  created() {
+    this.hostinfodisplay();
+  },
 };
 </script>
 
