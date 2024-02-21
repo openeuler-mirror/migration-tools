@@ -122,6 +122,16 @@
         </el-table-column>
       </el-table>
 
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="hostlist.page"
+        :page-sizes="[2, 4, 6, 8]"
+        :page-size="hostlist.size"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
     </el-card>
   </div>
 </template>
