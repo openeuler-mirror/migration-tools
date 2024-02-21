@@ -164,6 +164,21 @@ export default {
   created() {
     this.hostinfodisplay();
   },
+
+  methods: {
+    hostinfodisplay() {
+      this.$http
+        .post("/host_info_display", {
+          mod: this.mod,
+          page: this.hostlist.page,
+          size: this.hostlist.size,
+        })
+        .then((res) => {
+
+          this.tableData = res.data.info;
+          this.total = res.data.num;
+        });
+    },
 };
 </script>
 
