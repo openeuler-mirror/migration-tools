@@ -136,6 +136,34 @@
   </div>
 </template>
 
+<script>
+import qs from "qs";
+export default {
+  data() {
+    return {
+      mod: "host_info_display",
+      mod1:"export_reports",
+      type:"export_host_info",
+      total: 0,
+      hostlist: { page: 1, size: 4, },
+      tableData: [
+        {
+          task_CreateTime: "",
+          agent_ip: "",
+          hostname: "",
+          agent_online_status: "",
+          agent_os: "",
+          agent_arch: "",
+          task_status: "",
+          failure_reasons: "",
+        },
+      ],
+      multipleSelection: [],
+    };
+  },
+};
+</script>
+
 <style src="./index.css" scoped>
 
 </style>
