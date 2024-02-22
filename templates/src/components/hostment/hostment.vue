@@ -210,6 +210,21 @@ export default {
         return cellValue;
       }
     },
+    //导出
+    exportData() {
+      const h = this.$createElement;
+      this.$msgbox({
+        title: "提示",
+        message: h("p", null, [
+          h("p", null, "确定导出“主机列表xlsx”吗, 是否继续? "),
+          h("p", null, "文件将下载到本地，也可稍后前往下载中心下载。"),
+        ]),
+        showCancelButton: true,
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+    },
+  },
 };
 </script>
 
