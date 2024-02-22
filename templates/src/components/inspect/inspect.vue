@@ -236,6 +236,25 @@ export default {
         return cellValue;
       }
     },
+    empty: function (row, column, cellValue) {
+      if (cellValue == null || cellValue == "") {
+        return "- -";
+      } else {
+        return cellValue;
+      }
+    },
+    // 可用空间足够和不足数量
+    getnum() {
+      this.dialogFormVisible = true;
+      this.$http
+        .post("/get_storage_num", {
+          mod: this.mod1,
+        })
+        .then((res) => {
+          this.faild = res.data.faild;
+          this.success = res.data.success;
+        });
+    },
   },
 };
 </script>
