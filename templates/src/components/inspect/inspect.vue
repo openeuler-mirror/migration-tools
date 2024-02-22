@@ -9,4 +9,114 @@
       进行迁移需保证 ‘/var/cache’ 中至少有10GB的可用空间
     </el-card>
 
+    <el-card class="center">
+      <el-row>
+        <el-col :span="10" class="center-1">{{ this.total }}项</el-col>
+      </el-row>
+      <el-table
+        ref="multipleTable"
+        :data="
+          tableData.slice((currentPage - 1) * pagesize, currentPage * pagesize)
+        "
+        tooltip-effect="dark"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" align="center">
+        </el-table-column>
+
+        <el-table-column
+          prop="task_CreateTime"
+          label="迁移时间"
+          align="center"
+          :formatter="empty"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="agent_id"
+          label="AgentID"
+          align="center"
+          :formatter="empty"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="agent_ip"
+          label="主机IP"
+          align="center"
+          :formatter="empty"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="hostname"
+          label="主机名"
+          align="center"
+          :formatter="empty"
+        >
+        </el-table-column>
+        <el-table-column label="在线状态" align="center" :formatter="empty">
+          <template slot-scope="scope">
+            <el-col v-if="scope.row.agent_online_status == 0">在线</el-col>
+            <el-col v-if="scope.row.agent_online_status == 1">离线</el-col>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="agent_os"
+          label="操作系统类型"
+          align="center"
+          :formatter="empty"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="agent_arch"
+          label="架构"
+          align="center"
+          :formatter="empty"
+        >
+        </el-table-column>
+        <el-table-column
+          label="可用空间"
+          align="center"
+          :formatter="formatState"
+          prop="agent_storage"
+        >
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[2, 4, 6, 8]"
+        :page-size="pagesize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
+
+      <!-- 提示弹窗 -->
+
+      <el-dialog
+        title="提示"
+        :visible.sync="dialogFormVisible"
+        width="22%"
+        top="40vh"
+      >
+        <div>
+          <div class="tan tan-1">
+            <span>{{ this.success }}</span>
+            台主机可用空间充足，点击“确定”继续迁移
+          </div>
+          <div class="tan">
+            <span>{{ this.faild }}</span>
+            台主机可用空间不足或无法检测可用空间，迁移失败。请检查 /var/cache
+            目录，确认后再重新执行迁移
+          </div>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="info()">取 消</el-button>
+          <el-button type="primary" @click="go()" :disabled="this.success == 0"
+            >确 定</el-button
+          >
+        </div>
+      </el-dialog>
+    </el-card>
 </template>
