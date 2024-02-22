@@ -179,6 +179,14 @@ export default {
           this.total = res.data.num;
         });
     },
+    //  时间转换
+    timeTranslate(val) {
+      return this.dayjs(val).format("YYYY-MM-DD HH:mm:ss");
+    },
+    fn(row){
+      if( row.slice(-1) !="8"&& row!="00" && row!="09")
+        return true
+    },
 };
 </script>
 
