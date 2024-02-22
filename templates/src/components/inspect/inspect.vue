@@ -119,4 +119,20 @@
         </div>
       </el-dialog>
     </el-card>
+
+    <div class="footer">
+      <div>
+        <el-row>
+          <el-button @click="err()">取消</el-button>
+
+          <el-button
+            :disabled="this.tableData.agent_storage > 10 ? true : false"
+            @click="getnum()"
+            >下一步</el-button
+          >
+          <!-- && this.tableData.agent_storage !=null -->
+        </el-row>
+      </div>
+    </div>
+  </div>
 </template>
