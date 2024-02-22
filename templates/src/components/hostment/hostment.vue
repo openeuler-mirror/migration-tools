@@ -223,6 +223,57 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
       })
+        .then(() => {
+        this.$http.post("/export_reports",{
+          mod:this.mod1,
+          reports_type:this.type,
+          agent_ip:this.tableData.agent_ip,
+          hostname:this.tableData.hostname
+
+        }).then((res)=>{
+          // console.log(res)
+        })
+          this.$message({
+            type: "success",
+            message: "导出成功!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消导出",
+          });
+        });
+    },
+    gohostlist() {
+      this.$confirm("确定开始迁移吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(() => {
+         this.$router.push("/hostlist");
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消",
+          });
+        });
+    },
+    gohostlist1(row) {
+       this.$confirm("确定开始迁移吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(() => {
+         this.$router.push("/hostlist");
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消",
+          });
+        });
     },
   },
 };
