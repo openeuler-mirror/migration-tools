@@ -136,3 +136,45 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      dialogFormVisible: false,
+      success: "1",
+      faild: "2",
+
+      timer: null,
+      mod: "get_page_data",
+      mod1: "get_storage_num",
+      mod2: "check_info",
+      total: 0,
+
+      currentIndex: "",
+      currentPage: 1, //初始页
+      pagesize: 4, //    每页的数据
+
+      tableData: [
+        {
+          agent_ip: "",
+          hostname: "",
+          hostname: "",
+          agent_online_status: "",
+          agent_arch: "",
+          agent_os: "",
+          agent_storage: "",
+          agent_id: "",
+          task_CreateTime: "",
+          value1: "",
+        },
+      ],
+      list: "3",
+      multipleSelection: [],
+    };
+  },
+};
+</script>
+
+<style src="./index.css" scoped>
+</style>
