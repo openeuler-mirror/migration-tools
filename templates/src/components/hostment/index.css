@@ -1,0 +1,38 @@
+.head {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .head-1 {
+    width: 9px;
+    height: 20px;
+    /* background: paleturquoise; */
+    border-left: 4px solid #2b4490;
+  }
+  .num {
+    padding-left: 20px;
+  }
+  .el-row {
+    margin-top: 15px;
+  }
+  .col {
+    margin-right: 20px;
+  }
+  .col-1 {
+    height: 50px;
+    line-height: 20px;
+    text-align: center;
+  }
+  .center {
+    margin-top: 25px;
+  }
+  .center-1 {
+    margin-bottom: 10px;
+  }
+  .el-table {
+    text-align: center;
+  }
+  .el-pagination {
+    margin-top: 20px;
+    margin-left: 15px;
+  }
