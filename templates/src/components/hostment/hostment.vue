@@ -202,6 +202,14 @@ export default {
         return false;
       }
     },
+    formatState: function (row, column, cellValue) {
+      if (cellValue == null || cellValue == "") {
+        return "--";
+      } else {
+        // clearInterval(this.timer);
+        return cellValue;
+      }
+    },
 };
 </script>
 
