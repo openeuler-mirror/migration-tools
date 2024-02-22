@@ -187,6 +187,14 @@ export default {
       if( row.slice(-1) !="8"&& row!="00" && row!="09")
         return true
     },
+    handleSizeChange(val) {
+      this.hostlist.size = val;
+      this.hostinfodisplay();
+    },
+    handleCurrentChange(val) {
+      this.hostlist.page = val;
+      this.hostinfodisplay();
+    },
 };
 </script>
 
