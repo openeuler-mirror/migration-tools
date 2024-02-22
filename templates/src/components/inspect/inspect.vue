@@ -217,6 +217,25 @@ export default {
           // console.log("check_info");
         });
     },
+    // 获取列表数据
+    getpagedata() {
+      this.$http
+        .post("/get_page_data", {
+          mod: this.mod,
+        })
+        .then((res) => {
+          this.tableData = res.data.info;
+          this.total = res.data.num;
+        });
+    },
+    // 检查可用空间  定时器
+    formatState: function (row, column, cellValue) {
+      if (cellValue == "NoneGB" || cellValue == "") {
+        return "检查中";
+      } else {
+        return cellValue;
+      }
+    },
   },
 };
 </script>
