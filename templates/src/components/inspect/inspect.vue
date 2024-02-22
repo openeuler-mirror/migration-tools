@@ -192,6 +192,32 @@ export default {
       }
     });
   },
+  destroyed() {
+    clearInterval(this.timer);
+  },
+  methods: {
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+
+    handleSizeChange: function (size) {
+      this.pagesize = size;
+      this.getpagedata();
+    },
+    handleCurrentChange: function (currentPage) {
+      this.currentPage = currentPage;
+      this.getpagedata();
+    },
+    check_info() {
+      this.$http
+        .post("/check_info", {
+          mod: this.mod2,
+        })
+        .then((res) => {
+          // console.log("check_info");
+        });
+    },
+  },
 };
 </script>
 
