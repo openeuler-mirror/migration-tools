@@ -195,6 +195,13 @@ export default {
       this.hostlist.page = val;
       this.hostinfodisplay();
     },
+    item(row) {
+      if (row.agent_online_status == 1 || row.task_status == 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
 };
 </script>
 
