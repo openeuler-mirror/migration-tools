@@ -255,6 +255,21 @@ export default {
           this.success = res.data.success;
         });
     },
+    err() {
+      this.$confirm("确定退出吗, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$router.push("/hostment");
+
+          this.$message({ type: "success", message: "退出成功!" });
+        })
+        .catch(() => {
+          this.$message({ type: "info", message: "用户已取消" });
+        });
+    },
   },
 };
 </script>
