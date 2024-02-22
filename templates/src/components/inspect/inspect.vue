@@ -173,6 +173,25 @@ export default {
       multipleSelection: [],
     };
   },
+  created() {
+    this.check_info();
+  },
+  mounted() {
+    this.timer = setInterval(() => {
+      setTimeout(() => {
+        this.getpagedata();
+
+      }, 0);
+    }, 5000);
+  },
+  beforeUpdate() {
+    this.tableData.forEach((item) => {
+      if (item.agent_storage != "" && item.agent_storage != "nullGB") {
+        clearInterval(this.timer);
+
+      }
+    });
+  },
 };
 </script>
 
