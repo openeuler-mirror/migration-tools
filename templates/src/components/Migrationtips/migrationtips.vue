@@ -27,3 +27,17 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      mod:"close_tool"
+    }
+  },
+};
+</script>
+
+<style src="./index.css" scoped>
+
+</style>
