@@ -52,6 +52,9 @@ export default {
           this.$message({type: 'info',message: '用户已取消'});
         });
     },
+    go(){
+      this.$router.push("/inspect")
+    }
   },
 };
 </script>
