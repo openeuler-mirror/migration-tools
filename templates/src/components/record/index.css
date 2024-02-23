@@ -1,0 +1,42 @@
+.head {
+    display: flex;
+    align-items: center;
+  }
+  .head-1 {
+    width: 9px;
+    height: 20px;
+    /* background: paleturquoise; */
+    border-left: 4px solid #2b4490;
+  }
+  .el-row {
+    margin-top: 15px;
+  }
+  .center-1{
+    margin-left:20px ;
+  }
+  .center-1-2 {
+    display: flex;
+    justify-content: flex-end;
+    margin-left: 20px;
+  }
+  .col {
+    margin-right: 20px;
+  }
+  .col-1 {
+    height: 50px;
+    line-height: 20px;
+    text-align: center;
+  }
+  .el-table{
+    margin-top:5px ;
+  }
+  .center {
+    margin-top: 25px;
+  }
+  .el-pagination {
+    margin-top: 20px;
+    margin-left: 15px;
+  }
+  .card{
+    margin-top:8px ;
+  }
