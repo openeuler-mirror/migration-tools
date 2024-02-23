@@ -1,0 +1,139 @@
+.image {
+    display: block;
+    margin-right: 10px;
+  
+    animation: rotateImg 2s linear infinite;
+  }
+  
+  @keyframes rotateImg {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .box {
+    position: relative;
+  }
+  .tu-zuo {
+    margin-left: 20px;
+  }
+  .tu-tu {
+    display: flex;
+    align-items: center;
+  }
+  
+  .tu-zuo-2 {
+    width: 16px;
+    height: 16px;
+    background: url(./img/u856.svg);
+    background-size: 16px;
+    margin-right: 5px;
+  }
+  
+  .tu-zuo-3 {
+    width: 16px;
+    height: 16px;
+    background: url(./img/u1070.svg);
+    background-size: 16px;
+    margin-right: 5px;
+  }
+  
+  .el-dialog__body {
+    padding: 8px 20px;
+  }
+  .editor-container {
+    position: relative;
+    height: 100%;
+  }
+  .card {
+    margin-top: 18px;
+    height: 70vh;
+  }
+  .head {
+    display: flex;
+    align-items: center;
+  }
+  .head-1 {
+    width: 9px;
+    height: 20px;
+    /* background: paleturquoise; */
+    border-left: 4px solid #2b4490;
+  }
+  .dian {
+    width: 10px;
+    height: 10px;
+    background: #2a5caa;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+  }
+  .inputDeep {
+    display: flex;
+    align-items: center;
+  }
+  .inputDeep p {
+    width: 140px;
+  }
+  .inputDeep >>> .el-input__inner {
+    border: 0;
+    border-bottom: 1px solid gray;
+    width: 300px;
+  }
+  .inputDeep img {
+    width: 32px;
+  }
+  .center {
+    margin-top: 20px;
+    margin-left: 20px;
+  }
+  .card-3 {
+    color: #224b8f;
+    font-size: 20px;
+  }
+  .center-4 {
+    margin-bottom: 20px;
+  }
+  .center-2 {
+    margin-top: 4vh;
+  }
+  .center-1-1 {
+    margin-top: 15px;
+    margin-left: 20px;
+  }
+  .zi-1 {
+    color: rgb(160, 163, 166);
+    margin-top: 8px;
+  }
+  .zi {
+    margin-top: 15px;
+    margin-left: 35px;
+  }
+  .zi-2 {
+    margin-top: 30px;
+  }
+  .zi-3 {
+    margin-left: 6px;
+  }
+  .footer {
+    background-color: #eee;
+  
+    /* text-align: center; */
+    width: 100%;
+    height: 70px;
+  
+    /* line-height: 80px; */
+    position: absolute;
+    top: 84vh;
+    display: flex;
+    /* align-items: center; */
+    justify-content: flex-end;
+  }
+  .footer div {
+    padding-top: 8px;
+    margin-right: 10px;
+  }
