@@ -115,6 +115,15 @@ export default {
       multipleSelection: [],
     };
   },
+  created() {
+    this.getdownloadcenterdata();
+    //  this.$http.post("/get_download_center_data",{
+    //    mod:this.mod
+    //  }).then((res)=>{
+    //    this.tableData=res.data.info
+    //  })
+  },
+
 };
 </script>
 
