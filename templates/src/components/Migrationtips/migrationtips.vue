@@ -35,6 +35,24 @@ export default {
       mod:"close_tool"
     }
   },
+  methods: {
+    err(){
+      this.$confirm('确定退出吗, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http.post("/close_tool",{
+               mod:this.mod
+          }).then((res)=>{
+            this.$router.push("/hostment")
+          })
+          this.$message({type: 'success',message: '退出成功!'});
+        }).catch(() => {
+          this.$message({type: 'info',message: '用户已取消'});
+        });
+    },
+  },
 };
 </script>
 
