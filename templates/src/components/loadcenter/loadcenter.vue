@@ -124,6 +124,74 @@ export default {
     //  })
   },
 
+  methods: {
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+
+    handleSizeChange(val) {
+      this.list.size = val;
+      this.getdownloadcenterdata();
+
+    },
+    handleCurrentChange(val) {
+      this.list.page = val;
+      this.getdownloadcenterdata();
+
+    },
+    // 列表
+    getdownloadcenterdata() {
+      this.$http
+        .post("/get_download_center_data", {
+          mod: this.mod,
+          page: this.list.page,
+          size: this.list.size,
+        })
+        .then((res) => {
+
+          this.tableData = res.data.info;
+          this.total = res.data.num;
+        });
+    },
+    // 下载
+    download(type, ip, name) {
+
+      if (type == "迁移检测报告") {
+        type = this.testingtype;
+      }
+      if (type == "迁移日志") {
+        type = this.journaltype;
+      }
+      if (type == "迁移分析报告") {
+        type = this.analysistype;
+      }
+      if (type == "主机列表") {
+        type = this.hostlisttype;
+      }
+      if (type == "迁移成功主机列表") {
+        type = this.successlisttype;
+      }
+
+      this.$http
+        .post("/export_reports", {
+          mod: this.mod1,
+          reports_type: type,
+          agent_ip: ip,
+          hostname: name,
+        })
+        .then((res) => {
+          // console.log(res);
+        });
+    },
+     formatState: function (row, column, cellValue) {
+        if (cellValue == null || cellValue == "") {
+           return "--";
+      } else {
+        // clearInterval(this.timer);
+        return cellValue;
+      }
+     },
+  },
 };
 </script>
 
