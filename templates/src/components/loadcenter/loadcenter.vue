@@ -79,3 +79,45 @@
     </el-card>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      mod: "get_download_center_data",
+      mod1: "export_reports",
+      // 迁移检测报告
+      testingtype: "migration_detection",
+      //  迁移日志
+      journaltype: "migration_logs",
+      // 迁移分析报告
+      analysistype: "migration_analysis_report",
+      // 主机列表
+      hostlisttype: "export_host_info",
+      // 迁移成功主机列表
+      successlisttype: "migration_success_list",
+      total: 0,
+      list: {
+        page: 1, //当前页码不能为空
+        size: 4, //每页显示条数不能为空
+      },
+      tableData: [
+        {
+          report_generation_time: "",
+          report_name: "",
+          report_type: "",
+          agent_ip: "",
+          hostname: "",
+          agent_os: "",
+          agent_arch: "",
+        },
+      ],
+      multipleSelection: [],
+    };
+  },
+};
+</script>
+
+<style src="./index.css" scoped>
+
+</style>
