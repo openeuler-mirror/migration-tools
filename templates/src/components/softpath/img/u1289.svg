@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <mask fill="white" id="clip29">
+      <path d="M 2641.5 4292.5  C 2639.835 4292.5  2638.5 4291.165  2638.5 4289.5  L 2638.5 4272.5  C 2638.5 4270.835  2639.835 4269.5  2641.5 4269.5  L 2658.5 4269.5  C 2660.165 4269.5  2661.5 4270.835  2661.5 4272.5  L 2661.5 4289.5  C 2661.5 4291.165  2660.165 4292.5  2658.5 4292.5  L 2641.5 4292.5  " fill-rule="evenodd" />
+    </mask>
+  </defs>
+  <g transform="matrix(1 0 0 1 -2638 -4269 )">
+    <image preserveAspectRatio="none" style="overflow:visible" width="24" height="24" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAAGXcA1uAAAABGdBTUEAALGPC/xhBQAAAPRJREFUSA3tVFEOwiAMHcaEE+gl5rlYouE0xCXbZbyEu4SeYF9IF2hqAceiHxq3H9rH62vpoFWV+pRSdsLRSLG+GXOFX5/qg5M0TXOk4CY41tpzsD+7ipwc7Wzf98jDmnigEOLksCHCKeBVJ5JTPdC9v7axv7wLi/+DlHLPRcDP/rhxHG+5IBSCMrTWOwQSRpQBlF8FRQEgCkEJ8RX62Q5k73buRPTOUw6dQxRP3iNK4La/7mFWhZXT0F+cwBhzdwOxhUQlcy7botAKEHIv4+JKqmHSdl3XYnkFxnaO45/dAImg+jk+3y9tUQ2Jwqm4yOq/1YEH0aZOyHdLSSEAAAAASUVORK5CYII=" x="2638px" y="4269px" mask="url(#clip29)" />
+    <path d="M 2641 4292.5  C 2639.6125 4292.5  2638.5 4291.3875  2638.5 4290  L 2638.5 4272  C 2638.5 4270.6125  2639.6125 4269.5  2641 4269.5  L 2659 4269.5  C 2660.3875 4269.5  2661.5 4270.6125  2661.5 4272  L 2661.5 4290  C 2661.5 4291.3875  2660.3875 4292.5  2659 4292.5  L 2641 4292.5  Z " stroke-width="1" stroke="#d7d7d7" fill="none" />
+  </g>
+</svg>
