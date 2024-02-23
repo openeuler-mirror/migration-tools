@@ -55,3 +55,111 @@
     </el-card>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      mod:"migration_records",
+       mod1:"export_reports",
+      type:"migration_success_list",
+      total:0,
+       list: {
+        page: 1, //当前页码不能为空
+        size: 4, //每页显示条数不能为空
+      },
+      tableData: [
+        {
+          num:"",
+          create_time:"",
+          agent_ip:"",
+          hostname:"",
+          agent_os:"",
+          agent_migration_os:"",
+          agent_arch:"",
+        },
+
+      ],
+
+    };
+  },
+  created(){
+       this.migrationrecordslist();
+  },
+  methods: {
+    handleSizeChange(val) {
+          this.list.size = val;
+          this.migrationrecordslist();
+
+    },
+    handleCurrentChange(val) {
+      this.list.page = val;
+        this.migrationrecordslist();
+
+    },
+// 数据显示
+migrationrecordslist(){
+      this.$http.post("/migration_records",{
+        mod:this.mod,
+         page:this.list.page,
+            size:this.list.size
+      }).then((res)=>{
+
+        this.tableData=res.data.info
+            this.total=res.data.num
+      })
+},
+ formatState: function (row, column, cellValue) {
+        if (cellValue == null || cellValue == "") {
+           return "--";
+      } else {
+        // clearInterval(this.timer);
+        return cellValue;
+      }
+     },
+
+ exportData() {
+      const h = this.$createElement;
+      this.$msgbox({
+        title: "提示",
+        message: h("p", null, [
+          h("p", null, "确定导出“迁移成功主机列表”吗, 是否继续? "),
+          h("i", null, "文件将下载到本地，也可稍后前往下载中心下载。"),
+        ]),
+        showCancelButton: true,
+        confirmButtonText: "导出",
+        cancelButtonText: "取消",
+      })
+        .then(() => {
+         this.$http.post("/export_reports",{
+          mod:this.mod1,
+          reports_type:this.type,
+          agent_ip:this.tableData.agent_ip,
+          hostname:this.tableData.hostname
+
+        }).then((res)=>{
+          // console.log(res)
+        })
+          this.$message({
+            type: "success",
+            message: "导出成功!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消导出",
+          });
+        });
+
+    },
+
+}
+
+
+};
+</script>
+
+<style src="./index.css" scoped>
+
+</style>
