@@ -208,6 +208,27 @@
         </div>
       </el-dialog>
     </el-card>
+
+    <div class="footer">
+      <div>
+        <el-row>
+          <el-button @click="err()">取消</el-button>
+
+          <el-button
+            :disabled="
+              this.x86_64_7 != '' ||
+              this.x86_64_8 != '' ||
+              this.aarch_64_7 != '' ||
+              this.aarch_64_8 != ''
+                ? false
+                : true
+            "
+            @click="go()"
+            >下一步</el-button
+          >
+        </el-row>
+      </div>
+    </div>
   </div>
 </template>
 
