@@ -59,6 +59,7 @@ def clean_and_exit():
 
 def get_disk_info(string):
     dev_name = ""
+    part_num = ""
     length = len(string)
     for c in range(length-1, -1, -1):
         if not string[c].isdigit():
@@ -90,7 +91,7 @@ def add_boot_option():
     elif arch == "aarch64":
         cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubaa64.efi" -L "Uniontech OS"'
     try:
-        subprocess.check_call(cmd, shell=True)
+        subprocess.check_call(cmd.split(), shell=True)
     except:
         print("Use efibootmgr update boot loader failed, please update boot loader manually.")
 
