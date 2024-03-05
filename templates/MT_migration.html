@@ -93,6 +93,7 @@
 		var check_progress_data_json={"mod":"check_migration_progress"};
         check_progress_data_json.ip="tasks"
         var pg = document.getElementById('pg')
+        var arr_info = window.location.search;
         $.ajax({
 			async:true,
 			type: 'post',
