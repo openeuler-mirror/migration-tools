@@ -6,9 +6,10 @@ import shutil
 import subprocess
 import logging
 import sys
+import time
 os.chdir('/usr/lib/migration-tools-agent')
 sys.path.append('/usr/lib/migration-tools-agent')
-from settings import MIG_LOG, OPENEULER_REPO, DNF_PATH
+from settings import MIG_LOG, OPENEULER_REPO, DNF_PATH, PROGRESS
 
 
 if not os.path.exists(MIG_LOG):
@@ -24,11 +25,16 @@ logger.addHandler(handler)
 
 
 def check_migration_progress(message):
-    with open('/var/tmp/uos-migration/.progress', 'w') as fp:
+    with open(PROGRESS, 'w') as fp:
         fp.write(message)
         fp.close()
     return None
 
+def message_state(message):
+    with open('/var/tmp/uos-migration/.state', 'w') as fp:
+        fp.write(message)
+        fp.close()
+    return None
 
 def run_subprocess(cmd):
     try:
@@ -39,11 +45,11 @@ def run_subprocess(cmd):
             shell=False,
             check=True
         )
-        output = process.stdout
+        output = process.stdout.decode('utf-8')
         logger.info(output)
         return output, process.returncode
     except subprocess.CalledProcessError as e:
-        logger.error(e.stderr)
+        logger.error(e.stderr.decode('utf-8'))
         return e.stderr, e.returncode
 
 
@@ -174,9 +180,10 @@ def system_sync():
     subprocess.run('dnf clean all', shell=True)
     remove_rpm_nodeps = 'rpm -e python-enum34 --nodeps'
     subprocess.run(remove_rpm_nodeps, shell=True)
-    cmd = 'dnf -y distro-sync --allowerasing --skip-broken'
-    subprocess.run(cmd, shell=True)
-    _, ret = run_subprocess('rpm -q kernel | grep oe1'.split())
+    with open(MIG_LOG, 'a', encoding='utf-8') as log_file:
+        cmd = 'dnf -y distro-sync --allowerasing --skip-broken'
+        subprocess.run(cmd, shell=True, stdout=log_file, stderr=log_file) 
+        _, ret = run_subprocess('rpm -q kernel | grep oe1'.split())
     if ret:
         return False
     return True
@@ -206,7 +213,7 @@ def main():
         return None
     os_arch = platform.machine()
     paramiko_rpm_pwd = "/usr/lib/migration-tools-agent/agent-requires/paramiko/%s/*.rpm" % os_arch
-    os.system('rpm -Uvh %s --force' % paramiko_rpm_pwd)
+    os.system('rpm -Uvh {} --force >> {} 2>&1'.format(paramiko_rpm_pwd, MIG_LOG))
     remove_rpm_nodeps = 'rpm -e python-backports --nodeps'
     os.system(remove_rpm_nodeps)
     os.system("yum-config-manager --disable base updates extras")
@@ -220,12 +227,12 @@ def main():
         logger.info("swaping release")
         swap_release(openEuler_release)
     check_migration_progress('10')
-    os.system("yum install -y gdbm-help")
+    os.system("yum install -y gdbm-help >> %s 2>&1" % MIG_LOG)
     check_migration_progress('15')
     remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos', 'iwl7265-firmware', 'ivtv-firmware',
                               'sysvinit-tools', 'sg3_utils-libs']
     for package in remove_packages_nodeps:
-        nodeps_cmd = "rpm -q " + package + " && rpm -e --nodeps " + package
+        nodeps_cmd = "rpm -q " + package + " && rpm -e --nodeps " + package + ">> " + MIG_LOG + " 2>&1"
         os.system(nodeps_cmd)
     if not os.path.exists(DNF_PATH):
         os.makedirs(DNF_PATH)
@@ -233,10 +240,10 @@ def main():
         shutil.rmtree(DNF_PATH)
     check_migration_progress('30')
     install_cmd = 'yum install -y systemd python3-libdnf libreport-filesystem python3-gpg libmodulemd deltarpm python3-hawkey \
-                    python3-libcomps python3-rpm util-linux --installroot={}'.format(DNF_PATH)
+                    python3-libcomps python3-rpm util-linux --installroot={} >> {} 2>&1'.format(DNF_PATH, MIG_LOG)
     os.system(install_cmd)
     check_migration_progress('40')
-    download_dnf = '/usr/bin/yumdownloader {} --destdir={}'.format('dnf python3-dnf dnf-help', os.path.join(DNF_PATH, 'root'))
+    download_dnf = '/usr/bin/yumdownloader {} --destdir={} >> {} 2>&1'.format('dnf python3-dnf dnf-help', os.path.join(DNF_PATH, 'root'), MIG_LOG)
     os.system(download_dnf)
 
     subprocess.run("/sbin/chroot {} /bin/bash -c 'rpm --rebuilddb'".format(DNF_PATH), shell=True)
@@ -249,13 +256,14 @@ def main():
     check_migration_progress('50')
 
     rpm_perl = '/etc/rpm/macros.perl'
-    os.system('rpm --rebuilddb')
+    os.system('rpm --rebuilddb >> {} 2>&1'.format(MIG_LOG))
     if os.path.exists(rpm_perl):
         os.remove(rpm_perl)
 
-    os.system("rpm -e --nodeps yum")
+    os.system("rpm -e --nodeps yum >> {} 2>&1".format(MIG_LOG))
     if system_sync():
-        subprocess.run('dnf -y groupinstall Minimal Install', shell=True)
+        with open(MIG_LOG, 'a', encoding='utf-8') as log_file:
+            subprocess.run('dnf -y groupinstall Minimal Install', shell=True, stdout=log_file, stderr=log_file)
     else:
         logger.info("Removing confilct package yum...")
         system_sync()
@@ -278,8 +286,10 @@ def main():
     check_migration_progress('80')
     run_subprocess('dnf install -y yum'.split())
     run_subprocess('dnf remove *uelc* -y'.split())
+    message_state('20.03')
     check_migration_progress('100')
 
+    time.sleep(10)
     logger.info("System migration completed, rebooting system")
     os.system("reboot")
     return True

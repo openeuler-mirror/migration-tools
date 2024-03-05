@@ -552,15 +552,23 @@ def mig_check_migration_progress():
 def check_migration_progress(data_j):
     uos_sysmig_conf = json.loads(get_sysmig_conf())
     agent_ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
-    if not analysis_progress():
-        message_progress('0')
     with open(pstate, 'r+') as fp:
         state = fp.readlines()
         fp.close()
         state = state[0]
+    if state == 'euler' or state == '20.03':
+         with open(progresslogdir, 'r+') as fprogress:
+             progress = fprogress.readlines()
+         k_list = ['ip', 'progress']
+         v_list = [agent_ip, progress]
+         return list_to_json(k_list, v_list)
+
+    if not analysis_progress():
+        message_progress('0')
 
     if re.fullmatch('9', state):
         message_state('0')
+    
     mig_check_migration_progress()
     with open(progresslogdir, 'r+') as fpro:
         data = fpro.readlines()
@@ -610,8 +618,9 @@ def system_migration(data_j):
     res = '0'
     kernel_version = json.loads(data_j).get('kernel_version')
     if kernel_version == 'euler':
-        mig_euler()
-        return None
+        message_state('euler')
+        t = Process(target=mig_euler)
+        t.start()
     with open(pstate, 'r+') as fp:
         state = fp.readlines()
         fp.close()

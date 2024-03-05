@@ -1,5 +1,5 @@
 Name: 		migration-tools
-Version:	1.0.0
+Version:	1.0.1
 Release:	1
 License:	MulanPSL-2.0
 Summary:	A tool to help users migrate the Centos system to the UOS system and openEuler system
@@ -9,23 +9,25 @@ BuildArch: 	noarch
 %description
 UOS Migration Software
 
-
+%if 0%{?rhel} < 8
 %package -n migration-tools-agent
-Summary: migration-tools-agent
-License: GPL
-Requires:dnf
-Requires:libabigail
-Requires:python3
-Requires:python3-xlrd
-Requires:python3-xlwt
-Requires:python3-paramiko
-Requires:python3-flask
-Requires:rsync
-Requires:yum-utils
+Summary:        migration-tools-agent
+License:        MulanPSL-2.0
+Requires:       dnf
+Requires:       libabigail
+Requires:       python3
+Requires:       python3-flask
+Requires:       python3-paramiko
+Requires:       python3-requests
+Requires:       python3-xlrd
+Requires:       python3-xlwt
+Requires:       openssl
+Requires:       rsync
+Requires:       yum-utils
+%endif
 
 %description -n migration-tools-agent
 Migration software agent side
-
 
 %package -n migration-tools-server
 Summary: 	migration-tools-server
@@ -47,10 +49,12 @@ Migration software server side
 %install
 rm -rf %{buildroot}
 mkdir -p $RPM_BUILD_ROOT/usr/lib/migration-tools-server
+mkdir -p $RPM_BUILD_ROOT/usr/lib/migration-tools-agent
 mkdir -p $RPM_BUILD_ROOT/var/tmp/uos-migration
 mkdir -p $RPM_BUILD_ROOT/etc/migration-tools
 
-cp -r ut-Migration-tools/* $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
+cp -r migration-tools/* $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
+cp -r migration-tools/* $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/
 
 # Install server config
 %{__cp} -r $RPM_BUILD_ROOT/usr/lib/migration-tools-server/server/migration-tools.conf $RPM_BUILD_ROOT/etc/migration-tools
@@ -66,6 +70,11 @@ systemctl daemon-reload
 systemctl restart migration-tools-server.service
 systemctl enable migration-tools-server.service
 
+%post -n migration-tools-agent
+mkdir -p /etc/migration-tools
+mkdir -p /var/tmp/uos-migration
+cp -r /usr/lib/migration-tools-agent/server/migration-tools-agent.service /usr/lib/systemd/system/
+systemctl daemon-reload
 
 %postun -n migration-tools-server
 systemctl disable migration-tools-server.service
@@ -73,12 +82,21 @@ rm -rf /usr/lib/migration-tools-server/
 rm -rf /usr/lib/migration-tools
 rm -rf /usr/bin/migration-tools
 
+%postun -n migration-tools-agent
+rm -rf /usr/lib/migration-tools-agent/
+rm -rf /usr/lib/migration-tools
+rm -rf /usr/bin/migration-tools
 
 %files -n migration-tools-server
 /etc/migration-tools
 /usr/lib/migration-tools-server
 
+%files -n migration-tools-agent
+/usr/lib/migration-tools-agent
 
 %changelog
+* Tue Mar 05 2024 lixin <lixinb@uniontech.com> - 1.0.1-1
+- Supports migrations to OpenEuler system using the web-based interface.
+
 * Wed Aug 16 2023 lixin <lixinb@uniontech.com> - 1.0.0-1
 - init
