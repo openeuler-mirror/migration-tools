@@ -271,14 +271,14 @@ export default {
             });
           }
           console.log(this.xin2Data)
-           for (var key in this.xin2Data) {
-      if (
-        this.xin2Data[key].agent_kernel != "" &&
-        this.xin2Data[key].agent_repo_kernel != ""
-      ) {
-           clearInterval(this.timer);
-       }
-    }
+          for (var key in this.xin2Data) {
+          if (
+            this.xin2Data[key].agent_kernel != "" &&
+            this.xin2Data[key].agent_repo_kernel != ""
+          ) {
+               clearInterval(this.timer);
+            }
+        }
         });
     },
     batchOperate(command) {
