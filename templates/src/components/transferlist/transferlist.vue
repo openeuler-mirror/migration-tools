@@ -122,3 +122,259 @@
   </div>
 </template>
 
+<script>
+export default {
+  inject: ["reload"],
+  data() {
+    return {
+      xian1: true,
+      xian: true,
+      kk: false,
+      progress:true,
+      isprogress:false,
+      total: 0,
+       currentIndex: "",
+      currentPage: 1, //初始页
+      pagesize: 4, //    每页的数据
+      mod: "get_environment_data",
+      mod1: "check_environment",
+      mod2: "export_reports",
+      mod3:"modify_task_status",
+      reports_type: "migration_detection",
+
+      tranferdata1: [
+        {
+          task_CreateTime: "",
+          agent_id: "",
+          agent_ip: "",
+          hostname: "",
+          agent_online_status: "",
+          agent_os: " ",
+          agent_arch: "",
+          task_progress: "",
+          task_status: "",
+          value1: "",
+        },
+      ],
+      tranferdata: [
+        {
+          task_CreateTime: "",
+          agent_id: "",
+          agent_ip: "",
+          hostname: "",
+          agent_online_status: "",
+          agent_os: " ",
+          agent_arch: "",
+          task_progress: "",
+          task_status: "",
+          value1: "",
+        },
+      ],
+      multipleSelection: [],
+      jianarr: [],
+      Arrid:[]
+    };
+  },
+  created() {
+    this.transferlist();
+
+  },
+  mounted() {
+    this.tranferdata1 = this.$store.state.xin2Data;
+    this.timer=setInterval(() => {
+        setTimeout(() => {
+       this.transferlist();
+       console.log("在执行")
+
+        }, 0);
+      }, 5000);
+  },
+
+  destroyed() {
+    clearInterval(this.timer);
+
+  },
+  methods: {
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+
+    handleSizeChange: function (size) {
+      this.pagesize = size;
+  this.transferlist();
+
+    },
+    handleCurrentChange: function (currentPage) {
+      this.currentPage = currentPage;
+  this.transferlist();
+
+    },
+
+
+    // 列表
+    transferlist() {
+      this.$http
+        .post("/get_environment_data", {
+          mod: this.mod,
+
+        })
+        .then((res) => {
+          this.tranferdata = res.data.info;
+          this.total = res.data.num;
+          for (var key in this.tranferdata) {
+            this.tranferdata1.map((item) => {
+              if (this.tranferdata[key].agent_ip == item.agent_ip) {
+                this.tranferdata[key].task_CreateTime = item.task_CreateTime;
+                this.tranferdata[key].agent_id = item.agent_id;
+                this.tranferdata[key].hostname = item.hostname;
+                this.tranferdata[key].agent_online_status =
+                  item.agent_online_status;
+                this.tranferdata[key].agent_os = item.agent_os;
+                this.tranferdata[key].agent_arch = item.agent_arch;
+                this.tranferdata[key].value1 = item.value1;
+              } else {
+              }
+            });
+          }
+        });
+    },
+
+    formatState: function (row, column, cellValue) {
+      // console.log(row);
+      // console.log(column);
+      // console.log(cellValue);
+    },
+    notempty(data){
+
+         for(var key in data){
+           if( data[key].task_status==1){
+             return true
+           }else{
+             return false
+           }
+         }
+
+    },
+    //  全部检查
+    inspect() {
+      console.log(this.tranferdata)
+        this.progress=false
+        this.isprogress=true
+       this.tranferdata.forEach((item)=>{
+       this.Arrid.push(item.agent_ip);
+
+       })
+      let ip=this.Arrid
+      this.$http.post("/check_environment", {
+          mod: this.mod1,
+          agent_ip:ip,
+        })
+        .then((res) => {
+          console.log(res);
+        });
+    },
+    // 单选检查
+    checkone(ip) {
+          this.progress=false
+        this.isprogress=true
+      let oneip = ip.split(",");
+      console.log(oneip)
+
+      this.$http
+        .post("/check_environment", {
+          mod: this.mod1,
+          agent_ip:oneip,
+        })
+        .then((res) => {
+          console.log(res);
+          // this.reload();
+        });
+    },
+    // 迁移报告
+    testreport(ip, name) {
+      const h = this.$createElement;
+      this.$msgbox({
+        title: "提示",
+        message: h("p", null, [
+          h("p", null, "确定导出“迁移检测报告”吗,  "),
+          h("p", null, "文件将下载到本地，也可稍后前往下载中心下载。"),
+        ]),
+        showCancelButton: true,
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(() => {
+        this.$http.post("/export_reports",{
+          mod:this.mod2,
+          reports_type:this.reports_type,
+          agent_ip:ip,
+          hostname:name
+
+        }).then((res)=>{
+          // console.log(res)
+        })
+          this.$message({
+            type: "success",
+            message: "导出成功!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消导出",
+          });
+        });
+    },
+    gotransfer() {
+      this.$confirm(
+        "迁移工作即将开始，请确保稳定的网络连接。迁移开始后会禁用您的自动更新功能，迁移过程不可逆，请确保您的数据和设置已经【备份】",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+        }
+      )
+        .then(() => {
+          this.$store.commit("gotransfer", this.tranferdata);
+          this.$http.post("/modify_task_status",{
+            mod:this.mod3
+          }).then((res)=>{
+            // console.log(res)
+          })
+          this.$router.push("/transfer");
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "用户已取消",
+          });
+        });
+    },
+    err() {
+      this.$confirm("确定退出吗, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$router.push("/hostment")
+
+          this.$message({
+            type: "success",
+            message: "退出成功!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "用户已取消",
+          });
+        });
+    },
+  },
+};
+</script>
+
+<style src="./index.css" scoped>
+
+</style>
