@@ -85,3 +85,92 @@
     </el-card>
   </div>
 </template>
+
+<script>
+import inputExcel from "@/plugins/uploadExcel";
+export default {
+  data() {
+    return {
+      mod: "import_host_info",
+      dialogFormVisible: false,
+      isDisable: false,
+      isshow: false,
+      success: false,
+      faild: false,
+
+
+      list: 0,
+      input: "",
+      newdata: [],
+    };
+  },
+  components: {
+    inputExcel,
+  },
+  methods: {
+    go() {
+      this.$router.push("/pei");
+    },
+    dao() {
+      // console.log(this.input)
+      this.isDisable = true
+      // setTimeout(() => {
+      //   this.isDisable = false
+      // }, 10000)
+
+      this.isshow = true;
+
+      this.$http
+        .post("/import_host_info", {
+          mod: this.mod,
+          data: this.newdata,
+        })
+        .then((res) => {
+
+          if (res.data.data== "success") {
+            this.isshow = false;
+            this.success = true;
+             this.isDisable = false
+            this.list = res.data.num;
+          } else {
+            this.isDisable = false
+             this.isshow = false;
+            this.faild = true;
+          }
+        });
+    },
+    //下载模板
+      downUp(){
+        const jsonData = [{codeStr:"",tenantName:"",currentVal:""}];
+        if (!jsonData.length) return;
+        // 表格的列标题 如果出现科学技术法或者其他格式 使用 \t
+        let title = 'agent_ip,agent_hostname,agent_password\n';
+        jsonData.map(item => {
+          let key = {};
+          key['agent_ip'] = item.codeStr;
+          key['agent_hostname'] = item.tenantName;
+          key['agent_password'] = item.currentVal;
+          for (let i in key){
+            title += `${key[i]},`
+          }
+          title += '\n'
+        });
+        // encodeURIComponent 解决中文乱码
+        let uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(title);
+        // 创建a标签
+        let link = document.createElement('a');
+        link.href = uri;
+        link.download='主机信息模板.xlsx';
+        link.click()
+      },
+
+    getMyExcelData(data) {
+      // data 为读取的excel数据，在这里进行处理该数据
+      this.newdata = data;
+    },
+    tohostment(){
+      this.$router.push("/hostment")
+    }
+  },
+};
+</script>
