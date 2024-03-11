@@ -82,3 +82,18 @@
     </el-container>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      isCollapse: false,
+    };
+  },
+  methods: {
+    toggleCollapse() {
+      this.isCollapse = !this.isCollapse;
+    },
+  },
+};
+</script>
