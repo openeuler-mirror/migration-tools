@@ -174,3 +174,7 @@ export default {
   },
 };
 </script>
+
+<style src="./index.css" scoped>
+
+</style>
