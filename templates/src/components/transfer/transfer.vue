@@ -153,13 +153,198 @@ export default {
       multipleSelection: [],
     };
   },
+
   created() {
     this.getsystemmigrationdata();
   },
 
+  mounted() {
+    // console.log(this.$store.state.tranferdata)
+    this.transData1 = this.$store.state.tranferdata;
+    // console.log(this.transData1);
+
+    this.transData1.forEach((item) => {
+      if (item.value1 == "不迁移内核") {
+        item.value1 = this.Frame;
+        console.log(this.transData1.agent_ip);
+        for (var key in this.transData1) {
+          var info = [
+            {
+              agent_ip: this.transData1[key].agent_ip,
+              kernel_version: this.transData1[key].value1,
+            },
+          ];
+          console.log(info);
+          this.$http
+            .post("/system_migration", {
+              mod: this.mod2,
+              info: info,
+            })
+            .then((res) => {
+              console.log(res);
+            });
+        }
+      } else {
+        for (var key in this.transData1) {
+          var info = [
+            {
+              agent_ip: this.transData1[key].agent_ip,
+              kernel_version: this.transData1[key].value1,
+            },
+          ];
+          console.log(info);
+          this.$http
+            .post("/system_migration", {
+              mod: this.mod2,
+              info: info,
+            })
+            .then((res) => {
+              console.log(res);
+            });
+        }
+      }
+    });
+    this.timer = setInterval(() => {
+      setTimeout(() => {
+        this.getsystemmigrationdata();
+      }, 0);
+    }, 5000);
+  },
+
+  destroyed() {
+    clearInterval(this.timer);
+  },
+  methods: {
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+
+    handleSizeChange: function (size) {
+      this.pagesize = size;
+      this.getsystemmigrationdata();
+    },
+    handleCurrentChange: function (currentPage) {
+      this.currentPage = currentPage;
+      this.getsystemmigrationdata();
+    },
+    notempty(data) {
+      for (var key in data) {
+        //  console.log(data[key].task_status)
+        if (data[key].task_status == 0 || data[key].task_status == 1) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    },
+
+    // 列表
+    getsystemmigrationdata() {
+      this.$http
+        .post("/get_system_migration_data", {
+          mod: this.mod,
+        })
+        .then((res) => {
+          this.transData = res.data.info;
+          this.total = res.data.num;
+
+          for (var key in this.transData) {
+            this.transData1.map((item) => {
+              if (this.transData[key].agent_ip == item.agent_ip) {
+                this.transData[key].task_CreateTime = item.task_CreateTime;
+                this.transData[key].agent_id = item.agent_id;
+                this.transData[key].hostname = item.hostname;
+                this.transData[key].agent_online_status =
+                  item.agent_online_status;
+                this.transData[key].agent_os = item.agent_os;
+                this.transData[key].agent_arch = item.agent_arch;
+                this.transData[key].value1 = item.value1;
+              } else {
+                // console.log("名称不相等")
+              }
+            });
+          }
+        });
+    },
+
+    // 迁移日志
+    journal(ip, name) {
+      const h = this.$createElement;
+      this.$msgbox({
+        title: "提示",
+        message: h("p", null, [
+          h("p", null, "确定导出“迁移日志”吗,  "),
+          h("p", null, "文件将下载到本地，也可稍后前往下载中心下载。"),
+        ]),
+        showCancelButton: true,
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(() => {
+          this.$http
+            .post("/export_reports", {
+              mod: this.mod1,
+              reports_type: this.reports_type,
+              agent_ip: ip,
+              hostname: name,
+            })
+            .then((res) => {
+              // console.log(res)
+            });
+          this.$message({
+            type: "success",
+            message: "导出成功!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消导出",
+          });
+        });
+    },
+    // 迁移分析报告
+    report(ip, name) {
+      const h = this.$createElement;
+      this.$msgbox({
+        title: "提示",
+        message: h("p", null, [
+          h("p", null, "确定导出“迁移分析报告”吗,  "),
+          h("p", null, "文件将下载到本地，也可稍后前往下载中心下载。"),
+        ]),
+        showCancelButton: true,
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(() => {
+          this.$http
+            .post("/export_reports", {
+              mod: this.mod1,
+              reports_type: this.reports_type1,
+              agent_ip: ip,
+              hostname: name,
+            })
+            .then((res) => {
+              // console.log(res)
+            });
+          this.$message({
+            type: "success",
+            message: "导出成功!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消导出",
+          });
+        });
+    },
+    gohostment() {
+      this.$router.push("/hostment");
+    },
+  },
 };
 </script>
 
 <style src="./index.css" scoped>
 </style>
-
