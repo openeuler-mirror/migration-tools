@@ -108,4 +108,58 @@
   </div>
 </template>
 
+<script>
+export default {
+  data() {
+    return {
+      mod: "get_system_migration_data",
+      mod1: "export_reports",
+      mod2: "system_migration",
+      reports_type: "migration_logs",
+      reports_type1: "migration_analysis_report",
+      total: 0,
+      currentIndex: "",
+      currentPage: 1, //初始页
+      pagesize: 4, //    每页的数据
+      transData: [
+        {
+          task_CreateTime: "",
+          agent_id: "",
+          agent_ip: "",
+          hostname: "",
+          agent_online_status: "",
+          agent_os: " ",
+          agent_arch: "",
+          task_progress: "",
+          task_status: "",
+          value1: "",
+        },
+      ],
+      transData1: [
+        {
+          task_CreateTime: "",
+          agent_id: "",
+          agent_ip: "",
+          hostname: "",
+          agent_online_status: "",
+          agent_os: " ",
+          agent_arch: "",
+          task_progress: "",
+          task_status: "",
+          value1: "",
+        },
+      ],
+      Frame: 0,
+      multipleSelection: [],
+    };
+  },
+  created() {
+    this.getsystemmigrationdata();
+  },
+
+};
+</script>
+
+<style src="./index.css" scoped>
+</style>
 
