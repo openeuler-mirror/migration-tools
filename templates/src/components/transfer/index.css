@@ -8,7 +8,7 @@
     display: flex;
     justify-content: flex-end;
   }
-  
+
   .col {
     margin-right: 10px;
   }
@@ -36,11 +36,11 @@
   }
   .footer {
     background-color: #eee;
-  
+
     /* text-align: center; */
     width: 100%;
     height: 70px;
-  
+
     /* line-height: 80px; */
     position: absolute;
     top: 84vh;
