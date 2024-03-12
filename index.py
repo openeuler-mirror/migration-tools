@@ -5,34 +5,44 @@
 
 import os
 import json
-from sysmig_agent import share
-from views import migration, server
-
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
-app = Flask(__name__)
+os.chdir('/usr/lib/uos-sysmig-server')
+from connect_sql import *
+from logger import *
+from sysmig_agent.share import getSysMigConf
+from miscellaneous import *
+from views.migration import *
+from views.server import *
+from flask_cors import CORS
+# import MySQLdb
 
+os.chdir('/usr/lib/uos-sysmig-server')
+app = Flask(__name__)
+migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
+CORS(app, resources=r'/*')
 mods = {
-        'import_host_info': server.import_host_info,
-        'host_info_display': server.host_info_display,
-        'sql_task': server.modify_task_stream,
-        'delete_host_info': server.delete_host_info,
-        'check_info': migration.check_info,
-        'check_kernel': migration.check_kernel,
-        'get_kernel_data': server.get_kernel_data,
-        'check_repo': migration.check_repo,
-        'get_repo_data': server.get_repo_data,
-        'check_environment':migration.check_environment,
-        'get_environment_data': server.get_environment_data,
-        'get_repo_arch_info': server.get_repo_arch_info,
-        'get_storage_num': server.get_storage_num,
-        'export_reports': server.export_reports,
-        'get_page_data': server.get_page_data,
-        'system_migration': migration.system_migration,
-        'get_system_migration_data': server.get_system_migration_data,
-        'get_download_center_data': server.get_download_center_data,
-        'migration_records': server.migration_records,
-        'get_migrated_hosts': server.get_migrated_hosts,
-        'close_tool': server.close_tool,
+        'import_host_info': import_host_info,
+        'host_info_display': host_info_display,
+        'delete_host_info': delete_host_info,
+        'check_info': check_info,
+        'get_page_data': get_page_data,
+        'check_repo': check_repo,
+        'get_repo_data': get_repo_data,
+        'check_kernel': check_kernel,
+        'get_kernel_data': get_kernel_data,
+        'check_environment': check_environment,
+        'get_environment_data': get_environment_data,
+        'export_reports': export_reports,
+        'system_migration': system_migration,
+        'get_system_migration_data': get_system_migration_data,
+        'sql_task': modify_task_stream,
+        'get_download_center_data': get_download_center_data,
+        'migration_records': migration_records,
+        'get_migrated_hosts': get_migrated_hosts,
+        'get_storage_num': get_storage_num,
+        'get_repo_arch_info': get_repo_arch_info,
+        'close_tool': close_tool,
+        'modify_task_status': modify_task_status
         }
 
 
@@ -44,7 +54,46 @@ def check_methods():
         if mod:
             response_str = mod(data)
             return response_str
-        
+
+@app.route('/modify_task_status', methods=['GET', 'POST'])
+def modify_task_status():
+    """
+    修改任务状态
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+@app.route('/get_repo_arch_info', methods=['GET', 'POST'])
+def get_repo_arch_info():
+    """
+    获取软件仓库架构和系统信息
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+@app.route('/get_storage_num', methods=['GET', 'POST'])
+def get_storage_num():
+    """
+    获取可用空间足够和不足数量
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+@app.route('/export_migration_reports', methods=['GET', 'POST'])
+def export_migration_reports():
+    """
+    导出报告
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
 
 @app.route('/import_host_info', methods=['GET', 'POST'])
 def import_host_info():
@@ -144,6 +193,15 @@ def get_repo_data():
     if mod:
         return Response(mod, content_type='application/json')
 
+@app.route('/get_kernel_data', methods=['GET', 'POST'])
+def get_kernel_data():
+    """
+    获取系统内核和仓库内核版本
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
 
 @app.route('/check_environment', methods=['GET', 'POST'])
 def check_environment():
@@ -287,8 +345,13 @@ def close_tool():
 
 
 if __name__ == '__main__':
+    app.debug = True
     app.config["JSON_AS_ASCII"] = False
-    uos_sysmig_conf = json.loads(share.getSysMigConf())
+    uos_sysmig_conf = json.loads(getSysMigConf())
     ip = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
     port = int(json.loads(uos_sysmig_conf).get('serverport').strip()[1:-1])
-    app.run(debug=True, host=ip, port=port)
+    info = "import Vue from 'vue'" + '\n' + "import axios from 'axios'" + '\n' + "axios.defaults.baseURL='http://%s:%s'" % (ip, port) + "\n" + "Vue.prototype.$http=axios"
+    with open('template/src/plugins/axios.js', 'w+', encoding='utf-8') as f:
+        f.write(info)
+        f.close
+    app.run(debug=True, host=ip, port=port, use_reloader=False)
