@@ -1,4 +1,18 @@
 import pymysql
+import json
+import os
+#os.chdir('/usr/lib/uos-sysmig-server')
+from logger import *
+from miscellaneous import getSysMigConf
+
+
+migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
+uos_sysmig_conf = json.loads(getSysMigConf('0.0.0.0'))
+db_host = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
+db_name = json.loads(uos_sysmig_conf).get('db_name').strip()[1:-1]
+db_password = json.loads(uos_sysmig_conf).get('db_password').strip()[1:-1]
+db_user = json.loads(uos_sysmig_conf).get('db_user').strip()[1:-1]
+
 
 class DBHelper:
     # 构造函数
@@ -16,7 +30,7 @@ class DBHelper:
             self.connect = pymysql.connect(host=self.host, user=self.user, password=self.pwd, db=self.db,
                                            charset='utf8')
         except:
-            print('connectDatabase failed')
+            migration_log.error('connectDatabase failed')
             return False
         self.cursor = self.connect.cursor()
         return True
@@ -41,10 +55,10 @@ class DBHelper:
             self.cursor.execute(sql)
             self.connect.commit()
         except Exception as e:
-            print('%s执行失败：%s' % (sql, e))
+            migration_log.error('%s执行失败：%s' % (sql, e))
         else:
             self.close()
-            print('%s 执行成功' % sql)
+            migration_log.info('%s 执行成功' % sql)
             data = self.cursor
             return data
 
@@ -61,9 +75,9 @@ class DBHelper:
             self.cursor.executemany(sql, val)
             self.connect.commit()
         except Exception as e:
-            print('%s执行失败：%s' % (sql, e))
+            migration_log.error('%s执行失败：%s' % (sql, e))
         else:
             self.close()
-            print('%s 执行成功' % sql)
+            migration_log.info('%s 执行成功' % sql)
             data = self.cursor
             return data
