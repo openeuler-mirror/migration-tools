@@ -1,0 +1,11 @@
+[Unit]
+Description=uos sysmig agent
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/uos-sysmig-agent/agent_env/bin/python3 /usr/lib/uos-sysmig-agent/migration-tools-client.py
+ExecStop=/bin/kill- INT $MAINPID
+
+[Install]
+WantedBy=multi-user.target
