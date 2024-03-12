@@ -1,0 +1,11 @@
+[Unit]
+Description=uos sysmig data surposs npm running .
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/uos-sysmig-server/server_env/bin/python3 /usr/lib/uos-sysmig-server/server/start_web.py &>/dev/null
+ExecStop=/bin/kill -INT $MAINPID
+
+[Install]
+WantedBy=multi-user.target
