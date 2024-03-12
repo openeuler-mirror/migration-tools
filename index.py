@@ -105,7 +105,6 @@ def import_host_info():
     if mod:
         return Response(mod, content_type='application/json')
 
-
 @app.route('/host_info_display', methods=['GET', 'POST'])
 def host_info_display():
     """
@@ -115,7 +114,6 @@ def host_info_display():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
-
 
 @app.route('/sql_task', methods=['GET', 'POST'])
 def modify_task_stream():
@@ -127,7 +125,6 @@ def modify_task_stream():
     if mod:
         return Response(mod, content_type='application/json')
 
-
 @app.route('/delete_host_info', methods=['GET', 'POST'])
 def delete_host_info():
     """
@@ -138,7 +135,6 @@ def delete_host_info():
     if mod:
         return Response(mod, content_type='application/json')
 
-
 @app.route('/check_info', methods=['GET', 'POST'])
 def check_info():
     """
@@ -148,7 +144,15 @@ def check_info():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
-
+@app.route('/get_page_data', methods=['GET', 'POST'])
+def get_page_data():
+    """
+    定时获取可用空间页面数据
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
 
 @app.route('/check_kernel', methods=['GET', 'POST'])
 def check_kernel():
@@ -160,18 +164,6 @@ def check_kernel():
     if mod:
         return Response(mod, content_type='application/json')
 
-
-@app.route('/get_kernel_data', methods=['GET', 'POST'])
-def get_kernel_data():
-    """
-    获取系统内核和仓库内核版本
-    :return:
-    """
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
 @app.route('/check_repo', methods=['GET', 'POST'])
 def check_repo():
     """
@@ -181,7 +173,6 @@ def check_repo():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
-
 
 @app.route('/get_repo_data', methods=['GET', 'POST'])
 def get_repo_data():
@@ -213,7 +204,6 @@ def check_environment():
     if mod:
         return Response(mod, content_type='application/json')
 
-
 @app.route('/get_environment_data', methods=['GET', 'POST'])
 def get_environment_data():
     """
@@ -223,29 +213,6 @@ def get_environment_data():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
-
-
-@app.route('/get_repo_arch_info', methods=['GET', 'POST'])
-def get_repo_arch_info():
-    """
-    获取软件仓库架构和系统信息
-    :return:
-    """
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/get_storage_num', methods=['GET', 'POST'])
-def get_storage_num():
-    """
-    获取可用空间足够和不足数量
-    :return:
-    """
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
 
 @app.route('/export_reports', methods=['GET', 'POST'])
 def export_reports():
@@ -257,18 +224,6 @@ def export_reports():
     if mod:
         return Response(mod, content_type='application/json')
 
-
-@app.route('/get_page_data', methods=['GET', 'POST'])
-def get_page_data():
-    """
-    定时获取可用空间页面数据
-    :return:
-    """
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
 @app.route('/system_migration', methods=['GET', 'POST'])
 def system_migration():
     """
@@ -278,7 +233,6 @@ def system_migration():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
-
 
 @app.route('/get_system_migration_data', methods=['GET', 'POST'])
 def get_system_migration_data():
@@ -290,7 +244,6 @@ def get_system_migration_data():
     if mod:
         return Response(mod, content_type='application/json')
 
-
 @app.route('/get_download_center_data', methods=['GET', 'POST'])
 def get_download_center_data():
     """
@@ -300,7 +253,6 @@ def get_download_center_data():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
-
 
 @app.route('/migration_records', methods=['GET', 'POST'])
 def migration_records():
@@ -312,7 +264,6 @@ def migration_records():
     if mod:
         return Response(mod, content_type='application/json')
 
-
 @app.route('/get_migrated_hosts', methods=['GET', 'POST'])
 def get_migrated_hosts():
     """
@@ -323,16 +274,6 @@ def get_migrated_hosts():
     if mod:
         return Response(mod, content_type='application/json')
 
-
-@app.route('/', methods=['GET', 'POST'])
-def MT_index():
-    """
-    跳转起始界面
-    :return:
-    """
-    return render_template('MT_agreement.html')
-
-
 @app.route('/close_tool', methods=['GET', 'POST'])
 def close_tool():
     """
@@ -342,7 +283,6 @@ def close_tool():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
-
 
 if __name__ == '__main__':
     app.debug = True
