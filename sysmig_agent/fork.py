@@ -138,9 +138,6 @@ def timed_task_migrate(task_id, kernel_version):
 def get_abi_info():
     if q.empty():
         return None
-#    print("Full :", q.full())
-#    print("Empty :", q.empty())
-#    print("QSize:", q.qsize())
     size = int(q.qsize())
     i=0
     msg = ''
@@ -148,18 +145,25 @@ def get_abi_info():
         i += 1
         msg = q.get()
     return msg
-#    if not q.empty():
-
 
 def process_time_task_abi(task_id):
     # 定时任务启动并更新进度
     timed_task_abi(task_id)
     # abi结果接入数据库内
     abi_file_sql(abi_file)
-    # p_timed_task = Process(target=timed_task_abi, args=(task_id,))
-    # p_timed_task.start()
-    # p_timed_task.join()
 
+def structure_task():
+    # 先获得mysql的任务
+    ret_task = get_sql_task()
+    if not ret_task:
+        print('agent_task is None..')
+        pass
+    # 判断任务类型
+    if 1 == ret_task:
+        # 调用ABI权重比函数
+        ret_data = abi_check_priority()
+        # 更新mysql的任务状态
+        put_sql_task(ret_data)
 
 # ABI对比结果文件，存放数据库内
 def abi_file_sql(path):
