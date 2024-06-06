@@ -6,9 +6,6 @@ import subprocess
 import re
 import socket
 import sys
-import shutil
-import argparse
-import platform
 import logging
 from sysmig_agent.share import *
 from utils import *
@@ -77,7 +74,6 @@ def local_disabled_release_repo():
             with open(fpath,'r') as fdst:
                 allrepo = fdst.read()
                 fdst.close()
-                print(allrepo)
                 with open(fpath+'.disabled','w+') as fdst:
                     fdst.write('#This is a yum repository file that was disabled . <Migration to UiniontechOS>\n'+allrepo)
                     fdst.close()
@@ -348,9 +344,6 @@ EOF'
         return None
     def_grub_set()
 
-
-
-
 def mig_distro_sync(skip,task_id):
     local_disabled_release_repo()
     cwdo = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
@@ -383,7 +376,34 @@ def mig_distro_sync(skip,task_id):
     else:
         sql_mig_statue('04')
 
-# os_version_ret = platform.dist()
-# osname = os_version_ret[0]
-# centos8_main(osname)
-# sys.exit(messageState('2'))
+def mig_distro_sync_nobest(skip,task_id):
+    local_disabled_release_repo()
+    cwdo = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
+    cwde = '/var/tmp/uos-migration/UOS_migration_log/mig_err.txt'
+    fdout = open(cwdo, 'a')
+    fderr = open(cwde, 'a')
+    if 0 == skip:
+        cmd = 'yum -y distro-sync'
+    else:  ##elif
+        cmd = 'yum -y distro-sync --skip-broken'
+    wt, code = run_subprocess(cmd)
+    if 0 != code:
+        cmd = 'yum -y update --skip-broken --nobest'
+        wt_try, code_try = run_subprocess(cmd)
+        if 0 != code_try:
+            sql_mig_statue('48')
+            sql_task_statue(3, task_id)
+        else:
+            sql_mig_statue('04')
+        '''
+            cmd = 'yum -y distro-sync'
+            wt, code_atry = run_subprocess(cmd)
+            if code_atry != 0:
+                sql_mig_statue('04')
+                #sql_mig_statue('48')
+                #sql_task_statue(3, task_id)
+            else:
+                sql_mig_statue('04')
+        '''
+    else:
+        sql_mig_statue('04')
