@@ -163,13 +163,36 @@ def mig_kernel(kernel_version):
         cwd = '/var/tmp/uos-migration/kernel/'
         if os.listdir(cwd):
             cmd = 'rpm -Uvh "{}*" --nodeps --oldpackage'.format(cwd)
-            # os.system(cmd)
             run_subprocess(cmd)
         else:
-            # loggen.debug('Can not download kernel .')
-            #log.err
             return 1
 
+def init_log_dir():
+    if not os.path.isdir(PRE_MIG_DIR):
+        os.makedirs(PRE_MIG_DIR)
+    if not os.path.isdir(MIGRATION_KERNEL):
+        os.makedirs(MIGRATION_KERNEL)
+    if not os.path.isdir(MIGRATION_DIR):
+        os.makedirs(MIGRATION_DIR)
+    if not os.path.isdir(MIGRATION_DATA_RPMS_DIR):
+        os.makedirs(MIGRATION_DATA_RPMS_DIR)
+    if not os.path.exists(PROGRESS):
+        with open(PROGRESS,'w+') as fp:
+            fp.write(' ')
+            fp.close()
+    if not os.path.exists(MIGRATION_DATA_RPMS_3_INFO):
+        with open(MIGRATION_DATA_RPMS_3_INFO,'w+') as fp:
+            fp.write(' ')
+            fp.close()
+    if not os.path.exists(MIGRATION_LOG):
+        with open(MIGRATION_LOG,'w+') as fp:
+            fp.write(' ')
+            fp.close()
+    if not os.path.exists(PRE_MIG):
+        with open(PRE_MIG,'w+') as fp:
+            fp.write(' ')
+            fp.close()
+    migInit_porgress()
 
 def get_mig_state(task_id):
     sql = "SELECT task_data FROM agent_task WHERE task_id = {} ;".format(task_id)
