@@ -1,0 +1,20 @@
+utmtc-output/
+dist/
+utmtc.spec
+
+# frontend staff.
+node_modules
+frontend/node_modules
+frontend/dist
+frontend/package-lock.json
+
+data/report-template/resource/
+data/report-template/index.html
+
+# sysconfserver frontend staff.
+exportSysConf/static/*
+
+frontend-exportSysConf/package-lock.json
+
+## keep .gitkeep files
+!/**/.gitkeep

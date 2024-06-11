@@ -1,0 +1,3138 @@
+[
+  {
+    "unit": "boot.automount",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "boot.automount"
+  },
+  {
+    "unit": "proc-sys-fs-binfmt_misc.automount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Arbitrary Executable File Formats File System Automount Point"
+  },
+  {
+    "unit": "dev-block-8:3.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 3"
+  },
+  {
+    "unit": "dev-disk-by-id-ata-ST6000NM021A-2R7101_WRG01V16.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-disk-by-id-ata-ST6000NM021A-2R7101_WRG01V16-part1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 EFI\\x20System\\x20Partition"
+  },
+  {
+    "unit": "dev-disk-by-id-ata-ST6000NM021A-2R7101_WRG01V16-part2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 2"
+  },
+  {
+    "unit": "dev-disk-by-id-ata-ST6000NM021A-2R7101_WRG01V16-part3.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 3"
+  },
+  {
+    "unit": "dev-disk-by-id-ata-ST6000NM021A-2R7101_WRG01VDJ.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-disk-by-id-ata-ST6000NM021A-2R7101_WRG01VFH.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-disk-by-id-dm-name-uos-home.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-id/dm-name-uos-home"
+  },
+  {
+    "unit": "dev-disk-by-id-dm-name-uos-root.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-id/dm-name-uos-root"
+  },
+  {
+    "unit": "dev-disk-by-id-dm-name-uos-swap.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-id/dm-name-uos-swap"
+  },
+  {
+    "unit": "dev-disk-by-id-dm-uuid-LVM-sjHpaTeKeiWa0Pj59T52TWe9iSpwPq0c79KsP5NdvBcWwyDuccRBsjuctfe1xM2L.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-id/dm-uuid-LVM-sjHpaTeKeiWa0Pj59T52TWe9iSpwPq0c79KsP5NdvBcWwyDuccRBsjuctfe1xM2L"
+  },
+  {
+    "unit": "dev-disk-by-id-dm-uuid-LVM-sjHpaTeKeiWa0Pj59T52TWe9iSpwPq0cBrrKXg8nOhdA932e6tTqHASTalZnC4wx.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-id/dm-uuid-LVM-sjHpaTeKeiWa0Pj59T52TWe9iSpwPq0cBrrKXg8nOhdA932e6tTqHASTalZnC4wx"
+  },
+  {
+    "unit": "dev-disk-by-id-dm-uuid-LVM-sjHpaTeKeiWa0Pj59T52TWe9iSpwPq0cTa1nyFnGulpl6ZMS9hghniXRgZA3pTdy.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-id/dm-uuid-LVM-sjHpaTeKeiWa0Pj59T52TWe9iSpwPq0cTa1nyFnGulpl6ZMS9hghniXRgZA3pTdy"
+  },
+  {
+    "unit": "dev-disk-by-id-lvm-pv-uuid-cwxmHt-4xGV-5Amj-SRiG-SNPP-b2s6-YXt0LU.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 3"
+  },
+  {
+    "unit": "dev-disk-by-id-wwn-0x5000c500d4a4a353.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-disk-by-id-wwn-0x5000c500d4a4c8c5.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-disk-by-id-wwn-0x5000c500d4a4e528.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-disk-by-id-wwn-0x5000c500d4a4e528-part1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 EFI\\x20System\\x20Partition"
+  },
+  {
+    "unit": "dev-disk-by-id-wwn-0x5000c500d4a4e528-part2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 2"
+  },
+  {
+    "unit": "dev-disk-by-id-wwn-0x5000c500d4a4e528-part3.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 3"
+  },
+  {
+    "unit": "dev-disk-by-label-UnionTechOS.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-label/UnionTechOS"
+  },
+  {
+    "unit": "dev-disk-by-partlabel-EFI\\x5cx20System\\x5cx20Partition.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 EFI\\x20System\\x20Partition"
+  },
+  {
+    "unit": "dev-disk-by-partuuid-3dbaa4b4-42ed-44c2-922e-7badd8b31165.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 EFI\\x20System\\x20Partition"
+  },
+  {
+    "unit": "dev-disk-by-partuuid-4820ee5c-91d6-4d7f-8b98-2ca86c072724.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 2"
+  },
+  {
+    "unit": "dev-disk-by-partuuid-9e56a8fa-d8d9-4df2-99ad-d3097dc334a9.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 3"
+  },
+  {
+    "unit": "dev-disk-by-path-pci-0000:00:17.0-ata-1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-disk-by-path-pci-0000:00:17.0-ata-1-part1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 EFI\\x20System\\x20Partition"
+  },
+  {
+    "unit": "dev-disk-by-path-pci-0000:00:17.0-ata-1-part2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 2"
+  },
+  {
+    "unit": "dev-disk-by-path-pci-0000:00:17.0-ata-1-part3.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 3"
+  },
+  {
+    "unit": "dev-disk-by-path-pci-0000:00:17.0-ata-2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-disk-by-path-pci-0000:00:17.0-ata-3.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-disk-by-uuid-2021-10-11-22-54-26-00.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-uuid/2021-10-11-22-54-26-00"
+  },
+  {
+    "unit": "dev-disk-by-uuid-2021-10-13-17-07-59-00.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-uuid/2021-10-13-17-07-59-00"
+  },
+  {
+    "unit": "dev-disk-by-uuid-2021-11-20-04-54-13-00.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-uuid/2021-11-20-04-54-13-00"
+  },
+  {
+    "unit": "dev-disk-by-uuid-2021-11-20-05-02-07-00.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-uuid/2021-11-20-05-02-07-00"
+  },
+  {
+    "unit": "dev-disk-by-uuid-55f44421-0086-4ae4-9817-8c3d6ab9204b.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-uuid/55f44421-0086-4ae4-9817-8c3d6ab9204b"
+  },
+  {
+    "unit": "dev-disk-by-uuid-5a710ad8-e584-49fb-b7b5-0b52d26889a1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-disk-by-uuid-6180-9E23.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 EFI\\x20System\\x20Partition"
+  },
+  {
+    "unit": "dev-disk-by-uuid-8c89cc4f-28aa-40c4-b125-806ab0f85afa.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-disk-by-uuid-a8141f13-1932-40e6-ba8c-ffabde112050.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-uuid/a8141f13-1932-40e6-ba8c-ffabde112050"
+  },
+  {
+    "unit": "dev-disk-by-uuid-c6999a2a-2467-4d99-9417-1badab167c6b.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/disk/by-uuid/c6999a2a-2467-4d99-9417-1badab167c6b"
+  },
+  {
+    "unit": "dev-disk-by-uuid-edaad62d-8701-4843-9df3-0e4c725a10de.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 2"
+  },
+  {
+    "unit": "dev-dm-0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/dm-0"
+  },
+  {
+    "unit": "dev-dm-1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/dm-1"
+  },
+  {
+    "unit": "dev-dm-2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/dm-2"
+  },
+  {
+    "unit": "dev-loop0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/loop0"
+  },
+  {
+    "unit": "dev-loop1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/loop1"
+  },
+  {
+    "unit": "dev-loop2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/loop2"
+  },
+  {
+    "unit": "dev-loop3.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/loop3"
+  },
+  {
+    "unit": "dev-loop4.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/loop4"
+  },
+  {
+    "unit": "dev-mapper-uos-home.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/mapper/uos-home"
+  },
+  {
+    "unit": "dev-mapper-uos-root.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/mapper/uos-root"
+  },
+  {
+    "unit": "dev-mapper-uos-swap.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/mapper/uos-swap"
+  },
+  {
+    "unit": "dev-rfkill.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/rfkill"
+  },
+  {
+    "unit": "dev-sda.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-sda1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 EFI\\x20System\\x20Partition"
+  },
+  {
+    "unit": "dev-sda2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 2"
+  },
+  {
+    "unit": "dev-sda3.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 3"
+  },
+  {
+    "unit": "dev-sdb.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-sdc.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "dev-ttyS0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/ttyS0"
+  },
+  {
+    "unit": "dev-ttyS1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/ttyS1"
+  },
+  {
+    "unit": "dev-ttyS2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/ttyS2"
+  },
+  {
+    "unit": "dev-ttyS3.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/ttyS3"
+  },
+  {
+    "unit": "dev-uos-home.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/uos/home"
+  },
+  {
+    "unit": "dev-uos-root.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/uos/root"
+  },
+  {
+    "unit": "dev-uos-swap.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/dev/uos/swap"
+  },
+  {
+    "unit": "sys-devices-pci0000:00-0000:00:17.0-ata7-host6-target6:0:0-6:0:0:0-block-sda-sda1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 EFI\\x20System\\x20Partition"
+  },
+  {
+    "unit": "sys-devices-pci0000:00-0000:00:17.0-ata7-host6-target6:0:0-6:0:0:0-block-sda-sda2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 2"
+  },
+  {
+    "unit": "sys-devices-pci0000:00-0000:00:17.0-ata7-host6-target6:0:0-6:0:0:0-block-sda-sda3.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101 3"
+  },
+  {
+    "unit": "sys-devices-pci0000:00-0000:00:17.0-ata7-host6-target6:0:0-6:0:0:0-block-sda.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "sys-devices-pci0000:00-0000:00:17.0-ata8-host7-target7:0:0-7:0:0:0-block-sdb.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "sys-devices-pci0000:00-0000:00:17.0-ata9-host8-target8:0:0-8:0:0:0-block-sdc.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "ST6000NM021A-2R7101"
+  },
+  {
+    "unit": "sys-devices-pci0000:00-0000:00:1f.3-sound-card0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/pci0000:00/0000:00:1f.3/sound/card0"
+  },
+  {
+    "unit": "sys-devices-pci0000:5d-0000:5d:03.0-0000:5e:00.0-0000:5f:03.0-0000:60:00.0-infiniband-i40iw1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "Ethernet Connection X722 for 1GbE"
+  },
+  {
+    "unit": "sys-devices-pci0000:5d-0000:5d:03.0-0000:5e:00.0-0000:5f:03.0-0000:60:00.0-net-eno1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "Ethernet Connection X722 for 1GbE"
+  },
+  {
+    "unit": "sys-devices-pci0000:5d-0000:5d:03.0-0000:5e:00.0-0000:5f:03.0-0000:60:00.1-infiniband-i40iw0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "Ethernet Connection X722 for 1GbE"
+  },
+  {
+    "unit": "sys-devices-pci0000:5d-0000:5d:03.0-0000:5e:00.0-0000:5f:03.0-0000:60:00.1-net-eno2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "Ethernet Connection X722 for 1GbE"
+  },
+  {
+    "unit": "sys-devices-platform-serial8250-tty-ttyS0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/platform/serial8250/tty/ttyS0"
+  },
+  {
+    "unit": "sys-devices-platform-serial8250-tty-ttyS2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/platform/serial8250/tty/ttyS2"
+  },
+  {
+    "unit": "sys-devices-platform-serial8250-tty-ttyS3.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/platform/serial8250/tty/ttyS3"
+  },
+  {
+    "unit": "sys-devices-pnp0-00:03-tty-ttyS1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/pnp0/00:03/tty/ttyS1"
+  },
+  {
+    "unit": "sys-devices-virtual-block-dm-0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/block/dm-0"
+  },
+  {
+    "unit": "sys-devices-virtual-block-dm-1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/block/dm-1"
+  },
+  {
+    "unit": "sys-devices-virtual-block-dm-2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/block/dm-2"
+  },
+  {
+    "unit": "sys-devices-virtual-block-loop0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/block/loop0"
+  },
+  {
+    "unit": "sys-devices-virtual-block-loop1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/block/loop1"
+  },
+  {
+    "unit": "sys-devices-virtual-block-loop2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/block/loop2"
+  },
+  {
+    "unit": "sys-devices-virtual-block-loop3.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/block/loop3"
+  },
+  {
+    "unit": "sys-devices-virtual-block-loop4.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/block/loop4"
+  },
+  {
+    "unit": "sys-devices-virtual-misc-rfkill.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/misc/rfkill"
+  },
+  {
+    "unit": "sys-devices-virtual-net-br0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/net/br0"
+  },
+  {
+    "unit": "sys-devices-virtual-net-virbr0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/net/virbr0"
+  },
+  {
+    "unit": "sys-devices-virtual-net-virbr0-nic.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/devices/virtual/net/virbr0-nic"
+  },
+  {
+    "unit": "sys-module-configfs.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/configfs"
+  },
+  {
+    "unit": "sys-module-fuse.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/fuse"
+  },
+  {
+    "unit": "sys-module-ib_cm.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/ib_cm"
+  },
+  {
+    "unit": "sys-module-ib_core.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/ib_core"
+  },
+  {
+    "unit": "sys-module-ib_ipoib.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/ib_ipoib"
+  },
+  {
+    "unit": "sys-module-ib_iser.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/ib_iser"
+  },
+  {
+    "unit": "sys-module-ib_isert.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/ib_isert"
+  },
+  {
+    "unit": "sys-module-ib_srp.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/ib_srp"
+  },
+  {
+    "unit": "sys-module-ib_srpt.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/ib_srpt"
+  },
+  {
+    "unit": "sys-module-ib_umad.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/ib_umad"
+  },
+  {
+    "unit": "sys-module-ib_uverbs.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/ib_uverbs"
+  },
+  {
+    "unit": "sys-module-iw_cm.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/module/iw_cm"
+  },
+  {
+    "unit": "sys-subsystem-net-devices-br0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/subsystem/net/devices/br0"
+  },
+  {
+    "unit": "sys-subsystem-net-devices-eno1.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "Ethernet Connection X722 for 1GbE"
+  },
+  {
+    "unit": "sys-subsystem-net-devices-eno2.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "Ethernet Connection X722 for 1GbE"
+  },
+  {
+    "unit": "sys-subsystem-net-devices-virbr0.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/subsystem/net/devices/virbr0"
+  },
+  {
+    "unit": "sys-subsystem-net-devices-virbr0-nic.device",
+    "load": "loaded",
+    "active": "active",
+    "sub": "plugged",
+    "description": "/sys/subsystem/net/devices/virbr0-nic"
+  },
+  {
+    "unit": "-.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/"
+  },
+  {
+    "unit": "boot-efi.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/boot/efi"
+  },
+  {
+    "unit": "boot.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/boot"
+  },
+  {
+    "unit": "dev-hugepages.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "Huge Pages File System"
+  },
+  {
+    "unit": "dev-mqueue.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "POSIX Message Queue File System"
+  },
+  {
+    "unit": "home-var-www-html-repo-1020e_aarch64.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/home/var/www/html/repo/1020e_aarch64"
+  },
+  {
+    "unit": "home-var-www-html-repo-aarch64.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/home/var/www/html/repo/aarch64"
+  },
+  {
+    "unit": "home-var-www-html-repo-mnt_aarch64.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/home/var/www/html/repo/mnt_aarch64"
+  },
+  {
+    "unit": "home-var-www-html-repo-mnt_x86_64.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/home/var/www/html/repo/mnt_x86_64"
+  },
+  {
+    "unit": "home-var-www-html-repo-x86_64.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/home/var/www/html/repo/x86_64"
+  },
+  {
+    "unit": "home.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/home"
+  },
+  {
+    "unit": "media-root-8c89cc4f-28aa-40c4-b125-806ab0f85afa.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/media/root/8c89cc4f-28aa-40c4-b125-806ab0f85afa"
+  },
+  {
+    "unit": "proc-fs-nfsd.mount",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "NFSD configuration filesystem"
+  },
+  {
+    "unit": "proc-sys-fs-binfmt_misc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "Arbitrary Executable File Formats File System"
+  },
+  {
+    "unit": "run-user-0-gvfs.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/run/user/0/gvfs"
+  },
+  {
+    "unit": "run-user-0.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/run/user/0"
+  },
+  {
+    "unit": "run-user-987-gvfs.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/run/user/987/gvfs"
+  },
+  {
+    "unit": "run-user-987.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/run/user/987"
+  },
+  {
+    "unit": "sys-fs-fuse-connections.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "FUSE Control File System"
+  },
+  {
+    "unit": "sys-kernel-config.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "Kernel Configuration File System"
+  },
+  {
+    "unit": "sys-kernel-debug.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "Kernel Debug File System"
+  },
+  {
+    "unit": "sysroot.mount",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "sysroot.mount"
+  },
+  {
+    "unit": "tmp.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "Temporary Directory (/tmp)"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_1-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_1/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_1-dev-shm.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_1/dev/shm"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_1-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_1/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_1-sys.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_1/sys"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_11-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_11/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_11-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_11/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_12-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_12/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_12-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_12/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_13-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_13/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_13-dev-shm.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_13/dev/shm"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_13-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_13/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_13-sys.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_13/sys"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_15-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_15/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_15-dev-shm.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_15/dev/shm"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_15-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_15/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_15-sys.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_15/sys"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_16-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_16/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_16-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_16/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_2-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_2/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_2-dev-shm.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_2/dev/shm"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_2-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_2/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_2-sys.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_2/sys"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_3-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_3/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_3-dev-shm.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_3/dev/shm"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_3-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_3/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_3-sys.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_3/sys"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_4-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_4/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_4-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_4/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_5-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_5/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_5-dev-shm.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_5/dev/shm"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_5-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_5/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_5-sys.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_5/sys"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_6-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_6/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_6-dev-shm.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_6/dev/shm"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_6-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_6/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_6-sys.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_6/sys"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_7-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_7/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_7-dev-shm.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_7/dev/shm"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_7-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_7/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_7-sys.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_7/sys"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_8-dev-pts.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_8/dev/pts"
+  },
+  {
+    "unit": "var-cache-obs-worker-root_8-proc.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker/root_8/proc"
+  },
+  {
+    "unit": "var-cache-obs-worker.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/cache/obs/worker"
+  },
+  {
+    "unit": "var-lib-machines.mount",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Virtual Machine and Container Storage (Compatibility)"
+  },
+  {
+    "unit": "var-lib-nfs-rpc_pipefs.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "RPC Pipe File System"
+  },
+  {
+    "unit": "var-www-html.mount",
+    "load": "loaded",
+    "active": "active",
+    "sub": "mounted",
+    "description": "/var/www/html"
+  },
+  {
+    "unit": "cups.path",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "CUPS Scheduler"
+  },
+  {
+    "unit": "systemd-ask-password-console.path",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Dispatch Password Requests to Console Directory Watch"
+  },
+  {
+    "unit": "systemd-ask-password-plymouth.path",
+    "load": "loaded",
+    "active": "active",
+    "sub": "waiting",
+    "description": "Forward Password Requests to Plymouth Directory Watch"
+  },
+  {
+    "unit": "systemd-ask-password-wall.path",
+    "load": "loaded",
+    "active": "active",
+    "sub": "waiting",
+    "description": "Forward Password Requests to Wall Directory Watch"
+  },
+  {
+    "unit": "init.scope",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "System and Service Manager"
+  },
+  {
+    "unit": "session-1060.scope",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Session 1060 of user root"
+  },
+  {
+    "unit": "session-1137.scope",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Session 1137 of user root"
+  },
+  {
+    "unit": "session-1314.scope",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Session 1314 of user root"
+  },
+  {
+    "unit": "session-1315.scope",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Session 1315 of user root"
+  },
+  {
+    "unit": "session-39.scope",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Session 39 of user root"
+  },
+  {
+    "unit": "session-5.scope",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Session 5 of user root"
+  },
+  {
+    "unit": "session-696.scope",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Session 696 of user root"
+  },
+  {
+    "unit": "session-c1.scope",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Session c1 of user lightdm"
+  },
+  {
+    "unit": "accounts-daemon.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Accounts Service"
+  },
+  {
+    "unit": "alsa-restore.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Save/Restore Sound Card State"
+  },
+  {
+    "unit": "alsa-state.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Manage Sound Card State (restore and store)"
+  },
+  {
+    "unit": "apparmor.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "apparmor.service"
+  },
+  {
+    "unit": "atd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Deferred execution scheduler"
+  },
+  {
+    "unit": "auditd.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Security Auditing Service"
+  },
+  {
+    "unit": "auth-rpcgss-module.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Kernel Module supporting RPCSEC_GSS"
+  },
+  {
+    "unit": "autofs.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "autofs.service"
+  },
+  {
+    "unit": "avahi-daemon.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Avahi mDNS/DNS-SD Stack"
+  },
+  {
+    "unit": "chronyd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "NTP client/server"
+  },
+  {
+    "unit": "cockpit-motd.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Cockpit motd updater service"
+  },
+  {
+    "unit": "cockpit.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Cockpit Web Service"
+  },
+  {
+    "unit": "cpupower.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Configure CPU power related settings"
+  },
+  {
+    "unit": "crond.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Command Scheduler"
+  },
+  {
+    "unit": "cups.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "CUPS Scheduler"
+  },
+  {
+    "unit": "dbus.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "D-Bus System Message Bus"
+  },
+  {
+    "unit": "deepin-accounts-daemon.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Accounts Service"
+  },
+  {
+    "unit": "deepin-devicemanager-server.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Deepin Device Manager Daemon"
+  },
+  {
+    "unit": "dkms.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Builds and install new kernel modules through DKMS"
+  },
+  {
+    "unit": "dm-event.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Device-mapper event daemon"
+  },
+  {
+    "unit": "dnf-makecache.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "dnf makecache"
+  },
+  {
+    "unit": "dracut-cmdline.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "dracut cmdline hook"
+  },
+  {
+    "unit": "dracut-initqueue.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "dracut initqueue hook"
+  },
+  {
+    "unit": "dracut-mount.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "dracut mount hook"
+  },
+  {
+    "unit": "dracut-pre-mount.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "dracut pre-mount hook"
+  },
+  {
+    "unit": "dracut-pre-pivot.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "dracut pre-pivot and cleanup hook"
+  },
+  {
+    "unit": "dracut-pre-trigger.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "dracut pre-trigger hook"
+  },
+  {
+    "unit": "dracut-pre-udev.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "dracut pre-udev hook"
+  },
+  {
+    "unit": "dracut-shutdown.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Restore /run/initramfs on shutdown"
+  },
+  {
+    "unit": "emergency.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Emergency Shell"
+  },
+  {
+    "unit": "getty@tty1.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Getty on tty1"
+  },
+  {
+    "unit": "getty@tty2.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Getty on tty2"
+  },
+  {
+    "unit": "gssproxy.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "GSSAPI Proxy Daemon"
+  },
+  {
+    "unit": "httpd-init.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "httpd-init.service"
+  },
+  {
+    "unit": "httpd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "The Apache HTTP Server"
+  },
+  {
+    "unit": "hwclock-save.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Update RTC With System Clock"
+  },
+  {
+    "unit": "initrd-cleanup.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Cleaning Up and Shutting Down Daemons"
+  },
+  {
+    "unit": "initrd-parse-etc.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Reload Configuration from the Real Root"
+  },
+  {
+    "unit": "initrd-switch-root.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Switch Root"
+  },
+  {
+    "unit": "initrd-udevadm-cleanup-db.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Cleanup udevd DB"
+  },
+  {
+    "unit": "ip6tables.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "IPv6 firewall with ip6tables"
+  },
+  {
+    "unit": "ipmi.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "IPMI Driver"
+  },
+  {
+    "unit": "iptables.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "IPv4 firewall with iptables"
+  },
+  {
+    "unit": "irqbalance.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "irqbalance daemon"
+  },
+  {
+    "unit": "iscsi.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Login and scanning of iSCSI devices"
+  },
+  {
+    "unit": "iscsid.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Open-iSCSI"
+  },
+  {
+    "unit": "iscsiuio.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "iSCSI UserSpace I/O driver"
+  },
+  {
+    "unit": "iwpmd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "iWarp Port Mapper"
+  },
+  {
+    "unit": "kdump.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Crash recovery kernel arming"
+  },
+  {
+    "unit": "kmod-static-nodes.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Create list of static device nodes for the current kernel"
+  },
+  {
+    "unit": "ldconfig.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Rebuild Dynamic Linker Cache"
+  },
+  {
+    "unit": "libstoragemgmt.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "libstoragemgmt plug-in server daemon"
+  },
+  {
+    "unit": "libvirt-guests.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Suspend/Resume Running libvirt Guests"
+  },
+  {
+    "unit": "libvirtd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Virtualization daemon"
+  },
+  {
+    "unit": "license.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "UOS License Activator"
+  },
+  {
+    "unit": "lightdm.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Light Display Manager"
+  },
+  {
+    "unit": "livesys-late.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "livesys-late.service"
+  },
+  {
+    "unit": "lm_sensors.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Hardware Monitoring Sensors"
+  },
+  {
+    "unit": "lvm2-activation.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "lvm2-activation.service"
+  },
+  {
+    "unit": "lvm2-lvmpolld.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "LVM2 poll daemon"
+  },
+  {
+    "unit": "lvm2-monitor.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Monitoring of LVM2 mirrors, snapshots etc. using dmeventd or progress polling"
+  },
+  {
+    "unit": "lvm2-pvscan@8:3.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "LVM event activation on device 8:3"
+  },
+  {
+    "unit": "ModemManager.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Modem Manager"
+  },
+  {
+    "unit": "netcf-transaction.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Rollback uncommitted netcf network config change transactions"
+  },
+  {
+    "unit": "network.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "LSB: Bring up/down networking"
+  },
+  {
+    "unit": "NetworkManager-wait-online.service",
+    "load": "loaded",
+    "active": "failed",
+    "sub": "failed",
+    "description": "Network Manager Wait Online"
+  },
+  {
+    "unit": "NetworkManager.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Network Manager"
+  },
+  {
+    "unit": "nfs-idmapd.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "NFSv4 ID-name mapping service"
+  },
+  {
+    "unit": "nfs-mountd.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "NFS Mount Daemon"
+  },
+  {
+    "unit": "nfs-server.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "NFS server and services"
+  },
+  {
+    "unit": "nfs-utils.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "NFS server and client services"
+  },
+  {
+    "unit": "nfsdcld.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "NFSv4 Client Tracking Daemon"
+  },
+  {
+    "unit": "ntpd.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "ntpd.service"
+  },
+  {
+    "unit": "ntpdate.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "ntpdate.service"
+  },
+  {
+    "unit": "obsrepserver.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "obsrepserver.service"
+  },
+  {
+    "unit": "obssrcserver.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "obssrcserver.service"
+  },
+  {
+    "unit": "obsstoragesetup.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "obsstoragesetup.service"
+  },
+  {
+    "unit": "obsworker.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "OBS worker"
+  },
+  {
+    "unit": "openvswitch.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "openvswitch.service"
+  },
+  {
+    "unit": "plymouth-quit-wait.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Hold until boot process finishes up"
+  },
+  {
+    "unit": "plymouth-quit.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Terminate Plymouth Boot Screen"
+  },
+  {
+    "unit": "plymouth-read-write.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Tell Plymouth To Write Out Runtime Data"
+  },
+  {
+    "unit": "plymouth-start.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Show Plymouth Boot Screen"
+  },
+  {
+    "unit": "plymouth-switch-root.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Plymouth switch root service"
+  },
+  {
+    "unit": "polkit.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Authorization Manager"
+  },
+  {
+    "unit": "rasdaemon.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "RAS daemon to log the RAS events"
+  },
+  {
+    "unit": "rc-local.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "/etc/rc.d/rc.local Compatibility"
+  },
+  {
+    "unit": "rdma-load-modules@iwarp.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Load RDMA modules from /etc/rdma/modules/iwarp.conf"
+  },
+  {
+    "unit": "rdma-load-modules@iwpmd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Load RDMA modules from /etc/rdma/modules/iwpmd.conf"
+  },
+  {
+    "unit": "rdma-load-modules@rdma.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Load RDMA modules from /etc/rdma/modules/rdma.conf"
+  },
+  {
+    "unit": "rdma-ndd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "RDMA Node Description Daemon"
+  },
+  {
+    "unit": "rdma.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Initialize the iWARP/InfiniBand/RDMA stack in the kernel"
+  },
+  {
+    "unit": "repoinfo.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Repo infomation Service"
+  },
+  {
+    "unit": "rescue.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Rescue Shell"
+  },
+  {
+    "unit": "rngd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Hardware RNG Entropy Gatherer Daemon"
+  },
+  {
+    "unit": "rpc-gssd.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "RPC security service for NFS client and server"
+  },
+  {
+    "unit": "rpc-statd-notify.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Notify NFS peers of a restart"
+  },
+  {
+    "unit": "rpc-statd.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "NFS status monitor for NFSv2/3 locking."
+  },
+  {
+    "unit": "rpc-svcgssd.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "rpc-svcgssd.service"
+  },
+  {
+    "unit": "rpcbind.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "RPC Bind"
+  },
+  {
+    "unit": "rsyslog.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "System Logging Service"
+  },
+  {
+    "unit": "rtkit-daemon.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "RealtimeKit Scheduling Policy Service"
+  },
+  {
+    "unit": "selinux-autorelabel-mark.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Mark the need to relabel after reboot"
+  },
+  {
+    "unit": "smartd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Self Monitoring and Reporting Technology (SMART) Daemon"
+  },
+  {
+    "unit": "sntp.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "sntp.service"
+  },
+  {
+    "unit": "sshd-keygen@ecdsa.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "OpenSSH ecdsa Server Key Generation"
+  },
+  {
+    "unit": "sshd-keygen@ed25519.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "OpenSSH ed25519 Server Key Generation"
+  },
+  {
+    "unit": "sshd-keygen@rsa.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "OpenSSH rsa Server Key Generation"
+  },
+  {
+    "unit": "sshd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "OpenSSH server daemon"
+  },
+  {
+    "unit": "sssd.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "System Security Services Daemon"
+  },
+  {
+    "unit": "syslog.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "syslog.service"
+  },
+  {
+    "unit": "systemd-ask-password-console.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Dispatch Password Requests to Console"
+  },
+  {
+    "unit": "systemd-ask-password-plymouth.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Forward Password Requests to Plymouth"
+  },
+  {
+    "unit": "systemd-ask-password-wall.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Forward Password Requests to Wall"
+  },
+  {
+    "unit": "systemd-binfmt.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Set Up Additional Binary Formats"
+  },
+  {
+    "unit": "systemd-boot-system-token.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Store a System Token in an EFI Variable"
+  },
+  {
+    "unit": "systemd-firstboot.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "First Boot Wizard"
+  },
+  {
+    "unit": "systemd-fsck-root.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "File System Check on Root Device"
+  },
+  {
+    "unit": "systemd-fsck@dev-disk-by-uuid-6180-9E23.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "File System Check on /dev/disk/by-uuid/6180-9E23"
+  },
+  {
+    "unit": "systemd-hwdb-update.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Rebuild Hardware Database"
+  },
+  {
+    "unit": "systemd-initctl.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "initctl Compatibility Daemon"
+  },
+  {
+    "unit": "systemd-journal-catalog-update.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Rebuild Journal Catalog"
+  },
+  {
+    "unit": "systemd-journal-flush.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Flush Journal to Persistent Storage"
+  },
+  {
+    "unit": "systemd-journald.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Journal Service"
+  },
+  {
+    "unit": "systemd-logind.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Login Service"
+  },
+  {
+    "unit": "systemd-machine-id-commit.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Commit a transient machine-id on disk"
+  },
+  {
+    "unit": "systemd-machined.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Virtual Machine and Container Registration Service"
+  },
+  {
+    "unit": "systemd-modules-load.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Load Kernel Modules"
+  },
+  {
+    "unit": "systemd-networkd-wait-online.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Wait for Network to be Configured"
+  },
+  {
+    "unit": "systemd-networkd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Network Service"
+  },
+  {
+    "unit": "systemd-quotacheck.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "File System Quota Check"
+  },
+  {
+    "unit": "systemd-random-seed.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Load/Save Random Seed"
+  },
+  {
+    "unit": "systemd-remount-fs.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Remount Root and Kernel File Systems"
+  },
+  {
+    "unit": "systemd-rfkill.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Load/Save RF Kill Switch Status"
+  },
+  {
+    "unit": "systemd-sysctl.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Apply Kernel Variables"
+  },
+  {
+    "unit": "systemd-sysusers.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Create System Users"
+  },
+  {
+    "unit": "systemd-timesyncd.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Network Time Synchronization"
+  },
+  {
+    "unit": "systemd-tmpfiles-clean.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Cleanup of Temporary Directories"
+  },
+  {
+    "unit": "systemd-tmpfiles-setup-dev.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Create Static Device Nodes in /dev"
+  },
+  {
+    "unit": "systemd-tmpfiles-setup.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Create Volatile Files and Directories"
+  },
+  {
+    "unit": "systemd-udev-trigger.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "udev Coldplug all Devices"
+  },
+  {
+    "unit": "systemd-udevd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "udev Kernel Device Manager"
+  },
+  {
+    "unit": "systemd-update-done.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Update is Completed"
+  },
+  {
+    "unit": "systemd-update-utmp-runlevel.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Update UTMP about System Runlevel Changes"
+  },
+  {
+    "unit": "systemd-update-utmp.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Update UTMP about System Boot/Shutdown"
+  },
+  {
+    "unit": "systemd-user-sessions.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Permit User Sessions"
+  },
+  {
+    "unit": "systemd-vconsole-setup.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Setup Virtual Console"
+  },
+  {
+    "unit": "systemtap.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "Run a configured list of systemtap scripts at system startup."
+  },
+  {
+    "unit": "targetcli.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "targetcli.service"
+  },
+  {
+    "unit": "tgtd.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "tgtd.service"
+  },
+  {
+    "unit": "tuned.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Dynamic System Tuning Daemon"
+  },
+  {
+    "unit": "udev-wait.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "udev-wait.service"
+  },
+  {
+    "unit": "udisks2.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Disk Manager"
+  },
+  {
+    "unit": "user-runtime-dir@0.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "User Runtime Directory /run/user/0"
+  },
+  {
+    "unit": "user-runtime-dir@987.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "exited",
+    "description": "User Runtime Directory /run/user/987"
+  },
+  {
+    "unit": "user@0.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "User Manager for UID 0"
+  },
+  {
+    "unit": "user@987.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "User Manager for UID 987"
+  },
+  {
+    "unit": "virtlockd.service",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Virtual machine lock manager"
+  },
+  {
+    "unit": "virtlogd.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Virtual machine log manager"
+  },
+  {
+    "unit": "xencommons.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "xencommons.service"
+  },
+  {
+    "unit": "xendomains.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "xendomains.service"
+  },
+  {
+    "unit": "ypbind.service",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "ypbind.service"
+  },
+  {
+    "unit": "zabbix-agent.service",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Zabbix Agent"
+  },
+  {
+    "unit": "-.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Root Slice"
+  },
+  {
+    "unit": "machine.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Virtual Machine and Container Slice"
+  },
+  {
+    "unit": "system-getty.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "system-getty.slice"
+  },
+  {
+    "unit": "system-lvm2-pvscan.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "system-lvm2-pvscan.slice"
+  },
+  {
+    "unit": "system-rdma-load-modules.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "system-rdma-load-modules.slice"
+  },
+  {
+    "unit": "system-sshd-keygen.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "system-sshd-keygen.slice"
+  },
+  {
+    "unit": "system-systemd-coredump.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "system-systemd-coredump.slice"
+  },
+  {
+    "unit": "system-systemd-fsck.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "system-systemd-fsck.slice"
+  },
+  {
+    "unit": "system.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "System Slice"
+  },
+  {
+    "unit": "user-0.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "User Slice of UID 0"
+  },
+  {
+    "unit": "user-987.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "User Slice of UID 987"
+  },
+  {
+    "unit": "user.slice",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "User and Session Slice"
+  },
+  {
+    "unit": "avahi-daemon.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "listening",
+    "description": "Avahi mDNS/DNS-SD Stack Activation Socket"
+  },
+  {
+    "unit": "cockpit.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "listening",
+    "description": "Cockpit Web Service Socket"
+  },
+  {
+    "unit": "cups.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "CUPS Scheduler"
+  },
+  {
+    "unit": "dbus.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "D-Bus System Message Bus Socket"
+  },
+  {
+    "unit": "dm-event.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "listening",
+    "description": "Device-mapper event daemon FIFOs"
+  },
+  {
+    "unit": "iscsid.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Open-iSCSI iscsid Socket"
+  },
+  {
+    "unit": "libvirtd-admin.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Libvirt admin socket"
+  },
+  {
+    "unit": "libvirtd-ro.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Libvirt local read-only socket"
+  },
+  {
+    "unit": "libvirtd.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Libvirt local socket"
+  },
+  {
+    "unit": "lvm2-lvmpolld.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "listening",
+    "description": "LVM2 poll daemon socket"
+  },
+  {
+    "unit": "rpcbind.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "listening",
+    "description": "RPCbind Server Activation Socket"
+  },
+  {
+    "unit": "syslog.socket",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Syslog Socket"
+  },
+  {
+    "unit": "systemd-coredump.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "listening",
+    "description": "Process Core Dump Socket"
+  },
+  {
+    "unit": "systemd-initctl.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "listening",
+    "description": "initctl Compatibility Named Pipe"
+  },
+  {
+    "unit": "systemd-journald-audit.socket",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Journal Audit Socket"
+  },
+  {
+    "unit": "systemd-journald-dev-log.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Journal Socket (/dev/log)"
+  },
+  {
+    "unit": "systemd-journald.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Journal Socket"
+  },
+  {
+    "unit": "systemd-networkd.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Network Service Netlink Socket"
+  },
+  {
+    "unit": "systemd-rfkill.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "listening",
+    "description": "Load/Save RF Kill Switch Status /dev/rfkill Watch"
+  },
+  {
+    "unit": "systemd-udevd-control.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "udev Control Socket"
+  },
+  {
+    "unit": "systemd-udevd-kernel.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "udev Kernel Socket"
+  },
+  {
+    "unit": "virtlockd-admin.socket",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Virtual machine lock manager admin socket"
+  },
+  {
+    "unit": "virtlockd.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "listening",
+    "description": "Virtual machine lock manager socket"
+  },
+  {
+    "unit": "virtlogd-admin.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Virtual machine log manager socket"
+  },
+  {
+    "unit": "virtlogd.socket",
+    "load": "loaded",
+    "active": "active",
+    "sub": "running",
+    "description": "Virtual machine log manager socket"
+  },
+  {
+    "unit": "dev-disk-by-id-dm-name-uos-swap.swap",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "/dev/disk/by-id/dm-name-uos-swap"
+  },
+  {
+    "unit": "dev-disk-by-id-dm-uuid-LVM-sjHpaTeKeiWa0Pj59T52TWe9iSpwPq0cBrrKXg8nOhdA932e6tTqHASTalZnC4wx.swap",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "/dev/disk/by-id/dm-uuid-LVM-sjHpaTeKeiWa0Pj59T52TWe9iSpwPq0cBrrKXg8nOhdA932e6tTqHASTalZnC4wx"
+  },
+  {
+    "unit": "dev-disk-by-uuid-c6999a2a-2467-4d99-9417-1badab167c6b.swap",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "/dev/disk/by-uuid/c6999a2a-2467-4d99-9417-1badab167c6b"
+  },
+  {
+    "unit": "dev-dm-1.swap",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "/dev/dm-1"
+  },
+  {
+    "unit": "dev-mapper-uos-swap.swap",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "/dev/mapper/uos-swap"
+  },
+  {
+    "unit": "dev-uos-swap.swap",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "/dev/uos/swap"
+  },
+  {
+    "unit": "basic.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Basic System"
+  },
+  {
+    "unit": "cryptsetup.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Local Encrypted Volumes"
+  },
+  {
+    "unit": "emergency.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Emergency Mode"
+  },
+  {
+    "unit": "getty-pre.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Login Prompts (Pre)"
+  },
+  {
+    "unit": "getty.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Login Prompts"
+  },
+  {
+    "unit": "graphical.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Graphical Interface"
+  },
+  {
+    "unit": "initrd-fs.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Initrd File Systems"
+  },
+  {
+    "unit": "initrd-root-device.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Initrd Root Device"
+  },
+  {
+    "unit": "initrd-root-fs.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Initrd Root File System"
+  },
+  {
+    "unit": "initrd-switch-root.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Switch Root"
+  },
+  {
+    "unit": "initrd.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Initrd Default Target"
+  },
+  {
+    "unit": "local-fs-pre.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Local File Systems (Pre)"
+  },
+  {
+    "unit": "local-fs.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Local File Systems"
+  },
+  {
+    "unit": "multi-user.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Multi-User System"
+  },
+  {
+    "unit": "network-online.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Network is Online"
+  },
+  {
+    "unit": "network-pre.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Network (Pre)"
+  },
+  {
+    "unit": "network.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Network"
+  },
+  {
+    "unit": "nfs-client.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "NFS client services"
+  },
+  {
+    "unit": "nss-lookup.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Host and Network Name Lookups"
+  },
+  {
+    "unit": "nss-user-lookup.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "User and Group Name Lookups"
+  },
+  {
+    "unit": "paths.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Paths"
+  },
+  {
+    "unit": "rdma-hw.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "RDMA Hardware"
+  },
+  {
+    "unit": "remote-fs-pre.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Remote File Systems (Pre)"
+  },
+  {
+    "unit": "remote-fs.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Remote File Systems"
+  },
+  {
+    "unit": "rescue.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Rescue Mode"
+  },
+  {
+    "unit": "rpc_pipefs.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "rpc_pipefs.target"
+  },
+  {
+    "unit": "rpcbind.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "RPC Port Mapper"
+  },
+  {
+    "unit": "shutdown.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Shutdown"
+  },
+  {
+    "unit": "slices.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Slices"
+  },
+  {
+    "unit": "sockets.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Sockets"
+  },
+  {
+    "unit": "sound.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Sound Card"
+  },
+  {
+    "unit": "sshd-keygen.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "sshd-keygen.target"
+  },
+  {
+    "unit": "swap.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Swap"
+  },
+  {
+    "unit": "sysinit.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "System Initialization"
+  },
+  {
+    "unit": "syslog.target",
+    "load": "not-found",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "syslog.target"
+  },
+  {
+    "unit": "time-set.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "System Time Set"
+  },
+  {
+    "unit": "time-sync.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "System Time Synchronized"
+  },
+  {
+    "unit": "timers.target",
+    "load": "loaded",
+    "active": "active",
+    "sub": "active",
+    "description": "Timers"
+  },
+  {
+    "unit": "umount.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Unmount All Filesystems"
+  },
+  {
+    "unit": "virt-guest-shutdown.target",
+    "load": "loaded",
+    "active": "inactive",
+    "sub": "dead",
+    "description": "Libvirt guests shutdown"
+  },
+  {
+    "unit": "dnf-makecache.timer",
+    "load": "loaded",
+    "active": "active",
+    "sub": "waiting",
+    "description": "dnf makecache --timer"
+  },
+  {
+    "unit": "repoinfo.timer",
+    "load": "loaded",
+    "active": "active",
+    "sub": "waiting",
+    "description": "repoinfo timer"
+  },
+  {
+    "unit": "systemd-tmpfiles-clean.timer",
+    "load": "loaded",
+    "active": "active",
+    "sub": "waiting",
+    "description": "Daily Cleanup of Temporary Directories"
+  },
+  {
+    "unit": "LOAD",
+    "load": "=",
+    "active": "Reflects",
+    "sub": "whether",
+    "description": "the unit definition was properly loaded."
+  },
+  {
+    "unit": "ACTIVE",
+    "load": "=",
+    "active": "The",
+    "sub": "high-level",
+    "description": "unit activation state, i.e. generalization of SUB."
+  },
+  {
+    "unit": "SUB",
+    "load": "=",
+    "active": "The",
+    "sub": "low-level",
+    "description": "unit activation state, values depend on unit type."
+  },
+  {
+    "unit": "To",
+    "load": "show",
+    "active": "all",
+    "sub": "installed",
+    "description": "unit files use 'systemctl list-unit-files'."
+  }
+]

@@ -1,0 +1,130 @@
+[
+    {
+        "confGroupName": "系统访问控制",
+        "confList": [
+            {
+                "confName": "/etc/host.conf",
+                "desc": "解析器查询顺序配置文件"
+            },
+            {
+                "confName": "/etc/hosts",
+                "desc": "系统中IP地址与域名快速解析的文件"
+            },
+            {
+                "confName": "/etc/hosts.allow",
+                "desc": "主机访问控制文件"
+            },
+            {
+                "confName": "/etc/hosts.deny",
+                "desc": "主机访问控制文件"
+            }
+        ]
+    },
+    {
+        "confGroupName": "启动登录配置",
+        "confList": [
+            {
+                "confName": "/etc/issue",
+                "desc": "登录提示信息"
+            },
+            {
+                "confName": "/etc/rc.d/rc",
+                "desc": "系统启动脚本的配置文件"
+            },
+            {
+                "confName": "/etc/rc.d/rc.local",
+                "desc": "系统启动脚本的配置文件"
+            }
+        ]
+    },
+    {
+        "confGroupName": "文件系统配置",
+        "confList": [
+            {
+                "confName": "/etc/fstab",
+                "desc": "文件系统挂载表"
+            },
+            {
+                "confName": "/etc/mtab",
+                "desc": "文件系统挂载表"
+            },
+            {
+                "confName": "/etc/mtools.conf",
+                "desc": "文件系统工具配置文件"
+            }
+        ]
+    },
+    {
+        "confGroupName": "网络配置",
+        "confList": [
+            {
+                "confName": "/etc/networks",
+                "desc": "网络接口配置文件"
+            },
+            {
+                "confName": "/etc/exports",
+                "desc": "NFS文件系统共享配置文件"
+            },
+            {
+                "confName": "/etc/sysconfig/network",
+                "desc": "网络配置文件"
+            },
+            {
+                "confName": "/etc/rpc",
+                "desc": "网络远程过程调用配置文件"
+            },
+            {
+                "confName": "/etc/resolv.conf",
+                "desc": "配置系统DNS服务器的配置文件"
+            }
+        ]
+    },
+    {
+        "confGroupName": "防火墙配置",
+        "confList": [
+            {
+                "confName": "/etc/sysconfig/iptables",
+                "desc": "存储内核使用的信息来在引导时间或在启动服务时设置数据包过滤服务"
+            },
+            {
+                "confName": "/etc/sysconfig/firewalld",
+                "desc": "防火墙配置文件"
+            },
+            {
+                "confName": "/etc/firewalld/zones/public.xml",
+                "desc": "防火墙规则配置文件"
+            }
+        ]
+    },
+    {
+        "confGroupName": "软 raid 配置",
+        "confList": [
+            {
+                "confName": "/etc/mdadm.conf",
+                "desc": "软 raid 配置文件"
+            },
+            {
+                "confName": "/etc/mdadm.d/mdadm.conf",
+                "desc": "软 raid 配置文件"
+            }
+        ]
+    },
+    {
+        "confGroupName": "远程登录配置",
+        "confList": [
+            {
+                "confName": "/etc/ssh/sshd_config",
+                "desc": "SSH服务配置文件"
+            }
+        ]
+    },
+    {
+        "confGroupName": "系统定时器配置",
+        "confList": [
+            {
+                "confName": "/etc/crontab",
+                "desc": "系统定时器配置文件"
+            }
+        ]
+    }
+]
