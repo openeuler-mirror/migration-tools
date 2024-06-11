@@ -1,0 +1,426 @@
+[
+    {
+        "vendorID": "19e5",
+        "deviceID": "a239",
+        "svID": "",
+        "ssID": "",
+        "type": "USB controller",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "17cd",
+        "deviceID": "fc08",
+        "svID": "",
+        "ssID": "",
+        "type": "PCI bridge",
+        "chipVendor": "Cadence Design Systems, Inc."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1465",
+        "svID": "",
+        "ssID": "",
+        "type": "Host bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "10b5",
+        "deviceID": "8764",
+        "svID": "",
+        "ssID": "",
+        "type": "PCI bridge",
+        "chipVendor": "PLX Technology, Inc."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1452",
+        "svID": "",
+        "ssID": "",
+        "type": "Host bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1461",
+        "svID": "",
+        "ssID": "",
+        "type": "Host bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "10b5",
+        "deviceID": "8748",
+        "svID": "",
+        "ssID": "",
+        "type": "PCI bridge",
+        "chipVendor": "PLX Technology, Inc."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1455",
+        "svID": "1d94",
+        "ssID": "1455",
+        "type": "Non-Essential Instrumentation",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "1711",
+        "svID": "",
+        "ssID": "",
+        "type": "VGA compatible controller",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "a235",
+        "svID": "",
+        "ssID": "",
+        "type": "SATA controller",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "1000",
+        "deviceID": "97",
+        "svID": "1000",
+        "ssID": "97",
+        "type": "Serial Attached SCSI controller",
+        "chipVendor": "Broadcom / LSI"
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "a23b",
+        "svID": "",
+        "ssID": "",
+        "type": "USB controller",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "145a",
+        "svID": "1d94",
+        "ssID": "145a",
+        "type": "Non-Essential Instrumentation",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1467",
+        "svID": "",
+        "ssID": "",
+        "type": "Host bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1451",
+        "svID": "1d94",
+        "ssID": "1451",
+        "type": "IOMMU",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1468",
+        "svID": "1d94",
+        "ssID": "1468",
+        "type": "Encryption controller",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "1710",
+        "svID": "19e5",
+        "ssID": "0",
+        "type": "Signal processing controller",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "1000",
+        "deviceID": "5d",
+        "svID": "1000",
+        "ssID": "9361",
+        "type": "RAID bus controller",
+        "chipVendor": "Broadcom / LSI"
+    },
+    {
+        "vendorID": "1000",
+        "deviceID": "5d",
+        "svID": "1000",
+        "ssID": "9a61",
+        "type": "Serial Attached SCSI controller",
+        "chipVendor": "Broadcom / LSI"
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1464",
+        "svID": "",
+        "ssID": "",
+        "type": "Host bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "7901",
+        "svID": "1d94",
+        "ssID": "7901",
+        "type": "SATA controller",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "a122",
+        "svID": "",
+        "ssID": "",
+        "type": "System peripheral",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "8086",
+        "deviceID": "1521",
+        "svID": "1043",
+        "ssID": "853b",
+        "type": "Ethernet controller",
+        "chipVendor": "Intel Corporation"
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "a222",
+        "svID": "19e5",
+        "ssID": "4cc0",
+        "type": "Ethernet controller",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "1912",
+        "deviceID": "14",
+        "svID": "",
+        "ssID": "",
+        "type": "USB controller",
+        "chipVendor": "Renesas Technology Corp."
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "a221",
+        "svID": "19e5",
+        "ssID": "4cc0",
+        "type": "Ethernet controller",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "a121",
+        "svID": "",
+        "ssID": "",
+        "type": "PCI bridge",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "a12b",
+        "svID": "",
+        "ssID": "",
+        "type": "System peripheral",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "1a03",
+        "deviceID": "1150",
+        "svID": "",
+        "ssID": "",
+        "type": "PCI bridge",
+        "chipVendor": "ASPEED Technology, Inc."
+    },
+    {
+        "vendorID": "1b4b",
+        "deviceID": "9230",
+        "svID": "1b4b",
+        "ssID": "9230",
+        "type": "SATA controller",
+        "chipVendor": "Marvell Technology Group Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1460",
+        "svID": "",
+        "ssID": "",
+        "type": "Host bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "790e",
+        "svID": "1022",
+        "ssID": "790e",
+        "type": "ISA bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "15b3",
+        "deviceID": "1015",
+        "svID": "15b3",
+        "ssID": "69",
+        "type": "Ethernet controller",
+        "chipVendor": "Mellanox Technologies"
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "a120",
+        "svID": "",
+        "ssID": "",
+        "type": "PCI bridge",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "8088",
+        "deviceID": "1070",
+        "svID": "8088",
+        "ssID": "c402",
+        "type": "Ethernet controller",
+        "chipVendor": "Beijing Wangxun Technology Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1456",
+        "svID": "1d94",
+        "ssID": "1456",
+        "type": "Encryption controller",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "145f",
+        "svID": "1d94",
+        "ssID": "145c",
+        "type": "USB controller",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "17cd",
+        "deviceID": "fc16",
+        "svID": "",
+        "ssID": "",
+        "type": "PCI bridge",
+        "chipVendor": "Cadence Design Systems, Inc."
+    },
+    {
+        "vendorID": "1a03",
+        "deviceID": "2000",
+        "svID": "1a03",
+        "ssID": "2000",
+        "type": "VGA compatible controller",
+        "chipVendor": "ASPEED Technology, Inc."
+    },
+    {
+        "vendorID": "8086",
+        "deviceID": "10fb",
+        "svID": "1dcf",
+        "ssID": "30a0",
+        "type": "Ethernet controller",
+        "chipVendor": "Intel Corporation"
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "790b",
+        "svID": "1022",
+        "ssID": "790b",
+        "type": "SMBus",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1462",
+        "svID": "",
+        "ssID": "",
+        "type": "Host bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1454",
+        "svID": "",
+        "ssID": "",
+        "type": "PCI bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "a124",
+        "svID": "",
+        "ssID": "",
+        "type": "System peripheral",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "1000",
+        "deviceID": "16",
+        "svID": "19e5",
+        "ssID": "d215",
+        "type": "RAID bus controller",
+        "chipVendor": "Broadcom / LSI"
+    },
+    {
+        "vendorID": "8086",
+        "deviceID": "1572",
+        "svID": "8086",
+        "ssID": "0",
+        "type": "Ethernet controller",
+        "chipVendor": "Intel Corporation"
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1453",
+        "svID": "",
+        "ssID": "",
+        "type": "PCI bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1466",
+        "svID": "",
+        "ssID": "",
+        "type": "Host bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "a238",
+        "svID": "",
+        "ssID": "",
+        "type": "USB controller",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1450",
+        "svID": "1d94",
+        "ssID": "1450",
+        "type": "Host bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "1d94",
+        "deviceID": "1463",
+        "svID": "",
+        "ssID": "",
+        "type": "Host bridge",
+        "chipVendor": "Chengdu Haiguang IC Design Co., Ltd."
+    },
+    {
+        "vendorID": "19e5",
+        "deviceID": "a230",
+        "svID": "",
+        "ssID": "",
+        "type": "Serial Attached SCSI controller",
+        "chipVendor": "Huawei Technologies Co., Ltd."
+    },
+    {
+        "vendorID": "17cd",
+        "deviceID": "fc01",
+        "svID": "",
+        "ssID": "",
+        "type": "PCI bridge",
+        "chipVendor": "Cadence Design Systems, Inc."
+    }
+]
