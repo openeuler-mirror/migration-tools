@@ -1,0 +1,27 @@
+.head {
+    display: flex;
+    align-items: center;
+  }
+  .head-1 {
+    width: 9px;
+    height: 20px;
+    /* background: paleturquoise; */
+    border-left: 4px solid #2b4490;
+  }
+  .el-row {
+    margin-top: 15px;
+  }
+  .center {
+    margin-top: 25px;
+  }
+  .col {
+    margin-right: 20px;
+  }
+  .col-1 {
+    height: 50px;
+    line-height: 20px;
+    text-align: center;
+  }
+  .card{
+    margin-top: 8px;
+  }
