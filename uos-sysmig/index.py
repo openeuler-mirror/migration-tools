@@ -6,7 +6,6 @@
 import os
 import json
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
-os.chdir('/usr/lib/uos-sysmig-server')
 from connect_sql import *
 from logger import *
 from sysmig_agent.share import getSysMigConf
@@ -14,10 +13,10 @@ from miscellaneous import *
 from views.migration import *
 from views.server import *
 from flask_cors import CORS
-# import MySQLdb
 
 os.chdir('/usr/lib/uos-sysmig-server')
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../static', template_folder='../templates')
+
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 CORS(app, resources=r'/*')
 mods = {
@@ -45,6 +44,10 @@ mods = {
         'modify_task_status': modify_task_status
         }
 
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 def check_methods():
     if request.method == 'POST':
