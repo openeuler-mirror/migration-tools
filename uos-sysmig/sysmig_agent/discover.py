@@ -37,3 +37,32 @@ class Discover(object):
         """
         pass
 
+
+class DetInformation(Discover):
+    def __init__(self, data):
+        """
+        data 包含server传入json数据
+        Args:
+            data:
+        """
+        super().__init__()
+        self.task_id = json.loads(data).get('task_id')
+        self.data = data
+
+    def check_scanhardware(self):
+        """
+        硬件信息检测
+        Returns:"success"
+        """
+        # 更新SQL任务状态
+        statue = 1
+        sql_task_statue(statue, self.task_id)
+        # 发送消息给Server更新任务流状态
+        post_server('task_start', self.task_id)
+        Discover._check_scanhardware(self)
+        # 更新SQL任务状态
+        sql_task_statue(statue, self.task_id)
+        post_server('task_close', self.task_id)
+        return 'success'
+
+
