@@ -468,6 +468,23 @@ def abi_check_sys_type():
             localos = localos.strip().strip('\n') + ostype.strip().strip('\n')
             return localos
 
+def abi_check_sys():
+    c8 = ['1020a', '1021a', '1050a']
+    c7 = ['1000c', '1001c', '1002a']
+    system_type = abi_check_sys_type()
+    if not system_type:
+        os_version_ret = platform.dist()
+        osname = os_version_ret[1].strip()
+        osn = osname.split('.',-1)[0]
+        return osn.strip('\n')
+    for i in range(len(c8)):
+        if c8[i] in system_type:
+            return 8
+    for i in range(len(c7)):
+        if  c7[i] in system_type:
+            return 7
+    return None
+
 def get_new_osversion():
     path = '/etc/os-version'
     if os.path.exists(path):
