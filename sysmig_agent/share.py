@@ -449,6 +449,25 @@ def sql_os_newversion(localos):
         pass
 
 
+def abi_check_sys_type():
+    path = '/etc/os-version'
+    if os.path.exists(path):
+        with open(path,'r') as v:
+            ret = v.readlines()
+            localos=ostype=''
+            for i in range(len(ret)):
+                if not ret[i]:
+                    continue
+                if 'MinorVersion' in ret[i]:
+                    strminor = str(ret[i])
+                    _, localos = strminor.split('=',1)
+                if 'EditionName[zh_CN]' in ret[i]:
+                    strminor = str(ret[i])
+                    _, ostype = strminor.split('=',1)
+                    ostype = re.sub('[^a-zA-Z]+','',ostype)
+            localos = localos.strip().strip('\n') + ostype.strip().strip('\n')
+            return localos
+
 def get_new_osversion():
     path = '/etc/os-version'
     if os.path.exists(path):
@@ -480,13 +499,7 @@ def run_subprocess(cmd="", print_cmd=True, print_output=True):
     """
     cwdo = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
     cwde = '/var/tmp/uos-migration/UOS_migration_log/mig_err.txt'
-    # fderr = open(cwde, 'a')
-    # from logging import *
-    # if print_cmd:
-    #     log.debug("Calling command '%s'" % cmd)
 
-    # Python 2.6 has a bug in shlex that interprets certain characters in a string as
-    # a NULL character. This is a workaround that encodes the string to avoid the issue.
     if print_output:
         fdout = open(cwdo, 'a')
         fderr = open(cwde, 'a')
