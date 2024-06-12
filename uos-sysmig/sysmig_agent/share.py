@@ -265,6 +265,8 @@ def title_conf(oldosname):
     oldosname = oldosname.strip()
     if oldosname == 'redhat':
         capital = 'Red Hat'
+    elif oldosname == 'anolis':
+        capital = 'Anolis'
     elif oldosname == 'centos':
         capital = 'CentOS'
     path = '/boot/loader/entries'
@@ -572,11 +574,11 @@ def abi_check_sys_type():
                     _, ostype = strminor.split('=', 1)
                     ostype = re.sub('[^a-zA-Z]+', '', ostype)
             localos = localos.strip().strip('\n') + ostype.strip().strip('\n')
+            # localos = new_os.format(localos.strip().strip('\n'))
             return localos
 
+
 def abi_check_sys():
-    c8 = ['1020a', '1021a', '1050a']
-    c7 = ['1000c', '1001c', '1002a']
     system_type = abi_check_sys_type()
     if not system_type:
         os_version_ret = platform.dist()
@@ -587,9 +589,10 @@ def abi_check_sys():
         if c8[i] in system_type:
             return 8
     for i in range(len(c7)):
-
+        if c7[i] in system_type:
             return 7
     return None
+
 
 def get_new_osversion():
     path = '/etc/os-version'
