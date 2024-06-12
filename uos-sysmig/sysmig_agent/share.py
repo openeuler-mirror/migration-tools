@@ -192,8 +192,8 @@ def sql_online_statue(statue, task_id):
         statue, task_id)
     try:
         ret = DBHelper().execute(sql)
-    except:
-        pass
+    except Exception as e:
+        migration_log.error(e)
 
 
 def sql_mig_statue(statue):
@@ -202,27 +202,31 @@ def sql_mig_statue(statue):
                                                                                                            get_local_ip())
     try:
         ret = DBHelper().execute(sql)
-    except:
-        pass
+    except Exception as e:
+        migration_log.error(e)
 
 
-def sql_task_statue(statue, task_id = None):
+def sql_task_statue(statue, task_id=None):
     if task_id:
-        sql = "UPDATE agent_task SET task_status = {} , task_Updatetime = NOW() WHERE task_id = '{}';".format(statue, task_id)
+        sql = "UPDATE agent_task SET task_status = {} , task_Updatetime = NOW() WHERE task_id = '{}';".format(statue,
+                                                                                                              task_id)
     else:
-        sql = "UPDATE agent_task SET task_status = {} , task_Updatetime = NOW() WHERE agent_ip = '{}';".format(statue, get_local_ip())
+        sql = "UPDATE agent_task SET task_status = {} , task_Updatetime = NOW() WHERE agent_ip = '{}';".format(statue,
+                                                                                                               get_local_ip())
     try:
         ret = DBHelper().execute(sql)
-    except Exception :
-        pass
+    except Exception as e:
+        migration_log.error(e)
 
 
-def sql_show_tables():
-    sql = "SELECT task_progress,task_data FROM agent_task WHERE agent_ip = '{}';".format(get_local_ip())
-    ret_sql_msg_info = DBHelper().execute(sql)
-    if ret_sql_msg_info:
-        print(str(ret_sql_msg_info.fetchall()) + '\n')
-
+def get_local_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+        return ip
+    finally:
+        s.close()
 
 
 def local_disabled_release_repo():
