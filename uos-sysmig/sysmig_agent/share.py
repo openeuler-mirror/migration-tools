@@ -256,137 +256,6 @@ def local_disabled_release_repo():
                     os.remove(fpath)
 
 
-
-
-def getSysMigConf():
-    confpath = '/etc/migration-tools/migration-tools.conf'
-    if not os.path.exists(confpath):
-        return None
-    else:
-        cfid=agentip=serverip=agentport=serverport=baseurl=cftype=agentdatabase_ip=serverdatabase_ip=agentdatabase_port=serverdatabase_port=''
-        server = None
-        with open(confpath,'r') as cf:
-            for line in cf:
-                line = line.strip().strip('\n')
-                if not line:
-                    continue
-                if re.search('\[Agent\]',line):
-                    server=0
-                    continue
-                elif re.search('\[Server\]',line):
-                    server = None
-                    continue
-                else:
-                    p=ret=''
-                    if re.match('\=',line):
-                        continue
-                    else:
-                        p,ret=line.split('=',1)
-                    p = p.strip()
-                    if re.fullmatch('ID',p):
-                        cfid = ret.strip()
-                    if re.fullmatch('IP',p):
-                        if 0 == server:
-                            agentip = str(ret).strip()
-                        else:
-                            serverip = str(ret).strip()
-                    if re.fullmatch('PORT',p):
-                        if 0 == server:
-                            agentport = ret.strip()
-                        else:
-                            serverport = ret.strip()
-                    if re.search('BASEURL',p):
-                        baseurl = ret.strip()
-                    if re.search('TYPE',p):
-                        cftype = ret.strip()
-                    if re.search('DATABASE_IP',p):
-                        if 0 == server:
-                            agentdatabase_ip = ret.strip()
-                        else:
-                            serverdatabase_ip = ret.strip()
-                    if re.search('DATABASE_PORT',p):
-                        if 0 == server:
-                            agentdatabase_port = ret.strip()
-                        else:
-                            serverdatabase_port = ret.strip()
-        cf.close()
-        keylist = ['id','agentip','serverip','agentport','serverport','baseurl','type','agentdatabase_ip','serverdatabase_ip','agentdatabase_port','serverdatabase_port']
-        valuelist = [cfid,agentip,serverip,agentport,serverport,baseurl,cftype,agentdatabase_ip,serverdatabase_ip,agentdatabase_port,serverdatabase_port]
-        return list_to_json(keylist,valuelist)
-
-
-def run_cmd2file(cmd):
-    fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
-    fderr = open("/var/tmp/uos-migration/UOS_migration_log/err_log",'a')
-    p = subprocess.Popen(cmd, stdout=fdout, stderr=fderr, shell=True)
-    if p.poll():
-       return
-    p.wait()
-    return
-
-
-def get_disk_info(string):
-    dev_name = ""
-    part_num = ""
-    length = len(string)
-    for c in range(length-1, -1, -1):
-        if not string[c].isdigit():
-            if string.find('nvme') != -1:
-                dev_name = string[0:c]
-                part_num = string[c+1:length]
-            else:
-                dev_name = string[0:c+1]
-                part_num = string[c+1:length]
-            break
-    return dev_name,part_num
-
-
-def add_boot_option():
-    """
-    Current system is uefi, add boot option to boot manager.
-    """
-    subprocess.run('which efibootmgr > /dev/null 2>&1 || yum install -y efibootmgr', shell=True)
-    disk_name = subprocess.check_output('mount | grep /boot/efi | awk \'{print $1}\'', shell=True)
-    disk_name = str(disk_name, 'utf-8')
-    disk_name = disk_name.split('\n')[0]
-    dev_name, part_num = get_disk_info(disk_name)
-    if dev_name == "" or part_num == "":
-        # "Parse /boot/efi disk info failed, update boot loader failed.
-        return
-
-    cmd = ""
-    arch = platform.machine()
-    if arch == "x86_64":
-        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubx86.efi" -L "Uniontech OS"'
-    elif arch == "aarch64":
-        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubaa64.efi" -L "Uniontech OS"'
-    try:
-        subprocess.check_call(cmd, shell=True)
-    except:
-        print("Use efibootmgr update boot loader failed, please update boot loader manually.")
-
-
-def conf_grub():
-    if os.path.isdir('/sys/firmware/efi'):
-        subprocess.run('grub2-mkconfig -o /boot/efi/EFI/uos/grub.cfg' ,shell=True)
-        add_boot_option()
-    else:
-        subprocess.run('grub2-mkconfig -o /boot/grub2/grub.cfg',shell=True)
-
-
-def process_special_pkgs():
-    subprocess.run('rpm -q centos-logos-ipa && dnf swap -y centos-logos-ipa uos-logos-ipa', shell=True)
-    subprocess.run('rpm -q centos-logos-httpd && dnf swap -y centos-logos-httpd uos-logos-httpd', shell=True)
-    subprocess.run('rpm -q anolis-logos-ipa && dnf swap -y anolis-logos-ipa uos-logos-ipa', shell=True)
-    subprocess.run('rpm -q anolis-logos-httpd && dnf swap -y anolis-logos-httpd uos-logos-httpd', shell=True)
-    subprocess.run('rpm -q redhat-lsb-core && dnf swap -y redhat-lsb-core system-lsb-core', shell=True)
-    subprocess.run('rpm -q redhat-lsb-submod-security && dnf swap -y redhat-lsb-submod-security system-lsb-submod-security',shell=True)
-    subprocess.run('rpm -q rhn-client-tools && dnf -y remove rhn-client-tools python3-rhn-client-tools python3-rhnlib', shell=True)
-    subprocess.run('rpm -q subscription-manager && dnf -y remove subscription-manager', shell=True)
-    subprocess.run('rpm -q python3-syspurpose && dnf -y remove python3-syspurpose', shell=True)
-    subprocess.run('rpm -e $(rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS | awk \'{print $1}\')', shell=True)
-
-
 def title_conf(oldosname):
     """
     Change the boot start option after system migration
@@ -441,17 +310,175 @@ def title_conf(oldosname):
                         p = char
                         continue
                     if line[char] == ')':
-                        e = char+1
+                        e = char + 1
                         brackets = line[p:e]
                         break
                 title = 'title UniontechOS Linux ' + brackets + ' 20 (kongzi)'
                 open(fpath, 'w').write(strall.replace(line, title))
 
 
+def conf_grub():
+    if os.path.isdir('/sys/firmware/efi'):
+        run_subprocess('grub2-mkconfig -o /boot/efi/EFI/uos/grub.cfg')
+        add_boot_option()
+    else:
+        run_subprocess('grub2-mkconfig -o /boot/grub2/grub.cfg')
+        try:
+            run_subprocess('test -L /boot/grub2/grubenv')
+            run_subprocess('mv /boot/grub2/grubenv /boot/grub2/grubenv-bak')
+            run_subprocess('cat /boot/grub2/grubenv-bak > /boot/grub2/grubenv')
+        except Exception as e:
+            migration_log.error(e)
+
+
+def process_special_pkgs():
+    run_subprocess('rpm -q centos-logos-ipa && dnf swap -y centos-logos-ipa uos-logos-ipa')
+    run_subprocess('rpm -q centos-logos-httpd && dnf swap -y centos-logos-httpd uos-logos-httpd')
+    run_subprocess('rpm -q anolis-logos-ipa && dnf swap -y anolis-logos-ipa uos-logos-ipa')
+    run_subprocess('rpm -q anolis-logos-httpd && dnf swap -y anolis-logos-httpd uos-logos-httpd')
+    run_subprocess('rpm -q redhat-lsb-core && dnf swap -y redhat-lsb-core system-lsb-core')
+    run_subprocess('rpm -q redhat-lsb-submod-security && dnf swap -y redhat-lsb-submod-security system-lsb-submod-security')
+    subprocess.run('rpm -q rhn-client-tools && dnf -y remove rhn-client-tools python3-rhn-client-tools python3-rhnlib')
+    run_subprocess('rpm -q subscription-manager && dnf -y remove subscription-manager')
+    run_subprocess('rpm -q python3-syspurpose && dnf -y remove python3-syspurpose')
+    run_subprocess(
+        'rpm -e $(rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS | awk \'{print $1}\')')
+
+
+def get_disk_info(string):
+    dev_name = ""
+    part_num = ""
+    length = len(string)
+    for c in range(length - 1, -1, -1):
+        if not string[c].isdigit():
+            if string.find('nvme') != -1:
+                dev_name = string[0:c]
+                part_num = string[c + 1:length]
+            else:
+                dev_name = string[0:c + 1]
+                part_num = string[c + 1:length]
+            break
+    return dev_name, part_num
+
+
+def add_boot_option():
+    """
+    Current system is uefi, add boot option to boot manager.
+    """
+    subprocess.run('which efibootmgr > /dev/null 2>&1 || yum install -y efibootmgr', shell=True)
+    disk_name = subprocess.check_output('mount | grep /boot/efi | awk \'{print $1}\'', shell=True)
+    disk_name = str(disk_name, 'utf-8')
+    disk_name = disk_name.split('\n')[0]
+    dev_name, part_num = get_disk_info(disk_name)
+    if dev_name == "" or part_num == "":
+        # "Parse /boot/efi disk info failed, update boot loader failed.
+        return
+
+    cmd = ""
+    arch = platform.machine()
+    if arch == "x86_64":
+        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubx86.efi" -L "Uniontech OS"'
+    elif arch == "aarch64":
+        cmd = 'efibootmgr -c -d ' + dev_name + ' -p ' + part_num + ' -l "/EFI/uos/grubaa64.efi" -L "Uniontech OS"'
+    try:
+        run_subprocess(cmd)
+    except Exception as e:
+        migration_log.error("Use efibootmgr update boot loader failed, please update boot loader manually.")
+        migration_log.error(e)
+
+
+def getSysMigConf():
+    confpath = '/etc/uos-sysmig/uos-sysmig.conf'
+    if not os.path.exists(confpath):
+        return None
+    else:
+        db_name = db_password = db_user = cfid = agentip = serverip = agentport = serverport = baseurl = cftype = agentdatabase_ip = serverdatabase_ip = agentdatabase_port = serverdatabase_port = ''
+        server = None
+        skip = 0
+        with open(confpath, 'r') as cf:
+            for line in cf:
+                line = line.strip().strip('\n')
+                if not line:
+                    continue
+                if re.search('\[Agent\]', line):
+                    server = 0
+                    skip = 0
+                    continue
+                if skip != 0:
+                    continue
+                if '#' in line:
+                    continue
+                elif re.search('\[Server\]', line):
+                    server = 1
+                    continue
+                else:
+                    p = ret = ''
+                    if re.match('\=', line):
+                        continue
+                    else:
+                        p, ret = line.split('=', 1)
+                    p = p.strip()
+                    if re.fullmatch('ID', p):
+                        cfid = ret.strip()
+                    if re.fullmatch('IP', p):
+                        sip = str(ret).strip()
+                        if 0 == server:
+                            ip = sip.split('"', -1)[1]
+                            if ip != get_local_ip():
+                                skip = 1
+                                continue
+                            agentip = str(ret).strip()
+                        else:
+                            serverip = str(ret).strip()
+                    if re.fullmatch('PORT', p):
+                        if 0 == server:
+                            agentport = ret.strip()
+                        else:
+                            serverport = ret.strip()
+                    if re.search('BASEURL', p):
+                        baseurl = ret.strip()
+                    if re.search('TYPE', p):
+                        cftype = ret.strip()
+                    if re.search('DATABASE_IP', p):
+                        if 0 == server:
+                            agentdatabase_ip = ret.strip()
+                        else:
+                            serverdatabase_ip = ret.strip()
+                    if re.search('DATABASE_PORT', p):
+                        if 0 == server:
+                            agentdatabase_port = ret.strip()
+                        else:
+                            serverdatabase_port = ret.strip()
+                    if re.search('DB_NAME', p):
+                        if 0 == server:
+                            db_name = ret.strip()
+                        else:
+                            db_name = ret.strip()
+                    if re.search('DB_PASSWORD', p):
+                        if 0 == server:
+                            db_password = ret.strip()
+                        else:
+                            db_password = ret.strip()
+                    if re.search('DB_USER', p):
+                        if 0 == server:
+                            db_user = ret.strip()
+                        else:
+                            db_user = ret.strip()
+
+        cf.close()
+        keylist = ['id', 'agentip', 'serverip', 'agentport', 'serverport', 'baseurl', 'type', 'agentdatabase_ip',
+                   'serverdatabase_ip', 'agentdatabase_port', 'serverdatabase_port', 'db_name', 'db_password',
+                   'db_user']
+        valuelist = [cfid, agentip, serverip, agentport, serverport, baseurl, cftype, agentdatabase_ip,
+                     serverdatabase_ip, agentdatabase_port, serverdatabase_port, db_name, db_password, db_user]
+        return list_to_json(keylist, valuelist)
+
+
 def json_list_to_json(keylist, valuelist):
     res = dict(zip(keylist, valuelist))
     #    logdss.info (res)
     return json.dumps(res)
+
 
 def list_to_json(keylist, valuelist):
     res = dict(zip(keylist, valuelist))
@@ -477,22 +504,26 @@ def main_conf(osname):
     enabled_modules = enabled_modules.split('\n')[:-1]
     if len(enabled_modules) > 0:
         for mod in enabled_modules:
-            subprocess.run('dnf module reset -y '+mod, shell=True)
+            subprocess.run('dnf module reset -y ' + mod, shell=True)
             if re.fullmatch('container-tools|go-toolset|jmc|llvm-toolset|rust-toolset', mod):
-                subprocess.run('dnf module install -y '+mod, shell=True)
-            elif mod =='virt':
-                subprocess.run('dnf module install -y '+mod, shell=True)
+                # subprocess.run('dnf module install -y '+mod+':uelc20', shell=True)
+                run_subprocess('dnf module install -y ' + mod)
+            elif mod == 'virt':
+                # subprocess.run('dnf module install -y '+mod+':uelc', shell=True)
+                run_subprocess('dnf module install -y ' + mod)
             else:
-                logger.info("Unsure how to transform module"+mod)
-
+                migration_log.info("Unsure how to transform module" + mod)
+        # fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
+        # subprocess.run('dnf -y distro-sync', stdout=fdout ,shell=True)
+        # fdout.close()
     try:
-        subprocess.check_call('dnf module list --enabled | grep satellite-5-client', shell=True)
-        logger.info("UniontechOS does not provide satellite-5-client module, disable it.")
-        subprocess.run('dnf module disable -y satellite-5-client', shell=True)
+        run_subprocess('dnf module list --enabled | grep satellite-5-client')
+        migration_log.info("UniontechOS does not provide satellite-5-client module, disable it.")
+        run_subprocess('dnf module disable -y satellite-5-client')
     except:
         pass
-    process_special_pkgs()   
-    logger.info("Removing yum cache")
+    process_special_pkgs()
+    migration_log.info("Removing yum cache")
     if os.path.isfile('/var/cache/yum'):
         os.remove('/var/cache/yum')
     elif os.path.isdir('/var/cache/yum'):
@@ -501,19 +532,18 @@ def main_conf(osname):
         os.remove('/var/cache/dnf')
     elif os.path.isdir('/var/cache/dnf'):
         shutil.rmtree('/var/cache/dnf')
-    logger.info("------------- : "+osname)
-    
+
     conf_grub()
     title_conf(osname)
 
-    logger.info("Creating a list of RPMs installed after the switch")
-    logger.info("Verifying RPMs installed after the switch against RPM database")
-    out1 = subprocess.check_output('rpm -qa --qf \
-    "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\n" \
-    | sort > "/var/tmp/uos-migration/UOS_migration_log/rpms-list-after.txt"', shell=True)
-    out2 = subprocess.check_output('rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-after.txt"',shell=True)
-
-    logger.info("Switch complete.UniontechOS recommends rebooting this system.")
+    # migration_log.info("Creating a list of RPMs installed after the switch")
+    # migration_log.info("Verifying RPMs installed after the switch against RPM database")
+    # out1 = subprocess.check_output('rpm -qa --qf \
+    # "%{NAME}|%{VERSION}|%{RELEASE}|%{INSTALLTIME}|%{VENDOR}|%{BUILDTIME}|%{BUILDHOST}|%{SOURCERPM}|%{LICENSE}|%{PACKAGER}\n" \
+    # | sort > "/var/tmp/uos-migration/UOS_migration_log/rpms-list-after.txt"', shell=True)
+    # out2 = subprocess.check_output(
+    #     'rpm -Va | sort -k3 > "/var/tmp/uos-migration/UOS_migration_log/rpms-verified-after.txt"', shell=True)
+    migration_log.info("Switch complete.UniontechOS recommends rebooting this system.")
     return 0
 
 
@@ -521,26 +551,26 @@ def sql_os_newversion(localos):
     sql = "UPDATE agent_info SET agent_migration_os = '{}' WHERE agent_ip = '{}';".format(localos, get_local_ip())
     try:
         ret = DBHelper().execute(sql)
-    except:
-        pass
+    except Exception as e:
+        migration_log.error(e)
 
 
 def abi_check_sys_type():
     path = '/etc/os-version'
     if os.path.exists(path):
-        with open(path,'r') as v:
+        with open(path, 'r') as v:
             ret = v.readlines()
-            localos=ostype=''
+            localos = ostype = ''
             for i in range(len(ret)):
                 if not ret[i]:
                     continue
                 if 'MinorVersion' in ret[i]:
                     strminor = str(ret[i])
-                    _, localos = strminor.split('=',1)
+                    _, localos = strminor.split('=', 1)
                 if 'EditionName[zh_CN]' in ret[i]:
                     strminor = str(ret[i])
-                    _, ostype = strminor.split('=',1)
-                    ostype = re.sub('[^a-zA-Z]+','',ostype)
+                    _, ostype = strminor.split('=', 1)
+                    ostype = re.sub('[^a-zA-Z]+', '', ostype)
             localos = localos.strip().strip('\n') + ostype.strip().strip('\n')
             return localos
 
@@ -551,21 +581,22 @@ def abi_check_sys():
     if not system_type:
         os_version_ret = platform.dist()
         osname = os_version_ret[1].strip()
-        osn = osname.split('.',-1)[0]
+        osn = osname.split('.', -1)[0]
         return osn.strip('\n')
     for i in range(len(c8)):
         if c8[i] in system_type:
             return 8
     for i in range(len(c7)):
+
             return 7
     return None
 
 def get_new_osversion():
     path = '/etc/os-version'
     if os.path.exists(path):
-        with open(path,'r') as v:
+        with open(path, 'r') as v:
             ret = v.readlines()
-            localos=ostype=''
+            localos = ostype = ''
             for i in range(len(ret)):
                 if not ret[i]:
                     continue
