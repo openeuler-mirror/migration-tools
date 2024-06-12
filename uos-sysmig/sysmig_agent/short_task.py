@@ -24,7 +24,6 @@ def os_kernel():
     return agent_kernel
 
 
-
 def os_repo_kernel():
     version_list = []
     os_version_ret = platform.dist()
@@ -79,7 +78,6 @@ def os_repo_kernel():
     return str_kernel
 
 
-
 def check_kernel(data):
     task_id = json.loads(data).get('task_id')
     # 更新SQL任务开始状态
@@ -103,7 +101,6 @@ def check_kernel(data):
     sql_task_statue(statue, task_id)
     post_server('task_close', task_id)
     return 's'
-
 
 
 def check_info(data):
@@ -137,7 +134,6 @@ def get_agent_os():
     version = os_version_ret[1].split('.', -1)
     AGENT_OS = os_version_ret[0] + version[0]
     return AGENT_OS
-
 
 
 def init_remove_oldrepo():
@@ -195,7 +191,7 @@ def initRepoFile(baseurl):
             '\n') + '''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-BaseOS]\nname = UniontechOS BaseOS\nbaseurl = ''' + path_baseos.strip(
             '\n') + '''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-4.18.0]\nname = UniontechOS Kernel-4.18.0\nbaseurl = ''' + path_418.strip(
             '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-4.19.0]\nname = UniontechOS Kernel-4.19.0\nbaseurl = ''' + path_419.strip(
-            '\n') + '''\nenabled = 1\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = ''' + path_510.strip(
+            '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = ''' + path_510.strip(
             '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n
 '''
     else:
@@ -209,23 +205,25 @@ def initRepoFile(baseurl):
         f_repo.write(repostr_uos)
         f_repo.close()
 
-#检测repo文件创建缓存
+
+# 检测repo文件创建缓存
 def checkRepoMakeCache():
     os.system('yum clean all')
     os.system('yum makecache')
     os_version_ret = platform.dist()
-    os_arch = platform.machine()
-    version = os_version_ret[1].split('.',-1)
+    version = os_version_ret[1].split('.', -1)
+    AGENT_OS = os_version_ret[0] + version[0]
     ret = os.path.exists('/var/cache/dnf/UniontechOS-AppStream.solv')
     if ret:
         ret = os.path.exists('/var/cache/dnf/UniontechOS-BaseOS.solv')
-        if ret or re.fullmatch('7',version[0]):
+        if ret or re.fullmatch('7', version[0]):
             return 0
         else:
             return 1
     else:
-        if re.fullmatch('7',version[0]):
-            ret = os.path.exists('/var/cache/yum/%s/7/UniontechOS-AppStream/repomd.xml' % os_arch)
+        if re.fullmatch('7', version[0]):
+            path = '/var/cache/yum/' + platform.machine().strip('\n').strip('') + '/7/UniontechOS-AppStream/repomd.xml'
+            ret = os.path.exists(path)
             if ret:
                 return 0
         return 1
@@ -248,6 +246,7 @@ def checkRepoFileHttp(baseurl):
             return 1
 
 
+
 def repoFileCheck(baseurl):
     if re.match('file\:\/\/', baseurl):
         path = re.sub('file://', '', baseurl)
@@ -262,12 +261,12 @@ def repoFileCheck(baseurl):
         return 1
         pass
 
+
+
+
+
 def check_repo(data):
     agent_os = get_agent_os()
-    if '7' in agent_os:
-        agent_os = 'centos7'
-    elif '8' in agent_os:
-        agent_os = 'centos8'
     os_type = agent_os + '_' + platform.machine().strip('')
     baseurl = json.loads(data).get(os_type)
     if not baseurl:
@@ -290,7 +289,7 @@ def check_repo(data):
         repo_state = repoFileCheck(baseurl)
     else:
         repo_state = 1
-
+    
     sql = "UPDATE agent_info SET repo_status = {} WHERE agent_ip = '{}';".format(repo_state, get_local_ip())
     try:
         ret = DBHelper().execute(sql)
