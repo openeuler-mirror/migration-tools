@@ -458,6 +458,37 @@ def get_download_center_data(data):
     return json_res
 
 
+reports_type = {
+    "migration_detection": migration_detection,
+    "migration_logs": migration_logs,
+    "migration_analysis_report": migration_analysis_report,
+    "export_host_info": export_host_info,
+    "migration_success_list": migration_success_list,
+}
+
+
+def export_reports(data):
+    """
+    导出各种报告
+    :param data:
+    :return:
+    """
+    data = json.loads(data)
+    report_type = reports_type.get(data.get('reports_type'))
+    if report_type:
+        mkdir_log_pwd = "/var/uos-migration/"
+        isExists = os.path.exists(mkdir_log_pwd)
+        if not isExists:
+            try:
+                os.makedirs(mkdir_log_pwd)
+                migration_log.info(mkdir_log_pwd)
+            except:
+                migration_log.war("export report mkdir war:%s" % mkdir_log_pwd)
+
+        report_type(data)
+    return 'success'
+
+
 def migration_records(data):
     """
     获取迁移成功记录数据
