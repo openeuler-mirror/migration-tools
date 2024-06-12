@@ -1,13 +1,16 @@
-import json
-import os
-import re
-import paramiko
-from datetime import datetime
-
-from connect_sql import DBHelper
-from sysmig_agent.share import getSysMigConf
-from views import reports
+# -*- coding: utf-8 -*-
+# !/usr/bin/python
+from connect_sql import *
+from ctypes import *
 from logger import *
+from datetime import datetime
+from views.reports import migration_logs, migration_detection, \
+    migration_analysis_report, export_host_info, migration_success_list
+from sysmig_agent.share import getSysMigConf
+from flask import request
+import json
+import paramiko
+import re
 
 
 os.chdir('/usr/lib/uos-sysmig-server')
@@ -40,48 +43,6 @@ def close_tool(data):
     data_json = json.dumps(data)
     return data_json
 
-
-def check_user():
-    """
-    检测账户权限
-    :return:
-    """
-    sql = "select agent_ip, agent_username, AES_DECRYPT(agent_passwd, 'coco') from agent_info where agent_online_status='0';"
-    data = DBHelper().execute(sql).fetchall()
-    success_num = 0
-    port = 22
-    for value in data:
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        try:
-            ssh.connect(value[0], username=value[1], password=str(value[2], encoding="utf-8"), port=port)
-            if value[1] != "root":
-                stdin, stdout, stderr = ssh.exec_command('sudo -v')
-                flag = True
-                ret = stderr.read().decode()
-                ret = ret.split('\n')[:-1]
-                for i in range(len(ret)):
-                    if re.match('sudo', ret[i].strip()[0:4]):
-                        flag = False
-                if flag:
-                    if ret != 'sudo':
-                        update_agent_online_status(value[0])
-
-            ssh.close()
-            data = agent_rpm_issued(value)
-            if data == 'success':
-                success_num += 1
-            else:
-                update_agent_online_status(value[0])
-        except:
-            migration_log.error("error:" + value[0] + value[1] + str(value[2], encoding="utf-8") + str(port))
-            update_agent_online_status(value[0])
-
-    res = {"data": "success", "num": success_num}
-    if success_num == 0:
-        res = {"data": "faild"}
-    del success_num 
-    return res
 
 
 def import_host_info(data):
@@ -158,6 +119,21 @@ def create_task_stream(agent_ip):
     DBHelper().insert(create_agent_task_sql, values)
 
 
+def check_user(data):
+    """
+    检测账户权限
+    :return:
+    """
+    check_type = json.loads.get('type')
+    check_user_res = CDLL('./check_user_authority.so')
+    data = check_user_res.check_user_authority(check_type.encode())
+    if data == 0:
+        data = {"data": "faild", "num": 0}
+    else:
+        data = {"data": "success", "num": data}
+    json_data = json.dumps(data)
+    return jaon_data
+
 def pagebreak(data, page, size):
     """
     页面数据分页
@@ -169,6 +145,17 @@ def pagebreak(data, page, size):
     result = data[page_start:page_end]
 
     return result
+
+
+def update_agent_online_status(data):
+    """
+    修改agent状态
+    :param data:
+    :return:
+    """
+    sql = "update agent_info set agent_online_status = 1 where agent_ip = '%s';" % data
+    DBHelper().execute(sql)
+
 
 def host_info_display(data):
     """
@@ -635,11 +622,3 @@ def get_migrated_hosts(data):
     return json_res
 
 
-def update_agent_online_status(data):
-    """
-    修改agent状态
-    :param data:
-    :return:
-    """
-    sql = "update agent_info set agent_online_status = 1 where agent_ip = '%s';" % data
-    DBHelper().execute(sql)
