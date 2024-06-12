@@ -362,41 +362,13 @@ def get_environment_data(data):
     return json_res
 
 
-
-
-reports_type = {
-    "migration_detection": reports.migration_detection,
-    "migration_logs": reports.migration_logs,
-}
-
-def export_reports(data):
-    """
-    导出各种报告
-    :param data:
-    :return:
-    """
-    data = json.loads(data)
-    report_type = reports_type.get(data.get('reports_type'))
-    if report_type:
-        mkdir_log_pwd = "/var/uos-migration/"
-        isExists = os.path.exists(mkdir_log_pwd)
-        if not isExists:
-            try:
-                os.makedirs(mkdir_log_pwd)
-                migration_log.info(mkdir_log_pwd)
-            except:
-                migration_log.war("export report mkdir war:%s" % mkdir_log_pwd)
-
-        report_type(data)
-    return 'success'
-
-
-
 def get_system_migration_data(data):
     """
     获取agent迁移进度
     :return:
     """
+    page = json.loads(data).get('page')
+    size = json.loads(data).get('size')
     get_migration_pro_sql = "select agent_ip,task_progress,task_status from agent_task;"
     progress = DBHelper().execute(get_migration_pro_sql).fetchall()
     res = {}
@@ -637,3 +609,11 @@ def close_tool(data):
     return data_json
 
 
+def modify_task_status(data):
+    """
+    修改任务状态
+    :return:
+    """
+    update_sql = "update agent_task set task_progress=0,task_status=0"
+    DBHelper().execute(update_sql)
+    return 'success'
