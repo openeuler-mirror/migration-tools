@@ -1,0 +1,11 @@
+[Unit]
+Description=uos sysmig data surposs npm running .
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bash /usr/lib/uos-sysmig-server/server/nodejs.sh
+ExecStop=/bin/kill -INT $MAINPID
+
+[Install]
+WantedBy=multi-user.target

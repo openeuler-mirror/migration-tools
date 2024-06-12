@@ -96,3 +96,13 @@ class DetInformation(Discover):
         post_server('task_close', self.task_id)
         return 'success'
 
+    def check_exportsysconf(self):
+        """
+        系统配置文件，md5更改的文件检索，暂时保留，需要链接centos的源泉解压对比
+        Returns:
+        """
+        pass
+
+
+discover = Discover()
+
