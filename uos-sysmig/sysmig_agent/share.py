@@ -4,7 +4,6 @@
 import os
 import sys
 import json
-import sqlite3
 import re
 import subprocess
 import shutil
@@ -12,29 +11,18 @@ import socket
 import platform
 import logging
 from datetime import datetime
-from settings import *
-
-sys.path.append("..")
 from connect_sql import DBHelper
-
-
-def get_local_ip():
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-        return ip
-    finally:
-        s.close()
-
+from logger import migration_log
+from sysmig_agent.config import *
 
 
 def sql_abi_progress(data):
-    sql = "UPDATE agent_task SET task_progress = {} ,task_Updatetime = NOW() WHERE agent_ip = '{}';".format(data, get_local_ip())
+    sql = "UPDATE agent_task SET task_progress = {} ,task_Updatetime = NOW() WHERE agent_ip = '{}';".format(data,
+                                                                                                            get_local_ip())
     try:
         ret = DBHelper().execute(sql)
-    except:
-        pass
+    except Exception as e:
+        migration_log.error(e)
 
 
 def sql_migration_log(report_name, report_type):
@@ -72,7 +60,6 @@ def targz_mig_dir_report():
         sql_migration_log(report_name, report_type)
 
 
-
 def _targz_dir(path):
     import tarfile
     '''
@@ -92,7 +79,7 @@ def _targz_dir(path):
     # 创建压缩包
     for root, dir, files in os.walk(path):
         root_ = os.path.relpath(root, start=filepwd)
-        print('root:'+str(root)+'dir'+str(dir)+'_root:'+str(root_))
+        print('root:' + str(root) + 'dir' + str(dir) + '_root:' + str(root_))
         for file in files:
             fullpath = os.path.join(root, file)
             tar.add(fullpath, arcname=os.path.join(root_, file))
@@ -102,6 +89,95 @@ def _targz_dir(path):
     # store migration log information in database
     return tar_name
 
+
+def run_subprocess(cmd="", print_cmd=True, print_output=True):
+    """Call the passed command and optionally log the called command (print_cmd=True) and its
+    output (print_output=True). Switching off printing the command can be useful in case it contains
+    a password in plain text.
+    """
+    migration_log.info(cmd)
+    cwdo = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
+    cwde = '/var/tmp/uos-migration/UOS_migration_log/mig_err.txt'
+    # fderr = open(cwde, 'a')
+    # from logging import *
+    # if print_cmd:
+    #     log.debug("Calling command '%s'" % cmd)
+
+    # Python 2.6 has a bug in shlex that interprets certain characters in a string as
+    # a NULL character. This is a workaround that encodes the string to avoid the issue.
+    if print_output:
+        fdout = open(cwdo, 'a')
+        fderr = open(cwde, 'a')
+    if sys.version_info[0] == 2 and sys.version_info[1] == 6:
+        cmd = cmd.encode("ascii")
+    # cmd = shlex.split(cmd, False)
+    process = subprocess.Popen(
+        cmd,
+        # stdout=subprocess.PIPE,
+        # stderr=subprocess.STDOUT,
+        stdout=fdout,
+        stderr=fderr,
+        bufsize=1,
+        shell=True
+    )
+    output = ""
+    try:
+        for line in iter(process.stdout.readline, b""):
+            output += line.decode()
+            migration_log.info(line.decode().rstrip("\n"))
+    except:
+        pass
+
+    #            loggerinst.info(line.decode().rstrip("\n"))
+
+
+    # Call communicate() to wait for the process to terminate so that we can get the return code by poll().
+    # It's just for py2.6, py2.7+/3 doesn't need this.
+    process.communicate()
+    migration_log.info(return_code)
+    migration_log.info(output)
+    return_code = process.poll()
+    return output, return_code
+
+
+def os_storage():
+    """
+    判断系统剩余空间大小
+    :return: GB
+    """
+    path = '/var/cache'
+    stat = os.statvfs(path)
+
+    state = 1
+    ava_cache = format(stat.f_bavail * stat.f_frsize / 1024 // 1024 / 1024, '.1f')
+    if stat:
+        # with open(PRE_MIG,'a+') as pf:
+        #     pf.write('/var/cache可用空间为'+ava_cache+'GB')
+        #     pf.close()
+        if float(ava_cache) >= CACHE_SPACE:
+            state = 0
+            return ava_cache
+            # data = '可用空间为'+ava_cache+'GB'
+        else:
+            return ava_cache
+            # data = '可用空间为' + ava_cache + 'GB,请清理/var/cache的空间后重试。'
+    else:
+        return ava_cache
+        # data = '可用空间为'+ava_cache+'GB,请清理/var/cache的空间后重试。'
+        # return list_to_json(keylist,valuelist)
+
+
+def abi_file_connect(sql_r):
+    abi_sql = "INSERT INTO agent_ABI_check_result VALUES('" + get_local_ip() + "'," + sql_r + ',NOW());'
+    s = DBHelper()
+    ret_sql_msg = s.execute(abi_sql)
+
+
+def sql_show_tables():
+    sql = "SELECT task_progress,task_data FROM agent_task WHERE agent_ip = '{}';".format(get_local_ip())
+    ret_sql_msg_info = DBHelper().execute(sql)
+    if ret_sql_msg_info:
+        print(str(ret_sql_msg_info.fetchall()) + '\n')
 
 
 def sql_online_statue(statue, task_id):
@@ -148,10 +224,6 @@ def sql_show_tables():
         print(str(ret_sql_msg_info.fetchall()) + '\n')
 
 
-def abi_file_connect(sql_r):
-    abi_sql = "INSERT INTO agent_ABI_check_result VALUES('"+ get_local_ip()+"'," + sql_r + ',NOW());'
-    s = DBHelper()
-    ret_sql_msg = s.execute(abi_sql)
 
 def local_disabled_release_repo():
     """
@@ -481,7 +553,6 @@ def abi_check_sys():
         if c8[i] in system_type:
             return 8
     for i in range(len(c7)):
-        if  c7[i] in system_type:
             return 7
     return None
 
@@ -496,83 +567,14 @@ def get_new_osversion():
                     continue
                 if 'MinorVersion' in ret[i]:
                     strminor = str(ret[i])
-                    _, localos = strminor.split('=',1)
+                    _, localos = strminor.split('=', 1)
                 if 'EditionName[zh_CN]' in ret[i]:
                     strminor = str(ret[i])
-                    _, ostype = strminor.split('=',1)
-                    ostype = re.sub('[^a-zA-Z]+','',ostype)
+                    _, ostype = strminor.split('=', 1)
+                    ostype = re.sub('[^a-zA-Z]+', '', ostype)
             localos = localos.strip().strip('\n') + ostype.strip().strip('\n')
             localos = new_os.format(localos.strip().strip('\n'))
             sql_os_newversion(localos)
 
     else:
         sql_os_newversion('NULL')
-
-
-def run_subprocess(cmd="", print_cmd=True, print_output=True):
-    """Call the passed command and optionally log the called command (print_cmd=True) and its
-    output (print_output=True). Switching off printing the command can be useful in case it contains
-    a password in plain text.
-    """
-    cwdo = '/var/tmp/uos-migration/UOS_migration_log/mig_log.txt'
-    cwde = '/var/tmp/uos-migration/UOS_migration_log/mig_err.txt'
-
-    if print_output:
-        fdout = open(cwdo, 'a')
-        fderr = open(cwde, 'a')
-    if sys.version_info[0] == 2 and sys.version_info[1] == 6:
-        cmd = cmd.encode("ascii")
-    # cmd = shlex.split(cmd, False)
-    process = subprocess.Popen(
-        cmd,
-        # stdout=subprocess.PIPE,
-        # stderr=subprocess.STDOUT,
-        stdout=fdout,
-        stderr=fderr,
-        bufsize=1,
-        shell=True
-    )
-    output = ""
-    try:
-        for line in iter(process.stdout.readline, b""):
-            output += line.decode()
-    except:
-        pass
-
-    #            loggerinst.info(line.decode().rstrip("\n"))
-
-    # Call communicate() to wait for the process to terminate so that we can get the return code by poll().
-    # It's just for py2.6, py2.7+/3 doesn't need this.
-    process.communicate()
-
-    return_code = process.poll()
-    return output, return_code
-
-
-
-def os_storage():
-    """
-    判断系统剩余空间大小
-    :return: GB
-    """
-    path = '/var/cache'
-    stat = os.statvfs(path)
-    CACHE_SPACE = 10.0
-    state = 1
-    ava_cache = format(stat.f_bavail * stat.f_frsize / 1024 // 1024 / 1024, '.1f')
-    if stat:
-        # with open(PRE_MIG,'a+') as pf:
-        #     pf.write('/var/cache可用空间为'+ava_cache+'GB')
-        #     pf.close()
-        if float(ava_cache) >= CACHE_SPACE:
-            state = 0
-            return ava_cache
-            # data = '可用空间为'+ava_cache+'GB'
-        else:
-            return ava_cache
-            # data = '可用空间为' + ava_cache + 'GB,请清理/var/cache的空间后重试。'
-    else:
-        return ava_cache
-        # data = '可用空间为'+ava_cache+'GB,请清理/var/cache的空间后重试。'
-        # return list_to_json(keylist,valuelist)
-
