@@ -29,14 +29,13 @@ def import_host_info(data):
         json_data = json.dumps(data)
         return json_data
 
-
     sql = "insert into agent_info(agent_ip, agent_username, agent_passwd) values (%s, %s, AES_ENCRYPT(%s, 'coco'));"
     for i in agent_info:
         agent_ip = i.get('agent_ip')
         agent_username = i.get('agent_hostname')
         agent_passwd = i.get('agent_password')
         val = ((agent_ip, agent_username, agent_passwd),)
-        DBHelper().insert(sql, val)
+        info = DBHelper().insert(sql, val)
         create_task_stream(agent_ip)
 
     time = datetime.now().strftime('%Y-%-m-%d %H:%M:%S')
@@ -45,7 +44,7 @@ def import_host_info(data):
     host_report_sql = "insert into report_info(agent_ip,create_time,report_name,report_type) values (%s, %s, %s, %s);"
     host_report_sql_val = ((ip, time, '迁移主机列表_%s' % time, '主机列表'),)
     DBHelper().insert(host_report_sql, host_report_sql_val)
-    data = check_user()
+    data = check_user(data)
     data_json = json.dumps(data)
     return data_json
 
@@ -74,7 +73,7 @@ def create_task_stream(agent_ip):
     time = datetime.now().strftime('%Y-%-m-%d %H:%M:%S')
     values = ((agent_ip, agent_id, stream_status, time, time),)
     DBHelper().insert(create_task_stream_sql, values)
-    
+
     create_cur_task_sql = "insert into cur_task(task_status,stream_CreateTime,stream_Updatetime," \
                           "agent_ip) values (%s, %s, %s, %s);"
     values = (('None', time, time, agent_ip),)
@@ -106,18 +105,6 @@ def check_user(data):
     json_data = json.dumps(data)
     return jaon_data
 
-def pagebreak(data, page, size):
-    """
-    页面数据分页
-    :param data:
-    :return:
-    """
-    page_start = (page - 1) * size
-    page_end = page * size
-    result = data[page_start:page_end]
-
-    return result
-
 
 def update_agent_online_status(data):
     """
@@ -148,7 +135,7 @@ def host_info_display(data):
         get_agent_task = DBHelper().execute(agent_task).fetchall()
         get_agent_task = list(get_agent_task)
 
-        if not get_agent_task:
+        if get_agent_task == []:
             data[i] += ["", ""]
         else:
             task_CreateTime = get_agent_task[0][0].strftime('%Y-%-m-%d %H:%M:%S')
@@ -173,35 +160,6 @@ def host_info_display(data):
     return json_res
 
 
-def modify_task_stream(data):
-    """
-    修改任务流状态
-    :return:
-    """
-    task_id = json.loads(data).get('task_id')
-    get_task_status_sql = "select task_status,task_stream_id from agent_task where task_id='%s';" % task_id
-    info = DBHelper().execute(get_task_status_sql).fetchone()
-    task_status = info[0]
-    task_stream_id = info[1]
-    if task_status == 0:
-        task_status = 'None'
-    elif task_status == 1:
-        task_status = 'Doing'
-    elif task_status == 2:
-        task_status = 'Done'
-    else:
-        task_status = 'Cancel'
-    time = datetime.now()
-    modify_task_status_sql = "update cur_task set task_status='%s',stream_Updatetime='%s' " \
-                             "where task_id ='%s';" % (task_status, time, task_id)
-    DBHelper().execute(modify_task_status_sql)
-
-    modify_task_stream_sql = "update task_stream set stream_status='%s',stream_Updatetime='%s' " \
-                             "where task_stream_id='%s';" % (task_status, time, task_stream_id)
-    DBHelper().execute(modify_task_stream_sql)
-    return 'success'
-
-
 def delete_host_info(data):
     """
     删除主机信息
@@ -223,30 +181,39 @@ def delete_host_info(data):
     return json_res
 
 
-def get_kernel_data(data):
+def get_page_data(data):
     """
-    获取系统内核和仓库内核版本
+    定时获取可用空间页面数据
+    agent_ip,hostname,agent_online_status,agent_os,agent_storage,agent_arch,task_CreateTime
     :return:
     """
-    get_kernel_version_sql = 'select agent_ip,agent_kernel,agent_repo_kernel from agent_info where ' \
-                             'agent_online_status=0 and repo_status=0 and agent_storage>=10 and ' \
-                             'agent_migration_os is null;'
-    data = DBHelper().execute(get_kernel_version_sql).fetchall()
+    page = json.loads(data).get('page')
+    size = json.loads(data).get('size')
+    sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_storage,agent_arch,agent_id from " \
+          "agent_info where agent_online_status = 0 and agent_migration_os is null;"
+    data = DBHelper().execute(sql).fetchall()
+    data = list(data)
+    for i in range(0, len(data)):
+        data[i] = list(data[i])
+        data[i][4] = str(data[i][4]) + 'GB'
+        task_CreateTime = "select task_CreateTime from agent_task where agent_ip = '%s';" % data[i][0]
+        get_task_CreateTime = DBHelper().execute(task_CreateTime).fetchall()
+        get_task_CreateTime = list(get_task_CreateTime)
+        if get_task_CreateTime == []:
+            data[i] += [""]
+        else:
+            task_Createtime = get_task_CreateTime[0][0].strftime('%Y-%-m-%d %H:%M:%S')
+            data[i].append(task_Createtime)
+
     res = {}
+    res['num'] = len(data)
     info_list = []
-    info_dict_keys_list = ['agent_ip', 'agent_kernel', 'agent_repo_kernel']
-    if len(data) != 0:
-        for i in data:
-            if i[1] and i[2]:
-                kernel_arr = ('不迁移内核' + ',' + i[2]).split(',')
-                kernel_list = list(i)
-                kernel_list[2] = kernel_arr
-            else:
-                kernel_list = [list(i)[0], '', '']
-            info_list.append(dict(zip(info_dict_keys_list, kernel_list)))
+    info_dict_keys_list = ['agent_ip', 'hostname', 'agent_online_status', 'agent_os', 'agent_storage',
+                           'agent_arch', 'agent_id', 'task_CreateTime']
+    for i in data:
+        info_list.append(dict(zip(info_dict_keys_list, i)))
 
     res['info'] = info_list
-    res['num'] = len(info_list)
 
     json_res = json.dumps(res)
     return json_res
@@ -264,16 +231,16 @@ def get_repo_data(data):
         json_data = json.dumps(data)
         return json_data
     else:
-        centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
+        centos7_x86_sql = "select agent_ip from agent_info where agent_os='centos7' " \
                           "and agent_arch='x86_64' and repo_status=1;"
 
-        centos8_x86_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
+        centos8_x86_sql = "select agent_ip from agent_info where agent_os='centos8' " \
                           "and agent_arch='x86_64' and repo_status=1;"
 
-        centos7_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
+        centos7_aarch64_sql = "select agent_ip from agent_info where agent_os='centos7' " \
                               "and agent_arch='aarch64' and repo_status=1;"
 
-        centos8_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
+        centos8_aarch64_sql = "select agent_ip from agent_info where agent_os='centos8' " \
                               "and agent_arch='aarch64' and repo_status=1;"
 
         data = {}
@@ -305,11 +272,73 @@ def get_repo_data(data):
         return json_data
 
 
+def modify_task_stream(data):
+    """
+    修改任务流状态
+    :return:
+    """
+    task_id = json.loads(data).get('task_id')
+    get_task_status_sql = "select task_status,task_stream_id from agent_task where task_id='%s';" % task_id
+    info = DBHelper().execute(get_task_status_sql).fetchone()
+    task_status = info[0]
+    task_stream_id = info[1]
+    if task_status == 0:
+        task_status = 'None'
+    elif task_status == 1:
+        task_status = 'Doing'
+    elif task_status == 2:
+        task_status = 'Done'
+    else:
+        task_status = 'Cancel'
+    time = datetime.now()
+    modify_task_status_sql = "update cur_task set task_status='%s',stream_Updatetime='%s' " \
+                             "where task_id ='%s';" % (task_status, time, task_id)
+    DBHelper().execute(modify_task_status_sql)
+
+    modify_task_stream_sql = "update task_stream set stream_status='%s',stream_Updatetime='%s' " \
+                             "where task_stream_id='%s';" % (task_status, time, task_stream_id)
+    DBHelper().execute(modify_task_stream_sql)
+    return 'success'
+
+
+def get_kernel_data(data):
+    """
+    获取系统内核和仓库内核版本
+    :return:
+    """
+    page = json.loads(data).get('page')
+    size = json.loads(data).get('size')
+    get_kernel_version_sql = 'select agent_ip,agent_kernel,agent_repo_kernel from agent_info where ' \
+                             'agent_online_status=0 and repo_status=0 and agent_storage>=10 and ' \
+                             'agent_migration_os is null;'
+    data = DBHelper().execute(get_kernel_version_sql).fetchall()
+    res = {}
+    info_list = []
+    info_dict_keys_list = ['agent_ip', 'agent_kernel', 'agent_repo_kernel']
+    if len(data) != 0:
+        for i in data:
+            if i[1] and i[2]:
+                kernel_arr = ('不迁移内核' + ',' + i[2]).split(',')
+                kernel_list = list(i)
+                kernel_list[2] = kernel_arr
+            else:
+                kernel_list = [list(i)[0], '', '']
+            info_list.append(dict(zip(info_dict_keys_list, kernel_list)))
+
+    res['info'] = info_list
+    res['num'] = len(info_list)
+
+    json_res = json.dumps(res)
+    return json_res
+
+
 def get_environment_data(data):
     """
     获取环境检查进度
     :return:
     """
+    page = json.loads(data).get('page')
+    size = json.loads(data).get('size')
     get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task;"
     progress = DBHelper().execute(get_environment_pro_sql).fetchall()
     res = {}
@@ -333,55 +362,6 @@ def get_environment_data(data):
     return json_res
 
 
-def get_repo_arch_info(data):
-    """
-    获取软件仓库架构和系统信息
-    :param data:
-    :return:
-    """
-    sql = "select agent_os,agent_arch from agent_info where agent_online_status='0' and agent_storage>='10' " \
-          "and agent_migration_os is null;"
-    get_info = DBHelper().execute(sql).fetchall()
-    get_info_list = []
-    for i in get_info:
-        get_info_list.append(list(i))
-    
-    for i in get_info_list :
-        if i[0] == 'redhat7':
-            i[0] = 'centos7'
-        if i[0] == 'redhat8':
-            i[0] = 'centos8'
-
-    info_list = []
-    info_dict_keys_list = ['agent_os', 'agent_arch']
-    for i in get_info_list:
-        info_list.append(dict(zip(info_dict_keys_list, i)))
-
-    res = {}
-    res['info'] = info_list
-    json_res = json.dumps(res)
-    return json_res
-
-
-def get_storage_num(data):
-    """
-    获取可用空间足够和不足数量
-    :param data:
-    :return:
-    """
-    success_num_sql = "select agent_ip from agent_info where agent_online_status='0' and agent_storage>='10' " \
-                      "and agent_migration_os is null;"
-    get_success_num = DBHelper().execute(success_num_sql).fetchall()
-
-    faild_num_sql = "select agent_ip from agent_info where agent_online_status='0' and agent_storage<'10' " \
-                    "and agent_migration_os is null;"
-    get_faild_num = DBHelper().execute(faild_num_sql).fetchall()
-
-    success = len(get_success_num)
-    faild = len(get_faild_num)
-    data = {'success': success, 'faild': faild}
-    json_data = json.dumps(data)
-    return json_data
 
 
 reports_type = {
@@ -410,41 +390,6 @@ def export_reports(data):
         report_type(data)
     return 'success'
 
-
-def get_page_data(data):
-    """
-    定时获取可用空间页面数据
-    agent_ip,hostname,agent_online_status,agent_os,agent_storage,agent_arch,task_CreateTime
-    :return:
-    """
-    sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_storage,agent_arch,agent_id from " \
-          "agent_info where agent_online_status = 0 and agent_migration_os is null;"
-    data = DBHelper().execute(sql).fetchall()
-    data = list(data)
-    for i in range(0, len(data)):
-        data[i] = list(data[i])
-        data[i][4] = str(data[i][4]) + 'GB'
-        task_CreateTime = "select task_CreateTime from agent_task where agent_ip = '%s';" % data[i][0]
-        get_task_CreateTime = DBHelper().execute(task_CreateTime).fetchall()
-        get_task_CreateTime = list(get_task_CreateTime)
-        if get_task_CreateTime == []:
-            data[i] += [""]
-        else:
-            task_Createtime = get_task_CreateTime[0][0].strftime('%Y-%-m-%d %H:%M:%S')
-            data[i].append(task_Createtime)
-
-    res = {}
-    res['num'] = len(data)
-    info_list = []
-    info_dict_keys_list = ['agent_ip', 'hostname', 'agent_online_status', 'agent_os', 'agent_storage',
-                           'agent_arch', 'agent_id', 'task_CreateTime']
-    for i in data:
-        info_list.append(dict(zip(info_dict_keys_list, i)))
-
-    res['info'] = info_list
-
-    json_res = json.dumps(res)
-    return json_res
 
 
 def get_system_migration_data(data):
@@ -590,6 +535,61 @@ def get_migrated_hosts(data):
     res['page'] = page
     res['size'] = size
 
+    json_res = json.dumps(res)
+    return json_res
+
+
+def get_storage_num(data):
+    """
+    获取可用空间足够和不足数量
+    :param data:
+    :return:
+    """
+    success_num_sql = "select agent_ip from agent_info where agent_online_status='0' and agent_storage>='10' " \
+                      "and agent_migration_os is null;"
+    get_success_num = DBHelper().execute(success_num_sql).fetchall()
+
+    faild_num_sql = "select agent_ip from agent_info where agent_online_status='0' and agent_storage<'10' " \
+                    "and agent_migration_os is null;"
+    get_faild_num = DBHelper().execute(faild_num_sql).fetchall()
+
+    success = len(get_success_num)
+    faild = len(get_faild_num)
+    data = {'success': success, 'faild': faild}
+    json_data = json.dumps(data)
+    return json_data
+
+
+def pagebreak(data, page, size):
+    """
+    页面数据分页
+    :param data:
+    :return:
+    """
+    page_start = (page - 1) * size
+    page_end = page * size
+    result = data[page_start:page_end]
+
+    return result
+
+
+def get_repo_arch_info(data):
+    """
+    获取软件仓库架构和系统信息
+    :param data:
+    :return:
+    """
+    sql = "select agent_os,agent_arch from agent_info where agent_online_status='0' and agent_storage>='10' " \
+          "and agent_migration_os is null;"
+    get_info = DBHelper().execute(sql).fetchall()
+
+    info_list = []
+    info_dict_keys_list = ['agent_os', 'agent_arch']
+    for i in get_info:
+        info_list.append(dict(zip(info_dict_keys_list, i)))
+
+    res = {}
+    res['info'] = info_list
     json_res = json.dumps(res)
     return json_res
 
