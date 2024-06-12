@@ -17,34 +17,6 @@ os.chdir('/usr/lib/uos-sysmig-server')
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 
 
-def agent_rpm_issued(data):
-    """
-    agent安装rpm软件包
-    :return:
-    """
-    agent = os.system("sshpass -p %s ssh %s@%s yum install -y uos-sysmig-agent" % (str(data[2], encoding="utf-8"), data[1], data[0]))
-    cp_uos_sysmig_conf = os.system("sshpass -p %s scp -r /etc/uos-sysmig/uos-sysmig.conf %s@%s:/etc/uos-sysmig/uos-sysmig.conf" %
-                                   (str(data[2], encoding="utf-8"), data[1], data[0]))
-    restart_server = os.system("sshpass -p %s ssh %s@%s systemctl restart uos-sysmig-agent" % (str(data[2], encoding="utf-8"), data[1], data[0]))
-    if agent == 0 and restart_server == 0 and cp_uos_sysmig_conf == 0:
-        return 'success'
-    else:
-        return 'faild'
-
-
-def close_tool(data):
-    """
-    关闭迁移软件
-    :param data:
-    :return:
-    """
-    os.system('kill -9 `ps -ef | grep "start_webview.py" | grep -v grep | awk \'{print $2}\'`')
-    data = {"data": "success"}
-    data_json = json.dumps(data)
-    return data_json
-
-
-
 def import_host_info(data):
     """
     导入agent主机信息
@@ -52,7 +24,7 @@ def import_host_info(data):
     :return:
     """
     agent_info = json.loads(data).get("data")
-    if not agent_info:
+    if agent_info == []:
         data = {"data": "faild"}
         json_data = json.dumps(data)
         return json_data
@@ -620,5 +592,17 @@ def get_migrated_hosts(data):
 
     json_res = json.dumps(res)
     return json_res
+
+
+def close_tool(data):
+    """
+    关闭迁移软件
+    :param data:
+    :return:
+    """
+    os.system('kill -9 `ps -ef | grep "start_webview.py" | grep -v grep | awk \'{print $2}\'`')
+    data = {"data": "success"}
+    data_json = json.dumps(data)
+    return data_json
 
 
