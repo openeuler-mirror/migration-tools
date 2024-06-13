@@ -37,28 +37,24 @@ def local_disabled_release_repo():
                     os.remove(fpath)
 
 
-def run_subprocess(cmd):
-    try:
-        process = subprocess.run(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=False,  # Avoid using shell=True
-            check=True    # Check for non-zero return code and raise exception if found
-        )
-        output = process.stdout
-        print(output)  # Print the output to console
-        return output, process.returncode
-    except subprocess.CalledProcessError as e:
-        print(e.stderr)  # Print the error output to console
-        return e.stderr, e.returncode
+def check_pkg(pkg):
+    if pkg.split('/')[0] == '':
+        if os.path.exists(pkg):
+            return True
+        else:
+            return False
+
+    paths = os.environ['PATH'].split(':')
+    for path in paths:
+        if not os.path.isdir(path):
+            continue
+        for f in os.listdir(path):
+            if os.path.isfile(os.path.join(path, f)):
+                if f == pkg:
+                    return True
+    return False
 
 
-def check_pkg(rpm):
-    _, ret = run_subprocess('rpm -q {}'.format(rpm).split())
-    if ret:
-        return
-    return True
 
 
 def get_disk_info(string):
