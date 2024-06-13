@@ -22,6 +22,7 @@ Requires:python3-paramiko
 Requires:python3-flask
 Requires:rsync
 Requires:yum-utils
+Requires:uos-sysmig-data
 
 %description -n migration-tools-agent
 Migration software agent side

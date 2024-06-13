@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/python
-# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
-# SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
 from connect_sql import *
 from logger import *
 from interaction import *
 import json
 
+
 os.chdir('/usr/lib/uos-sysmig-server')
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
+
 
 def send_task_to_agent(data, url, ip):
     """
@@ -33,6 +32,7 @@ def send_task_to_agent(data, url, ip):
         DBHelper().execute(sql)
         migration_log.error("%s:请求失败，错误状态码为%s" % (ip, info.status_code))
         
+
 def get_agent_ip(data, sql, url):
     """
     获取agent_ip地址
@@ -52,6 +52,7 @@ def get_agent_ip(data, sql, url):
             json_data = json.dumps(data)
             send_task_to_agent(json_data, url, list(i)[0])
 
+
 def check_info(data):
     """
     检测系统版本和空间大小
@@ -61,6 +62,7 @@ def check_info(data):
     sql = "select agent_ip from agent_info where agent_online_status = 0;"
     get_agent_ip(data, sql, '/check_info')
     return 'success'
+
 
 def check_repo(data):
     """
@@ -76,6 +78,7 @@ def check_repo(data):
     get_agent_ip(data, sql, '/check_repo')
     return 'success'
 
+
 def check_kernel(data):
     """
     检测agent内核版本和软件仓库内核版本
@@ -85,6 +88,7 @@ def check_kernel(data):
     sql = "select agent_ip from agent_info where agent_online_status=0 and agent_storage>=10 and repo_status=0;"
     get_agent_ip(data, sql, '/check_kernel')
     return 'success'
+
 
 def check_environment(data):
     """
@@ -102,6 +106,7 @@ def check_environment(data):
         json_data = json.dumps(data)
         send_task_to_agent(json_data, url, i)
     return 'success'
+
 
 def system_migration(data):
     """
