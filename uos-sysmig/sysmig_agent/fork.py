@@ -126,32 +126,30 @@ def timed_task_migrate(task_id, kernel_version):
 def get_abi_info():
     if q.empty():
         return None
+    #    print("Full :", q.full())
+    #    print("Empty :", q.empty())
+    #    print("QSize:", q.qsize())
     size = int(q.qsize())
-    i=0
+    i = 0
     msg = ''
     while i < size:
         i += 1
         msg = q.get()
     return msg
 
+
+#    if not q.empty():
+
+
 def process_time_task_abi(task_id):
     # 定时任务启动并更新进度
     timed_task_abi(task_id)
     # abi结果接入数据库内
     abi_file_sql(abi_file)
+    # p_timed_task = Process(target=timed_task_abi, args=(task_id,))
+    # p_timed_task.start()
+    # p_timed_task.join()
 
-def structure_task():
-    # 先获得mysql的任务
-    ret_task = get_sql_task()
-    if not ret_task:
-        print('agent_task is None..')
-        pass
-    # 判断任务类型
-    if 1 == ret_task:
-        # 调用ABI权重比函数
-        ret_data = abi_check_priority()
-        # 更新mysql的任务状态
-        put_sql_task(ret_data)
 
 # ABI对比结果文件，存放数据库内
 def abi_file_sql(path):
@@ -166,22 +164,32 @@ def abi_file_sql(path):
                 sinfo = ''
                 if info[n].strip().strip('\n'):
                     sinfo = info[n].strip().strip('\n')
-                    info_str =  info_str+"'{}'".format(sinfo)
+                    info_str = info_str + "'{}'".format(sinfo)
                 else:
-                    sinfo='NULL'
-                    info_str =  info_str+"{}".format(sinfo)
-            if n != (len(info)-1):
-                info_str = info_str+','
+                    sinfo = 'NULL'
+                    info_str = info_str + "{}".format(sinfo)
+            if n != (len(info) - 1):
+                info_str = info_str + ','
         abi_file_connect(info_str)
 
 
 def check_environment(data):
     task_id = json.loads(data).get('task_id')
+    migration_version = json.loads(data).get('migration_version')
+
     # 更新SQL任务状态
     sql_task_statue('1', task_id)
     # 发送消息给Server更新任务流状态
     post_server('task_start', task_id)
-    process_time_task_abi(task_id)
+    det = DetInformation(data)
+    if re.match('e', migration_version):
+        det.check_scanhardware()
+        det.check_scansysconf()
+        det.check_scanrpms()
+        det.check_exportsysconf()
+    else:
+        det.check_scanhardware()
+        process_time_task_abi(task_id)
     # tar.gz types abi report
     targz_mig_dir_abi()
     sql_task_statue('2', task_id)
@@ -202,7 +210,6 @@ def mig_modify_statue(task_id):
         sql_mig_statue(ret)
     # loggea
     '''
-
 
 
 def get_info_version(data):
