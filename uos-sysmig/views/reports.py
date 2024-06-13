@@ -1,9 +1,8 @@
 import os
-import pandas as pd
-from datetime import datetime
-
 from logger import *
 from connect_sql import DBHelper
+import pandas as pd
+from datetime import datetime
 
 
 os.chdir('/usr/lib/uos-sysmig-server')
@@ -119,3 +118,4 @@ def migration_success_list(data):
     xls = "/var/uos-migration/迁移成功主机列表_%s.xls" % time
     df.to_excel(xls)
     return 'success'
+
