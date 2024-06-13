@@ -234,7 +234,7 @@ def system_migration(data):
     post_server('task_start', task_id)
     # The migration status is modified, and the breakpoint continues
     mig_modify_statue(task_id)
-    #sql_mig_statue('00')
+    # sql_mig_statue('00')
     # MIGRATION MAIN
     timed_task_migrate(task_id, kernel_version)
     post_server('task_close', task_id)
@@ -260,9 +260,21 @@ def post_task(data):
     elif 'check_environment' == task_mod:
         if if_env_check(data):
             t = threading.Thread(target=check_environment, args=[data])
+    elif 'check_scanrpms' == task_mod:
+        det = DetInformation(data)
+        t = threading.Thread(target=det.check_scanrpms)
+    elif 'check_scanhardware' == task_mod:
+        det = DetInformation(data)
+        t = threading.Thread(target=det.check_scanhardware)
+    elif 'check_scansysconf' == task_mod:
+        det = DetInformation(data)
+        t = threading.Thread(target=det.check_scansysconf)
     elif 'system_migration' == task_mod:
         t = threading.Thread(target=system_migration, args=[data])
+    elif 'hearbeat_detection' == task_mod:
+        return 'success'
     t.start()
     return 'y'
 
-
+# ABI 权重比
+# abi_check_priority()
