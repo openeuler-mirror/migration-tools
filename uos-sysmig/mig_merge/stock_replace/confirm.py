@@ -44,4 +44,43 @@ def get_rpms_from_sqlite():
     fp.close()
     return 'success'
 
+def read_migration_before_info(before_name):
+    newline = "\\n'"
+    single_quotes = "'"
+
+    migration_behind_name =
+    with open(before_name, mode='r') as fbp:
+        return str(fbp.readlines()).replace(newline, '"').replace(single_quotes, '"')
+
+
+def migration_confirm():
+    '''
+        应用场景：存量替换迁移分析操作之前，系统rpm包信息获取
+        功    能：是否存在rpm包信息文件？有-返回成功；无-生成
+        输入参数：无
+        返 回 值：0-存在rpm包信息文件；1-生成rpm包信息文件成功
+    '''
+    migration_file_name = FixedPageInfo.inventory_data_dir + '/migration-before-eln-rpm-tmp.csv'
+
+    if os.path.isfile(migration_file_name):
+        read_migration_before_info(migration_file_name)
+        return '0'
+
+    dist='.uelc20'
+    ts = rpm.TransactionSet()
+    mi = ts.dbMatch()
+
+    fp = open(migration_file_name, mode='w')
+    if system_version_id()== '7':
+        for rpm_pkg in mi:
+            #迁移前获取rpm包信息，过滤掉release为uelc20的包
+            if dist not in rpm_pkg['release'].decode():
+                fp.write(rpm_pkg['name'].decode()+'\n')
+    else:
+        for rpm_pkg in mi:
+            if dist not in rpm_pkg['release']:
+                fp.write(rpm_pkg['name']+'\n')
+    fp.close()
+    get_rpms_from_sqlite()
+    return '1'
 
