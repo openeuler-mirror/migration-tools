@@ -75,6 +75,12 @@ class DBwrite(DBHelper):
               "'%migration_report%';".format(self.getip)
         self.write_file(sql)
 
+    def write_completed_html(self):
+        sql = "SELECT report_name,report_contect FROM report_info WHERE agent_ip='{}' and report_name LIKE " \
+              "'%completed_report%';".format(self.getip)
+        self.write_file(sql)
+
+
 def selfDestruct(task_id):
     """
     destroy agent system migration rpm.
