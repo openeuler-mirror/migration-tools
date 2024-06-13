@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
 import os
 import sys
 import json
@@ -490,16 +489,6 @@ def list_to_json(keylist, valuelist):
 
 
 def main_conf(osname):
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    log_name = '/var/tmp/uos-migration/UOS_migration_log/log'
-    logfile = log_name
-    fh = logging.FileHandler(logfile, mode='w')
-    fh.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-
     enabled_modules = str(
         subprocess.check_output("dnf module list --enabled | grep rhel | awk '{print $1}'", shell=True),
         'utf-8')
