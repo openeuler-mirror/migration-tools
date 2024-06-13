@@ -14,6 +14,28 @@ enabled = 1
 gpgcheck = 0
 '''
 
+def local_disabled_release_repo():
+    path = '/etc/yum.repos.d'
+    if os.path.exists(path):
+        file_list = os.listdir(path)
+    for file in file_list:
+        fpath = os.path.join(path, file)
+        if os.path.isdir(fpath):
+            continue
+        else:
+            if re.fullmatch('switch-to-uos.repo', file, re.IGNORECASE):
+                continue
+            elif not re.search('repo$', file, re.IGNORECASE):
+                continue
+            with open(fpath, 'r') as fdst:
+                allrepo = fdst.read()
+                fdst.close()
+                with open(fpath + '.disabled', 'w+') as fdst:
+                    fdst.write(
+                        '#This is a yum repository file that was disabled . <Migration to UniontechOS>\n' + allrepo)
+                    fdst.close()
+                    os.remove(fpath)
+
 
 def run_subprocess(cmd):
     try:
