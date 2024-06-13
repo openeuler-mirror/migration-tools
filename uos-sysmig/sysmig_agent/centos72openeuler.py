@@ -1,18 +1,32 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
 import os
 import platform
 import shutil
 import subprocess
-
-
 openeuler_repo = '''[openeuler]
 name = openeuler
 baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-20.03-LTS-SP1/everything/$basearch
 enabled = 1
 gpgcheck = 0
 '''
+def get_bad_packages():
+    os_version_ret = platform.dist()
+    version = os_version_ret[1].split('.', -1)
+    local_os_version = version[0]
+    badpackages = ''
+    if '8' == local_os_version:
+        with open(badpackage8, 'r') as bf:
+            for bad_package in bf:
+                badpackages = badpackages + ' ' + bad_package.strip()
+            bf.close()
+    elif '7' == local_os_version:
+        with open(badpackage7, 'r') as bf:
+            for bad_package in bf:
+                badpackages = badpackages + ' ' + bad_package.strip()
+            bf.close()
+    return badpackages
+
 
 def local_disabled_release_repo():
     path = '/etc/yum.repos.d'
@@ -55,6 +69,12 @@ def check_pkg(pkg):
     return False
 
 
+def clean_and_exit():
+    global reposdir
+    repo_path = os.path.join(reposdir, 'switch-to-uos.repo')
+    if os.path.exists(repo_path):
+        os.remove(repo_path)
+    sys.exit(1)
 
 
 def get_disk_info(string):
