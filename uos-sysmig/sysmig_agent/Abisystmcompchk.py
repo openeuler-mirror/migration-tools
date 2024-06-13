@@ -1,7 +1,5 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
-
 import queue,os,string
 import threading,codecs
 import time,rpm,stat,re
@@ -12,7 +10,7 @@ import socket
 from xlutils.copy import copy
 from shutil import copyfile
 #from sysmig_agent.share import *
-from multiprocessing import Process
+from multiprocessing import Process 
 from multiprocessing import cpu_count
 
 from logger import *
@@ -115,8 +113,9 @@ def abi_check_sys():
 ######################## add for test end ########################
 ######################## add for test end ########################
 
+
 #20220107 add by lihp
-#20220112 modify by lihp: add deal kernel migration fail
+#20220112 modify by lihp: add deal kernel migration fail 
 def platform_release(Flag):
     if Flag == '0':
         cmd = "rpm -qa | grep kernel | grep -E 'an7|an8|el7|el8'"
@@ -129,10 +128,7 @@ def platform_release(Flag):
             kernel_version = line.split('-',1)[1]
             if 'uelc' in line:
                 break
-            elif 'oe1' in line:
-                break
     return kernel_version.rsplit('.', 1)[0]
-
 
 #Create agent ABI check result file
 def agent_ABI_check_result():
@@ -162,16 +158,15 @@ def agent_ABI_check_result():
         fp.write(rpm_name.split(',')[0] + string)
     fp.close()
 
-
 def logger_init():
-    log_file = 'Abisystmcompchk.log' + '.' + datetime.datetime.now().strftime('%Y%m%d%H%M')
-    log_path = '/var/tmp/uos-migration/UOS_migration_log/'
+    log_file='Abisystmcompchk.log' + '.' + datetime.datetime.now().strftime('%Y%m%d%H%M')
+    log_path='/var/tmp/uos-migration/UOS_migration_log/'
     if not os.path.exists(log_path):
         os.makedirs(log_path)
-
+        
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
-    log_name = log_path + log_file
+    log_name = log_path + log_file 
     logfile = log_name
     fh = logging.FileHandler(logfile, mode='w')
     fh.setLevel(logging.DEBUG)
@@ -180,7 +175,6 @@ def logger_init():
     logger.addHandler(fh)
 
     return logger
-
 
 # Check whether it is an ELF file
 def is_ELFfile(filepath, logger):
@@ -202,7 +196,6 @@ def is_ELFfile(filepath, logger):
         # logger.info(str(e))
         pass
     return False
-
 
 #Get migration behind rpm list, filter dist of '.uelc20'
 def get_migrate_behind_rpm_pkg():
@@ -230,13 +223,12 @@ def get_migrate_behind_rpm_pkg():
 
     return rpm_pkg_list
 
-
-# Get the current system package
+#Get the current system package
 def get_system_pkg_name(flag, mig_logger):
-    dist = '.uelc20'
-    rpm_pkg_list = ''
-    rpm_pkg_oth = []
-
+    dist='.uelc20'
+    rpm_pkg_list=''
+    rpm_pkg_oth=[]
+    
     if not os.path.exists(exp_rst_dir):
         os.makedirs(exp_rst_dir)
 
@@ -244,56 +236,56 @@ def get_system_pkg_name(flag, mig_logger):
     migration_before_eln_rpm = exp_rst_dir + 'migration-before-eln-rpm.csv'
 
     ts = rpm.TransactionSet()
-    mi = ts.dbMatch()
+    mi = ts.dbMatch() 
 
-    # migration before filter dist of '.uelc20'
-    if flag == '0':
+    #migration before filter dist of '.uelc20' 
+    if flag=='0':
         if os.path.exists(migration_before_uelc20_rpm):
             os.remove(migration_before_uelc20_rpm)
         if os.path.exists(migration_before_eln_rpm):
             os.remove(migration_before_eln_rpm)
-
+        
         fbfu = open(migration_before_uelc20_rpm, 'w')
         fbfe = open(migration_before_eln_rpm, 'w')
         if system_version_id() == '7':
             for rpm_pkg in mi:
                 if dist in rpm_pkg['release'].decode():
-                    fbfu.write(rpm_pkg['name'].decode() + '\n')
+                    fbfu.write(rpm_pkg['name'].decode()+'\n')
                 else:
-                    fbfe.write(rpm_pkg['name'].decode() + '\n')
+                    fbfe.write(rpm_pkg['name'].decode()+'\n')
                     rpm_pkg_list = rpm_pkg_list + ' ' + rpm_pkg['name'].decode()
         else:
             for rpm_pkg in mi:
                 if dist in rpm_pkg['release']:
-                    fbfu.write(rpm_pkg['name'] + '\n')
+                    fbfu.write(rpm_pkg['name']+'\n')
                 else:
-                    fbfe.write(rpm_pkg['name'] + '\n')
+                    fbfe.write(rpm_pkg['name']+'\n')
                     rpm_pkg_list = rpm_pkg_list + ' ' + rpm_pkg['name']
         fbfu.close()
         fbfe.close()
         return rpm_pkg_list
 
-    # migration behind filter dist of '.uelc20'
-    elif flag == '1':
+    #migration behind filter dist of '.uelc20' 
+    elif flag=='1':
         if os.path.exists(migration_before_uelc20_rpm):
-            with open(migration_before_uelc20_rpm, 'r') as fbfu:
+            with open(migration_before_uelc20_rpm, 'r') as fbfu: 
                 fbfu_list = fbfu.readlines()
 
             if os.path.exists(migration_system_install):
                 os.remove(migration_system_install)
 
-            fbhe = open(migration_system_install, 'w')
+            fbhe = open(migration_system_install, 'w') 
             rst = str(abi_check_sys())
             if rst == '7':
                 for rpm_pkg in mi:
                     if dist in rpm_pkg['release'].decode():
                         if rpm_pkg['name'].decode() not in fbfu_list:
-                            fbhe.write(rpm_pkg['name'].decode() + '\n')
+                            fbhe.write(rpm_pkg['name'].decode()+'\n')
             elif rst == '8':
                 for rpm_pkg in mi:
                     if dist in rpm_pkg['release']:
                         if rpm_pkg['name'] not in fbfu_list:
-                            fbhe.write(rpm_pkg['name'] + '\n')
+                            fbhe.write(rpm_pkg['name']+'\n')
             else:
                 mig_logger.info('migrate behind not exit verison id  !!!')
             fbhe.close()
@@ -303,25 +295,23 @@ def get_system_pkg_name(flag, mig_logger):
             return False
         return True
 
-    elif flag == '2':
+    elif flag=='2':
         if system_version_id() == '7':
             for rpm_name in mi:
                 if dist not in rpm_name['release'].decode():
                     rpm_pkg_oth.append(rpm_name['name'].decode())
-                    dist_flag = '1'
+                    dist_flag='1'
         else:
             for rpm_name in mi:
                 if dist not in rpm_name['release']:
                     rpm_pkg_oth.append(rpm_name['name'])
-                    dist_flag = '1'
+                    dist_flag='1'
 
-        if dist_flag == '1':
+        if dist_flag=='1':
             return rpm_pkg_oth
         else:
             mig_logger.info('The current system is UOS, not support migration, please check !!!')
             return False
-
-
 
 class myThread (threading.Thread):
     def __init__(self, threadID, name, q, lock, fpw, fpr, q_query, log):
@@ -458,7 +448,6 @@ def deal_files_list(fwincomp, fwcomp, cur_file_list, trn_file_list, rpm_full_pkg
     if comp_flag:
         fwcomp.write(rpm_pkg_name + ',' + ',' + ',' + 'Y,' + ',' + '\n')
 
-
 def process_data(threadName, q, queueLock, incompfw, compfw, Queue, pro_log):
     global exitFlag
     global total_rpm_nums
@@ -493,7 +482,6 @@ def process_data(threadName, q, queueLock, incompfw, compfw, Queue, pro_log):
         else:
             queueLock.release()
 
-
 def get_system_pkg_list(migbeflist):
     download_rpm_nums = 0
     migration_rpm_pkg_path = local_dir + 'uos/rpms'
@@ -517,7 +505,6 @@ def get_system_pkg_list(migbeflist):
     else:
         return False
 
-
 def incomp_pkg_num():
     tmp=''
     num=0
@@ -528,15 +515,13 @@ def incomp_pkg_num():
         tmp = line.split(',')[0]
     return num
 
-
 def system_version_id():
     fp = open('/etc/os-release', 'r')
     for line in fp:
         if 'VERSION_ID' in line:
             break
     fp.close()
-    return line.split('=', 1)[1].replace('"', '').replace('\n', '')
-
+    return line.split('=',1)[1].replace('"','').replace('\n','')
 
 def get_cur_sys_version():
     fp = open('/etc/os-release', 'r')
@@ -544,9 +529,8 @@ def get_cur_sys_version():
         if 'PRETTY_NAME' in line:
             break
     fp.close()
-    return line.split('=', 1)[1].replace('"', '').replace('\n', '')
-
-
+    return line.split('=',1)[1].replace('"','').replace('\n','')
+ 
 def get_migration_sys_info():
 
     behind_sys_info = exp_rst_dir + 'before-system-info.txt'
@@ -556,9 +540,9 @@ def get_migration_sys_info():
     migration_sys_info = '1|2|' + get_cur_sys_version()
     behind_list_info.append(migration_sys_info)
 
-    #20220107 modify lihp: get kernel version
-    #migration_kernel_verison = '2|2|' + platform.release()
-    migration_kernel_verison = '2|2|' + platform_release('1')
+    #20220107 modify lihp: get kernel version 
+    #migration_kernel_verison = '2|2|' + platform.release()  
+    migration_kernel_verison = '2|2|' + platform_release('1')  
     behind_list_info.append(migration_kernel_verison)
 
     with open(migration_system_install, 'r') as frm:
@@ -581,36 +565,36 @@ def get_cur_sys_info_list():
 
     #current system version, write sheet[0]:1-row,1-column
     cur_sys_info = '1|1|' + get_cur_sys_version()
-    list_info.append(cur_sys_info)
+    list_info.append(cur_sys_info) 
 
     #current kernel version, write sheet[0]:2-row,1-column
     #20220107 modify lihp: get kernel version of migrate before
-    #cur_kernel_verison = '2|1|' + platform.release()
-    cur_kernel_verison = '2|1|' + platform_release('0')
-    list_info.append(cur_kernel_verison)
+    #cur_kernel_verison = '2|1|' + platform.release()  
+    cur_kernel_verison = '2|1|' + platform_release('0')  
+    list_info.append(cur_kernel_verison) 
 
     #/var/cache available space,write sheet[0]:4-row,1-column
     cur_var_cache = '4|1|' + os_storage() + 'GB'
-    list_info.append(cur_var_cache)
+    list_info.append(cur_var_cache) 
 
     #system architecture, write sheet[0]:5-row,1-line
-    cur_arch = '5|1|' + platform.processor()
-    list_info.append(cur_arch)
+    cur_arch = '5|1|' + platform.processor()  
+    list_info.append(cur_arch) 
 
     #Be replaced rpm packages number,write sheet[0]:8-row,1-column
     with open(migration_system_total, 'r') as fr:
         replace_pkgs_num = str(len(fr.readlines()))
-    list_info.append('8|1|' + replace_pkgs_num)
+    list_info.append('8|1|' + replace_pkgs_num) 
 
     #Compatible with the number, write sheet[0]:11-row,1-column
     with open(abi_comp_chk, 'r') as fc:
         comp_num_int = len(fc.readlines())
         comp_num = '11|1|' + str(comp_num_int)
-    list_info.append(comp_num)
+    list_info.append(comp_num) 
 
     #Icompatible with the number,write sheet[0]:12-row,1-column
     incomp_num = '12|1|' + str(incomp_pkg_num())
-    list_info.append(incomp_num)
+    list_info.append(incomp_num) 
 
     #The total number of packages，write sheet[0]:13-row,1-column
     sum_num = comp_num_int + incomp_pkg_num()
@@ -629,11 +613,10 @@ def get_cur_sys_info_list():
 
     return list_info
 
-
 def mycopyfile(srcfile, dstfile, logger):
     if not os.path.exists(srcfile):
         logger.info("Please check!!!! src file not exit:" +  srcfile)
-        return False
+        return False 
     else:
         fpath,fname=os.path.split(dstfile)
         if not os.path.exists(fpath):
@@ -641,7 +624,6 @@ def mycopyfile(srcfile, dstfile, logger):
         copyfile(srcfile,dstfile)
 
     return dstfile
-
 
 #Generate report name
 def create_migrate_report_name(flag, logg):
@@ -677,7 +659,6 @@ def create_migrate_report_name(flag, logg):
     #Rename the real report name
     return mycopyfile(migrate_path_name_sample, migrate_name, logg)
 
-
 def write_row_and_column(report_name_rc, value_list, index):
 
     row_column_rb = xlrd.open_workbook(report_name_rc, formatting_info=True)
@@ -688,7 +669,6 @@ def write_row_and_column(report_name_rc, value_list, index):
     for data in value_list:
         row_column_sheet.write(int(data.split('|')[0]),int(data.split('|')[1]),data.split('|')[2])
     row_column_wb.save(report_name_rc)
-
 
 def write_column_by_column(report_name_cc, column_value_list, row, column, index):
 
@@ -718,7 +698,7 @@ def write_row_by_row(report_name_rr, row_value_list, row, column, index):
     column_rr = column
     for row_data in row_value_list:
         row_list = row_data.replace('\n','').split(',')
-        i = column
+        i = column 
         column_rr = column
         while i < (len(row_list) - 1):
             if i==2 or i==3:
@@ -733,14 +713,13 @@ def write_row_by_row(report_name_rr, row_value_list, row, column, index):
         row_rr = row_rr + 1
     row_row_wb.save(report_name_rr)
 
-
 def write_summary_data(report_name_summary, index, flag):
     summary_rb = xlrd.open_workbook(report_name_summary, formatting_info=True)
     r_sheet = summary_rb.sheet_by_index(index)
     summary_wb = copy(summary_rb)
     summary_sheet = summary_wb.get_sheet(index)
-
-    if flag == '0':
+    
+    if flag=='0':
         with open(abi_comp_chk, 'r') as fs:
             comp_num = len(fs.readlines())
         before_summary_num = comp_num + incomp_pkg_num()
@@ -749,7 +728,7 @@ def write_summary_data(report_name_summary, index, flag):
         summary_sheet.write(0, 0, before_summary_info)
         summary_sheet.write(2, 0, get_cur_sys_version())
 
-    elif flag == '1':
+    elif flag=='1':
         migrbef_sysver = exp_rst_dir + 'sys-version-tmp'
 
         with open(abi_comp_chk, 'r') as fsp:
@@ -762,8 +741,8 @@ def write_summary_data(report_name_summary, index, flag):
         with open(migrbef_sysver, 'r') as file_object:
             sys_version = file_object.read()
 
-        # 20220107 modify lihp: keep the history data
-        # os.remove(migrbef_sysver)
+        #20220107 modify lihp: keep the history data
+        #os.remove(migrbef_sysver)  
 
         behind_summary_info_tmp = r_sheet.row_values(0)[0].replace('REPLACE_NUM', str(behind_summary_num))
         behind_summary_info = behind_summary_info_tmp.replace('INSTALL_NUM', install_comp_num)
@@ -773,55 +752,53 @@ def write_summary_data(report_name_summary, index, flag):
 
     summary_wb.save(report_name_summary)
 
-
-# Deal report of sheet by num value
+#Deal report of sheet by num value
 def switch_write_migrate_report(report_name, num, flag):
-    # sheet[0]-system info: write data:row|column|value
+    #sheet[0]-system info: write data:row|column|value
     if num == 0:
-        if flag == '0':
+        if flag=='0':
             migration_value_list = get_cur_sys_info_list()
-        elif flag == '1':
+        elif flag=='1':
             migration_value_list = get_migration_sys_info()
         write_row_and_column(report_name, migration_value_list, num)
-    # sheet[1]-rpm package
+    #sheet[1]-rpm package 
     elif num == 1:
         with open(current_system_unique, 'r') as fr_cur:
             column_cur_list = fr_cur.readlines()
         write_column_by_column(report_name, column_cur_list, 3, 0, num)
 
-        if flag == '0':
-            # sheet[1]:2-column
+        if flag=='0':
+            #sheet[1]:2-column
             with open(migration_system_total, 'r') as fr_migr:
                 column_migr_list = fr_migr.readlines()
             write_column_by_column(report_name, column_migr_list, 3, 1, num)
-        elif flag == '1':
-            # sheet[1]:2-column
+        elif flag=='1':
+            #sheet[1]:2-column
             with open(migration_system_install, 'r') as fr_migr:
                 column_migr_list = fr_migr.readlines()
             write_column_by_column(report_name, column_migr_list, 3, 1, num)
 
-            # sheet[1]:3-row
+            #sheet[1]:3-row
             with open(migration_system_total, 'r') as fr_migr:
                 column_migr_list = fr_migr.readlines()
             write_column_by_column(report_name, column_migr_list, 3, 2, num)
 
-        # summary data write to sheet[1]
+        #summary data write to sheet[1]
         write_summary_data(report_name, num, flag)
 
-    # sheet[2]-ABI compartion
+    #sheet[2]-ABI compartion
     elif num == 2:
         with open(abi_comp_chk, 'r') as fr_comp:
             column_comp_list = fr_comp.readlines()
         write_column_by_column(report_name, column_comp_list, 1, 0, num)
-    # sheet[3]-ABI Incompartion
+    #sheet[3]-ABI Incompartion
     elif num == 3:
         with open(abi_incomp_chk, 'r') as fr_incomp:
             column_incomp_list = fr_incomp.readlines()
         write_row_by_row(report_name, column_incomp_list, 2, 0, num)
-
-
+    
 def get_system_unique_pkg(current_pkg_list, download_pkg_list):
-    # clean history data
+    #clean history data
     if os.path.exists(current_system_unique):
         os.remove(current_system_unique)
 
@@ -829,7 +806,6 @@ def get_system_unique_pkg(current_pkg_list, download_pkg_list):
     for data in set(current_pkg_list).difference(set(download_pkg_list)):
         fcw.write(data + '\n')
     fcw.close()
-
 
 #Check the environment before migration and generate a detection report
 def migrate_before_abi_chk(q_query, task_status):
@@ -920,48 +896,56 @@ def migrate_behind_abi_chk():
 
     return '0'
 
-
 def MutilThread(nameList, Query, muth_logger):
     global exitFlag
-
-    # Default number of cpus
+    
+    #Default number of cpus 
     thread_num = int(cpu_count() * 1.5)
 
-    threadList = ["Thread-%d" % (num) for num in range(0, thread_num)]
+    threadList = ["Thread-%d" %(num) for num in range(0,thread_num)]
 
     threads = []
-    threadID = 10
-    # threadID = 1
+    threadID = 10 
+    #threadID = 1
 
     fw = open(abi_incomp_chk, 'w')
     fr = open(abi_comp_chk, 'w')
 
-    # Creating new thread
+    #Creating new thread
     for tName in threadList:
         thread = myThread(threadID, tName, workQueue, queueLock, fw, fr, Query, muth_logger)
         thread.start()
         threads.append(thread)
         threadID += 1
 
-    # Fill in the queue
+    #Fill in the queue
     queueLock.acquire()
     for word in nameList:
         workQueue.put(word)
     queueLock.release()
 
-    # Waiting queue clear
+    #Waiting queue clear
     while not workQueue.empty():
         pass
 
-    # Notifies the thread that it is time to exit
+    #Notifies the thread that it is time to exit
     exitFlag = 1
 
-    # Wait for all threads to complete
+    #Wait for all threads to complete
     for t in threads:
         t.join()
-    muth_logger.info('==========     Exit main thread......     ==========')
+    muth_logger.info ('==========     Exit main thread......     ==========')
 
     fw.close()
     fr.close()
 
     return True
+
+#print('=============================  START TIME ： %s  =============================' %(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+#rst = migrate_before_abi_chk(Queue, 1)
+#rst = migrate_behind_abi_chk()
+#rst = agent_ABI_check_result()
+#Queue.queue.clear() 
+#print(rst)
+#print('=============================  END TIME ：%s  =============================' %(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+

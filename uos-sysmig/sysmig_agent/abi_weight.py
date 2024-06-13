@@ -6,6 +6,8 @@ import os
 # ABI_INCOMPAT_PATH = '/home/xzx/nfs/abi-incompat-pkg.txt'
 # ABI_COMPAT_PATH = '/home/xzx/nfs/abi-compat-pkg.txt'
 pwd = '/root/nfs'
+if not os.path.exists(pwd):
+    pwd = '/home/xzx/nfs'
 ABI_INCOMPAT_PATH = pwd+'/abi-incompat-pkg.txt'
 ABI_COMPAT_PATH = pwd + '/abi-compat-pkg.txt'
 AppStream =pwd + '/uos-sysmig/ut-Migration-tools/sysmig_agent/AppStream.txt'
