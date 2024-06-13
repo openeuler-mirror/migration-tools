@@ -19,4 +19,24 @@ def messageProgress(message):
 def messageState(message):
     with open('/var/tmp/uos-migration/.state','w') as fp:
         fp.write(message)
-        fp.close()
+
+fp.close()
+def selfDestruct(task_id):
+    """
+    destroy agent system migration rpm.
+    Args:
+        task_id:
+
+    Returns:
+
+    """
+    if '9' == int(str(get_mig_state(task_id))[1]):
+        cmd = 'yum remove -y uos-sysmig-agent uos-sysmig-data'
+        _, code = run_subprocess(cmd)
+        if code != 0:
+            migration_log.error("Migration is complete，Agent[{}]:Uninstall failed".format(get_local_ip()))
+        else:
+            migration_log.info("Migration is complete，Agent[{}]:Uninstall has been successful".format(get_local_ip()))
+    migration_log.info("migration statues is not satisfied，Agent[{}]:It is not uninstalled for the time being. Please "
+                       "check the task_info.task-data table and uninstall it after the migration is "
+                       "successful.".format(get_local_ip()))
