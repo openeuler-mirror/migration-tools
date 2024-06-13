@@ -39,6 +39,36 @@ class DBupload(object):
             pass
 
 
+class DBwrite(DBHelper):
+    """
+    Export the Html file of MySql to /var/uos-migration.
+    """
+    def __init__(self, getip, path='/var/uos-migration/'):
+        super().__init__()
+        self.getip = getip
+        self.path = path
+
+    def write_file(self, sql):
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+        try:
+            ret = self.execute(sql).fetchall()
+            if len(ret) < 1:
+                migration_log.error('MySql does not store html report.')
+                return False
+            for i in range(len(ret)):
+                filename = self.path.strip('\n') + ret[i][0]
+                print(filename)
+                content = str(ret[i][1])
+                if os.path.exists(filename):
+                    filename = filename.strip('\n') + '.new'
+                with open(filename, 'w+') as f:
+                    f.write(content)
+                    f.close()
+            return True
+        except Exception as e:
+            migration_log.error(e)
+            return False
 def selfDestruct(task_id):
     """
     destroy agent system migration rpm.

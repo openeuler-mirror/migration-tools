@@ -79,6 +79,7 @@ class DetInformation(Discover):
         # 更新SQL任务状态
         sql_task_statue(statue, self.task_id)
         post_server('task_close', self.task_id)
+        return 'success'
 
     def check_scanrpms(self):
         """
@@ -105,4 +106,3 @@ class DetInformation(Discover):
 
 
 discover = Discover()
-
