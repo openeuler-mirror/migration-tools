@@ -1,0 +1,45 @@
+import os
+import sys
+import json
+import socket
+from shutil import copyfile
+
+#for test
+sys.path.append("../..")
+
+from sysmig_agent.migrationTools.scanHardware import utils
+from mig_merge.config import FixedPageInfo
+
+def mycopyfile(template_name, dst_name):
+
+    dst_dir = FixedPageInfo.report_dir
+    report_template_name = FixedPageInfo.report_template_dir + '/' + template_name
+
+    if not os.path.exists(report_template_name):
+        print("Please check!!!! src file not exit: %s" +  report_template_name)
+        return False
+    else:
+        if not os.path.exists(dst_dir):
+            os.makedirs(dst_dir)
+        dstfile = dst_dir + '/' + dst_name
+        copyfile(report_template_name, dstfile)
+
+    return dstfile
+
+
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('8.8.8.8', 80))
+    ip = s.getsockname()[0]
+    s.close()
+    return ip
+
+def rpmpkg_formatting(file_name):
+    '''格式化输出存量json数据
+    '''
+    format_info = ''
+    for line in open(file_name, 'r'):
+        format_info = format_info+'"'+line.strip()+'",'
+    return format_info.rsplit(',',1)[0]+"]},"
+
+
