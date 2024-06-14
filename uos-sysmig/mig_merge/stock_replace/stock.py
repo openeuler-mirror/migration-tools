@@ -58,3 +58,23 @@ def get_softpkg_compatibility():
             rpmpkg_formatting(FixedPageInfo.install_pkgname).rsplit(',', 1)[0]+"},"
 
 
+def get_rpm_chkinfo():
+    '''
+        应用场景：存量替换迁移检查-RPM兼容性对比
+        功    能：1xxxa版RPM兼容性对比，按照前后端接口生成json格式的RPM兼容性检查数据
+        输入参数：无
+        返 回 值：json数据
+    '''
+    third_tab = ''
+    rpm_file_name = FixedPageInfo.inventory_data_dir + '/abi-incomp-chk.csv'
+    for line in open(rpm_file_name, 'r'):
+        element_list = line.strip().split(',', 5)
+        element = '{"name":"'+element_list[0]+\
+                '","is_compatible": "'+element_list[3]+\
+                '","current_version": "'+element_list[2]+\
+                '","incompatibility_type": "'+element_list[4]+\
+                '","incompatibility_sources": "'+element_list[1]+\
+                '","description": "'+element_list[5]+'"},'
+        third_tab = third_tab + element
+    return FixedPageInfo.page_rpm_tabs +third_tab.rsplit(',',1)[0]+']},'
+
