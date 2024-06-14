@@ -125,3 +125,18 @@ def get_rpm_chkinfo():
         third_tab = third_tab + element
     return FixedPageInfo.page_rpm_tabs +third_tab.rsplit(',',1)[0]+']},'
 
+def xlsTohtml(hardware_json_info):
+    '''
+        应用场景：存量替换迁移评估检查，包括系统基本信息，软件包对比，RPM兼容性检测和硬件兼容性对比
+        功    能：1xxxa版系统基本信息，软件包对比，RPM兼容性对比，按照前后端接口生成json格式数据
+                  1xxxe版硬件兼容性对比，按照前后端接口生成json数据
+        输出参数：hardware_json_info 硬件兼容性对比结果
+        返 回 值：json数据
+    '''
+    return get_system_info()+\
+            get_softpkg_compatibility()+\
+            get_rpm_chkinfo()+\
+            FixedPageInfo.page_hardware_tabs+\
+            hardware_json_info+'}}'
+
+
