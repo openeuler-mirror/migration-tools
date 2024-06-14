@@ -43,3 +43,18 @@ def rpmpkg_formatting(file_name):
     return format_info.rsplit(',',1)[0]+"]},"
 
 
+def get_softpkg_compatibility():
+    '''
+        应用场景：存量替换迁移检查-软件包对比
+        功    能：1xxxa版软件包对比，按照前后端接口生成json格式的软件包对比数据
+        输入参数：无
+        返 回 值：json数据
+    '''
+    softpkg_page = FixedPageInfo.page_softpkg_first_column + \
+            rpmpkg_formatting(FixedPageInfo.unique_pkgname)
+
+    return softpkg_page + \
+            FixedPageInfo.page_softpkg_third_column + \
+            rpmpkg_formatting(FixedPageInfo.install_pkgname).rsplit(',', 1)[0]+"},"
+
+
