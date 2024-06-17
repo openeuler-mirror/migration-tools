@@ -6,15 +6,12 @@ import sys
 import json
 import platform
 
-#for test 
-sys.path.append("..")
-
-from mig_merge.config import FixedPageInfo
-from mig_merge.new_expansion.scan_rpms import scan_rpms
-from sysmig_agent.migrationTools.scanHardware import utils
-from sysmig_agent.migrationTools.utils.config import PathConf
-from sysmig_agent.migrationTools.scanConf.scanconf import ScanConf
-from sysmig_agent.migrationTools.exportSysConf.paramdata import ParamData
+from config import FixedPageInfo
+from new_expansion.scan_rpms import scan_rpms
+from migrationTools.scanHardware import utils
+from migrationTools.utils.config import PathConf
+from migrationTools.scanConf.scanconf import ScanConf
+from migrationTools.exportSysConf.paramdata import ParamData
 
 class MigrationMerge:
 

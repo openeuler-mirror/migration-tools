@@ -3,11 +3,8 @@
 
 import sys
 
-#for test
-sys.path.append("..")
-
-import mig_merge.stock_replace.confirm as confirm 
-from sysmig_agent.migrationTools.utils.logger import Logger
+import stock_replace.confirm as confirm 
+from migrationTools.utils.logger import Logger
 
 
 logger = Logger(__name__)

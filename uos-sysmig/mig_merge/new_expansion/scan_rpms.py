@@ -5,8 +5,8 @@ import os
 import json
 import platform
 
-from sysmig_agent.migrationTools.scanRPM.scan_rpm import parsed_pkg_to_json,get_current_pkg_list
-from sysmig_agent.migrationTools.scanRPM.scan_rpm import ParsedPkgInfo
+from migrationTools.scanRPM.scan_rpm import parsed_pkg_to_json,get_current_pkg_list
+from migrationTools.scanRPM.scan_rpm import ParsedPkgInfo
 
 def scan_rpms():
     exclude_fonts = True

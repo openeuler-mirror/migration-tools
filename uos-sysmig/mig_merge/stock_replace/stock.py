@@ -4,11 +4,8 @@ import json
 import socket
 from shutil import copyfile
 
-#for test
-sys.path.append("../..")
-
-from sysmig_agent.migrationTools.scanHardware import utils
-from mig_merge.config import FixedPageInfo
+from migrationTools.scanHardware import utils
+from config import FixedPageInfo
 
 def mycopyfile(template_name, dst_name):
 
