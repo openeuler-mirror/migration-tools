@@ -6,38 +6,34 @@ import sys
 import json
 import socket
 
+from merge.utils import dataplaceholder_replace
 from migrationTools.utils.logger import Logger
 from migrationTools.scanHardware import utils
-from Abisystmcompchk import migrate_before_abi_chk 
-from config import FixedPageInfo
+#from Abisystmcompchk import migrate_before_abi_chk 
+from config import FixedInfo
 import stock_replace.stock as stock 
 
 logger = Logger(__name__)
 
 #def stock_replace_check(query, sta):
 def stock_replace_check():
-    '''UYi-V1.2版本存量替换迁移检查场景
-        基于1xxxa版本，按照前后端接口生成json数据
-        替换html报告中数据占位符"dataPlaceholder"为json数据
-        参数：
-            无
-        返回：
-            success
     '''
+        应用场景：存量替换迁移检查-系统基本信息、软件包对比、RPM兼容性
+        功    能：基于1xxxa版本，转换检测结果为html报告
+        输入参数：无
+        返 回 值：绝对路径的检测报告名
+    '''
+
     #1xxxa原有接口保留
     #migrate_before_abi_chk(query, sta)
 
-    template_html = FixedPageInfo.report_template_dir + '/uos-sysmig-A.html'
-
+    fixed_name = 'UOS_migration_report_'
     hostinfo = stock.get_local_ip() + '_' + socket.gethostname()
-    report_name = "UOS_migration_report_" + hostinfo + "_" + FixedPageInfo.timestamp + ".html"
-    report_html = FixedPageInfo.report_dir + '/' + report_name 
+    report_name = fixed_name + hostinfo + "_" + FixedInfo.timestamp + ".html"
+    report_html = FixedInfo.report_stock_dir + '/' + report_name 
 
-    compatability_list = utils.get_compatability_list(
-        utils.get_pci_list(), utils.get_supported_device_list(), False)
-    jsonstr = stock.xlsTohtml(json.dumps(compatability_list))
-    dataplaceholder_replace(template_html, report_html, jsonstr)
-    return 'success'
+    return dataplaceholder_replace(FixedInfo.stock_template_check, 
+            report_html, stock.xlsTohtml())
 
 def main():
     stock_replace_check()
