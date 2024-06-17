@@ -42,7 +42,10 @@ mods = {
         'get_storage_num': get_storage_num,
         'get_repo_arch_info': get_repo_arch_info,
         'close_tool': close_tool,
-        'modify_task_status': modify_task_status
+        'modify_task_status': modify_task_status,
+        'get_analysis_migrated_hosts': get_analysis_migrated_hosts,
+        'modify_migration_type': modify_migration_type
+
         }
 
 
@@ -55,6 +58,27 @@ def check_methods():
             response_str = mod(data)
             return response_str
 
+
+@app.route('/modify_migration_type', methods=['GET', 'POST'])
+def modify_migration_type():
+    """
+    修改迁移类型
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/get_analysis_migrated_hosts', methods=['GET', 'POST'])
+def get_analysis_migrated_hosts():
+    """
+    获取迁移分析主机数据
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
 @app.route('/modify_task_status', methods=['GET', 'POST'])
 def modify_task_status():
     """
