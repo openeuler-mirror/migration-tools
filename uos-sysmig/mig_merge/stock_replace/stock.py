@@ -5,12 +5,13 @@ import socket
 from shutil import copyfile
 
 from migrationTools.scanHardware import utils
-from config import FixedPageInfo
+from stock_replace.confirm import get_cur_sys_version
+from config import FixedInfo
 
 def mycopyfile(template_name, dst_name):
 
-    dst_dir = FixedPageInfo.report_dir
-    report_template_name = FixedPageInfo.report_template_dir + '/' + template_name
+    dst_dir = FixedInfo.report_dir
+    report_template_name = FixedInfo.report_template_dir + '/' + template_name
 
     if not os.path.exists(report_template_name):
         print("Please check!!!! src file not exit: %s" +  report_template_name)
@@ -31,12 +32,12 @@ def get_local_ip():
     return ip
 
 def rpmpkg_formatting(file_name): 
-    '''格式化输出存量json数据
+    '''格式化输出存量json格式数据
     '''
-    format_info = ''
+    format_info = []
     for line in open(file_name, 'r'):
-        format_info = format_info+'"'+line.strip()+'",'
-    return format_info.rsplit(',',1)[0]+"]},"
+        format_info.append(line.replace('\n', ''))
+    return json.dumps(format_info)
 
 def get_system_info():
     '''
@@ -47,13 +48,13 @@ def get_system_info():
     '''
     line_num = 0
 
-    sysinfo_name = FixedPageInfo.inventory_data_dir + '/systeminfo.txt'
+    sysinfo_name = FixedInfo.inventory_dir + '/systeminfo.txt'
     for line in open(sysinfo_name, 'r'):
         line_num += 1
 
         if line_num == 2:
             middle_data = '"current_os_version": "'+line.strip().split('|')[1]+'",'
-            system_list = FixedPageInfo.page_system_info + middle_data
+            system_list = FixedInfo.page_system_info + middle_data
 
         if line_num == 3:
             middle_data = '"current_os_kennel_version": "'+line.strip().split('|')[1]+'",'
@@ -92,12 +93,12 @@ def get_softpkg_compatibility():
         输入参数：无
         返 回 值：json数据
     '''
-    softpkg_page = FixedPageInfo.page_softpkg_first_column + \
-            rpmpkg_formatting(FixedPageInfo.unique_pkgname)
+    softpkg_page = FixedInfo.current_head_info + \
+            get_cur_sys_version() + '","data":' + \
+            rpmpkg_formatting(FixedInfo.unique_pkgname) + '},'
 
-    return softpkg_page + \
-            FixedPageInfo.page_softpkg_third_column + \
-            rpmpkg_formatting(FixedPageInfo.install_pkgname).rsplit(',', 1)[0]+"}," 
+    return softpkg_page + FixedInfo.total_head_info + ',"data":' + \
+            rpmpkg_formatting(FixedInfo.total_pkgname)+"}}," 
 
 def get_rpm_chkinfo():
     '''
@@ -107,29 +108,33 @@ def get_rpm_chkinfo():
         返 回 值：json数据
     '''
     third_tab = ''
-    rpm_file_name = FixedPageInfo.inventory_data_dir + '/abi-incomp-chk.csv'
+    rpm_file_name = FixedInfo.inventory_dir + '/abi-incomp-chk.csv'
     for line in open(rpm_file_name, 'r'):
-        element_list = line.strip().split(',', 5)
-        element = '{"name":"'+element_list[0]+\
-                '","is_compatible": "'+element_list[3]+\
-                '","current_version": "'+element_list[2]+\
-                '","incompatibility_type": "'+element_list[4]+\
-                '","incompatibility_sources": "'+element_list[1]+\
-                '","description": "'+element_list[5]+'"},'
+        element_list = line.strip().split(',', 6)
+        if element_list[4] == 'N':
+            compatible = 'false'
+            element = '{"name":"'+element_list[0]+\
+                    '","is_compatible": '+compatible+\
+                    ',"current_version": "'+element_list[2]+\
+                    '","future_version": "'+element_list[3]+\
+                    '","incompatible_type": "'+element_list[5]+\
+                    '","incompatible_source": "'+element_list[1]+\
+                    '","description": "'+element_list[6]+'"},'
+        else:
+            compatible = 'true'
+            element = '{"name":"'+element_list[0]+\
+                    '","is_compatible": '+compatible+'},'
         third_tab = third_tab + element
-    return FixedPageInfo.page_rpm_tabs +third_tab.rsplit(',',1)[0]+']},'
+    return FixedInfo.page_rpm_tabs +third_tab.rsplit(',',1)[0]+']}}'
 
-def xlsTohtml(hardware_json_info):
+def xlsTohtml():
     '''
-        应用场景：存量替换迁移评估检查，包括系统基本信息，软件包对比，RPM兼容性检测和硬件兼容性对比
+        应用场景：存量替换迁移评估检查，包括系统基本信息，软件包对比，RPM兼容性检测
         功    能：1xxxa版系统基本信息，软件包对比，RPM兼容性对比，按照前后端接口生成json格式数据
-                  1xxxe版硬件兼容性对比，按照前后端接口生成json数据
-        输出参数：hardware_json_info 硬件兼容性对比结果
+        输入参数：无
         返 回 值：json数据
     '''
     return get_system_info()+\
             get_softpkg_compatibility()+\
-            get_rpm_chkinfo()+\
-            FixedPageInfo.page_hardware_tabs+\
-            hardware_json_info+'}}'
+            get_rpm_chkinfo()
 
