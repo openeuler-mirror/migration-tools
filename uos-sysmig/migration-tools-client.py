@@ -1,5 +1,3 @@
-# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
-# SPDX-License-Identifier:   MulanPubL-2.0-or-later
 from flask import Flask, render_template, url_for, request, Response
 from logger import Logger
 from miscellaneous import *
@@ -7,6 +5,7 @@ from sysmig_agent.share import getSysMigConf
 from sysmig_agent.fork import post_task
 import os
 import json
+
 
 app = Flask(__name__)
 os.chdir('/usr/lib/uos-sysmig-agent')
@@ -75,3 +74,6 @@ if __name__ == '__main__':
     ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
     port = int(json.loads(uos_sysmig_conf).get('agentport').strip()[1:-1])
     app.run(debug=True, host=ip, port=port,use_reloader=False)
+
+
+
