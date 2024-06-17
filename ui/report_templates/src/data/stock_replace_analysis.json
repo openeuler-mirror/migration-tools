@@ -1,0 +1,44 @@
+{
+  "type": "stock_replace_analysis",
+  "packages_tabs": {
+    "name": "软件包列表",
+    "current_os_item": {
+      "name": "当前系统特有（不替换）CentOS Linux 8 (Core)",
+      "data": ["centos-backgrounds", "centos-gpg-keys"]
+    },
+    "future_os_item": {
+      "name": "迁移统特有（新安装）UOS Server Enterprise-C 20",
+      "data": [
+        "libe-boot",
+        "perl-Tk",
+        "libe-boot",
+        "perl-Tk",
+        "libe-boot",
+        "perl-Tk",
+        "libe-boot",
+        "perl-Tk"
+      ]
+    },
+    "total_list_item": {
+      "name": "迁移系统软件包总列表 UOS Server Enterprise-C 20",
+      "data": [
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr"
+      ]
+    }
+  }
+}
