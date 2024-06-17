@@ -17,7 +17,9 @@ mods = {
         'check_repo': post_task,
         'check_kernel': post_task,
         'check_environment': post_task,
-        'system_migration': post_task
+        'system_migration': post_task,
+        'check_add_repo': check_add_repo,
+        'check_add_environment': check_add_environment
         }
 
 
@@ -62,6 +64,20 @@ def mt_check_environment():
 
 @app.route('/system_migration', methods=['GET', 'POST'])
 def mt_system_migration():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/check_add_repo', methods=['GET', 'POST'])
+def check_add_repo():
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/check_add_environment', methods=['GET', 'POST'])
+def check_add_environment():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
