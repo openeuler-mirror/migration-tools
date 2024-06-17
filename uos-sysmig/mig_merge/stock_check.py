@@ -6,14 +6,11 @@ import sys
 import json
 import socket
 
-#for test
-sys.path.append("..")
-
-from sysmig_agent.migrationTools.utils.logger import Logger
-from sysmig_agent.migrationTools.scanHardware import utils
-from sysmig_agent.Abisystmcompchk import migrate_before_abi_chk 
-from mig_merge.config import FixedPageInfo
-import mig_merge.stock_replace.stock as stock 
+from migrationTools.utils.logger import Logger
+from migrationTools.scanHardware import utils
+from Abisystmcompchk import migrate_before_abi_chk 
+from config import FixedPageInfo
+import stock_replace.stock as stock 
 
 logger = Logger(__name__)
 

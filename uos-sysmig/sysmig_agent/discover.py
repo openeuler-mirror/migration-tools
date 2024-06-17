@@ -1,3 +1,4 @@
+from sysmig_agent.agent_request import post_server
 from sysmig_agent.short_task import sql_task_statue, json
 from sysmig_agent.migrationTools.scanRPM.scan_rpm import generate_rpm_list_js
 from sysmig_agent.migrationTools.scanConf.scanconf import ScanConf

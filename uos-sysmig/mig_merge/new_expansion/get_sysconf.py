@@ -6,8 +6,8 @@
 import json
 import os
 
-from sysmig_agent.migrationTools.scanConf import utils
-from sysmig_agent.migrationTools.scanConf.conent_parser import ContentParser
+from mig_merge.migrationTools.scanConf import utils
+from mig_merge.migrationTools.scanConf.conent_parser import ContentParser
 
 def get_sysctl_a_data():
     cmd = "sysctl -a"

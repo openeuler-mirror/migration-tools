@@ -3,12 +3,9 @@ import sys
 import rpm
 import json
 
-#for test
-sys.path.append("../..")
-
 from mig_merge.config import FixedPageInfo
-from sysmig_agent.migrationTools.scanRPM.scan_rpm import get_current_pkg_list
-from sysmig_agent.migrationTools.scanRPM.db_operates import DBOperate
+from mig_merge.migrationTools.scanRPM.scan_rpm import get_current_pkg_list
+from mig_merge.migrationTools.scanRPM.db_operates import DBOperate
 
 def system_version_id():
     '''

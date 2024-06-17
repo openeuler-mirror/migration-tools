@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import re
+from share import get_local_ip, abi_txt2xls_trans, sql_mig_statue, run_cmd2file
 from sysmig_agent.share import *
 from sysmig_agent.centos82uos import *
 
