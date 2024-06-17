@@ -29,14 +29,27 @@ def import_host_info(data):
         json_data = json.dumps(data)
         return json_data
 
-    sql = "insert into agent_info(agent_ip, agent_username, agent_passwd) values (%s, %s, AES_ENCRYPT(%s, 'coco'));"
+    sql = "insert into agent_info(agent_ip, agent_username, agent_passwd, type, migration_type) " \
+          "values (%s, %s, AES_ENCRYPT(%s, 'coco'), %s, %s);"
+    agent_ip_sql = "select agent_ip from agent_info;"
+    get_agent_ip = DBHelper().execute(agent_ip_sql).fetchall()
+    agent_ip_list = []
+    if get_agent_ip:
+        for i in get_agent_ip:
+            agent_ip_list.append(i[0])
+
     for i in agent_info:
         agent_ip = i.get('agent_ip')
         agent_username = i.get('agent_hostname')
         agent_passwd = i.get('agent_password')
-        val = ((agent_ip, agent_username, agent_passwd),)
-        info = DBHelper().insert(sql, val)
-        create_task_stream(agent_ip)
+        check_type = i.get('type')
+        migration_type = i.get('migration_type')
+        if agent_ip in agent_ip_list:
+            pass
+        else:
+            val = ((agent_ip, agent_username, agent_passwd, check_type, migration_type),)
+            info = DBHelper().insert(sql, val)
+            create_task_stream(agent_ip)
 
     time = datetime.now().strftime('%Y-%-m-%d %H:%M:%S')
     uos_sysmig_conf = json.loads(getSysMigConf())
@@ -95,7 +108,7 @@ def check_user(data):
     检测账户权限
     :return:
     """
-    check_type = json.loads.get('type')
+    check_type = json.loads(data).get('type')
     check_user_res = CDLL('./check_user_authority.so')
     data = check_user_res.check_user_authority(check_type.encode())
     if data == 0:
@@ -103,7 +116,7 @@ def check_user(data):
     else:
         data = {"data": "success", "num": data}
     json_data = json.dumps(data)
-    return jaon_data
+    return json_data
 
 
 def update_agent_online_status(data):
@@ -231,16 +244,16 @@ def get_repo_data(data):
         json_data = json.dumps(data)
         return json_data
     else:
-        centos7_x86_sql = "select agent_ip from agent_info where agent_os='centos7' " \
+        centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
                           "and agent_arch='x86_64' and repo_status=1;"
 
-        centos8_x86_sql = "select agent_ip from agent_info where agent_os='centos8' " \
+        centos8_x86_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
                           "and agent_arch='x86_64' and repo_status=1;"
 
-        centos7_aarch64_sql = "select agent_ip from agent_info where agent_os='centos7' " \
+        centos7_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
                               "and agent_arch='aarch64' and repo_status=1;"
 
-        centos8_aarch64_sql = "select agent_ip from agent_info where agent_os='centos8' " \
+        centos8_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
                               "and agent_arch='aarch64' and repo_status=1;"
 
         data = {}
@@ -585,10 +598,19 @@ def get_repo_arch_info(data):
     sql = "select agent_os,agent_arch from agent_info where agent_online_status='0' and agent_storage>='10' " \
           "and agent_migration_os is null;"
     get_info = DBHelper().execute(sql).fetchall()
+    get_info_list = []
+    for i in get_info:
+        get_info_list.append(list(i))
+
+    for i in get_info_list :
+        if i[0] == 'redhat7':
+            i[0] = 'centos7'
+        if i[0] == 'redhat8':
+            i[0] = 'centos8'
 
     info_list = []
     info_dict_keys_list = ['agent_os', 'agent_arch']
-    for i in get_info:
+    for i in get_info_list:
         info_list.append(dict(zip(info_dict_keys_list, i)))
 
     res = {}

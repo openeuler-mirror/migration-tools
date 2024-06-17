@@ -1,4 +1,5 @@
 
+
 def dataplaceholder_replace(template, report, replace_str):
     '''按照前后端接口（json格式）替换检测报告中数据占位符 "dataPlaceholder"
         参数：

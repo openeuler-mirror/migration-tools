@@ -1,3 +1,7 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+import os
 import sys
 import json
 import platform
@@ -61,5 +65,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
