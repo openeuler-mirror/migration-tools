@@ -26,7 +26,6 @@ def mycopyfile(template_name, dst_name):
 
     return dstfile
 
-
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(('8.8.8.8', 80))
@@ -34,14 +33,13 @@ def get_local_ip():
     s.close()
     return ip
 
-def rpmpkg_formatting(file_name):
+def rpmpkg_formatting(file_name): 
     '''格式化输出存量json数据
     '''
     format_info = ''
     for line in open(file_name, 'r'):
         format_info = format_info+'"'+line.strip()+'",'
     return format_info.rsplit(',',1)[0]+"]},"
-
 
 def get_system_info():
     '''
@@ -102,8 +100,7 @@ def get_softpkg_compatibility():
 
     return softpkg_page + \
             FixedPageInfo.page_softpkg_third_column + \
-            rpmpkg_formatting(FixedPageInfo.install_pkgname).rsplit(',', 1)[0]+"},"
-
+            rpmpkg_formatting(FixedPageInfo.install_pkgname).rsplit(',', 1)[0]+"}," 
 
 def get_rpm_chkinfo():
     '''
@@ -138,5 +135,4 @@ def xlsTohtml(hardware_json_info):
             get_rpm_chkinfo()+\
             FixedPageInfo.page_hardware_tabs+\
             hardware_json_info+'}}'
-
 

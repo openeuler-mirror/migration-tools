@@ -33,7 +33,7 @@ def get_rpms_from_sqlite():
     '''
 
     migration_file_name = FixedPageInfo.inventory_data_dir + '/migration-before-uelc20-rpm-tmp.csv'
-    if os.path.isfile(migration_file_name):
+    if os.path.isfile(migration_file_name): 
         os.remove(migration_file_name)
     fp = open(migration_file_name, mode='w')
 
@@ -48,7 +48,7 @@ def read_migration_before_info(before_name):
     newline = "\\n'"
     single_quotes = "'"
 
-    migration_behind_name =
+    migration_behind_name = 
     with open(before_name, mode='r') as fbp:
         return str(fbp.readlines()).replace(newline, '"').replace(single_quotes, '"')
 
@@ -62,10 +62,10 @@ def migration_confirm():
     '''
     migration_file_name = FixedPageInfo.inventory_data_dir + '/migration-before-eln-rpm-tmp.csv'
 
-    if os.path.isfile(migration_file_name):
+    if os.path.isfile(migration_file_name): 
         read_migration_before_info(migration_file_name)
         return '0'
-
+     
     dist='.uelc20'
     ts = rpm.TransactionSet()
     mi = ts.dbMatch()
