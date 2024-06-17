@@ -11,6 +11,7 @@ from miscellaneous import *
 from views.migration import *
 from views.server import *
 from flask_cors import CORS
+from views.new_expansion import *
 
 
 # import MySQLdb
@@ -44,8 +45,9 @@ mods = {
         'close_tool': close_tool,
         'modify_task_status': modify_task_status,
         'get_analysis_migrated_hosts': get_analysis_migrated_hosts,
+        'check_add_repo': check_add_repo,
+        'get_add_repo_data': get_add_repo_data,
         'modify_migration_type': modify_migration_type
-
         }
 
 
@@ -79,6 +81,30 @@ def get_analysis_migrated_hosts():
     mod = check_methods()
     if mod:
         return Response(mod, content_type='application/json')
+
+
+@app.route('/check_add_repo', methods=['GET', 'POST'])
+def check_add_repo():
+    """
+    下发新增扩容软件仓库检测
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/get_add_repo_data', methods=['GET', 'POST'])
+def get_add_repo_data():
+    """
+    获取新增扩容软件仓库检测结果
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
 @app.route('/modify_task_status', methods=['GET', 'POST'])
 def modify_task_status():
     """
@@ -105,17 +131,6 @@ def get_repo_arch_info():
 def get_storage_num():
     """
     获取可用空间足够和不足数量
-    :return:
-    """
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/export_migration_reports', methods=['GET', 'POST'])
-def export_migration_reports():
-    """
-    导出报告
     :return:
     """
     mod = check_methods()
