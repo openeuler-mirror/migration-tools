@@ -162,3 +162,21 @@ def check_add_repo(data):
     get_agent_ip(data, sql, '/check_add_repo')
     return 'success'
 
+
+def check_add_environment(data):
+    """
+    agent新增扩容环境检测
+    :param data:
+    :return:
+    """
+    agent_ip_list = json.loads(data).get('agent_ip')
+    data = json.loads(data)
+    url = '/check_add_environment'
+    for i in agent_ip_list:
+        get_task_id_sql = "select task_id from cur_task where agent_ip='%s'" % i
+        task_id = DBHelper().execute(get_task_id_sql).fetchall()
+        data['task_id'] = task_id[0][0]
+        json_data = json.dumps(data)
+        send_task_to_agent(json_data, url, i)
+    return 'success'
+
