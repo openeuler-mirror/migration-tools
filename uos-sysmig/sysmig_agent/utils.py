@@ -12,7 +12,7 @@ class DBupload(object):
     Put reports into database based on folder contents.
     """
     types = {'UOS_analysis_report_add': '迁移检测报告-新增扩容', 'UOS_analysis_report': '迁移检测报告-存量替换',
-             'UOS_migration_completed_report': '迁移分析报告','UOS_migration_log':'日志'}
+             'UOS_migration_completed_report': '迁移分析报告', 'UOS_migration_log': '日志'}
 
     def __init__(self, htmlpath):
         super().__init__()
@@ -31,15 +31,16 @@ class DBupload(object):
         html = self.read_html()
         if not html:
             migration_log.error('Please check you report')
-            return 1
-	# report_type = self.html_path.split('.', -1)[len(self.html_path.split('.', -1)) - 1]
+            return False
+        # report_type = self.html_path.split('.', -1)[len(self.html_path.split('.', -1)) - 1]
         if not os.path.exists(self.html_path):
             migration_log.error('Can not found report..')
             return False
         if not self.types[os.path.basename(os.path.dirname(self.html_path))]:
             migration_log.error('Can not found report..')
         sql = "INSERT INTO report_info  ( agent_ip , report_type , report_name ,create_time, report_content) VALUES(" \
-              "'{}','{}','{}',NOW(),'{}');".format(get_local_ip(), self.types[os.path.basename(os.path.dirname(self.html_path))],
+              "'{}','{}','{}',NOW(),'{}');".format(get_local_ip(),
+                                                   self.types[os.path.basename(os.path.dirname(self.html_path))],
                                                    os.path.basename(self.html_path), html)
         try:
             ret = DBHelper().execute(sql)
@@ -55,7 +56,7 @@ class DBwrite(DBHelper):
     def __init__(self, getip, path='/var/uos-migration/'):
         super().__init__()
         self.getip = getip
-        self.path = path.strip('\n')+getip.strip('\n')+'/'
+        self.path = path.strip('\n') + getip.strip('\n') + '/'
 
     def write_file(self, sql):
         if not os.path.exists(self.path):

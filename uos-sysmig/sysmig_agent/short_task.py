@@ -13,7 +13,6 @@ from flask import Flask, render_template, url_for, redirect, make_response, sess
 import urllib.request
 from sysmig_agent.agent_request import post_server
 
-sys.path.append("..")
 from connect_sql import DBHelper
 
 
