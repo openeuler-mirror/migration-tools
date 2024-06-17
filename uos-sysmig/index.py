@@ -47,6 +47,8 @@ mods = {
         'get_analysis_migrated_hosts': get_analysis_migrated_hosts,
         'check_add_repo': check_add_repo,
         'get_add_repo_data': get_add_repo_data,
+        'check_add_environment': check_add_environment,
+        'get_add_environment_data': get_add_environment_data,
         'modify_migration_type': modify_migration_type
         }
 
@@ -98,6 +100,28 @@ def check_add_repo():
 def get_add_repo_data():
     """
     获取新增扩容软件仓库检测结果
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/check_add_environment', methods=['GET', 'POST'])
+def check_add_environment():
+    """
+    下发新增扩容环境检测
+    :return:
+    """
+    mod = check_methods()
+    if mod:
+        return Response(mod, content_type='application/json')
+
+
+@app.route('/get_add_environment_data', methods=['GET', 'POST'])
+def get_add_environment_data():
+    """
+    获取新增扩容环境检测结果
     :return:
     """
     mod = check_methods()
