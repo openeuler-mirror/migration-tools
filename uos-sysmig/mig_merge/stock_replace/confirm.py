@@ -3,9 +3,12 @@ import sys
 import rpm
 import json
 
-from mig_merge.config import FixedPageInfo
-from mig_merge.migrationTools.scanRPM.scan_rpm import get_current_pkg_list
-from mig_merge.migrationTools.scanRPM.db_operates import DBOperate
+#for temporary test
+#sys.path.append("..")
+
+from migrationTools.scanRPM.scan_rpm import get_current_pkg_list
+from migrationTools.scanRPM.db_operates import DBOperate
+from config import FixedInfo
 
 def system_version_id():
     '''
@@ -21,63 +24,144 @@ def system_version_id():
     fp.close()
     return line.split('=',1)[1].replace('"','').replace('\n','')
 
-def get_rpms_from_sqlite():
+def get_cur_sys_version():
     '''
-        应用场景：跳过存量替换迁移检查，获取系统所有rpm包
-        功    能：从.sqlite中获取所有rpm包名，作为存量替换迁移分析报告中数据
+        应用场景：系统说明信息
+        功    能：获取系统说明，如 CentOS Linux 8 (Core)
         输入参数：无
-        返 回 值：0-生成全量rpm包文成功件
+        返 回 值：CentOS Linux 8 (Core)
     '''
-
-    migration_file_name = FixedPageInfo.inventory_data_dir + '/migration-before-uelc20-rpm-tmp.csv'
-    if os.path.isfile(migration_file_name): 
-        os.remove(migration_file_name)
-    fp = open(migration_file_name, mode='w')
-
-    with DBOperate(FixedPageInfo.sqlite_name) as db:
-        db.execute_sql("select * from packages")
-        for row in db.cursor:
-            fp.write(row[2]+'\n')
+    fp = open('/etc/os-release', 'r')
+    for line in fp:
+        if 'PRETTY_NAME' in line:
+            break
     fp.close()
-    return 'success'
+    return line.split('=',1)[1].replace('"','').replace('\n','')
 
-def read_migration_before_info(before_name):
-    newline = "\\n'"
-    single_quotes = "'"
-
-    migration_behind_name = 
-    with open(before_name, mode='r') as fbp:
-        return str(fbp.readlines()).replace(newline, '"').replace(single_quotes, '"')
-
-
-def migration_confirm():
+def gen_migration_behind_rpms():
     '''
-        应用场景：存量替换迁移分析操作之前，系统rpm包信息获取
-        功    能：是否存在rpm包信息文件？有-返回成功；无-生成
+        应用场景：系统迁移成功后，rpm包列表
+        功    能：获取当前系统release为【uelc20】的rpm包列表
         输入参数：无
-        返 回 值：0-存在rpm包信息文件；1-生成rpm包信息文件成功
+        返 回 值：rpm包名列表
     '''
-    migration_file_name = FixedPageInfo.inventory_data_dir + '/migration-before-eln-rpm-tmp.csv'
 
-    if os.path.isfile(migration_file_name): 
-        read_migration_before_info(migration_file_name)
-        return '0'
-     
     dist='.uelc20'
     ts = rpm.TransactionSet()
     mi = ts.dbMatch()
 
-    fp = open(migration_file_name, mode='w')
-    if system_version_id()== '7':
-        for rpm_pkg in mi:
-            #迁移前获取rpm包信息，过滤掉release为uelc20的包
-            if dist not in rpm_pkg['release'].decode():
-                fp.write(rpm_pkg['name'].decode()+'\n')
-    else:
-        for rpm_pkg in mi:
-            if dist not in rpm_pkg['release']:
+    behind_rpms_list = []
+    for rpm_pkg in mi:
+        if dist in rpm_pkg['release']:
+            behind_rpms_list.append(rpm_pkg['name'])
+    return json.dumps(behind_rpms_list)
+
+
+def gen_migration_info():
+    '''
+        应用场景：生成存量替换迁移分析后台数据
+        功    能：读取rpm包数据文件，获取迁移后系统rpm包列表
+                  按照前后端接口生成json格式数据
+        输入参数：无
+        返 回 值：
+    '''
+
+    sys_ver = FixedInfo.sys_version
+    eln_rpms = FixedInfo.migration_eln
+    uelc_rpms = FixedInfo.migration_uelc
+    head_info = '{"type":"stock_replace_analysis","packages_tabs": {"name": "软件包列表",'
+
+    newline = "\\n'"
+    single_quotes = "'"
+
+    current_info = '"current_os_item": {"name":"当前系统特有（不替换）'
+    with open(sys_ver, mode='r') as fsp:
+        sys_version = fsp.read().replace('\n', '')
+
+    head_data = head_info + current_info + sys_version + '",'
+
+    with open(eln_rpms, mode='r') as fbp:
+        current_data = '"data":' + str(fbp.readlines()).replace(newline, '"').replace(single_quotes, '"')
+    analysis_data = head_data + current_data + '},'
+
+
+    future_info = '"future_os_item": {"name": "迁移统特有（新安装）'
+    data_info = analysis_data + future_info + get_cur_sys_version() + '",'
+    current_data = '"data":' + gen_migration_behind_rpms()
+    future_data = data_info + current_data + '},'
+
+    total_info = '"total_list_item": {"name": "迁移系统软件包总列表 '
+    data_info = future_data + total_info + get_cur_sys_version() + '",'
+    with open(uelc_rpms, mode='r') as fup:
+        current_data = '"data":' + str(fup.readlines()).replace(newline, '"').replace(single_quotes, '"')
+    total_data = data_info + current_data + '}}}'
+
+    return total_data
+
+def gen_uelc_rpms(uelc_name):
+    '''
+        应用场景：跳过存量替换迁移检查，获取系统所有rpm包
+        功    能：从.sqlite中获取所有rpm包名，作为存量替换迁移分析报告中数据
+        输入参数：无
+        返 回 值：True-生成全量rpm包文成功件
+    '''
+
+    if os.path.isfile(uelc_name):
+        os.remove(uelc_name)
+    all_rpms = ''
+    fp = open(uelc_name, mode='w')
+    with DBOperate(FixedInfo.sqlite_name) as db:
+        db.execute_sql("select * from packages")
+        for row in db.cursor:
+            fp.write(row[2]+'\n')
+            all_rpms = all_rpms + row[2]+','
+    fp.close()
+    return all_rpms.rsplit(',', 1)[0]
+
+def gen_eln_rpms(eln_name, uos_rpms_list):
+    '''
+        应用场景：系统迁移前，当前系统特有rpm包
+        功    能：当前系统存在，uos源不存在的rpm包
+        输入参数：eln_name当前系统特有rpm包文件名
+                  uos_rpms_list uos源中rpm包列表
+        返 回 值：True-成功；False-失败
+    '''
+
+    dist='.uelc20'
+    ts = rpm.TransactionSet()
+    mi = ts.dbMatch()
+
+    fp = open(eln_name, mode='w')
+    for rpm_pkg in mi:
+        #迁移前获取rpm包信息，过滤掉release为uelc20的包
+        if dist not in rpm_pkg['release']:
+            if rpm_pkg['name'] not in uos_rpms_list:
                 fp.write(rpm_pkg['name']+'\n')
     fp.close()
-    get_rpms_from_sqlite()
+
+    return True
+
+def migration_confirm():
+    '''
+        应用场景：存量替换迁移分析操作之前，rpm包信息存在性判断
+        功    能：确认是否存在rpm包信息文件，有-成功；无-生成
+        输入参数：无
+        返 回 值：0-存在rpm包信息文件；'1'-生成rpm包信息文件成功
+    '''
+
+    file_eln = FixedInfo.migration_eln
+    file_uelc = FixedInfo.migration_uelc
+
+    if os.path.isfile(file_eln) and os.path.isfile(file_uelc): 
+        print('migration before the current system rpms files exist!!!')
+        return '0'
+
+    uelc_list = gen_uelc_rpms(file_uelc)
+    if uelc_list:
+        print('get uos repo source rpms list success')
+
+    if gen_eln_rpms(file_eln,uelc_list):
+        print('get eln unique rpms file success')
+
     return '1'
 
