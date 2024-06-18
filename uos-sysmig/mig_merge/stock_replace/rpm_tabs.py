@@ -36,7 +36,7 @@ def rpm_tabs():
                     '","is_compatible": '+compatible+'},'
         third_tab = third_tab + element
     #migration_log.info('Get rpm packages info:{}'.format(third_tab))
-    return FixedInfo.page_rpm_tabs +third_tab.rsplit(',',1)[0]+']}},'
+    return FixedInfo.page_rpm_tabs +third_tab.rsplit(',',1)[0]+']},'
 
 def main():
     rpm_tabs()
