@@ -3,10 +3,11 @@
 
 import os
 
-from new_expansion.merge import MigrationMerge
+from new_expansion.expansion import MigrationMerge
 
 def new_expansion_check():
     jsonstr = MigrationMerge()
+    print('jsonstr')
 
 def main():
     new_expansion_check()
