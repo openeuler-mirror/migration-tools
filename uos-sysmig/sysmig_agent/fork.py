@@ -251,15 +251,19 @@ def if_env_check(data):
 
 def post_task(data):
     task_mod = json.loads(data).get('mod')
+    if not if_env_check(data):
+        return 'success'
     if 'check_info' == task_mod:
         t = threading.Thread(target=check_info, args=[data])
     elif 'check_repo' == task_mod:
         t = threading.Thread(target=check_repo, args=[data])
+    elif 'check_add_repo' == task_mod:
+        add_repo = RepoFileAdd(data)
+        t = threading.Thread(target=add_repo.run)
     elif 'check_kernel' == task_mod:
         t = threading.Thread(target=check_kernel, args=[data])
     elif 'check_environment' == task_mod:
-        if if_env_check(data):
-            t = threading.Thread(target=check_environment, args=[data])
+        t = threading.Thread(target=check_environment, args=[data])
     elif 'check_scanrpms' == task_mod:
         det = DetInformation(data)
         t = threading.Thread(target=det.check_scanrpms)
