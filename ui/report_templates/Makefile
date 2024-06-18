@@ -45,6 +45,7 @@ release:
 		sed -i '/resolve(__dirname/s|//||g' vite.config.js; \
 	done
 # 最终结果发布到 dist 目录下
+	rm -rf dist/*
 	mv ${RELEASE_DIR}/*.html dist/
 	rm -rf ${RELEASE_DIR}
 
