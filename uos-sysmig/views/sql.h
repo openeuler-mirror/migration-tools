@@ -4,6 +4,7 @@ typedef struct CHECK_DATA
     char *ip;
     char *user;
     char *password;
+    char *mode;
 }CHECK_DATA;
 
 MYSQL conn;
@@ -57,7 +58,7 @@ int get_Data(const char* db_user, const char* db_password, const char* db_databa
             
            
         connection(db_user, db_password, db_database);
-        res = mysql_query(&conn, "select agent_ip, agent_username, AES_DECRYPT(agent_passwd, 'coco')  from agent_info where agent_online_status = 0");
+        res = mysql_query(&conn, "select agent_ip, agent_username, type, AES_DECRYPT(agent_passwd, 'coco') from agent_info where agent_online_status = 0");
         if(res)//执行sql语句
         {
                 len=0;
@@ -84,6 +85,10 @@ int get_Data(const char* db_user, const char* db_password, const char* db_databa
                         k++;
                         data[i].user = (char*)malloc(sizeof(char) * strlen(sqlrow[k]));
                         strcpy(data[i].user,sqlrow[k]);
+
+			k++;
+                        data[i].mode = (char*)malloc(sizeof(char) * strlen(sqlrow[k]));
+                        strcpy(data[i].mode,sqlrow[k]);
 
                         k++;
                         if ( sqlrow[k] == NULL )

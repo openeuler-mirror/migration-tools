@@ -39,7 +39,7 @@ int get_database(char *name, char **res)
                                 {
                                         buf0[j]='\0';
                                         *res = (char*)malloc(sizeof(char) * j);
-                                        memcpy(*res,buf0,j);
+					strcpy(*res,buf0);
                                         free(buf0);
                                 }
                                 else if(flag==1 && buf[i]!='\"')

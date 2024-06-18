@@ -42,7 +42,7 @@ int restart_ser(char *yum_shell, char *cp_shell, char *s_ser_shell, char *c_ser_
 		return 4;//4用于在数据库中标志yum错误
 	cp_conf=system(cp_shell);
         if(cp_conf)
-                return cp_conf;
+                return 5;
 
 	system(s_ser_shell);
         s_start=system(c_ser_shell);
