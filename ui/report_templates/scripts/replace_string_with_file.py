@@ -14,5 +14,11 @@ def parse_args():
 
     return parser.parse_args()
 
+def replace_string_with_file(file1, file2, string, output):
+    with open(file1, 'r') as f1, open(file2, 'r') as fs:
+        with open(output, 'w') as fo:
+            fo.write(f1.read().replace(string, fs.read()))
+
 if __name__ == "__main__":
     args = parse_args()
+    replace_string_with_file(args.file1, args.file2, args.string, args.output)
