@@ -60,71 +60,39 @@ def get_add_repo_data(data):
     task_status_sql = "select agent_id from agent_task where task_status=2"
     get_task_status = DBHelper().execute(task_status_sql).fetchall()
     if len(get_task_status) == 0:
-        data = {"centos7_x86": "", "centos8_x86": "", "centos7_aarch64": "", "centos8_aarch64": ""}
+        data = {"migration_x86_64": "", "migration_aarch64": ""}
         json_data = json.dumps(data)
         return json_data
     else:
         if agent_ip_list == []:
-            centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
-                              "and agent_arch='x86_64' and repo_status=1 and agent_online_status='0' and " \
-                              "agent_migration_os is null and migration_type='new_expansion';"
+            x86_sql = "select agent_ip from agent_info where agent_arch='x86_64' and repo_status=1 " \
+                              "and agent_online_status='0' and agent_migration_os is null " \
+                              "and migration_type='new_expansion';"
 
-            centos8_x86_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
-                              "and agent_arch='x86_64' and repo_status=1 agent_online_status='0' and " \
-                              "agent_migration_os is null and migration_type='new_expansion';"
-
-            centos7_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
-                                  "and agent_arch='aarch64' and repo_status=1 agent_online_status='0' and " \
-                                  "agent_migration_os is null and migration_type='new_expansion';"
-
-            centos8_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
-                                  "and agent_arch='aarch64' and repo_status=1 agent_online_status='0' and " \
-                                  "agent_migration_os is null and migration_type='new_expansion';"
+            aarch64_sql = "select agent_ip from agent_info where agent_arch='aarch64' and repo_status=1 " \
+                          "and agent_online_status='0' and agent_migration_os is null and " \
+                          "migration_type='new_expansion';"
         else:
-            centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
-                              "and agent_arch='x86_64' and repo_status=1 and agent_online_status='0' and " \
-                              "agent_migration_os is null and agent_ip in %s and migration_type='new_expansion'" \
-                              ";" % tuple(agent_ip_list)
+            x86_sql = "select agent_ip from agent_info where agent_arch='x86_64' and repo_status=1 and " \
+                              "agent_online_status='0' agent_migration_os is null and agent_ip in " \
+                              "%s and migration_type='new_expansion';" % tuple(agent_ip_list)
 
-            centos8_x86_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
-                              "and agent_arch='x86_64' and repo_status=1 agent_online_status='0' and " \
-                              "agent_migration_os is null and agent_ip in %s and migration_type='new_expansion'" \
-                              ";" % tuple(agent_ip_list)
-
-            centos7_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
-                                  "and agent_arch='aarch64' and repo_status=1 agent_online_status='0' and " \
-                                  "agent_migration_os is null and agent_ip in %s and " \
-                                  "migration_type='new_expansion';" % tuple(agent_ip_list)
-
-            centos8_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
-                                  "and agent_arch='aarch64' and repo_status=1 agent_online_status='0' and " \
-                                  "agent_migration_os is null and agent_ip in %s and " \
-                                  "migration_type='new_expansion';" % tuple(agent_ip_list)
+            aarch64_sql = "select agent_ip from agent_info where agent_arch='aarch64' and repo_status=1 and " \
+                          "agent_online_status='0' and agent_migration_os is null and agent_ip in %s and " \
+                          "migration_type='new_expansion';" % tuple(agent_ip_list)
 
         data = {}
-        get_centos7_x86_status = DBHelper().execute(centos7_x86_sql).fetchall()
-        if len(get_centos7_x86_status) == 0:
-            data['migration_before_x86_64'] = 'success'
+        get_x86_sql = DBHelper().execute(x86_sql).fetchall()
+        if len(get_x86_sql) == 0:
+            data['migration_x86_64'] = 'success'
         else:
-            data['migration_before_x86_64'] = 'faild'
+            data['migration_x86_64'] = 'faild'
 
-        get_centos8_x86_status = DBHelper().execute(centos8_x86_sql).fetchall()
-        if len(get_centos8_x86_status) == 0:
-            data['migration_after_x86_64'] = 'success'
+        get_aarch64_sql = DBHelper().execute(aarch64_sql).fetchall()
+        if len(get_aarch64_sql) == 0:
+            data['migration_aarch64'] = 'success'
         else:
-            data['migration_after_x86_64'] = 'faild'
-
-        get_centos7_aarch64_status = DBHelper().execute(centos7_aarch64_sql).fetchall()
-        if len(get_centos7_aarch64_status) == 0:
-            data['migration_before_aarch64'] = 'success'
-        else:
-            data['migration_before_aarch64'] = 'faild'
-
-        get_centos8_aarch64_status = DBHelper().execute(centos8_aarch64_sql).fetchall()
-        if len(get_centos8_aarch64_status) == 0:
-            data['migration_after_aarch64'] = 'success'
-        else:
-            data['migration_after_aarch64'] = 'faild'
+            data['migration_aarch64'] = 'faild'
 
         json_data = json.dumps(data)
         return json_data
@@ -149,7 +117,7 @@ def get_add_environment_data(data):
     finall_progress = []
     for i in progress:
         sql = "select agent_id from agent_info where agent_ip='%s' and agent_online_status=0 and repo_status=0 " \
-              "and agent_storage>=10 and agent_migration_os is null;" % i[0]
+              "and agent_migration_os is null;" % i[0]
         get_sql = DBHelper().execute(sql).fetchall()
         if get_sql:
             finall_progress.append(list(i))
