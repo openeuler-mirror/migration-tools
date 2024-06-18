@@ -9,10 +9,10 @@ def dataplaceholder_replace(template, report, replace_str):
         返回：
             report 检测报告(html)
     '''
-    dataplaceholder = '"dataPlaceholder"'
+
+    dataplaceholder = 'dataPlaceholder'
     fp = open(report, mode='w')
     for line in open(template, mode='r'):
-        num += 1
         if 'dataPlaceholder' in line:
             line = line.replace(dataplaceholder, replace_str)
         fp.write(line)
