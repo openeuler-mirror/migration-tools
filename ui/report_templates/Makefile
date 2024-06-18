@@ -54,7 +54,21 @@ release:
 	find src/ -name "App.vue" | xargs -I {} sed -i '/dataPlaceholder/s|// import|import|g' {}
 
 dev:
-	npm run dev
+# 开发模式
+	declare -A pages=(
+		[rc]="stock_replace_check"
+		[ra]="stock_replace_analysis"
+		[ec]="new_expansion_check"
+	)
+	for key in $$(echo $${!pages[@]});do \
+		value=$${pages[$$key]}; \
+		jq -c . src/data/$${value}.json > ./.$${value}.json; \
+		scripts/replace_string_with_file.py -s "dataPlaceholder" -f1 dist/$${value}.html -f2 ./.$${value}.json -o dist/$${value}-dev.html; \
+		rm -f ./.$${value}.json; \
+	done
+# 打开网页，查看网页是否正常
+	python3 -m http.server -d dist
+
 
 .PHONY: release
 .DEFAULT_GOAL := release
