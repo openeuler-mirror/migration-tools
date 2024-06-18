@@ -130,3 +130,36 @@ def get_add_repo_data(data):
         return json_data
 
 
+def get_add_environment_data(data):
+    """
+    获取新增扩容分析进度
+    :return:
+    """
+    agent_ip_list = json.loads(data).get('agent_ip')
+    if agent_ip_list == []:
+        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
+                                  "and migration_type='new_expansion';"
+    else:
+        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task where agent_ip in %s " \
+                                  "and migration_type='new_expansion';" % \
+                                  tuple(agent_ip_list)
+    progress = DBHelper().execute(get_environment_pro_sql).fetchall()
+    res = {}
+    info_list = []
+    finall_progress = []
+    for i in progress:
+        sql = "select agent_id from agent_info where agent_ip='%s' and agent_online_status=0 and repo_status=0 " \
+              "and agent_storage>=10 and agent_migration_os is null;" % i[0]
+        get_sql = DBHelper().execute(sql).fetchall()
+        if get_sql:
+            finall_progress.append(list(i))
+
+    info_dict_keys_list = ['agent_ip', 'task_progress', 'task_status']
+    for i in finall_progress:
+        info_list.append(dict(zip(info_dict_keys_list, list(i))))
+
+    res['info'] = info_list
+    res['num'] = len(finall_progress)
+
+    json_res = json.dumps(res)
+    return json_res
