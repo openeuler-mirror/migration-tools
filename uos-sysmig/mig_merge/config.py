@@ -7,6 +7,9 @@ class FixedInfo():
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
+    #sqlite 数据目录
+    sqlite_dir = '/root/uos-sysmig/uos-sysmig/mig_merge/migrationTools/data/repo-sqlite'
+
     local_dir = '/var/tmp/uos-migration'
     template_dir = '../../ui/report_templates/dist'
     inventory_dir = os.path.join(local_dir, 'data/exp-rst')
@@ -48,3 +51,5 @@ class FixedInfo():
     #融合1xxxe版
     expansion_page_head = '{"type": "new_expansion_check","sysconffile_tabs": {"name": "SysSconf","data": ['
     hardware_tabs_head = '"hardware_tabs": {"name": "硬件兼容性","data":'
+
+    suffix_list = ['.mo', '.gz', '.xml', '.conf', '.png', '.page', '.woff', '.ttf', '.pyc', '.typelib', '.pdf', '.ppt', '.txt', '.ico', '.icc', '.tcc', '.gif', '.oga', '.rom', '.jpg', '.dict', '.webm', '.pyc', '.wav', '.ucode', '.ttc', '.gresource', '.otf', '.t1', '.db', '.elc', '.cache', '.fd', '.iso', '.efi', '.mmdb', '.bz2', '.img', '.bin', '.fw', '.cis', '.itb', '.inp', '.sbcf', '.ddc', '.sfi', '.bseq', '.mfa2', '.chk', '.mgc', '.stub', '.dfu', '.dat', '.sys', '.bts', '.dlmem', '.brd', '.hwm', '.pwd', '.pwi', '.exe', '.der', '.p12', '.ogg', '.signed', '.dafsa', '.gpg', '.tri', '.x86_64']
