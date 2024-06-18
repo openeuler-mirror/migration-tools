@@ -9,7 +9,6 @@ from views.reports import analysis_report_add, migration_completed_report, \
 from sysmig_agent.share import getSysMigConf
 from flask import request
 import json
-import paramiko
 import re
 
 
@@ -107,9 +106,8 @@ def check_user(data):
     检测账户权限
     :return:
     """
-    check_type = json.loads(data).get('type')
     check_user_res = CDLL('./check_user_authority.so')
-    data = check_user_res.check_user_authority(check_type.encode())
+    data = check_user_res.check_user_authority()
     if data == 0:
         data = {"data": "faild", "num": 0}
     else:
@@ -149,7 +147,7 @@ def host_info_display(data):
     agent_history_faild_reason,task_CreateTime,task_status
     :return:
     """
-    sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_arch," \
+    sql = "select agent_ip,hostname,agent_online_status,agent_os,migration_type,agent_arch," \
           "agent_history_faild_reason from agent_info;"
     data = DBHelper().execute(sql).fetchall()
     data = list(data)
@@ -170,7 +168,7 @@ def host_info_display(data):
     res = {}
     res['num'] = len(data)
     info_list = []
-    info_dict_keys_list = ['agent_ip', 'hostname', 'agent_online_status', 'agent_os', 'agent_arch',
+    info_dict_keys_list = ['agent_ip', 'hostname', 'agent_online_status', 'agent_os', 'migration_type', 'agent_arch',
                            'failure_reasons', 'task_CreateTime', 'task_status']
     for i in data:
         info_list.append(dict(zip(info_dict_keys_list, i)))
@@ -646,7 +644,7 @@ def get_repo_arch_info(data):
     :return:
     """
     sql = "select agent_os,agent_arch from agent_info where agent_online_status='0' and agent_storage>='10' " \
-          "and agent_migration_os is null;"
+          "and agent_migration_os is null and migration_type='stock_replacement';"
     get_info = DBHelper().execute(sql).fetchall()
     get_info_list = []
     for i in get_info:
