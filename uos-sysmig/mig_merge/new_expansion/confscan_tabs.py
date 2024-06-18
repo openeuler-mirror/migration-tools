@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 # coding=utf-8
 
@@ -50,3 +49,18 @@ def write_data_json(data, name):
         data_content = json.dumps(data)
         file.write(data_content)
 
+def confscan_tabs():
+    """
+    收集当前系统上的信息配置信息
+    """
+    conf_dir = PathConf.run_dir
+    new_conf_dir = PathConf.new_conf_dir
+    get_all_data()
+    gen_report = gen_conf_data
+    json_str = '"confscan_tabs": ' + gen_report(conf_dir, new_conf_dir) + ','
+
+    return json_str
+
+if __name__ == "__main__":
+    scan_conf = confscan_tabs()
+    print('scan_conf = %s' %(scan_conf))
