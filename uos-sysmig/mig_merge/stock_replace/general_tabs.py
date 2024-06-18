@@ -4,7 +4,7 @@ import json
 import socket
 from shutil import copyfile
 
-from logger import migration_log
+#from logger import migration_log
 from migrationTools.scanHardware import utils
 from stock_replace.confirm import get_cur_sys_version
 from config import FixedInfo
