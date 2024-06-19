@@ -5,6 +5,7 @@
 #include "/usr/include/mysql/mysql.h"
 #include "/usr/include/mysql/errmsg.h"
 #include "/usr/include/mysql/mysqld_error.h"
+
 #include "sql.h"
 #include "r_service.h"
 #include "p_check.h"
@@ -18,35 +19,35 @@
 
 int check_user_authority(void);
 int perm_check(char *perm_sql);
-int restart_ser(char *yum_shell, char *cp_shell, char *s_ser_shell, char *c_ser_shell, char **sys, char **cpu, char **hostname);
+int restart_ser(char *yum_shell, char *cp_shell, char *s_ser_shell, char *c_ser_shell);
 int c_Sec(char *check_sql);
 int add_knownhost(char *ip);
 int free_Sec(char *ip, char *user, char *password);
-int get_database(char *name, char **res);
+int get_database(char *name, unsigned long **res);
 int get_Data(const char* db_user, const char* db_password, const char* db_database, int len, CHECK_DATA *data);
 int get_Len(const char* user, const char* password, const char* database, char *sql);
 
 int check_user_authority(void)
 {
 	int len = 0,i = 0, num = 0 ;//定义指针存放需要检测的ip
-	int do_check = 1;
-
-	char *sys;
-	char *cpu;
-	char *hostname;
+	int do_check = 0;
 
 	//获取本地数据库配置参数
 	char *db_user;
+	unsigned long *db_pwd;
 	char *u_key="DB_USER";
 	char *db_database;
+	unsigned long *db_pwd1;
 	char *db_key="DB_NAME";
 	char *db_password;
+	unsigned long *db_pwd2;
 	char *pw_key="DB_PASSWORD";
 
+	int r_psw = 0;//密码正确性
 	int do_sql_res=0;//执行sql语句结果
 	int password_ssh = 0;//密码是否正确
 	int sec = 0; //查询是否免密
-	int free_sec_res = 1; //设置免密结果
+	int free_sec_res = 0; //设置免密结果
 	int perm_res = 0;	//权限验证结果
 	int restart_ser_res; //重启服务结果
 	
@@ -69,11 +70,37 @@ int check_user_authority(void)
 	cp_shell = (char*)malloc(sizeof(char) * 100);
 	s_ser_shell = (char*)malloc(sizeof(char) * 100);
 	c_ser_shell = (char*)malloc(sizeof(char) * 100);
+	db_pwd =  (unsigned long*)malloc(sizeof(unsigned long) * 20);
+	memset(db_pwd, 0, 20);
+	db_pwd1 =  (unsigned long*)malloc(sizeof(unsigned long) * 20);
+        memset(db_pwd1, 0, 20);
+	db_pwd2 =  (unsigned long*)malloc(sizeof(unsigned long) * 20);
+        memset(db_pwd2, 0, 20);
 
 	//获取数据库参数
-	get_database(u_key,&db_user);
-        get_database(pw_key,&db_password);
-        get_database(db_key,&db_database);
+	fflush(stdout);
+	get_database(u_key,&db_pwd);
+	db_user = (char*)malloc(sizeof(char) * (strlen((char *)db_pwd)+1));
+	//memcpy(db_user, (char *)db_pwd, strlen((char *)db_pwd));
+	strcpy(db_user, (char *)db_pwd);
+	free(db_pwd);
+	db_pwd = NULL;
+
+	//fflush(stdout);
+	get_database(db_key,&db_pwd1);
+        db_database = (char*)malloc(sizeof(char) * (strlen((char *)db_pwd1)+1));
+        //memcpy(db_user, (char *)db_pwd, strlen((char *)db_pwd));
+        strcpy(db_database, (char *)db_pwd1);
+        free(db_pwd1);
+	db_pwd1 = NULL;
+
+	fflush(stdout);
+        get_database(pw_key,&db_pwd2);
+        db_password = (char*)malloc(sizeof(char) * (strlen((char *)db_pwd2)+1));
+        //memcpy(db_user, (char *)db_pwd, strlen((char *)db_pwd));
+        strcpy(db_password, (char *)db_pwd2);
+	free(db_pwd2);
+	db_pwd2 = NULL;
 
 	//查询在线ip数量
 	strcpy(sql, "select agent_ip, agent_username from agent_info where agent_online_status = 0");
@@ -87,77 +114,75 @@ int check_user_authority(void)
 		//开始验证	
 		for( i=0; i<len; i++)
 		{
-			do_check = 1;
 			//模式输入判断
 	        	if(strcmp(data[i].mode,SSH)||strcmp(data[i].mode,PSW))
 			{
 				if(!add_knownhost(data[i].ip))
 				{
-					sprintf(check_sql_1, "sshpass -p %s_1 ssh %s@%s ls", data[i].password, data[i].user, data[i].ip);
+					sprintf(check_sql_1, "sshpass -e ssh -q -t %s@%s date", data[i].user, data[i].ip);
+					setenv("SSHPASS","",1); 
 					sec = c_Sec(check_sql_1);
+
 				}
 				if(sec)
 				{
-					sprintf(check_sql_2, "sshpass -p %s ssh %s@%s ls", data[i].password, data[i].user, data[i].ip);
-					if(c_Sec(check_sql_2))
-					{
-						sprintf(sql, "update agent_info set agent_online_status =2 where agent_ip = \"%s\"", data[i].ip);//未免密，且密码错误
-						do_check=0;
-					}
+					
+					sprintf(check_sql_2, "sshpass -p %s ssh  %s@%s date", data[i].password, data[i].user, data[i].ip);
+					r_psw = c_Sec(check_sql_2);
+					if(r_psw)
+						do_check = 1;//密码错误
 					else
 					{
 						if(!strcmp(data[i].mode,SSH))
 						{
 							free_sec_res=free_Sec(data[i].ip, data[i].user, data[i].password);//调用免密函数
 							if(free_sec_res)
-							{
-								sprintf(sql, "update agent_info set agent_online_status =3 where agent_ip = \"%s\"", data[i].ip);//免密失败
-							      	do_check=0;
-							}
+								do_check = 1;//免密失败
+							else
+								sec = 0;//免密成功
 						}
 						else
 						{
-							sprintf(c_ssh_shell, "sshpass -p  %s ssh %s@%s ls", data[i].password, data[i].user, data[i].ip);
-                                               		sprintf(perm_shell, "sshpass -p %s ssh %s@%s sudo -v", data[i].password, data[i].user, data[i].ip);
-                        	                  	sprintf(yum_shell, "sshpass -p %s ssh %s@%s yum install -y %s", data[i].password, data[i].user, data[i].ip, PACK_NAME);
-							sprintf(cp_shell, "sshpass -p %s scp %s %s@%s:%s", data[i].password, CONF_NAME, data[i].user, data[i].ip, CONF_NAME);
-							sprintf(s_ser_shell, "sshpass -p %s ssh %s@%s systemctl restart %s.service", data[i].password, data[i].user, data[i].ip, PACK_NAME);
-							sprintf(c_ser_shell,"sshpass -p %s ssh %s@%s systemctl status %s.service |grep running", data[i].password, data[i].user, data[i].ip, PACK_NAME);
+							//未免密
+							sprintf(c_ssh_shell, "sshpass -p  %s ssh %s@%s date", data[i].password, data[i].user, data[i].ip);
+							sprintf(perm_shell, "sshpass -p %s ssh %s@%s sudo -v", data[i].password, data[i].user, data[i].ip);
+                                                        sprintf(yum_shell, "sshpass -p %s ssh %s@%s yum install -y %s", data[i].password, data[i].user, data[i].ip, PACK_NAME);
+                                                        sprintf(cp_shell, "sshpass -p %s scp %s %s@%s:%s", data[i].password, CONF_NAME, data[i].user, data[i].ip, CONF_NAME);
+                                                        sprintf(s_ser_shell, "sshpass -p %s ssh %s@%s systemctl restart %s.service", data[i].password, data[i].user, data[i].ip, PACK_NAME);
+                                                        sprintf(c_ser_shell,"sshpass -p %s ssh %s@%s systemctl status %s.service |grep running", data[i].password, data[i].user, data[i].ip, PACK_NAME);
 						}
-					}
+					}			
 				}
-				if(!sec || !free_sec_res)
+				if(!sec)
 				{
-						sprintf(perm_shell, "ssh %s@%s sudo -v", data[i].user, data[i].ip);
-						sprintf(yum_shell, "ssh %s@%s yum install -y %s", data[i].user, data[i].ip, PACK_NAME);
-						sprintf(cp_shell, "scp %s %s@%s:%s", CONF_NAME, data[i].user, data[i].ip, CONF_NAME);
-						sprintf(s_ser_shell, "ssh %s@%s systemctl restart %s.service", data[i].user, data[i].ip, PACK_NAME);
-						sprintf(c_ser_shell,"ssh %s@%s systemctl status %s.service |grep running", data[i].user, data[i].ip, PACK_NAME);				
+					//免密
+					sprintf(perm_shell, "ssh %s@%s sudo -v", data[i].user, data[i].ip);
+                                        sprintf(yum_shell, "ssh %s@%s yum install -y %s", data[i].user, data[i].ip, PACK_NAME);
+                                        sprintf(cp_shell, "scp %s %s@%s:%s", CONF_NAME, data[i].user, data[i].ip, CONF_NAME);
+                                        sprintf(s_ser_shell, "ssh %s@%s systemctl restart %s.service", data[i].user, data[i].ip, PACK_NAME);
+                                        sprintf(c_ser_shell,"ssh %s@%s systemctl status %s.service |grep running", data[i].user, data[i].ip, PACK_NAME);	
 				}
-				if(do_check)
-				{
-					if( data[i].user  != "root" )
-						perm_res=perm_check(perm_shell);
-					if(perm_res)
-						sprintf(sql, "update agent_info set agent_online_status =1 where agent_ip = \"%s\"", data[i].ip);//权限检测失败
-					restart_ser_res=restart_ser(yum_shell, cp_shell, s_ser_shell, c_ser_shell, &sys, &cpu, &hostname); //重启uos-sysmig-agent.service服务
 
-					if(!(perm_res ||restart_ser_res))
+				if(do_check)
+					sprintf(sql, "update agent_info set agent_online_status =2, agent_history_faild_reason = \"agent连接失败\" where agent_ip = \"%s\"", data[i].ip);//agent连接失败
+				else
+				{
+					if(!strcmp(data[i].ip,"root"))
 					{
-						sprintf(sql, "update agent_info set agent_os =\"%s\", agent_arch = \"%s\", hostname = \"%s\" where agent_ip = \"%s\"", sys, cpu, hostname, data[i].ip);
-						//sql语句,更新数据库system、cpu、hostname
-						num++;
-						free(sys);
-						sys = NULL;
-						free(cpu);
-						cpu = NULL;
-						free(hostname);
-						hostname = NULL;
+						perm_res=perm_check(perm_shell);
 					}
+					if(perm_res)
+						sprintf(sql, "update agent_info set agent_online_status =1, agent_history_faild_reason = \"权限验证失败\" where agent_ip = \"%s\"", data[i].ip);//权限检测失败
+					restart_ser_res=restart_ser(yum_shell, cp_shell, s_ser_shell, c_ser_shell); //重启agent服务
 					if(!perm_res && restart_ser_res)
 					{
-						sprintf(sql, "update agent_info set agent_online_status =%d where agent_ip = \"%s\"",restart_ser_res, data[i].ip);//在数据库中标志重启服务失败具体错误原因
+						if (restart_ser_res ==4)
+							sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent安装失败\" where agent_ip = \"%s\"",restart_ser_res, data[i].ip);//agent安装失败
+						else if (restart_ser_res ==5)
+							sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent重启服务失败\" where agent_ip = \"%s\"",restart_ser_res, data[i].ip);//agent重启服务失败
 					}
+					if(!(perm_res ||restart_ser_res))
+						num++;
 				}
 				get_Len(db_user, db_password, db_database, sql);
 			}
@@ -193,6 +218,7 @@ int check_user_authority(void)
 	free(check_sql_1);
 	free(check_sql_2);
 	check_sql_2 = NULL;
+	fflush(stdout);
 	return num;
 
 }
