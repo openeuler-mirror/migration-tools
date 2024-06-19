@@ -133,9 +133,9 @@ def run_subprocess(cmd="", print_cmd=True, print_output=True):
     # Call communicate() to wait for the process to terminate so that we can get the return code by poll().
     # It's just for py2.6, py2.7+/3 doesn't need this.
     process.communicate()
-    migration_log.info(return_code)
     migration_log.info(output)
     return_code = process.poll()
+    migration_log.info(return_code)
     return output, return_code
 
 
@@ -338,12 +338,14 @@ def process_special_pkgs():
     run_subprocess('rpm -q anolis-logos-ipa && dnf swap -y anolis-logos-ipa uos-logos-ipa')
     run_subprocess('rpm -q anolis-logos-httpd && dnf swap -y anolis-logos-httpd uos-logos-httpd')
     run_subprocess('rpm -q redhat-lsb-core && dnf swap -y redhat-lsb-core system-lsb-core')
+    run_subprocess('rpm -q redhat-rpm-config && dnf swap -y redhat-rpm-config uos-rpm-config')
     run_subprocess('rpm -q redhat-lsb-submod-security && dnf swap -y redhat-lsb-submod-security system-lsb-submod-security')
     subprocess.run('rpm -q rhn-client-tools && dnf -y remove rhn-client-tools python3-rhn-client-tools python3-rhnlib')
     run_subprocess('rpm -q subscription-manager && dnf -y remove subscription-manager')
     run_subprocess('rpm -q python3-syspurpose && dnf -y remove python3-syspurpose')
     run_subprocess(
         'rpm -e $(rpm -q gpg-pubkey --qf "%{NAME}-%{VERSION}-%{RELEASE} %{PACKAGER}\\n" | grep CentOS | awk \'{print $1}\')')
+
 
 
 def get_disk_info(string):
@@ -504,9 +506,6 @@ def main_conf(osname):
                 run_subprocess('dnf module install -y ' + mod)
             else:
                 migration_log.info("Unsure how to transform module" + mod)
-        # fdout = open("/var/tmp/uos-migration/UOS_migration_log/mig_log.txt",'a')
-        # subprocess.run('dnf -y distro-sync', stdout=fdout ,shell=True)
-        # fdout.close()
     try:
         run_subprocess('dnf module list --enabled | grep satellite-5-client')
         migration_log.info("UniontechOS does not provide satellite-5-client module, disable it.")
@@ -526,6 +525,8 @@ def main_conf(osname):
 
     conf_grub()
     title_conf(osname)
+    cmd_license = 'yum -y install uos-license-mini license-config '
+    run_subprocess(cmd_license)
 
     # migration_log.info("Creating a list of RPMs installed after the switch")
     # migration_log.info("Verifying RPMs installed after the switch against RPM database")
