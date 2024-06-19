@@ -4,13 +4,15 @@
 
 #define CONF_NAME "/etc/uos-sysmig/uos-sysmig.conf"
 
-int get_database(char *name, char **res)
+int get_database(char *name,unsigned long **res)
 {
         FILE     *input_file;
         unsigned int    file_size = 0;  //读取文件的字节数
         char line[64]; //接收文件每行
         char *buf;
         char *buf0;
+	char *pw;
+	//memset(*res, 0, sizeof(*res));
         int len = 0;
         int i = 0, j = 0,flag = 0;
 
@@ -38,9 +40,14 @@ int get_database(char *name, char **res)
                                 else if(flag==1 && buf[i]=='\"')
                                 {
                                         buf0[j]='\0';
-                                        *res = (char*)malloc(sizeof(char) * j);
-					strcpy(*res,buf0);
-                                        free(buf0);
+					pw = (char*)malloc(sizeof(buf0));
+					memset(pw, 0, sizeof(buf0));
+					strcpy(pw,buf0);
+					//memcpy(pw,buf0,j);
+					free(buf0);
+		                        buf0 = NULL;
+					break;
+
                                 }
                                 else if(flag==1 && buf[i]!='\"')
                                 {
@@ -48,11 +55,12 @@ int get_database(char *name, char **res)
                                 }
                                 i++;
                                 }
-                }
-
+                	}
         }
-
+	memcpy(*res,pw,strlen((int *)pw));
+        free(pw);
+	pw = NULL;
         free(buf);
-        fclose(input_file);
-        return 0;
+	buf = NULL;
+	return 0;
 }
