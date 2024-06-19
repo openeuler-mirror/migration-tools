@@ -106,13 +106,18 @@ def check_user(data):
     检测账户权限
     :return:
     """
-    check_user_res = CDLL('./check_user_authority.so')
+    check_user_res = CDLL('/usr/lib/uos-sysmig-server/views/check_user_authority.so')
     data = check_user_res.check_user_authority()
+    from views.migration import check_info
+    import time
+    check_info_data = {"mod": "check_info", "agent_ip": []}
+    check_info(json.dumps(check_info_data))
     if data == 0:
         data = {"data": "faild", "num": 0}
     else:
         data = {"data": "success", "num": data}
     json_data = json.dumps(data)
+    time.sleep(5)
     return json_data
 
 
@@ -213,8 +218,8 @@ def get_page_data(data):
               "and migration_type='stock_replacement';"
     else:
         sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_storage,agent_arch,agent_id from " \
-              "from agent_info where agent_ip in %s and agent_online_status='0'and agent_migration_os is " \
-              "null and migration_type='stock_replacement';" % tuple(agent_ip_list)
+              "from agent_info where agent_ip in {} and agent_online_status='0'and agent_migration_os is " \
+              "null and migration_type='stock_replacement';".format(tuple(agent_ip_list))
 
     data = DBHelper().execute(sql).fetchall()
     data = list(data)
@@ -276,23 +281,23 @@ def get_repo_data(data):
         else:
             centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
                               "and agent_arch='x86_64' and repo_status=1 and agent_online_status='0' and " \
-                              "agent_migration_os is null and agent_ip in %s and migration_type='stock_replacement'" \
-                              ";" % tuple(agent_ip_list)
+                              "agent_migration_os is null and agent_ip in {} and migration_type='stock_replacement'" \
+                              ";".format(tuple(agent_ip_list))
 
             centos8_x86_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
                               "and agent_arch='x86_64' and repo_status=1 agent_online_status='0' and " \
-                              "agent_migration_os is null and agent_ip in %s and migration_type='stock_replacement'" \
-                              ";" % tuple(agent_ip_list)
+                              "agent_migration_os is null and agent_ip in {} and migration_type='stock_replacement'" \
+                              ";".format(tuple(agent_ip_list))
 
             centos7_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
                                   "and agent_arch='aarch64' and repo_status=1 agent_online_status='0' and " \
-                                  "agent_migration_os is null and agent_ip in %s and " \
-                                  "migration_type='stock_replacement';" % tuple(agent_ip_list)
+                                  "agent_migration_os is null and agent_ip in {} and " \
+                                  "migration_type='stock_replacement';".format(tuple(agent_ip_list))
 
             centos8_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
                                   "and agent_arch='aarch64' and repo_status=1 agent_online_status='0' and " \
-                                  "agent_migration_os is null and agent_ip in %s and " \
-                                  "migration_type='stock_replacement';" % tuple(agent_ip_list)
+                                  "agent_migration_os is null and agent_ip in {} and " \
+                                  "migration_type='stock_replacement';".format(tuple(agent_ip_list))
 
         data = {}
         get_centos7_x86_status = DBHelper().execute(centos7_x86_sql).fetchall()
@@ -365,8 +370,8 @@ def get_kernel_data(data):
     else:
         get_kernel_version_sql = 'select agent_ip,agent_kernel,agent_repo_kernel from agent_info where ' \
                                  'agent_online_status=0 and repo_status=0 and agent_storage>=10 and ' \
-                                 'agent_migration_os is null and agent_ip in %s ' \
-                                 'and migration_type="stock_replacement";' % tuple(agent_ip_list)
+                                 'agent_migration_os is null and agent_ip in {} ' \
+                                 'and migration_type="stock_replacement";'.format(tuple(agent_ip_list))
     data = DBHelper().execute(get_kernel_version_sql).fetchall()
     res = {}
     info_list = []
@@ -398,9 +403,8 @@ def get_environment_data(data):
         get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
                                   "and migration_type='stock_replacement';"
     else:
-        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task where agent_ip in %s " \
-                                  "and migration_type='stock_replacement';" % \
-                                  tuple(agent_ip_list)
+        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task where agent_ip in {} " \
+                                  "and migration_type='stock_replacement';".format(tuple(agent_ip_list))
     progress = DBHelper().execute(get_environment_pro_sql).fetchall()
     res = {}
     info_list = []
@@ -434,7 +438,7 @@ def get_system_migration_data(data):
                                 "and migration_type='stock_replacement';"
     else:
         get_migration_pro_sql = "select agent_ip,task_progress,task_status from agent_task where " \
-                                "agent_ip in %s and migration_type='stock_replacement';" % tuple(agent_ip_list)
+                                "agent_ip in {} and migration_type='stock_replacement';".format(tuple(agent_ip_list))
     progress = DBHelper().execute(get_migration_pro_sql).fetchall()
     res = {}
     info_list = []
@@ -570,8 +574,8 @@ def get_migrated_hosts(data):
               " and migration_type='stock_replacement';"
     else:
         sql = "select agent_ip,agent_id,hostname,agent_online_status,agent_os,agent_arch,agent_history_faild_reason " \
-              "from agent_info where agent_ip in %s and agent_online_status='0' and agent_migration_os is " \
-              "null and migration_type='stock_replacement';" % tuple(agent_ip_list)
+              "from agent_info where agent_ip in {} and agent_online_status='0' and agent_migration_os is " \
+              "null and migration_type='stock_replacement';".format(tuple(agent_ip_list))
 
     data = DBHelper().execute(sql).fetchall()
     data = list(data)

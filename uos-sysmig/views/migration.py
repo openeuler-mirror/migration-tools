@@ -63,8 +63,8 @@ def check_info(data):
     if agent_ip_list == []:
         sql = "select agent_ip from agent_info where agent_online_status = 0 and migration_type='stock_replacement';"
     else:
-        sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_ip in %s " \
-              "and migration_type='stock_replacement';" % tuple(agent_ip_list)
+        sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_ip in {} " \
+              "and migration_type='stock_replacement';".format(tuple(agent_ip_list))
     get_agent_ip(data, sql, '/check_info')
     return 'success'
 
@@ -81,7 +81,7 @@ def check_repo(data):
               "and migration_type='stock_replacement';"
     else:
         sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_storage >= 10 " \
-              "and agent_ip in %s and migration_type='stock_replacement';" % tuple(agent_ip_list)
+              "and agent_ip in {} and migration_type='stock_replacement';".format(tuple(agent_ip_list))
     agent_ip_list = DBHelper().execute(sql)
     for i in agent_ip_list:
         repo_status_sql = "update agent_info set repo_status='2' where agent_ip='%s'" % list(i)[0]
@@ -102,7 +102,7 @@ def check_kernel(data):
               "and migration_type='stock_replacement';"
     else:
         sql = "select agent_ip from agent_info where agent_online_status=0 and agent_storage>=10 and repo_status=0 " \
-              "and agent_ip in %s and migration_type='stock_replacement';" % tuple(agent_ip_list)
+              "and agent_ip in {} and migration_type='stock_replacement';".format(tuple(agent_ip_list))
     get_agent_ip(data, sql, '/check_kernel')
     return 'success'
 
@@ -153,8 +153,8 @@ def check_add_repo(data):
     if agent_ip_list == []:
         sql = "select agent_ip from agent_info where agent_online_status = 0 and migration_type='new_expansion';"
     else:
-        sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_ip in %s and " \
-              "migration_type='new_expansion';" % tuple(agent_ip_list)
+        sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_ip in {} and " \
+              "migration_type='new_expansion';".format(tuple(agent_ip_list))
     agent_ip_list = DBHelper().execute(sql)
     for i in agent_ip_list:
         repo_status_sql = "update agent_info set repo_status='2' where agent_ip='%s'" % list(i)[0]
