@@ -18,8 +18,8 @@ def get_analysis_migrated_hosts(data):
               " and migration_type='new_expansion';"
     else:
         sql = "select agent_ip,agent_id,hostname,agent_online_status,agent_os,agent_arch,agent_history_faild_reason " \
-              "from agent_info where agent_ip in %s and agent_online_status='0' and agent_migration_os is " \
-              "null and migration_type='new_expansion';" % tuple(agent_ip_list)
+              "from agent_info where agent_ip in {} and agent_online_status='0' and agent_migration_os is " \
+              "null and migration_type='new_expansion';".format(tuple(agent_ip_list))
 
     data = DBHelper().execute(sql).fetchall()
     data = list(data)
@@ -57,42 +57,39 @@ def get_add_repo_data(data):
     :return:
     """
     agent_ip_list = json.loads(data).get('agent_ip')
-    task_status_sql = "select agent_id from agent_task where task_status=2"
+    if agent_ip_list == []:
+        task_status_sql = "select agent_id from agent_task where task_status=2 and migration_type='new_expansion';"
+    else:
+        task_status_sql = "select agent_id from agent_task where task_status=2 and migration_type='new_expansion' " \
+                          "and agent_ip in {};".format(tuple(agent_ip_list))
     get_task_status = DBHelper().execute(task_status_sql).fetchall()
     if len(get_task_status) == 0:
-        data = {"migration_x86_64": "", "migration_aarch64": ""}
+        data = {"migration_before_x86_64": "", "migration_after_x86_64": "", "migration_before_aarch64": "",
+                "migration_after_aarch64": ""}
         json_data = json.dumps(data)
         return json_data
     else:
         if agent_ip_list == []:
-            x86_sql = "select agent_ip from agent_info where agent_arch='x86_64' and repo_status=1 " \
-                              "and agent_online_status='0' and agent_migration_os is null " \
-                              "and migration_type='new_expansion';"
-
-            aarch64_sql = "select agent_ip from agent_info where agent_arch='aarch64' and repo_status=1 " \
-                          "and agent_online_status='0' and agent_migration_os is null and " \
-                          "migration_type='new_expansion';"
+            repo_status_sql = "select repo_status from agent_info where agent_online_status='0' and " \
+                              "agent_migration_os is null and migration_type='new_expansion';"
         else:
-            x86_sql = "select agent_ip from agent_info where agent_arch='x86_64' and repo_status=1 and " \
-                              "agent_online_status='0' agent_migration_os is null and agent_ip in " \
-                              "%s and migration_type='new_expansion';" % tuple(agent_ip_list)
+            repo_status_sql = "select repo_status from agent_info where agent_online_status='0' " \
+                              "agent_migration_os is null and agent_ip in {} and " \
+                              "migration_type='new_expansion';".format(tuple(agent_ip_list))
 
-            aarch64_sql = "select agent_ip from agent_info where agent_arch='aarch64' and repo_status=1 and " \
-                          "agent_online_status='0' and agent_migration_os is null and agent_ip in %s and " \
-                          "migration_type='new_expansion';" % tuple(agent_ip_list)
+        data = {"migration_before_x86_64": "success", "migration_after_x86_64": "success",
+                "migration_before_aarch64": "success", "migration_after_aarch64": "success"}
 
-        data = {}
-        get_x86_sql = DBHelper().execute(x86_sql).fetchall()
-        if len(get_x86_sql) == 0:
-            data['migration_x86_64'] = 'success'
-        else:
-            data['migration_x86_64'] = 'faild'
-
-        get_aarch64_sql = DBHelper().execute(aarch64_sql).fetchall()
-        if len(get_aarch64_sql) == 0:
-            data['migration_aarch64'] = 'success'
-        else:
-            data['migration_aarch64'] = 'faild'
+        get_repo_status = DBHelper().execute(repo_status_sql).fetchall()
+        for i in get_repo_status:
+            if i[0][0] == 1:
+                data["migration_before_x86_64"] = 'faild'
+            if i[0][1] == 1:
+                data["migration_after_x86_64"] = 'faild'
+            if i[0][2] == 1:
+                data["migration_before_aarch64"] = 'faild'
+            if i[0][3] == 1:
+                data["migration_after_aarch64"] = 'faild'
 
         json_data = json.dumps(data)
         return json_data
@@ -108,15 +105,14 @@ def get_add_environment_data(data):
         get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
                                   "and migration_type='new_expansion';"
     else:
-        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task where agent_ip in %s " \
-                                  "and migration_type='new_expansion';" % \
-                                  tuple(agent_ip_list)
+        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task where agent_ip in {} " \
+                                  "and migration_type='new_expansion';".format(tuple(agent_ip_list))
     progress = DBHelper().execute(get_environment_pro_sql).fetchall()
     res = {}
     info_list = []
     finall_progress = []
     for i in progress:
-        sql = "select agent_id from agent_info where agent_ip='%s' and agent_online_status=0 and repo_status=0 " \
+        sql = "select agent_id from agent_info where agent_ip='%s' and agent_online_status=0 and repo_status='0' " \
               "and agent_migration_os is null;" % i[0]
         get_sql = DBHelper().execute(sql).fetchall()
         if get_sql:
