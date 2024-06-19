@@ -219,7 +219,7 @@ def get_migrate_behind_rpm_pkg():
             if dist in rpm_pkg['release']:
                 fhu.write(rpm_pkg['name']+'\n')
                 rpm_pkg_list.append(rpm_pkg['name'])
-    fcw.close()
+    fhu.close()
 
     return rpm_pkg_list
 
