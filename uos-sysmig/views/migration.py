@@ -98,10 +98,10 @@ def check_kernel(data):
     """
     agent_ip_list = json.loads(data).get('agent_ip')
     if agent_ip_list == []:
-        sql = "select agent_ip from agent_info where agent_online_status=0 and agent_storage>=10 and repo_status=0 " \
+        sql = "select agent_ip from agent_info where agent_online_status=0 and agent_storage>=10 and repo_status='0' " \
               "and migration_type='stock_replacement';"
     else:
-        sql = "select agent_ip from agent_info where agent_online_status=0 and agent_storage>=10 and repo_status=0 " \
+        sql = "select agent_ip from agent_info where agent_online_status=0 and agent_storage>=10 and repo_status='0' " \
               "and agent_ip in {} and migration_type='stock_replacement';".format(tuple(agent_ip_list))
     get_agent_ip(data, sql, '/check_kernel')
     return 'success'
