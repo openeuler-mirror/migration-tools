@@ -2,16 +2,14 @@
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 
 import os
+from config import *
+import config
 
 # ABI_INCOMPAT_PATH = '/home/xzx/nfs/abi-incompat-pkg.txt'
 # ABI_COMPAT_PATH = '/home/xzx/nfs/abi-compat-pkg.txt'
 pwd = '/root/nfs'
 if not os.path.exists(pwd):
     pwd = '/home/xzx/nfs'
-ABI_INCOMPAT_PATH = pwd+'/abi-incompat-pkg.txt'
-ABI_COMPAT_PATH = pwd + '/abi-compat-pkg.txt'
-AppStream =pwd + '/uos-sysmig/ut-Migration-tools/sysmig_agent/AppStream.txt'
-BaseOS = pwd + '/uos-sysmig/ut-Migration-tools/sysmig_agent/txts/BaseOS.txt'
 
 
 def get_list_pkg(path):
@@ -19,7 +17,7 @@ def get_list_pkg(path):
         rpm = ap.readlines()
         ap.close()
     return rpm
-#
+
 
 # 调用
 def get_abi_incompat_pkg():
@@ -64,12 +62,7 @@ def match_rpm(txt_path, rpm_query):
 def rpm_priority(rpm_compat_query, rpm_incompat_query):
     app_weight = 50
     base_weight = 50
-    if not os.path.exists(AppStream) and os.path.exists(BaseOS):
-        return return_error('debuginfo:can not open this file...')
-    total_incompat_app = match_rpm(AppStream, rpm_incompat_query)
-    total_incompat_base = match_rpm(BaseOS, rpm_incompat_query)
-    total_compat_app = match_rpm(AppStream, rpm_compat_query)
-    total_compat_base = match_rpm(BaseOS, rpm_compat_query)
+
     app_weight_percent = (total_compat_app / (total_incompat_app + total_compat_app)) * app_weight
     base_weight_percent = (total_compat_base / (total_incompat_base + total_compat_base)) * base_weight
     AllWeight = app_weight_percent + base_weight_percent
@@ -96,4 +89,30 @@ def abi_check_priority():
     else:
         AllWeight = 0
     print(AllWeight)
+
+
+class LayeredGrading(object):
+    layered = {'app_weight': 50, 'base_weight': 50}
+    layered_file = {'app_weight': AppStream, 'base_weight': BaseOS}
+
+    def __init__(self):
+        self.rpm_incompat_query = ''
+        self.rpm_compat_query = ''
+        self.compatibility = 0
+
+    def get_data(self):
+        self.rpm_incompat_query = get_abi_incompat_pkg()
+        self.rpm_compat_query = get_list_pkg(ABI_COMPAT_PATH)
+
+    def run(self):
+        self.get_data()
+        tmp_incompat = tmp_compat = 0
+        for i in range(len(self.layered)):
+            tmp_incompat = match_rpm(self.layered_file[i], self.rpm_incompat_query)
+            tmp_compat = match_rpm(self.layered_file[i], self.rpm_compat_query)
+            self.compatibility = self.compatibility + (tmp_compat / (tmp_incompat + tmp_compat)) * self.layered[i]
+            return first_high_weight(self.rpm_incompat_query) or self.compatibility
+
+
+
 
