@@ -1,13 +1,5 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
-# import os
-# import platform
-# from share import list_to_json
-# import sys
-# import re
-# import subprocess
-# import json
 from sysmig_agent.share import *
 from flask import Flask, render_template, url_for, redirect, make_response, session, Response
 import urllib.request
@@ -181,6 +173,7 @@ def initRepoFile(baseurl):
     if re.fullmatch('8', version[0]):
         path_appstream = baseurl + '/AppStream'
         path_baseos = baseurl + '/BaseOS'
+        path_ext = baseurl + '/external'
         path_310 = baseurl + '/kernel-3.10'
         path_418 = baseurl + '/kernel-4.18'
         path_419 = baseurl + '/kernel419'
@@ -190,13 +183,16 @@ def initRepoFile(baseurl):
             '\n') + '''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-BaseOS]\nname = UniontechOS BaseOS\nbaseurl = ''' + path_baseos.strip(
             '\n') + '''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-4.18.0]\nname = UniontechOS Kernel-4.18.0\nbaseurl = ''' + path_418.strip(
             '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-4.19.0]\nname = UniontechOS Kernel-4.19.0\nbaseurl = ''' + path_419.strip(
-            '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = ''' + path_510.strip(
+            '\n') + '''\nenabled = 1\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-external]\nname = UniontechOS externel\nbaseurl = ''' + path_ext.strip(
+            '\n') + '''\nenabled = 1\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = ''' + path_510.strip(
             '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n
 '''
     else:
         path_310 = baseurl + '/kernel-3.10'
+        path_ext = baseurl + '/external'
         repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = ''' + baseurl.strip(
             '\n') + '''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-3.10.0]\nname = UniontechOS Kernel-3.10.0\nbaseurl = ''' + path_310.strip(
+            '\n') + '''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-3.10.0]\nname = UniontechOS Kernel-3.10.0\nbaseurl = ''' + path_ext.strip(
             '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n
         '''
     repofile = os.path.join(reposdir, 'switch-to-uos.repo')
@@ -245,7 +241,6 @@ def checkRepoFileHttp(baseurl):
             return 1
 
 
-
 def repoFileCheck(baseurl):
     if re.match('file\:\/\/', baseurl):
         path = re.sub('file://', '', baseurl)
@@ -259,9 +254,6 @@ def repoFileCheck(baseurl):
     except Exception as err:
         return 1
         pass
-
-
-
 
 
 def check_repo(data):
@@ -288,7 +280,7 @@ def check_repo(data):
         repo_state = repoFileCheck(baseurl)
     else:
         repo_state = 1
-    
+
     sql = "UPDATE agent_info SET repo_status = {} WHERE agent_ip = '{}';".format(repo_state, get_local_ip())
     try:
         ret = DBHelper().execute(sql)
@@ -302,30 +294,37 @@ def check_repo(data):
 
 
 def initRepoFile_add(filename, baseurl):
-    path_appstream = baseurl + '/AppStream'
-    path_baseos = baseurl + '/BaseOS'
-    path_ext = baseurl + '/external'
-    path_418 = baseurl + '/kernel-4.18'
-    path_419 = baseurl + '/kernel419'
-    path_510 = baseurl + '/kernel510'
-
-    repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = ''' + path_appstream.strip(
-        '\n') + '''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-BaseOS]\nname = UniontechOS BaseOS\nbaseurl = ''' + path_baseos.strip(
-        '\n') + '''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-4.18.0]\nname = UniontechOS Kernel-4.18.0\nbaseurl = ''' + path_418.strip(
-        '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-4.19.0]\nname = UniontechOS Kernel-4.19.0\nbaseurl = ''' + path_419.strip(
-        '\n') + '''\nenabled = 1\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-external]\nname = UniontechOS-external\nbaseurl = ''' + path_ext.strip(
-        '\n') + '''\nenabled = 1\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = ''' + path_510.strip(
-        '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n'''
+    if os.path.exists(os.path.join(AGENT_DIR, filename + '.repo')):
+        os.remove(os.path.join(AGENT_DIR, filename + '.repo'))
+    if not repoFileCheck(baseurl+'/repodata'):
+        path_310 = baseurl + '/kernel-3.10'
+        path_ext = baseurl + '/external'
+        repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = ''' + baseurl.strip(
+            '\n') + '''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-3.10.0]\nname = UniontechOS Kernel-3.10.0\nbaseurl = ''' + path_310.strip(
+            '\n') + '''\nenabled = 0\ngpgcheck = 0\n\n[UniontechOS-external]\nname = UniontechOS external\nbaseurl = ''' + path_ext.strip(
+            '\n') + '''\nenabled = 1\ngpgcheck = 0\nskip_if_unavailable = 1\n
+                '''
+    else:
+        path_appstream = baseurl + '/AppStream'
+        path_baseos = baseurl + '/BaseOS'
+        path_418 = baseurl + '/kernel-4.18'
+        path_419 = baseurl + '/kernel419'
+        path_510 = baseurl + '/kernel510'
+        repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = ''' + path_appstream.strip(
+            '\n') + '''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-BaseOS]\nname = UniontechOS BaseOS\nbaseurl = ''' + path_baseos.strip(
+            '\n') + '''\nenabled = 1\ngpgcheck = 0\n\n[UniontechOS-kernel-4.18.0]\nname = UniontechOS Kernel-4.18.0\nbaseurl = ''' + path_418.strip(
+            '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-4.19.0]\nname = UniontechOS Kernel-4.19.0\nbaseurl = ''' + path_419.strip(
+            '\n') + '''\nenabled = 1\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = ''' + path_510.strip(
+            '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n'''
     with open(os.path.join(AGENT_DIR, filename+'.repo'), 'a') as frepo:
         frepo.write(repostr_uos)
-
-
-def repo_urlcheck(url):
-    
-    return 1
+        frepo.close()
 
 
 class RepoFileAdd(object):
+    '''
+    增量扩容场景下,检测并配置repo源
+    '''
     def __init__(self, data):
         self.migration_before = "migration_before"
         self.migration_after = "migration_after"
@@ -335,8 +334,8 @@ class RepoFileAdd(object):
         self.after_repo = self.migration_after + '_' + platform.machine().strip('')
         self.after_baseurl = ''
         self.task_id = json.loads(self.data).get('task_id')
-        self.before_baseurl = json.loads(self.data).get(self.before_repo)
-        self.after_baseurl = json.loads(self.data).get(self.after_repo)
+        self.before_baseurl = json.loads(self.data).get(self.before_repo).replace('$basearch',platform.machine().strip('')).strip('/')
+        self.after_baseurl = json.loads(self.data).get(self.after_repo).replace('$basearch',platform.machine().strip('')).strip('/')
 
     def run(self):
         if not self.before_baseurl or not self.after_baseurl:
@@ -346,9 +345,19 @@ class RepoFileAdd(object):
         sql_task_statue(statue, self.task_id)
         # 发送消息给Server更新任务流状态
         post_server('task_start', self.task_id)
-        initRepoFile_add(self.migration_before, self.before_repo)
-        initRepoFile_add(self.migration_after, self.after_repo)
-        repo_state = repo_urlcheck(self.migration_before)
+        initRepoFile_add(self.migration_before, self.before_baseurl)
+        initRepoFile_add(self.migration_after, self.after_baseurl)
+        repo_state = ''
+        if 'x86_64' == platform.machine().strip(''):
+            repo_state = str(repoFileCheck(self.before_baseurl + '/AppStream/repodata') and repoFileCheck(
+                self.before_baseurl + '/repodata')) + '0'
+            repo_state = repo_state + str(repoFileCheck(self.after_baseurl + '/AppStream/repodata') and repoFileCheck(
+                self.after_baseurl + '/repodata')) + '0'
+        else:
+            repo_state = '0' + str(repoFileCheck(self.before_baseurl + '/AppStream/repodata') and repoFileCheck(
+                self.before_baseurl + '/repodata'))
+            repo_state = repo_state + '0' + str(repoFileCheck(self.after_baseurl + '/AppStream/repodata') and repoFileCheck(
+                self.after_baseurl + '/repodata'))
         sql = "UPDATE agent_info SET repo_status = {} WHERE agent_ip = '{}';".format(repo_state, get_local_ip())
         try:
             ret = DBHelper().execute(sql)
