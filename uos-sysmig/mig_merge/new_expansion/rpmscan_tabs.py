@@ -5,9 +5,9 @@ import os
 import json
 import platform
 
-#from logger import migration_log
-from migrationTools.scanRPM.scan_rpm import parsed_pkg_to_json,get_current_pkg_list
-from migrationTools.scanRPM.scan_rpm import ParsedPkgInfo
+from logger import migration_log
+from mig_merge.migrationTools.scanRPM.scan_rpm import parsed_pkg_to_json,get_current_pkg_list
+from mig_merge.migrationTools.scanRPM.scan_rpm import ParsedPkgInfo
 
 def rpmscan_tabs():
     exclude_fonts = True
