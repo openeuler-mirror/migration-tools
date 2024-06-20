@@ -5,8 +5,8 @@ import os
 import json
 import platform
 
-from config import FixedInfo
-from migrationTools.scanHardware import utils
+from mig_merge.config import FixedInfo
+from mig_merge.migrationTools.scanHardware import utils
 
 def hardware_tabs():
     '''硬件兼容性分析
@@ -20,10 +20,6 @@ def hardware_tabs():
 
     return json_str
 
-def main():
-    hardware_tabs()
-
-
 if __name__ == "__main__":
-    main()
+    hardware_tabs()
 
