@@ -24,9 +24,12 @@ class FixedInfo():
     expansion_template = os.path.join(template_dir, 'new_expansion_check.html')
 
     #repo sqlite name
-    repo_sqlite_path = 'migrationTools/data/repo-sqlite/uos-1020e/x86_64'
+    repo_sqlite_path = 'mig_merge/migrationTools/data/repo-sqlite/uos-1020e/x86_64'
     repo_sqlite_file = '2ad7cabc63634d5c75336929453bf9ff2054434547844df0c279c4759cd05409-primary.sqlite'
     sqlite_name = os.path.join(repo_sqlite_path, repo_sqlite_file)
+
+    #配置、服务基础数据目录
+    system_data_path = 'mig_merge/data'
 
 
     #数据文件
@@ -63,7 +66,6 @@ class FixedInfo():
     page_hardware_tabs = '"hardware_tabs": {"name": "硬件兼容性","data": '
     page_rpm_tabs = '"rpm_tabs": {"name": "RPM兼容性","data": ['
     expansion_gen_tabs = '{"type": "new_expansion_check","general_tabs": {"name": "系统基本信息",'
-
 
     #融合1xxxe版
     expansion_page_head = '{"type": "new_expansion_check","sysconffile_tabs": {"name": "SysSconf","data": ['
