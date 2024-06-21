@@ -2,13 +2,14 @@
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 import threading
 from multiprocessing import Process, Queue
-from sysmig_agent.utils import DBwrite, selfDestruct
+from sysmig_agent.utils import DBwrite, selfDestruct, DBupload
 from apscheduler.schedulers.background import BackgroundScheduler
 import time
 from sysmig_agent.Abisystmcompchk import migrate_before_abi_chk
 from mig_merge.stock_analysis import stock_replace_analysis
 from mig_merge.stock_replace.confirm import migration_confirm
 from sysmig_agent.short_task import *
+from sysmig_agent.utils import anilysis_DBconnect
 from sysmig_agent.migration import *
 from sysmig_agent.agent_request import post_server
 
@@ -193,15 +194,14 @@ def check_environment(data):
     # tar.gz types abi report
     # targz_mig_dir_abi()
     # 系统兼容性检测的html存入数据库
-    db_write = DBwrite(get_local_ip())
-    db_write.write_analysis_html()
+    anilysis_DBconnect(PRE_MIG_DIR)
     sql_task_statue('2', task_id)
     post_server('task_close', task_id)
 
 
 def process_time_task_abi_e(task_id):
     # 定时任务启动并更新进度
-    # TODO:
+    # TODO:更新进度
     time_task = BackgroundScheduler(timezone='Asia/Shanghai')
     task_id = str(task_id)
     p = time_task.add_job(up_to_date_sql_abi, 'interval', seconds=3)
@@ -239,9 +239,8 @@ def check_add_environment(data):
     # tar.gz types abi report
     # targz_mig_dir_abi()
     # 系统兼容性检测的html存入数据库
-    db_write = DBwrite(get_local_ip())
-    db_write.write_analysis_add_html()
-    sql_task_statue('2', task_id)
+    # db_write = DBwrite(get_local_ip())
+    anilysis_DBconnect(PRE_MIG_DIR_ADD)
     post_server('task_close', task_id)
 
 
@@ -270,12 +269,13 @@ def get_info_version(data):
         if ip == agent_ip:
             version = json.loads(agent_info).get('kernel_version')
             return version
+    return None
 
 
 def system_migration(data):
     kernel_version = get_info_version(data)
     if not kernel_version:
-        kernel_version = '0'
+        return 'n'
     task_id = json.loads(data).get('task_id')
     # 更新SQL任务状态
     sql_task_statue('1', task_id)
@@ -288,6 +288,9 @@ def system_migration(data):
     migration_confirm()
     # MIGRATION MAIN
     timed_task_migrate(task_id, kernel_version)
+    anilysis_DBconnect(MIGRATION_DIR)
+    dbconnect = DBupload(db_log)
+    dbconnect.upload_html()
     post_server('task_close', task_id)
 
 
@@ -302,8 +305,6 @@ def if_env_check(data):
 
 def post_task(data):
     task_mod = json.loads(data).get('mod')
-    if not if_env_check(data):
-        return 'success'
     if 'check_info' == task_mod:
         t = threading.Thread(target=check_info, args=[data])
     elif 'check_repo' == task_mod:
@@ -314,13 +315,17 @@ def post_task(data):
     elif 'check_kernel' == task_mod:
         t = threading.Thread(target=check_kernel, args=[data])
     elif 'check_environment' == task_mod:
-        t = threading.Thread(target=check_environment, args=[data])
+        if if_env_check(data):
+            t = threading.Thread(target=check_environment, args=[data])
+        else:
+            return 'n'
     elif 'check_add_environment' == task_mod:
-        t = threading.Thread(target=check_add_environment, args=[data])
+        if if_env_check(data):
+            t = threading.Thread(target=check_add_environment, args=[data])
+        else:
+            return 'n'
     elif 'system_migration' == task_mod:
         t = threading.Thread(target=system_migration, args=[data])
     t.start()
     return 'y'
 
-# ABI 权重比
-# abi_check_priority()
