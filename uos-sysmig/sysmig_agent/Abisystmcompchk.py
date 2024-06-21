@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+# SPDX-License-Identifier:   MulanPubL-2.0-or-later
 #!/usr/bin/python3
 
 import queue,os,string
@@ -16,6 +18,7 @@ from mig_merge.new_expansion.special_pkg import deal_repo_rpm
 from mig_merge.stock_check import stock_replace_check
 from mig_merge.expansion_check import new_expansion_check
 from sysmig_agent.abi_weight import layered_Grading
+from mig_merge.merge.utils import gen_pkg_version
 
 from logger import *
 #from connect_sql import DBHelper
@@ -365,8 +368,10 @@ def deal_files_list(fwincomp, fwcomp, cur_file_list, trn_file_list, rpm_full_pkg
     cur_file_deal = ''
 
     rpm_pkg_dir = local_dir + 'uos/rpms'
+    rpm_info = rpm_full_pkg_name.rsplit('.',2)[0].rsplit('-', 2)
     rpm_pkg_name = rpm_full_pkg_name.rsplit('-',2)[0]
-    pkg_version = rpm_full_pkg_name.rsplit('-',2)[1]
+    uos_pkg_version = rpm_info[1]+'-'+rpm_info[2]
+    oth_pkg_version = gen_pkg_version(rpm_pkg_name.strip())
 
     for cur_file_name in cur_file_list:
 
@@ -420,7 +425,7 @@ def deal_files_list(fwincomp, fwcomp, cur_file_list, trn_file_list, rpm_full_pkg
                                 compatiablity='N'
                                 incomp_reason = incomp_binwary_desc(bin_name)
                                 diff_detail = abidiff_rst_list[i].split(':', 1)[1]
-                                fwincomp.write(rpm_pkg_name+','+bin_name+','+pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
+                                fwincomp.write(rpm_pkg_name+','+bin_name+','+oth_pkg_version+','+uos_pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
                                 comp_flag = 0
                         i = i + 1
                 #20220112 lihp: add if branch
@@ -433,7 +438,7 @@ def deal_files_list(fwincomp, fwcomp, cur_file_list, trn_file_list, rpm_full_pkg
                                 compatiablity='N'
                                 incomp_reason = incomp_binwary_desc(bin_name)
                                 diff_detail = abidiff_rst_list[i].split(':', 1)[1]
-                                fwincomp.write(rpm_pkg_name+','+bin_name+','+pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
+                                fwincomp.write(rpm_pkg_name+','+bin_name+','+oth_pkg_version+','+uos_pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
                                 comp_flag = 0
                         i = i + 1
                 else:
@@ -444,13 +449,13 @@ def deal_files_list(fwincomp, fwcomp, cur_file_list, trn_file_list, rpm_full_pkg
                                 compatiablity='N'
                                 incomp_reason = incomp_binwary_desc(bin_name)
                                 diff_detail = abidiff_rst_list[i].split(':', 1)[1]
-                                fwincomp.write(rpm_pkg_name+','+bin_name+','+pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
+                                fwincomp.write(rpm_pkg_name+','+bin_name+','+oth_pkg_version+','+uos_pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
                                 comp_flag = 0
                         i = i + 1
             else:
                 continue
     if comp_flag:
-        fwcomp.write(rpm_pkg_name + ',' + ',' + ',' + 'Y,' + ',' + '\n')
+        fwcomp.write(rpm_pkg_name + ',' + ',' + ',' + ',' + 'Y,' + ',' + '\n')
 
 def process_data(threadName, q, queueLock, incompfw, compfw, Queue, pro_log):
     global exitFlag
