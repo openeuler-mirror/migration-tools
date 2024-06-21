@@ -27,7 +27,7 @@ def new_expansion_check():
         os.makedirs(report_expansion_dir)
     report_html = os.path.join(report_expansion_dir, report_name)
 
-    return dataplaceholder_replace(FixedInfo.stock_template_analysis,
+    return dataplaceholder_replace(FixedInfo.expansion_template,
         report_html, MigrationMerge())
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ from views.reports import analysis_report_add, migration_completed_report, \
     analysis_report, export_host_info, migration_success_list, uos_migration_log
 from sysmig_agent.share import getSysMigConf
 from flask import request
-from views.migration import check_info
+from views.migration import check_all_info
 import time
 import json
 import re
@@ -109,8 +109,8 @@ def check_user(data):
     """
     check_user_res = CDLL('/usr/lib/uos-sysmig-server/uos-sysmig/views/check_user_authority.so')
     data = check_user_res.check_user_authority()
-    check_info_data = {"mod": "check_info", "agent_ip": []}
-    check_info(json.dumps(check_info_data))
+    check_info_data = {"mod": "check_info"}
+    check_all_info(json.dumps(check_info_data))
     if data == 0:
         data = {"data": "failed", "num": 0}
     else:
@@ -178,27 +178,6 @@ def host_info_display(data):
     res['info'] = info_list
     json_res = json.dumps(res)
 
-    return json_res
-
-
-def delete_host_info(data):
-    """
-    删除主机信息
-    :return:
-    """
-    data = json.loads(data)
-    for i in data.get('agent_ip'):
-        sql = "delete from agent_info where agent_ip='%s';" % i
-        DBHelper().execute(sql)
-        sql = "delete from agent_task where agent_ip='%s';" % i
-        DBHelper().execute(sql)
-        sql = "delete from task_stream where agent_ip='%s';" % i
-        DBHelper().execute(sql)
-        sql = "delete from cur_task where agent_ip='%s';" % i
-        DBHelper().execute(sql)
-
-    res = {'data': 'success'}
-    json_res = json.dumps(res)
     return json_res
 
 
@@ -599,77 +578,6 @@ def migration_records(data):
     return json_res
 
 
-def get_migrated_hosts(data):
-    """
-    获取迁移主机列表数据
-    :param data:
-    :return:
-    """
-    agent_ip_list = json.loads(data).get('agent_ip')
-    if agent_ip_list == []:
-        sql = "select agent_ip,agent_id,hostname,agent_online_status,agent_os,agent_arch,agent_history_failed_reason " \
-              "from agent_info where agent_online_status='0' and agent_migration_os is null" \
-              " and migration_type='stock_replacement';"
-    elif len(agent_ip_list) == 1:
-        sql = "select agent_ip,agent_id,hostname,agent_online_status,agent_os,agent_arch,agent_history_failed_reason " \
-              "from agent_info where agent_online_status='0' and agent_migration_os is null" \
-              " and migration_type='stock_replacement' and agent_ip='%s';" % agent_ip_list[0]
-    else:
-        sql = "select agent_ip,agent_id,hostname,agent_online_status,agent_os,agent_arch,agent_history_failed_reason " \
-              "from agent_info where agent_ip in {} and agent_online_status='0' and agent_migration_os is " \
-              "null and migration_type='stock_replacement';".format(tuple(agent_ip_list))
-
-    data = DBHelper().execute(sql).fetchall()
-    data = list(data)
-    finall_data = []
-    for i in range(0, len(data)):
-        data[i] = list(data[i])
-        agent_task = "select task_CreateTime,task_data from agent_task where agent_ip='%s';" % data[i][0]
-        get_agent_task = DBHelper().execute(agent_task).fetchall()
-        get_agent_task = list(get_agent_task)
-        if get_agent_task == []:
-            pass
-        else:
-            task_CreateTime = get_agent_task[0][0].strftime('%Y-%-m-%d %H:%M:%S')
-            task_status = get_agent_task[0][1]
-            data[i].append(task_CreateTime)
-            data[i].append(task_status)
-            finall_data.append(data[i])
-    res = {}
-    res['num'] = len(finall_data)
-    info_list = []
-    info_dict_keys_list = ['agent_ip', 'agent_id', 'hostname', 'agent_online_status', 'agent_os', 'agent_arch',
-                           'failure_reasons', 'task_CreateTime', 'task_status']
-    for i in finall_data:
-        info_list.append(dict(zip(info_dict_keys_list, i)))
-
-    res['info'] = info_list
-    json_res = json.dumps(res)
-
-    return json_res
-
-
-def get_storage_num(data):
-    """
-    获取可用空间足够和不足数量
-    :param data:
-    :return:
-    """
-    success_num_sql = "select agent_ip from agent_info where agent_online_status='0' and agent_storage>='10' " \
-                      "and agent_migration_os is null and migration_type='stock_replacement';"
-    get_success_num = DBHelper().execute(success_num_sql).fetchall()
-
-    failed_num_sql = "select agent_ip from agent_info where agent_online_status='0' and agent_storage<'10' " \
-                    "and agent_migration_os is null and migration_type='stock_replacement';"
-    get_failed_num = DBHelper().execute(failed_num_sql).fetchall()
-
-    success = len(get_success_num)
-    failed = len(get_failed_num)
-    data = {'success': success, 'failed': failed}
-    json_data = json.dumps(data)
-    return json_data
-
-
 def pagebreak(data, page, size):
     """
     页面数据分页
@@ -681,36 +589,6 @@ def pagebreak(data, page, size):
     result = data[page_start:page_end]
 
     return result
-
-
-def get_repo_arch_info(data):
-    """
-    获取软件仓库架构和系统信息
-    :param data:
-    :return:
-    """
-    sql = "select agent_os,agent_arch from agent_info where agent_online_status='0' and agent_storage>='10' " \
-          "and agent_migration_os is null and migration_type='stock_replacement';"
-    get_info = DBHelper().execute(sql).fetchall()
-    get_info_list = []
-    for i in get_info:
-        get_info_list.append(list(i))
-
-    for i in get_info_list:
-        if i[0] == 'redhat7':
-            i[0] = 'centos7'
-        if i[0] == 'redhat8':
-            i[0] = 'centos8'
-
-    info_list = []
-    info_dict_keys_list = ['agent_os', 'agent_arch']
-    for i in get_info_list:
-        info_list.append(dict(zip(info_dict_keys_list, i)))
-
-    res = {}
-    res['info'] = info_list
-    json_res = json.dumps(res)
-    return json_res
 
 
 def close_tool(data):
@@ -730,6 +608,13 @@ def modify_task_status(data):
     修改任务状态
     :return:
     """
-    update_sql = "update agent_task set task_progress=0,task_status=0"
+    agent_ip_list = json.loads(data).get('agent_ip')
+    if agent_ip_list == []:
+        update_sql = "update agent_task set task_progress=0,task_status=0"
+    elif len(agent_ip_list) == 1:
+        update_sql = "update agent_task set task_progress=0,task_status=0 where agent_ip='%s'" % agent_ip_list[0]
+    else:
+        update_sql = "update agent_task set task_progress=0,task_status=0 where agent_ip in {}"\
+            .format(tuple(agent_ip_list))
     DBHelper().execute(update_sql)
     return 'success'
