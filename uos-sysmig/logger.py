@@ -29,13 +29,13 @@ class Logger:
         self.logger.warning(message)
 
     def error(self, message):
-        self.logger.error(message, exc_info=True)
+        self.logger.error(message)
 
     def cri(self, message):
         self.logger.critical(message)
 
 
-migration_log = Logger('/var/tmp/uos-migration/UOS_analysis_report/migration.log', logging.DEBUG, logging.DEBUG)
+migration_log = Logger('/var/tmp/uos-migration/UOS_migration_log/migration.log', logging.DEBUG, logging.DEBUG)
 
 '''
 if __name__ =='__main__':

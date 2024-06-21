@@ -2,18 +2,18 @@
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 import threading
 from multiprocessing import Process, Queue
-from sysmig_agent.discover import DetInformation
-import pymysql
+from sysmig_agent.utils import DBwrite, selfDestruct
 from apscheduler.schedulers.background import BackgroundScheduler
 import time
-from sysmig_agent.Abisystmcompchk import migrate_before_abi_chk, migrate_behind_abi_chk
+from sysmig_agent.Abisystmcompchk import migrate_before_abi_chk
+from mig_merge.stock_analysis import stock_replace_analysis
+from mig_merge.stock_replace.confirm import migration_confirm
 from sysmig_agent.short_task import *
 from sysmig_agent.migration import *
 from sysmig_agent.agent_request import post_server
-from sysmig_agent.discover import DetInformation
-from sysmig_agent.utils import selfDestruct
 
 q = Queue(maxsize=0)
+
 
 # 定时任务
 def up_to_date_sql_abi():
@@ -36,7 +36,8 @@ def timed_task_abi(task_id):
     time_task.start()
     try:
         task_statue = '1'
-        p_abi = Process(target=migrate_before_abi_chk, args=(q, task_statue,))
+        # 新增mig_type参数，mig_type为'A'存量替换迁移检查；mig_type为'E'新增扩容。
+        p_abi = Process(target=migrate_before_abi_chk, args=(q, task_statue, 'A'))
         p_abi.start()
         p_abi.join()
         # Determine whether the message queue is dead or empty to end the timer
@@ -64,11 +65,12 @@ def timed_task_migrate(task_id, kernel_version):
                 time_task_m.shutdown()
                 return 'error'
             old_os_name = get_old_osname()
+            old_os = get_old_osnameversion()
             if '0' == state:
                 sql_mig_statue('10')
                 if ifnot_mig_kernel(kernel_version):
                     sql_mig_statue('18')
-                t = Process(target=centos8_main, args=(old_os_name, task_id,))
+                t = Process(target=centos8_main, args=(old_os, task_id,))
                 t.start()
                 t.join()
             elif '2' == state:
@@ -87,7 +89,7 @@ def timed_task_migrate(task_id, kernel_version):
                 main_conf(old_os_name)
                 # Migration report
                 try:
-                    migrate_behind_abi_chk()
+                    stock_replace_analysis()
                 except:
                     # Generate analysis report error
                     pass
@@ -138,14 +140,14 @@ def get_abi_info():
     return msg
 
 
-#    if not q.empty():
-
-
 def process_time_task_abi(task_id):
     # 定时任务启动并更新进度
     timed_task_abi(task_id)
+    # 系统兼容性检测的html存入数据库
+    db_write = DBwrite(get_local_ip())
+    db_write.write_analysis_html()
     # abi结果接入数据库内
-    abi_file_sql(abi_file)
+    # abi_file_sql(abi_file)
     # p_timed_task = Process(target=timed_task_abi, args=(task_id,))
     # p_timed_task.start()
     # p_timed_task.join()
@@ -174,24 +176,71 @@ def abi_file_sql(path):
 
 
 def check_environment(data):
-    task_id = json.loads(data).get('task_id')
-    migration_version = json.loads(data).get('migration_version')
+    """
+    存量替换 系统兼容性检测
+    Args:
+        data:
+        json 数据传入
+    Returns:
 
+    """
+    task_id = json.loads(data).get('task_id')
     # 更新SQL任务状态
     sql_task_statue('1', task_id)
     # 发送消息给Server更新任务流状态
     post_server('task_start', task_id)
-    det = DetInformation(data)
-    if re.match('e', migration_version):
-        det.check_scanhardware()
-        det.check_scansysconf()
-        det.check_scanrpms()
-        det.check_exportsysconf()
-    else:
-        det.check_scanhardware()
-        process_time_task_abi(task_id)
+    process_time_task_abi(task_id)
     # tar.gz types abi report
-    targz_mig_dir_abi()
+    # targz_mig_dir_abi()
+    # 系统兼容性检测的html存入数据库
+    db_write = DBwrite(get_local_ip())
+    db_write.write_analysis_html()
+    sql_task_statue('2', task_id)
+    post_server('task_close', task_id)
+
+
+def process_time_task_abi_e(task_id):
+    # 定时任务启动并更新进度
+    # TODO:
+    time_task = BackgroundScheduler(timezone='Asia/Shanghai')
+    task_id = str(task_id)
+    p = time_task.add_job(up_to_date_sql_abi, 'interval', seconds=3)
+    time_task.start()
+    try:
+        task_statue = '1'
+        # 新增mig_type参数，mig_type为'A'存量替换迁移检查；mig_type为'E'新增扩容。
+        p_abi = Process(target=migrate_before_abi_chk, args=(q, task_statue, 'E'))
+        p_abi.start()
+        p_abi.join()
+        # Determine whether the message queue is dead or empty to end the timer
+        while not q.empty():
+            continue
+        time_task.shutdown()
+    except (KeyboardInterrupt, SystemExit):
+        # Not strictly necessary if daemonic mode is enabled but should be done if possible
+        time_task.shutdown()
+        migration_log('Exit The Job!')
+
+
+def check_add_environment(data):
+    """
+    新增扩容 兼容性检测
+    Args:
+        data:
+    Returns:
+
+    """
+    task_id = json.loads(data).get('task_id')
+    # 更新SQL任务状态
+    sql_task_statue('1', task_id)
+    # 发送消息给Server更新任务流状态
+    post_server('task_start', task_id)
+    process_time_task_abi_e(task_id)
+    # tar.gz types abi report
+    # targz_mig_dir_abi()
+    # 系统兼容性检测的html存入数据库
+    db_write = DBwrite(get_local_ip())
+    db_write.write_analysis_add_html()
     sql_task_statue('2', task_id)
     post_server('task_close', task_id)
 
@@ -235,6 +284,8 @@ def system_migration(data):
     # The migration status is modified, and the breakpoint continues
     mig_modify_statue(task_id)
     # sql_mig_statue('00')
+    # 迁移分析确认
+    migration_confirm()
     # MIGRATION MAIN
     timed_task_migrate(task_id, kernel_version)
     post_server('task_close', task_id)
@@ -264,19 +315,10 @@ def post_task(data):
         t = threading.Thread(target=check_kernel, args=[data])
     elif 'check_environment' == task_mod:
         t = threading.Thread(target=check_environment, args=[data])
-    elif 'check_scanrpms' == task_mod:
-        det = DetInformation(data)
-        t = threading.Thread(target=det.check_scanrpms)
-    elif 'check_scanhardware' == task_mod:
-        det = DetInformation(data)
-        t = threading.Thread(target=det.check_scanhardware)
-    elif 'check_scansysconf' == task_mod:
-        det = DetInformation(data)
-        t = threading.Thread(target=det.check_scansysconf)
+    elif 'check_add_environment' == task_mod:
+        t = threading.Thread(target=check_add_environment, args=[data])
     elif 'system_migration' == task_mod:
         t = threading.Thread(target=system_migration, args=[data])
-    elif 'hearbeat_detection' == task_mod:
-        return 'success'
     t.start()
     return 'y'
 
