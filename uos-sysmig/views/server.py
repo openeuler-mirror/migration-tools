@@ -26,7 +26,7 @@ def import_host_info(data):
     """
     agent_info = json.loads(data).get("data")
     if agent_info == []:
-        data = {"data": "faild"}
+        data = {"data": "failed"}
         json_data = json.dumps(data)
         return json_data
 
@@ -113,7 +113,7 @@ def check_user(data):
     check_info_data = {"mod": "check_info",}
     check_all_info(json.dumps(check_info_data))
     if data == 0:
-        data = {"data": "faild", "num": 0}
+        data = {"data": "failed", "num": 0}
     else:
         data = {"data": "success", "num": data}
     json_data = json.dumps(data)
@@ -147,11 +147,11 @@ def host_info_display(data):
     """
     显示主机信息
     agent_ip,hostname,agent_online_status,agent_os,agent_arch,
-    agent_history_faild_reason,task_CreateTime,task_status
+    agent_history_failed_reason,task_CreateTime,task_status
     :return:
     """
     sql = "select agent_ip,hostname,agent_online_status,agent_os,migration_type,agent_arch," \
-          "agent_history_faild_reason from agent_info;"
+          "agent_history_failed_reason from agent_info;"
     data = DBHelper().execute(sql).fetchall()
     data = list(data)
     for i in range(0, len(data)):
@@ -332,25 +332,25 @@ def get_repo_data(data):
         if len(get_centos7_x86_status) == 0:
             data['centos7_x86'] = 'success'
         else:
-            data['centos7_x86'] = 'faild'
+            data['centos7_x86'] = 'failed'
 
         get_centos8_x86_status = DBHelper().execute(centos8_x86_sql).fetchall()
         if len(get_centos8_x86_status) == 0:
             data['centos8_x86'] = 'success'
         else:
-            data['centos8_x86'] = 'faild'
+            data['centos8_x86'] = 'failed'
 
         get_centos7_aarch64_status = DBHelper().execute(centos7_aarch64_sql).fetchall()
         if len(get_centos7_aarch64_status) == 0:
             data['centos7_aarch64'] = 'success'
         else:
-            data['centos7_aarch64'] = 'faild'
+            data['centos7_aarch64'] = 'failed'
 
         get_centos8_aarch64_status = DBHelper().execute(centos8_aarch64_sql).fetchall()
         if len(get_centos8_aarch64_status) == 0:
             data['centos8_aarch64'] = 'success'
         else:
-            data['centos8_aarch64'] = 'faild'
+            data['centos8_aarch64'] = 'failed'
 
         json_data = json.dumps(data)
         return json_data
@@ -608,7 +608,7 @@ def get_migrated_hosts(data):
     """
     agent_ip_list = json.loads(data).get('agent_ip')
     if agent_ip_list == []:
-        sql = "select agent_ip,agent_id,hostname,agent_online_status,agent_os,agent_arch,agent_history_faild_reason " \
+        sql = "select agent_ip,agent_id,hostname,agent_online_status,agent_os,agent_arch,agent_history_failed_reason " \
               "from agent_info where agent_online_status='0' and agent_migration_os is null" \
               " and migration_type='stock_replacement';"
     elif len(agent_ip_list) == 1:
@@ -616,7 +616,7 @@ def get_migrated_hosts(data):
               "from agent_info where agent_online_status='0' and agent_migration_os is null" \
               " and migration_type='stock_replacement' and agent_ip='%s';" % agent_ip_list[0]
     else:
-        sql = "select agent_ip,agent_id,hostname,agent_online_status,agent_os,agent_arch,agent_history_faild_reason " \
+        sql = "select agent_ip,agent_id,hostname,agent_online_status,agent_os,agent_arch,agent_history_failed_reason " \
               "from agent_info where agent_ip in {} and agent_online_status='0' and agent_migration_os is " \
               "null and migration_type='stock_replacement';".format(tuple(agent_ip_list))
 
@@ -680,8 +680,8 @@ def get_storage_num(data):
     get_success_num = DBHelper().execute(success_num_sql).fetchall()
 
     success = len(get_success_num)
-    faild = len(get_faild_num)
-    data = {'success': success, 'faild': faild}
+    failed = len(get_failed_num)
+    data = {'success': success, 'failed': failed}
     json_data = json.dumps(data)
     return json_data
 
