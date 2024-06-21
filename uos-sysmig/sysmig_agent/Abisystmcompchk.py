@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
+
 #!/usr/bin/python3
 
 import queue,os,string
@@ -14,7 +15,7 @@ from shutil import copyfile
 #from sysmig_agent.share import *
 from multiprocessing import Process 
 from multiprocessing import cpu_count
-from mig_merge.special_pkg import deal_repo_rpm
+from mig_merge.new_expansion.special_pkg import deal_repo_rpm
 from mig_merge.stock_check import stock_replace_check
 from mig_merge.expansion_check import new_expansion_check
 
@@ -224,7 +225,7 @@ def get_migrate_behind_rpm_pkg():
             if dist in rpm_pkg['release']:
                 fhu.write(rpm_pkg['name']+'\n')
                 rpm_pkg_list.append(rpm_pkg['name'])
-    fcw.close()
+    fhu.close()
 
     return rpm_pkg_list
 
@@ -848,7 +849,7 @@ def migrate_before_abi_chk(q_query, task_status, mig_flag):
     if not current_list:
         msg_tup = ('0', task_status)
         q_query.put(msg_tup)
-        log.info('The current progress exit:' + str(msg_tup_error))
+        #log.info('The current progress exit:' + str(msg_tup_error))
         #return False
 
     get_system_unique_pkg(list(current_list), migration_download_list)
@@ -880,8 +881,8 @@ def migrate_before_abi_chk(q_query, task_status, mig_flag):
     #20220328 generating html reports
     if mig_flag == 'A':
         stock_replace_check()
-    elif mig_flag == 'E'
-        new_expansion_check
+    elif mig_flag == 'E':
+        new_expansion_check()
     else:
         log.info('the current migration type is incorrect, please check!!!')
 
