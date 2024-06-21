@@ -72,6 +72,17 @@ def check_info(data):
     return 'success'
 
 
+def check_all_info(data):
+    """
+    检测所有系统版本和空间大小
+    :param data:
+    :return:
+    """
+    sql = "select agent_ip from agent_info where agent_online_status = 0;"
+    get_agent_ip(data, sql, '/check_info')
+    return 'success'
+
+
 def check_repo(data):
     """
     检测平台软件仓库
