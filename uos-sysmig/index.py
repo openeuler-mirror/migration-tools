@@ -26,7 +26,6 @@ def index():
 mods = {
         'import_host_info': import_host_info,
         'host_info_display': host_info_display,
-        'delete_host_info': delete_host_info,
         'check_info': check_info,
         'get_page_data': get_page_data,
         'check_repo': check_repo,
@@ -41,12 +40,8 @@ mods = {
         'sql_task': modify_task_stream,
         'get_download_center_data': get_download_center_data,
         'migration_records': migration_records,
-        'get_migrated_hosts': get_migrated_hosts,
-        'get_storage_num': get_storage_num,
-        'get_repo_arch_info': get_repo_arch_info,
         'close_tool': close_tool,
         'modify_task_status': modify_task_status,
-        'get_analysis_migrated_hosts': get_analysis_migrated_hosts,
         'check_add_repo': check_add_repo,
         'get_add_repo_data': get_add_repo_data,
         'check_add_environment': check_add_environment,
@@ -69,17 +64,6 @@ def check_methods():
 def modify_migration_type():
     """
     修改迁移类型
-    :return:
-    """
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/get_analysis_migrated_hosts', methods=['GET', 'POST'])
-def get_analysis_migrated_hosts():
-    """
-    获取迁移分析主机数据
     :return:
     """
     mod = check_methods()
@@ -142,28 +126,6 @@ def modify_task_status():
         return Response(mod, content_type='application/json')
 
 
-@app.route('/get_repo_arch_info', methods=['GET', 'POST'])
-def get_repo_arch_info():
-    """
-    获取软件仓库架构和系统信息
-    :return:
-    """
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/get_storage_num', methods=['GET', 'POST'])
-def get_storage_num():
-    """
-    获取可用空间足够和不足数量
-    :return:
-    """
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
 @app.route('/import_host_info', methods=['GET', 'POST'])
 def import_host_info():
     """
@@ -190,17 +152,6 @@ def host_info_display():
 def modify_task_stream():
     """
     修改任务流
-    :return:
-    """
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
-@app.route('/delete_host_info', methods=['GET', 'POST'])
-def delete_host_info():
-    """
-    删除迁移主机
     :return:
     """
     mod = check_methods()
@@ -351,17 +302,6 @@ def migration_records():
         return Response(mod, content_type='application/json')
 
 
-@app.route('/get_migrated_hosts', methods=['GET', 'POST'])
-def get_migrated_hosts():
-    """
-    获取迁移主机列表数据
-    :return:
-    """
-    mod = check_methods()
-    if mod:
-        return Response(mod, content_type='application/json')
-
-
 @app.route('/close_tool', methods=['GET', 'POST'])
 def close_tool():
     """
@@ -376,7 +316,6 @@ def close_tool():
 if __name__ == '__main__':
     app.debug = True
     app.config["JSON_AS_ASCII"] = False
-    from miscellaneous import getSysMigConf
     uos_sysmig_conf = json.loads(getSysMigConf('0.0.0.0'))
     ip = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
     port = int(json.loads(uos_sysmig_conf).get('serverport').strip()[1:-1])
