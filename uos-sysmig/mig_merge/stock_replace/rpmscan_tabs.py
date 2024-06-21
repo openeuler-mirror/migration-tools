@@ -7,7 +7,7 @@ import platform
 
 from logger import migration_log
 from mig_merge.migrationTools.scanRPM.scan_rpm import parsed_pkg_to_json,get_current_pkg_list
-from mig_merge.migrationTools.scanRPM.scan_rpm import ParsedPkgInfo
+from mig_merge.migrationTools.scanRPM.scan_rpm import ParsedPkgInfoAdd
 
 def rpmscan_tabs():
     exclude_fonts = True
@@ -34,7 +34,7 @@ def rpmscan_tabs():
         installed_pkgs = filted_installed_pkgs
 
     for pkg_name in installed_pkgs:
-        tmp_pkg_info = ParsedPkgInfo(pkg_name, add_tags)
+        tmp_pkg_info = ParsedPkgInfoAdd(pkg_name, add_tags)
         parsed_pkgs.append(tmp_pkg_info)
 
     only_show_leap = True

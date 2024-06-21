@@ -54,7 +54,8 @@ def general_tabs(sFlag):
             system_list = system_list + middle_data
 
         if line_num == 8:
-            middle_data = '"software_package_count": "'+line.strip().split('|')[2]+'"},'
+            layered_grading = ',根据分层分级算法的兼容度为%s%%' %(line.strip().split('|')[3])
+            middle_data = '"software_package_count": "'+line.strip().split('|')[2] + layered_grading +'"},'
             system_list = system_list + middle_data
     #migration_log.info('Get the current system info:{}'.format(system_list))
     return system_list
