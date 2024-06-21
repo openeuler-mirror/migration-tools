@@ -5,9 +5,9 @@ import os
 import stat
 import shutil
 
-from config import FixedInfo
-from repo_sqlite.utils import run_cmd
-from migrationTools.scanRPM.scan_rpm import get_current_pkg_list
+from mig_merge.config import FixedInfo
+from mig_merge.migrationTools.scanConf.utils import run_cmd
+from mig_merge.migrationTools.scanRPM.scan_rpm import get_current_pkg_list
 from logger import migration_log
 
 
@@ -169,4 +169,51 @@ def gen_reporpm_list():
     shutil.copy(FixedInfo.unique_pkgname, FixedInfo.same_rpmpkg)
     migration_log.info('Specific software package string same of current unique list')
     return '-1'
+
+def deal_repo_rpm():
+    '''
+        应用场景：特定软件包映射
+        功    能：repo源的特定软件包映射到当前系统包列表
+        输入参数：
+        返 回 值：diff_list - 当前系统包列表
+                  -1 - 不存在特定包列表
+    '''
+
+    diff_list = []
+
+    #获取当前系统与repo源中包名不同的rmp包列表
+    pkg_str = gen_reporpm_list()
+    if pkg_str == '-1':
+        migration_log.info('current unique rpms list same of repo source!!')
+        return '-1'
+
+    #下载repo源中存在包名差异的rpm包
+    os.system('yumdownloader --destdir=%s%s --skip-broken' %(FixedInfo.repo_diff_path, pkg_str))
+
+    #将下载的存在包名差异的rpm包重命名为当前系统rpm包
+    for diff_line in open(FixedInfo.diff_rpmpkg, 'r'):
+        element_line = diff_line.replace('\n', '').split('|')
+
+        pkgname = element_line[0] 
+
+        rpm_info = element_line[1].rsplit('-',2)
+        pkgname_curr = FixedInfo.repo_diff_path+'/'+pkgname+'-'+rpm_info[1]+'-'+rpm_info[2]
+        pkgname_repo = FixedInfo.repo_diff_path+'/'+element_line[1]
+
+        if not os.path.exists(pkgname_repo):
+            migration_log.info('repo source not exit file:' +pkgname_repo)
+            continue
+
+        #将repo上特定包重名为当前系统包
+        os.rename(pkgname_repo, pkgname_curr)
+
+        diff_list.append(pkgname)
+
+    return diff_list
+
+def main():
+   deal_repo_rpm()
+   
+if __name__ == "__main__":
+    main()
 
