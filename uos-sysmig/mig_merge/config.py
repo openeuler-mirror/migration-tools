@@ -62,7 +62,8 @@ class FixedInfo():
     expansion_haed = '{"type": "new_expansion_check",'
     page_hardware_tabs = '"hardware_tabs": {"name": "硬件兼容性","data": '
     page_rpm_tabs = '"rpm_tabs": {"name": "RPM兼容性","data": ['
-    expansion_gen_tabs = 'general_tabs": {"name": "系统基本信息",'
+    expansion_gen_tabs = '{"type": "new_expansion_check","general_tabs": {"name": "系统基本信息",'
+
 
     #融合1xxxe版
     expansion_page_head = '{"type": "new_expansion_check","sysconffile_tabs": {"name": "SysSconf","data": ['
