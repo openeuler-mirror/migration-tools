@@ -20,8 +20,8 @@ int add_knownhost(char *ip)
 
         f_host = (char*)malloc(sizeof(char)*100);
         add_host = (char*)malloc(sizeof(char)*100);
-	sprintf(f_host, "cat $HOME/.ssh/known_hosts |grep %s", ip);
-        sprintf(add_host, "ssh-keyscan %s >> $HOME/.ssh/known_hosts", ip);
+	sprintf(f_host, "cat ~/.ssh/known_hosts |grep %s", ip);
+        sprintf(add_host, "ssh-keyscan %s >> ~/.ssh/known_hosts", ip);
 
 	if(system(f_host))//与agent_ip没有连接过
                 add_ip = system(add_host);//添加agentip
