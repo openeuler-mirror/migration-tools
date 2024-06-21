@@ -62,6 +62,9 @@ def check_info(data):
     agent_ip_list = json.loads(data).get('agent_ip')
     if agent_ip_list == []:
         sql = "select agent_ip from agent_info where agent_online_status = 0 and migration_type='stock_replacement';"
+    elif len(agent_ip_list) == 1:
+        sql = "select agent_ip from agent_info where agent_online_status = 0 and " \
+              "agent_ip='%s' and migration_type='stock_replacement';" % agent_ip_list[0]
     else:
         sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_ip in {} " \
               "and migration_type='stock_replacement';".format(tuple(agent_ip_list))
@@ -79,6 +82,9 @@ def check_repo(data):
     if agent_ip_list == []:
         sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_storage >= 10 " \
               "and migration_type='stock_replacement';"
+    elif len(agent_ip_list) == 1:
+        sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_storage >= 10 " \
+              "and agent_ip='%s' and migration_type='stock_replacement';" % agent_ip_list[0]
     else:
         sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_storage >= 10 " \
               "and agent_ip in {} and migration_type='stock_replacement';".format(tuple(agent_ip_list))
@@ -100,6 +106,9 @@ def check_kernel(data):
     if agent_ip_list == []:
         sql = "select agent_ip from agent_info where agent_online_status=0 and agent_storage>=10 and repo_status='0' " \
               "and migration_type='stock_replacement';"
+    elif len(agent_ip_list) == 1:
+        sql = "select agent_ip from agent_info where agent_online_status=0 and agent_storage>=10 and repo_status='0' " \
+              "and agent_ip='%s' and migration_type='stock_replacement';" % agent_ip_list[0]
     else:
         sql = "select agent_ip from agent_info where agent_online_status=0 and agent_storage>=10 and repo_status='0' " \
               "and agent_ip in {} and migration_type='stock_replacement';".format(tuple(agent_ip_list))
@@ -152,6 +161,9 @@ def check_add_repo(data):
     agent_ip_list = json.loads(data).get('agent_ip')
     if agent_ip_list == []:
         sql = "select agent_ip from agent_info where agent_online_status = 0 and migration_type='new_expansion';"
+    elif len(agent_ip_list) == 1:
+        sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_ip='%s' and" \
+              " migration_type='new_expansion';" % agent_ip_list[0]
     else:
         sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_ip in {} and " \
               "migration_type='new_expansion';".format(tuple(agent_ip_list))
