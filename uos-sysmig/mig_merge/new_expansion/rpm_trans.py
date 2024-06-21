@@ -4,10 +4,10 @@ import os
 import rpm
 import stat
 
-from config import FixedInfo
-from repo_sqlite.utils import run_cmd
-from migrationTools.utils.logger import Logger
-from migrationTools.scanRPM.scan_rpm import get_current_pkg_list
+from mig_merge.config import FixedInfo
+from mig_merge.migrationTools.scanConf.utils import run_cmd
+from mig_merge.migrationTools.utils.logger import Logger
+from mig_merge.migrationTools.scanRPM.scan_rpm import get_current_pkg_list
 
 logger = Logger(__name__)
 
@@ -46,6 +46,7 @@ def binary_type(file_name):
         if not is_ELFfile(line):
             continue
         else:
+            pass
             #查找连接文件
 
 def rpm_trans():
