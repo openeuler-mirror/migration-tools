@@ -4,16 +4,16 @@ import json
 import socket
 from shutil import copyfile
 
-#from logger import migration_log
-from migrationTools.scanHardware import utils
-from stock_replace.confirm import get_cur_sys_version
-from config import FixedInfo
+from logger import migration_log
+from mig_merge.config import FixedInfo
+from mig_merge.migrationTools.scanHardware import utils
+from mig_merge.stock_replace.confirm import get_cur_sys_version
 
-def general_tabs():
+def general_tabs(sFlag):
     '''
         应用场景：存量替换迁移检测-系统基本信息
         功    能：1xxxa版系统基本信息，按照前后端接口生成json格式系统基本信息
-        输入参数：无
+        输入参数：sFlag - A/E标识
         返 回 值：json数据
     '''
     line_num = 0
@@ -24,7 +24,10 @@ def general_tabs():
 
         if line_num == 2:
             middle_data = '"current_os_version": "'+line.strip().split('|')[1]+'",'
-            system_list = FixedInfo.page_system_info + middle_data
+            if sFlag == 'A':
+                system_list = FixedInfo.page_system_info + middle_data
+            else:
+                system_list = FixedInfo.expansion_gen_tabs + middle_data
 
         if line_num == 3:
             middle_data = '"current_os_kennel_version": "'+line.strip().split('|')[1]+'",'

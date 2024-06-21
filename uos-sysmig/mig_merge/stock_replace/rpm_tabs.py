@@ -5,9 +5,9 @@ import socket
 from shutil import copyfile
 
 from logger import migration_log
-from migrationTools.scanHardware import utils
-from stock_replace.confirm import get_cur_sys_version
-from config import FixedInfo
+from mig_merge.migrationTools.scanHardware import utils
+from mig_merge.stock_replace.confirm import get_cur_sys_version
+from mig_merge.config import FixedInfo
 
 def rpm_tabs():
     '''
@@ -18,8 +18,7 @@ def rpm_tabs():
     '''
 
     third_tab = ''
-    rpm_file_name = FixedInfo.inventory_dir + '/abi-incomp-chk.csv'
-    for line in open(rpm_file_name, 'r'):
+    for line in open(FixedInfo.agent_abi_result, 'r'):
         element_list = line.strip().split(',', 6)
         if element_list[4] == 'N':
             compatible = 'false'

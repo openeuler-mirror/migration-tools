@@ -4,11 +4,11 @@
 import json
 import os
 
-from migrationTools.scanConf import utils
-from migrationTools.scanConf.conent_parser import ContentParser
-from migrationTools.scanConf.gen_report import gen_conf_data
-from migrationTools.utils.config import PathConf
-from migrationTools.utils.logger import Logger
+from mig_merge.migrationTools.scanConf import utils
+from mig_merge.migrationTools.scanConf.conent_parser import ContentParser
+from mig_merge.migrationTools.scanConf.gen_report import gen_conf_data
+from mig_merge.migrationTools.utils.config import PathConf
+from mig_merge.migrationTools.utils.logger import Logger
 
 logger = Logger(__name__)
 
@@ -63,4 +63,3 @@ def confscan_tabs():
 
 if __name__ == "__main__":
     scan_conf = confscan_tabs()
-    print('scan_conf = %s' %(scan_conf))
