@@ -5,9 +5,9 @@ import socket
 from shutil import copyfile
 
 from logger import migration_log
-from migrationTools.scanHardware import utils
-from stock_replace.confirm import get_cur_sys_version
-from config import FixedInfo
+from mig_merge.migrationTools.scanHardware import utils
+from mig_merge.stock_replace.confirm import get_cur_sys_version
+from mig_merge.config import FixedInfo
 
 def rpmpkg_formatting(file_name):
     '''格式化输出存量json格式数据

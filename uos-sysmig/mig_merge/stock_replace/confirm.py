@@ -3,12 +3,10 @@ import sys
 import rpm
 import json
 
-#for temporary test
-#sys.path.append("..")
-
-from migrationTools.scanRPM.scan_rpm import get_current_pkg_list
-from migrationTools.scanRPM.db_operates import DBOperate
-from config import FixedInfo
+from logger import migration_log
+from mig_merge.migrationTools.scanRPM.scan_rpm import get_current_pkg_list
+from mig_merge.migrationTools.scanRPM.db_operates import DBOperate
+from mig_merge.config import FixedInfo
 
 def system_version_id():
     '''
@@ -66,33 +64,25 @@ def gen_migration_info():
         返 回 值：
     '''
 
-    sys_ver = FixedInfo.sys_version
-    eln_rpms = FixedInfo.migration_eln
-    uelc_rpms = FixedInfo.migration_uelc
-    head_info = '{"type":"stock_replace_analysis","packages_tabs": {"name": "软件包列表",'
-
     newline = "\\n'"
     single_quotes = "'"
 
-    current_info = '"current_os_item": {"name":"当前系统特有（不替换）'
-    with open(sys_ver, mode='r') as fsp:
+    with open(FixedInfo.sys_version, mode='r') as fsp:
         sys_version = fsp.read().replace('\n', '')
 
-    head_data = head_info + current_info + sys_version + '",'
+    head_data = FixedInfo.head_info + FixedInfo.current_info + sys_version + '",'
 
-    with open(eln_rpms, mode='r') as fbp:
+    with open(FixedInfo.migration_eln, mode='r') as fbp:
         current_data = '"data":' + str(fbp.readlines()).replace(newline, '"').replace(single_quotes, '"')
     analysis_data = head_data + current_data + '},'
 
 
-    future_info = '"future_os_item": {"name": "迁移统特有（新安装）'
-    data_info = analysis_data + future_info + get_cur_sys_version() + '",'
+    data_info = analysis_data + FixedInfo.future_info + get_cur_sys_version() + '",'
     current_data = '"data":' + gen_migration_behind_rpms()
     future_data = data_info + current_data + '},'
 
-    total_info = '"total_list_item": {"name": "迁移系统软件包总列表 '
-    data_info = future_data + total_info + get_cur_sys_version() + '",'
-    with open(uelc_rpms, mode='r') as fup:
+    data_info = future_data + FixedInfo.total_info + get_cur_sys_version() + '",'
+    with open(FixedInfo.migration_uelc, mode='r') as fup:
         current_data = '"data":' + str(fup.readlines()).replace(newline, '"').replace(single_quotes, '"')
     total_data = data_info + current_data + '}}}'
 
@@ -153,15 +143,15 @@ def migration_confirm():
     file_uelc = FixedInfo.migration_uelc
 
     if os.path.isfile(file_eln) and os.path.isfile(file_uelc): 
-        print('migration before the current system rpms files exist!!!')
+        migration_log.info('migration before the current system rpms files exist!!!')
         return '0'
 
     uelc_list = gen_uelc_rpms(file_uelc)
     if uelc_list:
-        print('get uos repo source rpms list success')
+        migration_log.info('get uos repo source rpms list success')
 
     if gen_eln_rpms(file_eln,uelc_list):
-        print('get eln unique rpms file success')
+        migration_log.info('get eln unique rpms file success')
 
     return '1'
 

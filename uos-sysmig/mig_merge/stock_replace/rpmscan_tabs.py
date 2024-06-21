@@ -5,9 +5,9 @@ import os
 import json
 import platform
 
-#from logger import migration_log
-from migrationTools.scanRPM.scan_rpm import parsed_pkg_to_json,get_current_pkg_list
-from migrationTools.scanRPM.scan_rpm import ParsedPkgInfoAdd
+from logger import migration_log
+from mig_merge.migrationTools.scanRPM.scan_rpm import parsed_pkg_to_json,get_current_pkg_list
+from mig_merge.migrationTools.scanRPM.scan_rpm import ParsedPkgInfo
 
 def rpmscan_tabs():
     exclude_fonts = True
@@ -34,7 +34,7 @@ def rpmscan_tabs():
         installed_pkgs = filted_installed_pkgs
 
     for pkg_name in installed_pkgs:
-        tmp_pkg_info = ParsedPkgInfoAdd(pkg_name, add_tags)
+        tmp_pkg_info = ParsedPkgInfo(pkg_name, add_tags)
         parsed_pkgs.append(tmp_pkg_info)
 
     only_show_leap = True
@@ -50,8 +50,6 @@ def rpmscan_tabs():
 
     target_OS = current_OS + ',"target_os": "UnionTech OS Server 20",'
     json_str = target_OS + '"data": ' + parsed_pkg_to_json(parsed_pkgs) + '}'
-
-    #migration_log.info('json_str = {}'.format(json_str))
 
     return json_str
 

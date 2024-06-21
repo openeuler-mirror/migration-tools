@@ -2,18 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
-import json
 import socket
 
-from config import FixedInfo
-from merge.utils import dataplaceholder_replace
-import stock_replace.stock as stock
-import stock_replace.confirm as confirm 
-from migrationTools.utils.logger import Logger
-
-
-logger = Logger(__name__)
+from mig_merge.config import FixedInfo
+from mig_merge.merge.utils import dataplaceholder_replace
+import mig_merge.stock_replace.stock as stock
+import mig_merge.stock_replace.confirm as confirm 
 
 def stock_replace_analysis():
     '''
@@ -26,10 +20,12 @@ def stock_replace_analysis():
     fixed_name = 'UOS_migration_completed_report_'
     hostinfo = stock.get_local_ip() + '_' + socket.gethostname()
     report_name = fixed_name + hostinfo + "_" + FixedInfo.timestamp + ".html"
-    report_html = os.path.join(FixedInfo.report_stock_dir, report_name)
 
-    #if confirm.migration_confirm():
-    #    print('同时存在两个rpm信息文件')
+    report_analysis_dir = FixedInfo.report_analysis_dir
+
+    if not os.path.exists(report_analysis_dir):
+        os.makedirs(report_analysis_dir)
+    report_html = os.path.join(report_analysis_dir, report_name)
 
     return dataplaceholder_replace(FixedInfo.stock_template_analysis,
             report_html, confirm.gen_migration_info())

@@ -5,11 +5,13 @@ import socket
 from shutil import copyfile
 
 from logger import migration_log
-from stock_replace.general_tabs import general_tabs
-from stock_replace.packages_tabs import packages_tabs
-from stock_replace.rpm_tabs import rpm_tabs
-from stock_replace.confscan_tabs import confscan_tabs
-from stock_replace.rpmscan_tabs import rpmscan_tabs
+from mig_merge.stock_replace.general_tabs import general_tabs
+from mig_merge.stock_replace.packages_tabs import packages_tabs
+from mig_merge.stock_replace.rpm_tabs import rpm_tabs
+from mig_merge.stock_replace.sysconffile_tabs import sysconffile_tabs
+from mig_merge.stock_replace.hardware_tabs import hardware_tabs
+from mig_merge.stock_replace.confscan_tabs import confscan_tabs
+from mig_merge.stock_replace.rpmscan_tabs import rpmscan_tabs
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -20,15 +22,18 @@ def get_local_ip():
 
 def xlsTohtml():
     '''
-        应用场景：存量替换迁移评估检查，包括系统基本信息，软件包对比，RPM兼容性检测
-        功    能：1xxxa版系统基本信息，软件包对比，RPM兼容性对比，按照前后端接口生成json格式数据
+        应用场景：存量替换迁移评估检查
+        功    能：按照前后端接口生成json格式数据,包括系统基本信息、软件包对比、
+                  RPM二进制金融性、配置兼容性评估、PRM provide兼容性评估
         输入参数：无
         返 回 值：json数据
     '''
-    return general_tabs()+packages_tabs()+rpm_tabs()+confscan_tabs()+rpmscan_tabs()+'}'
+    json_str = general_tabs('A')+packages_tabs()+rpm_tabs()+sysconffile_tabs()+hardware_tabs()+confscan_tabs()+rpmscan_tabs()+'}'
+
+    return json_str
 
 def main():
-    xlsTohtml()
+    print(xlsTohtml())
 
 
 if __name__ == "__main__":
