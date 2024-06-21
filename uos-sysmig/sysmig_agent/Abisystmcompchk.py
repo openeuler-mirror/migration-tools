@@ -1,5 +1,7 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
+#!/usr/bin/python3
+
 import queue,os,string
 import threading,codecs
 import time,rpm,stat,re
@@ -12,6 +14,9 @@ from shutil import copyfile
 #from sysmig_agent.share import *
 from multiprocessing import Process 
 from multiprocessing import cpu_count
+from mig_merge.special_pkg import deal_repo_rpm
+from mig_merge.stock_check import stock_replace_check
+from mig_merge.expansion_check import new_expansion_check
 
 from logger import *
 #from connect_sql import DBHelper
@@ -808,7 +813,7 @@ def get_system_unique_pkg(current_pkg_list, download_pkg_list):
     fcw.close()
 
 #Check the environment before migration and generate a detection report
-def migrate_before_abi_chk(q_query, task_status):
+def migrate_before_abi_chk(q_query, task_status, mig_flag):
     i=0
     Flag='0'
     Oth='2'
@@ -848,6 +853,12 @@ def migrate_before_abi_chk(q_query, task_status):
 
     get_system_unique_pkg(list(current_list), migration_download_list)
 
+    #20220328 add special software package deal
+    if mig_flag == 'E':
+        special_list = deal_repo_rpm()
+        if special_list != '-1':
+            download_list = download_list + special_list
+
     cur_dir = os.getcwd()
     os.chdir(download_path)
     rst = MutilThread(download_list, q_query, log)
@@ -865,6 +876,14 @@ def migrate_before_abi_chk(q_query, task_status):
     while i < 4:
         write_migrate_report_rst =switch_write_migrate_report(migrate_before_report_name, i, Flag)
         i = i + 1
+
+    #20220328 generating html reports
+    if mig_flag == 'A':
+        stock_replace_check()
+    elif mig_flag == 'E'
+        new_expansion_check
+    else:
+        log.info('the current migration type is incorrect, please check!!!')
 
     task_status = '0'
     msg_tup = (percentage, task_status)
