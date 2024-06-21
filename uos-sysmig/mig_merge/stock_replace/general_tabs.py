@@ -18,43 +18,43 @@ def general_tabs(sFlag):
     '''
     line_num = 0
 
-    sysinfo_name = FixedInfo.inventory_dir + '/systeminfo.txt'
+    sysinfo_name = FixedInfo.inventory_dir + '/before-system-info.txt'
     for line in open(sysinfo_name, 'r'):
         line_num += 1
 
-        if line_num == 2:
-            middle_data = '"current_os_version": "'+line.strip().split('|')[1]+'",'
+        if line_num == 1:
+            middle_data = '"current_os_version": "'+line.strip().split('|')[2]+'",'
             if sFlag == 'A':
                 system_list = FixedInfo.page_system_info + middle_data
             else:
                 system_list = FixedInfo.expansion_gen_tabs + middle_data
 
+        if line_num == 2:
+            middle_data = '"current_os_kennel_version": "'+line.strip().split('|')[2]+'",'
+            system_list = system_list + middle_data
+
         if line_num == 3:
-            middle_data = '"current_os_kennel_version": "'+line.strip().split('|')[1]+'",'
+            middle_data = '"var_cache_available_space": "'+line.strip().split('|')[2]+'",'
+            system_list = system_list + middle_data
+
+        if line_num == 4:
+            middle_data = '"architecture": "'+line.strip().split('|')[2]+'",'
             system_list = system_list + middle_data
 
         if line_num == 5:
-            middle_data = '"var_cache_available_space": "'+line.strip().split('|')[1]+'",'
+            middle_data = '"replaced_software_package_count": "'+line.strip().split('|')[2]+'",'
             system_list = system_list + middle_data
 
         if line_num == 6:
-            middle_data = '"architecture": "'+line.strip().split('|')[1]+'",'
+            middle_data = '"compatible_software_package_count": "'+line.strip().split('|')[2]+'",'
             system_list = system_list + middle_data
 
-        if line_num == 9:
-            middle_data = '"replaced_software_package_count": "'+line.strip().split('|')[1]+'",'
+        if line_num == 7:
+            middle_data = '"incompatible_software_package_count": "'+line.strip().split('|')[2]+'",'
             system_list = system_list + middle_data
 
-        if line_num == 12:
-            middle_data = '"compatible_software_package_count": "'+line.strip().split('|')[1]+'",'
-            system_list = system_list + middle_data
-
-        if line_num == 13:
-            middle_data = '"incompatible_software_package_count": "'+line.strip().split('|')[1]+'",'
-            system_list = system_list + middle_data
-
-        if line_num == 14:
-            middle_data = '"software_package_count": "'+line.strip().split('|')[1]+'"},'
+        if line_num == 8:
+            middle_data = '"software_package_count": "'+line.strip().split('|')[2]+'"},'
             system_list = system_list + middle_data
     #migration_log.info('Get the current system info:{}'.format(system_list))
     return system_list

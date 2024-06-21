@@ -11,7 +11,7 @@ class FixedInfo():
     sqlite_dir = '/root/uos-sysmig/uos-sysmig/mig_merge/migrationTools/data/repo-sqlite'
 
     local_dir = '/var/tmp/uos-migration'
-    template_dir = '../ui/report_templates/dist'
+    template_dir = './dist'
     inventory_dir = os.path.join(local_dir, 'data/exp-rst')
     repo_diff_path = os.path.join(local_dir, 'uos/rpms')
     report_check_dir = os.path.join(local_dir, 'UOS_analysis_report')
@@ -31,8 +31,8 @@ class FixedInfo():
 
     #数据文件
     agent_abi_result = os.path.join(inventory_dir, 'agent_ABI_check_result.csv')
-    migration_eln = os.path.join(inventory_dir, 'migration-before-eln-rpm-tmp.csv')
-    migration_uelc = os.path.join(inventory_dir, 'migration-before-uelc20-rpm-tmp.csv')
+    migration_eln = os.path.join(inventory_dir, 'migration-before-eln-rpm.csv')
+    migration_uelc = os.path.join(inventory_dir, 'migration-before-uelc20-rpm.csv')
     sys_version = os.path.join(inventory_dir, 'sys-version-tmp')
 
 
