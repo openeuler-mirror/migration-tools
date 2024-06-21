@@ -16,10 +16,13 @@ from views.new_expansion import *
 
 # import MySQLdb
 os.chdir('/usr/lib/uos-sysmig-server')
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 CORS(app, resources=r'/*')
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 mods = {
         'import_host_info': import_host_info,
@@ -377,9 +380,5 @@ if __name__ == '__main__':
     uos_sysmig_conf = json.loads(getSysMigConf())
     ip = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
     port = int(json.loads(uos_sysmig_conf).get('serverport').strip()[1:-1])
-    info = "import Vue from 'vue'" + '\n' + "import axios from 'axios'" + '\n' + "axios.defaults.baseURL='http://%s:%s'" % (ip, port) + "\n" + "Vue.prototype.$http=axios"
-    with open('template/src/plugins/axios.js', 'w+', encoding='utf-8') as f:
-        f.write(info)
-        f.close
     app.run(debug=True, host=ip, port=port, use_reloader=False)
 
