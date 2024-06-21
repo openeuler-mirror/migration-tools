@@ -3,10 +3,9 @@
 import os
 import json
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
-os.chdir('/usr/lib/uos-sysmig-server')
+os.chdir('/usr/lib/uos-sysmig-server/')
 from connect_sql import *
 from logger import *
-from sysmig_agent.share import getSysMigConf
 from miscellaneous import *
 from views.migration import *
 from views.server import *
@@ -15,8 +14,8 @@ from views.new_expansion import *
 
 
 # import MySQLdb
-os.chdir('/usr/lib/uos-sysmig-server')
-app = Flask(__name__, static_folder='static', template_folder='templates')
+os.chdir('/usr/lib/uos-sysmig-server/')
+app = Flask(__name__, static_folder='../static', template_folder='../templates')
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 CORS(app, resources=r'/*')
 
@@ -377,8 +376,9 @@ def close_tool():
 if __name__ == '__main__':
     app.debug = True
     app.config["JSON_AS_ASCII"] = False
-    uos_sysmig_conf = json.loads(getSysMigConf())
+    from miscellaneous import getSysMigConf
+    uos_sysmig_conf = json.loads(getSysMigConf('0.0.0.0'))
     ip = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
     port = int(json.loads(uos_sysmig_conf).get('serverport').strip()[1:-1])
-    app.run(debug=True, host=ip, port=port, use_reloader=False)
+    app.run(debug=True, host=ip, port=port)
 
