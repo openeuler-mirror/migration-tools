@@ -13,7 +13,7 @@ def sysconffile_tabs():
         按照前后端接口，生成json格式数据，对应html报告tab页
     '''
 
-    json_str = FixedInfo.expansion_haed + '"sysconffile_tabs": {"confGroupName": "文件系统配置","confList": []},'
+    json_str = '"sysconffile_tabs": {"confGroupName": "文件系统配置","confList": []},'
     return json_str
 
 if __name__ == "__main__":
