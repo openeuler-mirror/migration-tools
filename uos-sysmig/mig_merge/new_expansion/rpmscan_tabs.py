@@ -45,8 +45,8 @@ def rpmscan_tabs():
                 filted_pkgs.append(pkg)
         parsed_pkgs = filted_pkgs
 
-    current_OS = '"rpmscan_tabs": {"current_os": ' + platform.linux_distribution(
-    )[0] + " " + platform.linux_distribution()[1]
+    current_OS = '"rpmscan_tabs": {"current_os": ' + '"' + platform.linux_distribution(
+    )[0] + " " + platform.linux_distribution()[1] + '"'
 
     target_OS = current_OS + ',"target_os": "UnionTech OS Server 20",'
     json_str = target_OS + '"data": ' + parsed_pkg_to_json(parsed_pkgs) + '},'
