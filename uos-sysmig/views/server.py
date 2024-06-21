@@ -8,6 +8,8 @@ from views.reports import analysis_report_add, migration_completed_report, \
     analysis_report, export_host_info, migration_success_list, uos_migration_log
 from sysmig_agent.share import getSysMigConf
 from flask import request
+from views.migration import check_info
+import time
 import json
 import re
 
@@ -106,10 +108,8 @@ def check_user(data):
     检测账户权限
     :return:
     """
-    check_user_res = CDLL('/usr/lib/uos-sysmig-server/views/check_user_authority.so')
+    check_user_res = CDLL('/usr/lib/uos-sysmig-server/uos-sysmig/views/check_user_authority.so')
     data = check_user_res.check_user_authority()
-    from views.migration import check_info
-    import time
     check_info_data = {"mod": "check_info", "agent_ip": []}
     check_info(json.dumps(check_info_data))
     if data == 0:
@@ -138,10 +138,8 @@ def modify_migration_type(data):
     :return:
     """
     get_info = json.loads(data).get('info')
-    for i in get_info:
-        updata_sql = "update migration_type=%s from agent_info where agent_ip=%s" % (i.get("migration_type"),
-                                                                                     i.get("agent_ip"))
-        DBHelper().execute(updata_sql)
+    updata_sql = "update agent_info set migration_type='%s' where agent_ip='%s';" % (get_info.get("migration_type"),get_info.get("agent_ip"))
+    DBHelper().execute(updata_sql)
     return 'success'
 
 
@@ -173,14 +171,14 @@ def host_info_display(data):
     res = {}
     res['num'] = len(data)
     info_list = []
-    info_dict_keys_list = ['agent_ip', 'hostname', 'agent_online_status', 'agent_os', 'migration_type', 'agent_arch',
+    info_dict_keys_list = ['agent_ip', 'hostname', 'agent_status', 'agent_os', 'migration_type', 'agent_arch',
                            'failure_reasons', 'task_CreateTime', 'task_status']
     for i in data:
         info_list.append(dict(zip(info_dict_keys_list, i)))
 
     res['info'] = info_list
     json_res = json.dumps(res)
-
+    print(res)
     return json_res
 
 
@@ -476,7 +474,7 @@ def get_download_center_data(data):
     res = {}
     res['num'] = len(info)
     info_list = []
-    info_dict_keys_list = ['report_generation_time', 'report_name', 'report_type', 'agent_ip',
+    info_dict_keys_list = ['task_Updatetime', 'report_name', 'report_type', 'agent_ip',
                            'hostname', 'agent_os', 'agent_arch']
     for i in range(0, len(info)):
         info[i] = list(info[i])
