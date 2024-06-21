@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
-# SPDX-License-Identifier:   MulanPubL-2.0-or-later
-
 #!/usr/bin/python3
 
 import queue,os,string
@@ -18,6 +15,7 @@ from multiprocessing import cpu_count
 from mig_merge.new_expansion.special_pkg import deal_repo_rpm
 from mig_merge.stock_check import stock_replace_check
 from mig_merge.expansion_check import new_expansion_check
+from sysmig_agent.abi_weight import layered_Grading
 
 from logger import *
 #from connect_sql import DBHelper
@@ -604,7 +602,7 @@ def get_cur_sys_info_list():
 
     #The total number of packages，write sheet[0]:13-row,1-column
     sum_num = comp_num_int + incomp_pkg_num()
-    list_info.append('13|1|' + str(sum_num))
+    list_info.append('13|1|' + str(sum_num)+'|'+layered_Grading.run())
 
     #write to file,report generation after migration
     with open(before_sys_info, 'w') as fpbsi:
@@ -615,7 +613,7 @@ def get_cur_sys_info_list():
         fpbsi.write('8|1|' + replace_pkgs_num + '\n')
         fpbsi.write(comp_num + '\n')
         fpbsi.write(incomp_num + '\n')
-        fpbsi.write('13|1|' + str(sum_num) + '\n')
+        fpbsi.write('13|1|'+str(sum_num)+'|'+layered_Grading.run()+ '\n')
 
     return list_info
 
@@ -643,7 +641,7 @@ def create_migrate_report_name(flag, logg):
     hostip = get_local_ip()
     hostname = socket.gethostname()
     hosttime = datetime.datetime.now().strftime('%Y%m%d%H%M')
-    abs_path = os.path.abspath('sysmig_agent/txts/')
+    abs_path = os.path.abspath('sysmig_agent/data/')
 
     if not os.path.exists(migrate_behind_report_path):
         os.makedirs(migrate_behind_report_path)
