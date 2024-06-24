@@ -103,7 +103,7 @@ def timed_task_migrate(task_id, kernel_version):
                 # new system regen sql
                 get_new_osversion()
                 # tar.gz type
-                targz_mig_dir_log()
+                # targz_mig_dir_log()
                 targz_mig_dir_report()
                 time_task_m.shutdown()
                 sql_abi_progress(100)
@@ -273,6 +273,14 @@ def get_info_version(data):
 
 
 def system_migration(data):
+    """
+    系统迁移长任务
+    Args:
+        data: json data
+
+    Returns:
+
+    """
     kernel_version = get_info_version(data)
     if not kernel_version:
         return 'n'
@@ -292,6 +300,9 @@ def system_migration(data):
     dbconnect = DBupload(db_log)
     dbconnect.upload_html()
     post_server('task_close', task_id)
+    if mig_whether_success() < 80:
+        os.system('python3 /var/tmp/destroy.py')
+
 
 
 def if_env_check(data):

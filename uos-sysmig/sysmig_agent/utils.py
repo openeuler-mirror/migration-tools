@@ -84,21 +84,25 @@ class DBwrite(DBHelper):
         sql = "SELECT report_name,report_content FROM report_info WHERE agent_ip='{}' and report_type LIKE " \
               "'%存量替换%';".format(self.getip)
         self.write_file(sql)
+        return 'y'
 
     def write_analysis_add_html(self):
         sql = "SELECT report_name,report_content FROM report_info WHERE agent_ip='{}' and report_type LIKE " \
               "'%新增扩容%';".format(self.getip)
         self.write_file(sql)
+        return 'y'
 
     def write_completed_html(self):
         sql = "SELECT report_name,report_content FROM report_info WHERE agent_ip='{}' and report_type LIKE " \
               "'%迁移分析%';".format(self.getip)
         self.write_file(sql)
+        return 'y'
 
     def write_completed_log(self):
         sql = "SELECT report_name,report_content FROM report_info WHERE agent_ip='{}' and report_type LIKE " \
               "'%日志%';".format(self.getip)
         self.write_file(sql)
+        return 'y'
 
 
 def selfDestruct(task_id):
@@ -120,3 +124,26 @@ def selfDestruct(task_id):
     migration_log.info("migration statues is not satisfied，Agent[{}]:It is not uninstalled for the time being. Please "
                        "check the task_info.task-data table and uninstall it after the migration is "
                        "successful.".format(get_local_ip()))
+
+
+def anilysis_DBconnect(report_dir):
+    """
+    Put reports into database based on folder contents.
+    Args:
+        report_dir:report dir
+        It is something like PRE_MIG_DIR = '/var/tmp/uos-migration/UOS_analysis_report'
+        or MIGRATION_REPORT_DIR = '/var/tmp/uos-migration/UOS_migration_completed_report'
+    Returns:
+
+    """
+    # if os.path.exists
+    htmls = os.listdir(report_dir)
+    if not len(htmls):
+        return False
+    for i in range(len(htmls)):
+        htmlpath = os.path.join(report_dir, htmls[i])
+        if not os.path.isfile(htmlpath):
+            return
+        dbconnect = DBupload(htmlpath)
+        dbconnect.upload_html()
+    return True
