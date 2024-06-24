@@ -43,13 +43,13 @@ def get_add_repo_data(data):
         get_repo_status = DBHelper().execute(repo_status_sql).fetchall()
         for i in get_repo_status:
             if i[0][0] == 1:
-                data["migration_before_x86_64"] = 'faild'
+                data["migration_before_x86_64"] = 'failed'
             if i[0][1] == 1:
-                data["migration_after_x86_64"] = 'faild'
+                data["migration_after_x86_64"] = 'failed'
             if i[0][2] == 1:
-                data["migration_before_aarch64"] = 'faild'
+                data["migration_before_aarch64"] = 'failed'
             if i[0][3] == 1:
-                data["migration_after_aarch64"] = 'faild'
+                data["migration_after_aarch64"] = 'failed'
 
         json_data = json.dumps(data)
         return json_data

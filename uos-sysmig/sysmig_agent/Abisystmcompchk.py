@@ -166,11 +166,6 @@ def agent_ABI_check_result():
         fp.write(rpm_name.split(',')[0] + string)
     fp.close()
 
-    #The compatibility of the hierarchical algorithm is
-    #before_sys_info = exp_rst_dir + 'before-system-info.txt'
-    #with open(before_sys_info, 'a') as fpb:
-    #    fpb.write(layered_Grading.run())
-
 def logger_init():
     log_file='Abisystmcompchk.log' + '.' + datetime.datetime.now().strftime('%Y%m%d%H%M')
     log_path='/var/tmp/uos-migration/UOS_migration_log/'
