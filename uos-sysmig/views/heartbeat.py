@@ -27,7 +27,7 @@ def check_heartbeat(q):
             for i in db_agent_ip:
                 sql = "update agent_info set agent_online_status=1 where agent_ip='%s'" % i
                 DBHelper().execute(sql)
-        time.sleep(10)
+        time.sleep(120)
 
 
 def get_db_agent_ip():
