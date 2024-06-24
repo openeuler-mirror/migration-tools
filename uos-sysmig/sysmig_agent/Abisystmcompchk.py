@@ -348,7 +348,6 @@ def is_binwary_file(filename):
     with open(filename, 'rb') as file:
         CHUNKSIZE = 8192
         initial_bytes = file.read(CHUNKSIZE)
-        file.close
     return not any(initial_bytes.startswith(bom) for bom in TEXT_BOMS) and b'\0' in initial_bytes
 
 def incomp_binwary_desc(binwary_file):
