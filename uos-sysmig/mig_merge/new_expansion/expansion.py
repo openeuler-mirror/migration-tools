@@ -19,9 +19,14 @@ from mig_merge.new_expansion.confscan_tabs import confscan_tabs
 from mig_merge.new_expansion.rpmscan_tabs import rpmscan_tabs
 from mig_merge.new_expansion.sysconffile_tabs import sysconffile_tabs
 
-def MigrationMerge():
+def MigrationMerge(log):
     #return sysconffile_tabs()+hardware_tabs()+confscan_tabs()+rpmscan_tabs()+general_tabs('E')+packages_tabs()+rpm_tabs().rsplit(',',1)[0]+'}'
-    return general_tabs('E')+packages_tabs()+rpm_tabs()+hardware_tabs()+confscan_tabs()+rpmscan_tabs()+sysconffile_tabs()+'}'
+    expansion_json_data = general_tabs('E', log)+packages_tabs()+\
+            rpm_tabs()+hardware_tabs()+confscan_tabs()+\
+            rpmscan_tabs()+sysconffile_tabs()+'}'
+
+    log.info('new expansion check json data:{}'.format(expansion_json_data))
+    return expansion_json_data
 
 if __name__ == "__main__":
    MigrationMerge()
