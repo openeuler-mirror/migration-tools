@@ -478,10 +478,10 @@ def get_download_center_data(data):
             info[i] += ["", "", ""]
         else:
             agent_info = list(agent_info[0])
-            info[i].pop()
             info[i] += agent_info
     for i in info:
         info_list.append(dict(zip(info_dict_keys_list, i)))
+
 
     res['info'] = info_list
     json_res = json.dumps(res)
@@ -490,12 +490,12 @@ def get_download_center_data(data):
 
 
 reports_type = {
-    "存量替换迁移日志": uos_migration_log,    # 存量替换迁移日志
-    "存量替换迁移分析": migration_completed_report,    # 存量替换迁移分析报告
-    "存量替换迁移检测": analysis_report,    # 存量替换迁移检测报告
-    "新增扩容迁移检查": analysis_report_add,    # 新增扩容迁移检测报告
-    "主机列表": export_host_info,    # 主机列表
-    "迁移成功主机列表": migration_success_list,    # 迁移成功列表
+    "migration_log": uos_migration_log,    # 存量替换迁移日志
+    "migration_completed_report": migration_completed_report,    # 存量替换迁移分析报告
+    "analysis_report": analysis_report,    # 存量替换迁移检测报告
+    "analysis_report_add": analysis_report_add,    # 新增扩容迁移检测报告
+    "export_host_info": export_host_info,    # 主机列表
+    "migration_success_list": migration_success_list,    # 迁移成功列表
 }
 
 
