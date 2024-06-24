@@ -420,37 +420,61 @@ def deal_files_list(fwincomp, fwcomp, cur_file_list, trn_file_list, rpm_full_pkg
                 i = 0
                 if cur_file_binwary.endswith('.exec'):
                     while i < 2:
+                        record_flag = False
+                        #0 Removed, 1 Added variable symbol not referenced by debug info
                         for line in abidiff_rst_list[i].split(':',1)[1].split(','):
+                            if record_flag:
+                                continue
+                            #if Removed is '0', Compatible and continue
+                            if abidiff_rst_list[i].split(':',1)[1].split(',')[0].split(' ', 2)[1] == '0':
+                                break
                             if line.split(' ', 2)[1] != '0':
                                 bin_name = cur_file_name.strip('\n').rsplit('/', 1)[1]
                                 compatiablity='N'
                                 incomp_reason = incomp_binwary_desc(bin_name)
                                 diff_detail = abidiff_rst_list[i].split(':', 1)[1]
                                 fwincomp.write(rpm_pkg_name+','+bin_name+','+oth_pkg_version+','+uos_pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
+                                record_flag = True
                                 comp_flag = 0
                         i = i + 1
                 #20220112 lihp: add if branch
                 elif abidiff_rst_list[0].startswith('ELF SONAME'):
                     i = i + 1
                     while i < 2:
+                        record_flag = False
+                        #0 Removed, 1 Added variable symbol not referenced by debug info
                         for line in abidiff_rst_list[i].split(':',1)[1].split(','):
+                            if record_flag:
+                                continue
+                            #if Removed is '0', Compatible and continue
+                            if abidiff_rst_list[i].split(':',1)[1].split(',')[0].split(' ', 2)[1] == '0':
+                                break
                             if line.split(' ', 2)[1] != '0':
                                 bin_name = cur_file_name.strip('\n').rsplit('/', 1)[1]
                                 compatiablity='N'
                                 incomp_reason = incomp_binwary_desc(bin_name)
                                 diff_detail = abidiff_rst_list[i].split(':', 1)[1]
                                 fwincomp.write(rpm_pkg_name+','+bin_name+','+oth_pkg_version+','+uos_pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
+                                record_flag = True
                                 comp_flag = 0
                         i = i + 1
                 else:
                     while i < 4:
+                        record_flag = False
+                        #0 Removed, 1 Added variable symbol not referenced by debug info
                         for line in abidiff_rst_list[i].split(':',1)[1].split(','):
+                            if record_flag:
+                                continue
+                            #if Removed is '0', Compatible and continue
+                            if abidiff_rst_list[i].split(':',1)[1].split(',')[0].split(' ', 2)[1] == '0':
+                                break 
                             if line.split(' ', 2)[1] != '0':
                                 bin_name = cur_file_name.strip('\n').rsplit('/', 1)[1]
                                 compatiablity='N'
                                 incomp_reason = incomp_binwary_desc(bin_name)
                                 diff_detail = abidiff_rst_list[i].split(':', 1)[1]
                                 fwincomp.write(rpm_pkg_name+','+bin_name+','+oth_pkg_version+','+uos_pkg_version+','+compatiablity+','+incomp_reason+','+diff_detail)
+                                record_flag = True
                                 comp_flag = 0
                         i = i + 1
             else:
