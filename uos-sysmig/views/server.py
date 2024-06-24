@@ -146,11 +146,11 @@ def host_info_display(data):
     """
     显示主机信息
     agent_ip,hostname,agent_online_status,agent_os,agent_arch,
-    agent_history_failed_reason,task_CreateTime,task_status
+    agent_history_faild_reason,task_CreateTime,task_status
     :return:
     """
     sql = "select agent_ip,hostname,agent_online_status,agent_os,migration_type,agent_arch," \
-          "agent_history_failed_reason from agent_info;"
+          "agent_history_faild_reason from agent_info;"
     data = DBHelper().execute(sql).fetchall()
     data = list(data)
     for i in range(0, len(data)):
@@ -235,36 +235,18 @@ def get_repo_data(data):
     :return:
     """
     agent_ip_list = json.loads(data).get('agent_ip')
-    if agent_ip_list == []:
-        task_status_sql = "select agent_id from agent_task where task_status=2;"
-    elif len(agent_ip_list) == 1:
+    if len(agent_ip_list) == 1:
         task_status_sql = "select agent_id from agent_task where task_status=2 and agent_ip='%s';" % agent_ip_list[0]
     else:
         task_status_sql = "select agent_id from agent_task where task_status=2" \
                           " and agent_ip in {};".format(tuple(agent_ip_list))
     get_task_status = DBHelper().execute(task_status_sql).fetchall()
-    if len(get_task_status) == 0:
+    if len(get_task_status) != len(agent_ip_list):
         data = {"centos7_x86": "", "centos8_x86": "", "centos7_aarch64": "", "centos8_aarch64": ""}
         json_data = json.dumps(data)
         return json_data
     else:
-        if agent_ip_list == []:
-            centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
-                              "and agent_arch='x86_64' and repo_status='1' and agent_online_status='0' and " \
-                              "agent_migration_os is null and migration_type='stock_replacement';"
-
-            centos8_x86_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
-                              "and agent_arch='x86_64' and repo_status='1' and agent_online_status='0' and " \
-                              "agent_migration_os is null and migration_type='stock_replacement';"
-
-            centos7_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
-                                  "and agent_arch='aarch64' and repo_status='1' and agent_online_status='0' and " \
-                                  "agent_migration_os is null and migration_type='stock_replacement';"
-
-            centos8_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
-                                  "and agent_arch='aarch64' and repo_status='1' and agent_online_status='0' and " \
-                                  "agent_migration_os is null and migration_type='stock_replacement';"
-        elif len(agent_ip_list) == 1:
+        if len(agent_ip_list) == 1:
             centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
                               "and agent_arch='x86_64' and repo_status='1' and agent_online_status='0' and " \
                               "agent_migration_os is null and migration_type='stock_replacement' and" \
@@ -411,14 +393,13 @@ def get_environment_data(data):
     """
     agent_ip_list = json.loads(data).get('agent_ip')
     if agent_ip_list == []:
-        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
-                                  "and migration_type='stock_replacement';"
+        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task;"
     elif len(agent_ip_list) == 1:
         get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
-                                  "and migration_type='stock_replacement' and agent_ip='%s';" % agent_ip_list[0]
+                                  "and agent_ip='%s';" % agent_ip_list[0]
     else:
-        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task where agent_ip in {} " \
-                                  "and migration_type='stock_replacement';".format(tuple(agent_ip_list))
+        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
+                                  "where agent_ip in {};".format(tuple(agent_ip_list))
     progress = DBHelper().execute(get_environment_pro_sql).fetchall()
     res = {}
     info_list = []
@@ -448,14 +429,13 @@ def get_system_migration_data(data):
     """
     agent_ip_list = json.loads(data).get('agent_ip')
     if agent_ip_list == []:
-        get_migration_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
-                                "and migration_type='stock_replacement';"
+        get_migration_pro_sql = "select agent_ip,task_progress,task_status from agent_task;"
     elif len(agent_ip_list) == 1:
-        get_migration_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
-                                "and migration_type='stock_replacement' and agent_ip='%s';" % agent_ip_list[0]
+        get_migration_pro_sql = "select agent_ip,task_progress,task_status from agent_task" \
+                                " and agent_ip='%s';" % agent_ip_list[0]
     else:
         get_migration_pro_sql = "select agent_ip,task_progress,task_status from agent_task where " \
-                                "agent_ip in {} and migration_type='stock_replacement';".format(tuple(agent_ip_list))
+                                "agent_ip in {};".format(tuple(agent_ip_list))
     progress = DBHelper().execute(get_migration_pro_sql).fetchall()
     res = {}
     info_list = []
