@@ -2,7 +2,6 @@
 import os
 import re
 import subprocess
-import time
 
 
 class DestroyAgent(object):
@@ -13,6 +12,9 @@ class DestroyAgent(object):
 
     def kill_pid(self):
         for n in range(len(self.pid)):
+            if str(os.getpid()) == self.pid[n]:
+                continue
+            print(self.pid[n])
             subprocess.run('kill -9 {}'.format(self.pid[n]), shell=True)
             # del self.pid[n]
 
@@ -23,17 +25,22 @@ class DestroyAgent(object):
             os.removedirs(self.program_file)
         if os.path.exists(self.cache_file):
             os.removedirs(self.cache_file)
-        print(os.path.join(os.getcwd() + os.path.basename(__file__)))
-        os.remove(os.path.join(os.getcwd() + '/' + os.path.basename(__file__)))
+        # print(os.path.join(os.getcwd() + os.path.basename(__file__)))
+        # os.remove(os.path.join(os.getcwd() + '/' + os.path.basename(__file__)))
+        os.remove(os.path.join('/root' + '/' + os.path.basename(__file__)))
 
     def check_pid(self, pids):
         for i in range(len(self.pid)):
             if pids == self.pid[i]:
                 return False
+            if pids == os.getpid():
+                return False
         return True
 
     def get_running_pid(self, path):
         cmd = "lsof -Pn +D {} "
+        if not os.path.exists(path):
+            return
         # ret = subprocess.check_output("lsof -Pn +D /usr/lib/uos-sysmig-agent", shell=True)
         # ret = str(ret, 'utf-8').split('\n')
         ret = os.popen(cmd.format(path)).readlines()
@@ -52,15 +59,13 @@ class DestroyAgent(object):
                     break
 
     def run(self):
-        time.sleep(5)
-        os.setgid(0)
         self.get_running_pid(self.program_file)
         self.get_running_pid(self.cache_file)
         self.kill_pid()
         self.destroy_self()
-        print(self.pid)
 
 
-destroy_agent = DestroyAgent()
-destroy_agent.run()
+if __name__ == "__main__":
+    destroy_agent = DestroyAgent()
+    destroy_agent.run()
 
