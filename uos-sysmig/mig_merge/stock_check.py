@@ -11,7 +11,7 @@ import mig_merge.stock_replace.stock as stock
 
 logger = Logger(__name__)
 
-def stock_replace_check():
+def stock_replace_check(logger):
     '''
         应用场景：存量替换迁移检查-系统基本信息、软件包对比、RPM兼容性
                   配置兼容性评估、RPM兼容性评估
@@ -30,7 +30,7 @@ def stock_replace_check():
     report_html = report_check_dir + '/' + report_name 
 
     return dataplaceholder_replace(FixedInfo.stock_template_check, 
-            report_html, stock.xlsTohtml())
+            report_html, stock.xlsTohtml(logger))
 
 if __name__ == "__main__":
     stock_replace_check()
