@@ -1,14 +1,17 @@
-# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
-# SPDX-License-Identifier:   MulanPubL-2.0-or-later
+import time
+
 import requests
 import json
 from logger import migration_log
 from sysmig_agent.share import getSysMigConf, json_list_to_json, sql_online_statue
+from sysmig_agent.share import get_local_ip
 
 uos_sysmig_conf = json.loads(getSysMigConf())
 ip = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
 port = int(json.loads(uos_sysmig_conf).get('serverport').strip()[1:-1])
 mod_sql = '/sql_task'
+mod_heartbeat = '/heartbeat'
+send_time = 10
 
 headers = {'content-type': 'application/json'}
 
@@ -28,16 +31,23 @@ class PostIntranetIP:
 
 def post_client_data(data):
     post_url = "http://" + ip + ":" + str(port) + mod_sql
-    migration_log.info('______>post:' + post_url + '\n____> data: ' + str(data) + 'ip port ' + ip + str(port))
     post_data = PostIntranetIP(post_url, data)
     return post_data.post_intranetip()
+
+
+def post_heartbeat():
+    data = json.loads("agent_ip")
+    post_url = "http://" + ip + ":" + str(port) + mod_heartbeat
+    post_data = PostIntranetIP(post_url, data)
+    while True:
+        post_data.post_intranetip()
+        time.sleep(send_time)
 
 
 def post_server(statue, task_id):
     keylist = ['mod', 'statue', 'task_id']
     valuelist = ['sql_task', statue, str(task_id)]
     data = json_list_to_json(keylist, valuelist)
-
     #    data={"mod":"sql_task", "statue": "task_start", "task_id":2}
     t = post_client_data(data)
     migration_log.info("requires post return code :" + str(t))
