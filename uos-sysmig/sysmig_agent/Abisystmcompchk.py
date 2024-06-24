@@ -895,16 +895,18 @@ def migrate_before_abi_chk(q_query, task_status, mig_flag):
 
     agent_ABI_check_result()
 
-    #migrate_before_report_name = create_migrate_report_name(Flag, log)
-    #if not migrate_before_report_name:
-    #    msg_tup = ('0', task_status)
-    #    q_query.put(msg_tup)
-    #    log.info('The current progress exit:' + str(msg_tup))
+    migrate_before_report_name = create_migrate_report_name(Flag, log)
+    if not migrate_before_report_name:
+        msg_tup = ('0', task_status)
+        q_query.put(msg_tup)
+        log.info('The current progress exit:' + str(msg_tup))
         #return False
 
-    #while i < 4:
-    #    write_migrate_report_rst =switch_write_migrate_report(migrate_before_report_name, i, Flag)
-    #    i = i + 1
+    while i < 4:
+        write_migrate_report_rst =switch_write_migrate_report(migrate_before_report_name, i, Flag)
+        i = i + 1
+
+    os.remove(migrate_before_report_name)
 
     #The compatibility of the hierarchical algorithm is
     before_sys_info = exp_rst_dir + 'before-system-info.txt'
