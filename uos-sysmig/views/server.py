@@ -8,6 +8,7 @@ from views.reports import analysis_report_add, migration_completed_report, \
     analysis_report, export_host_info, migration_success_list, uos_migration_log
 from sysmig_agent.share import getSysMigConf
 from flask import request
+from views.migration import check_all_info
 import time
 import json
 import re
@@ -57,7 +58,7 @@ def import_host_info(data):
     host_report_sql_val = ((ip, time, '迁移主机列表_%s' % time, '主机列表'),)
     DBHelper().insert(host_report_sql, host_report_sql_val)
     data = check_user(data)
-    return data
+    return data_json
 
 
 def get_agent_id(agent_ip):
@@ -108,6 +109,8 @@ def check_user(data):
     """
     check_user_res = CDLL('/usr/lib/uos-sysmig-server/uos-sysmig/views/check_user_authority.so')
     data = check_user_res.check_user_authority()
+    check_info_data = {"mod": "check_info"}
+    check_all_info(json.dumps(check_info_data))
     if data == 0:
         data = {"data": "failed", "num": 0}
     else:
@@ -393,7 +396,7 @@ def get_environment_data(data):
         get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task;"
     elif len(agent_ip_list) == 1:
         get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
-                                  "where agent_ip='%s';" % agent_ip_list[0]
+                                  "and agent_ip='%s';" % agent_ip_list[0]
     else:
         get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
                                   "where agent_ip in {};".format(tuple(agent_ip_list))
@@ -408,7 +411,7 @@ def get_environment_data(data):
         if get_sql:
             finall_progress.append(list(i))
 
-    info_dict_keys_list = ['agent_ip', 'progress', 'task_status']
+    info_dict_keys_list = ['agent_ip', 'task_progress', 'task_status']
     for i in finall_progress:
         info_list.append(dict(zip(info_dict_keys_list, list(i))))
 
@@ -429,7 +432,7 @@ def get_system_migration_data(data):
         get_migration_pro_sql = "select agent_ip,task_progress,task_status from agent_task;"
     elif len(agent_ip_list) == 1:
         get_migration_pro_sql = "select agent_ip,task_progress,task_status from agent_task" \
-                                " where agent_ip='%s';" % agent_ip_list[0]
+                                " and agent_ip='%s';" % agent_ip_list[0]
     else:
         get_migration_pro_sql = "select agent_ip,task_progress,task_status from agent_task where " \
                                 "agent_ip in {};".format(tuple(agent_ip_list))
@@ -444,7 +447,7 @@ def get_system_migration_data(data):
         if get_sql:
             finall_progress.append(i)
 
-    info_dict_keys_list = ['agent_ip', 'progress', 'task_status']
+    info_dict_keys_list = ['agent_ip', 'task_progress', 'task_status']
     for i in finall_progress:
         info_list.append(dict(zip(info_dict_keys_list, list(i))))
 
