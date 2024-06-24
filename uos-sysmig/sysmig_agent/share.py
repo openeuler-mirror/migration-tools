@@ -11,9 +11,10 @@ import platform
 import logging
 from datetime import datetime
 from connect_sql import DBHelper
-from logger import migration_log
 from sysmig_agent.config import *
-
+#from logger import migration_log
+from logger import Logger
+migration_log = Logger('/var/tmp/uos-migration/UOS_migration_log/migration.log', logging.DEBUG, logging.DEBUG)
 
 def sql_abi_progress(data):
     sql = "UPDATE agent_task SET task_progress = {} ,task_Updatetime = NOW() WHERE agent_ip = '{}';".format(data,
