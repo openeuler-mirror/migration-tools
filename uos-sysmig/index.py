@@ -13,6 +13,7 @@ from flask_cors import CORS
 from views.new_expansion import *
 from multiprocessing import Queue, Process
 from views.heartbeat import check_heartbeat
+from flask import send_from_directory
 
 
 # import MySQLdb
@@ -257,8 +258,13 @@ def export_reports():
     """
     mod = check_methods()
     if mod:
-        return Response(mod, content_type='application/json')
-
+        report_pwd = mod.get('report_pwd')
+        report_name = mod.get('report_name')
+        response = {}
+        response = make_response(send_from_directory(directory=report_pwd, filename=report_name, as_attachment=True))
+        response.headers["Access-Control-Expose-Headers"]="Content-Disposition";
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
 
 @app.route('/system_migration', methods=['GET', 'POST'])
 def system_migration():
@@ -328,7 +334,8 @@ def heartbeat():
         data = request.get_data()
         agent_ip = json.loads(data).get("agent_ip")
         q.put(agent_ip)
-        return 'success'
+        data = {"data": "success"}
+        return json.dumps(data)
 
 
 if __name__ == '__main__':
