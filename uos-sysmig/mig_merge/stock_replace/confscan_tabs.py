@@ -5,13 +5,12 @@ import json
 import os
 
 from mig_merge.config import FixedInfo
+from mig_merge.stock_replace.system_mark import gen_system_mark
 from mig_merge.migrationTools.scanConf import utils
 from mig_merge.migrationTools.scanConf.conent_parser import ContentParser
 from mig_merge.migrationTools.scanConf.gen_report import gen_conf_data
 from mig_merge.migrationTools.utils.config import PathConf
-from mig_merge.migrationTools.utils.logger import Logger
 
-logger = Logger(__name__)
 
 def get_all_data():
     data = get_sysctl_a_data()
@@ -54,8 +53,10 @@ def confscan_tabs():
     """
     收集当前系统上的信息配置信息
     """
+
     conf_dir = PathConf.run_dir
-    new_conf_dir = FixedInfo.system_data_path+'/system-config/uos-1020a/x86_64'
+    new_conf_dir = FixedInfo.system_data_path+'/system-config/'+gen_system_mark()+'/x86_64'
+
     get_all_data()
     gen_report = gen_conf_data
     json_str = '"confscan_tabs": ' + gen_report(conf_dir, new_conf_dir) + ','
