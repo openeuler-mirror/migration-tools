@@ -11,6 +11,8 @@ from views.migration import *
 from views.server import *
 from flask_cors import CORS
 from views.new_expansion import *
+from multiprocessing import Queue, Process
+from views.heartbeat import check_heartbeat
 
 
 # import MySQLdb
@@ -46,7 +48,7 @@ mods = {
         'get_add_repo_data': get_add_repo_data,
         'check_add_environment': check_add_environment,
         'get_add_environment_data': get_add_environment_data,
-        'modify_migration_type': modify_migration_type
+        'modify_migration_type': modify_migration_type,
         }
 
 
@@ -313,11 +315,29 @@ def close_tool():
         return Response(mod, content_type='application/json')
 
 
+q = Queue()
+
+
+@app.route('/heartbeat', methods=['GET', 'POST'])
+def heartbeat():
+    """
+    写入队列
+    :return:
+    """
+    if request.method == 'POST':
+        data = request.get_data()
+        agent_ip = json.loads(data).get("agent_ip")
+        q.put(agent_ip)
+        return 'success'
+
+
 if __name__ == '__main__':
     app.debug = True
     app.config["JSON_AS_ASCII"] = False
     uos_sysmig_conf = json.loads(getSysMigConf('0.0.0.0'))
     ip = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
     port = int(json.loads(uos_sysmig_conf).get('serverport').strip()[1:-1])
+    p = Process(target=check_heartbeat, args=(q,))
+    p.start()
     app.run(debug=True, host=ip, port=port)
 
