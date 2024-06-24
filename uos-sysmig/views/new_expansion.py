@@ -19,16 +19,12 @@ def get_add_repo_data(data):
         task_status_sql = "select agent_id from agent_task where task_status=2 and " \
                           "agent_ip in {};".format(tuple(agent_ip_list))
     get_task_status = DBHelper().execute(task_status_sql).fetchall()
-    if len(get_task_status) == 0:
-        data = {"migration_before_x86_64": "", "migration_after_x86_64": "", "migration_before_aarch64": "",
-                "migration_after_aarch64": ""}
+    if len(get_task_status) != len(agent_ip_list):
+        data = {"centos7_x86": "", "centos8_x86": "", "centos7_aarch64": "", "centos8_aarch64": ""}
         json_data = json.dumps(data)
         return json_data
     else:
-        if agent_ip_list == []:
-            repo_status_sql = "select repo_status from agent_info where agent_online_status='0' and " \
-                              "agent_migration_os is null and migration_type='new_expansion';"
-        elif len(agent_ip_list) == 1:
+        if len(agent_ip_list) == 1:
             repo_status_sql = "select repo_status from agent_info where agent_online_status='0' and " \
                               "agent_migration_os is null and migration_type='new_expansion' " \
                               "and agent_ip='%s';" % agent_ip_list[0]
@@ -37,19 +33,26 @@ def get_add_repo_data(data):
                               "agent_migration_os is null and agent_ip in {} and " \
                               "migration_type='new_expansion';".format(tuple(agent_ip_list))
 
-        data = {"migration_before_x86_64": "success", "migration_after_x86_64": "success",
-                "migration_before_aarch64": "success", "migration_after_aarch64": "success"}
+        data = {}
 
         get_repo_status = DBHelper().execute(repo_status_sql).fetchall()
-        for i in get_repo_status:
-            if i[0][0] == 1:
+        for i in range(0, len(get_repo_status)):
+            if get_repo_status[i][0] == '1':
                 data["migration_before_x86_64"] = 'failed'
-            if i[0][1] == 1:
+            else:
+                data["migration_before_x86_64"] = 'success'
+            if get_repo_status[i][1] == '1':
                 data["migration_after_x86_64"] = 'failed'
-            if i[0][2] == 1:
+            else:
+                data["migration_after_x86_64"] = 'success'
+            if get_repo_status[i][2] == '1':
                 data["migration_before_aarch64"] = 'failed'
-            if i[0][3] == 1:
+            else:
+                data["migration_before_aarch64"] = 'success'
+            if get_repo_status[i][3] == '1':
                 data["migration_after_aarch64"] = 'failed'
+            else:
+                data["migration_after_aarch64"] = 'success'
 
         json_data = json.dumps(data)
         return json_data
@@ -81,7 +84,7 @@ def get_add_environment_data(data):
         if get_sql:
             finall_progress.append(list(i))
 
-    info_dict_keys_list = ['agent_ip', 'task_progress', 'task_status']
+    info_dict_keys_list = ['agent_ip', 'progress', 'task_status']
     for i in finall_progress:
         info_list.append(dict(zip(info_dict_keys_list, list(i))))
 
