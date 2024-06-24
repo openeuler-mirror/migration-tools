@@ -11,7 +11,7 @@ ip = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
 port = int(json.loads(uos_sysmig_conf).get('serverport').strip()[1:-1])
 mod_sql = '/sql_task'
 mod_heartbeat = '/heartbeat'
-send_time = 10
+send_time = 60
 
 headers = {'content-type': 'application/json'}
 
@@ -36,7 +36,10 @@ def post_client_data(data):
 
 
 def post_heartbeat():
-    data = json.loads("agent_ip")
+    keylist = 'agent_ip'
+    valuelist = get_local_ip()
+    res = dict(zip(keylist, valuelist))
+    data = json.dumps(res)
     post_url = "http://" + ip + ":" + str(port) + mod_heartbeat
     post_data = PostIntranetIP(post_url, data)
     while True:
