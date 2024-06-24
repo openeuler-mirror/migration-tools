@@ -59,25 +59,6 @@ def check_info(data):
     :param data:
     :return:
     """
-    agent_ip_list = json.loads(data).get('agent_ip')
-    if agent_ip_list == []:
-        sql = "select agent_ip from agent_info where agent_online_status = 0 and migration_type='stock_replacement';"
-    elif len(agent_ip_list) == 1:
-        sql = "select agent_ip from agent_info where agent_online_status = 0 and " \
-              "agent_ip='%s' and migration_type='stock_replacement';" % agent_ip_list[0]
-    else:
-        sql = "select agent_ip from agent_info where agent_online_status = 0 and agent_ip in {} " \
-              "and migration_type='stock_replacement';".format(tuple(agent_ip_list))
-    get_agent_ip(data, sql, '/check_info')
-    return 'success'
-
-
-def check_all_info(data):
-    """
-    检测所有系统版本和空间大小
-    :param data:
-    :return:
-    """
     sql = "select agent_ip from agent_info where agent_online_status = 0;"
     get_agent_ip(data, sql, '/check_info')
     return 'success'
