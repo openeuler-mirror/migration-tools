@@ -139,23 +139,24 @@ def platform_release(Flag):
 
 #Create agent ABI check result file
 def agent_ABI_check_result():
-    string = ',,,Y,,\n'
+    string = ',,,,Y,,\n'
 
     #mycopyfile(abi_incomp_chk, agent_abi_check_result, abi_log)
     facp = open(agent_abi_check_result, 'w')
     for line in open(abi_incomp_chk):
 
-        tmp01 = line.split(',', 5)
-        tmp = tmp01[4]
+        tmp01 = line.split(',', 6)
+        tmp = tmp01[5]
 
-        if tmp == '库差异':
-            str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',1,'+tmp01[5]
-        elif tmp == '二进制差异':
-            str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',2,'+tmp01[5]
-        elif tmp == '可执行文件差异':
-            str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',3,'+tmp01[5]
-        elif tmp == '视频文件差异':
-            str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',4,'+tmp01[5]
+        #if tmp == '库差异':
+        #    str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',1,'+tmp01[5]
+        #elif tmp == '二进制差异':
+        #    str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',2,'+tmp01[5]
+        #elif tmp == '可执行文件差异':
+        #    str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',3,'+tmp01[5]
+        #elif tmp == '视频文件差异':
+        #    str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',4,'+tmp01[5]
+        str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+','+tmp01[4]+','+tmp01[5]+','+tmp01[6]
 
         facp.write(str_01)
     facp.close()
@@ -166,9 +167,9 @@ def agent_ABI_check_result():
     fp.close()
 
     #The compatibility of the hierarchical algorithm is
-    before_sys_info = exp_rst_dir + 'before-system-info.txt'
-    with open(before_sys_info, 'a') as fpb:
-        fpb.write(layered_Grading.run())
+    #before_sys_info = exp_rst_dir + 'before-system-info.txt'
+    #with open(before_sys_info, 'a') as fpb:
+    #    fpb.write(layered_Grading.run())
 
 def logger_init():
     log_file='Abisystmcompchk.log' + '.' + datetime.datetime.now().strftime('%Y%m%d%H%M')
@@ -885,6 +886,11 @@ def migrate_before_abi_chk(q_query, task_status, mig_flag):
     while i < 4:
         write_migrate_report_rst =switch_write_migrate_report(migrate_before_report_name, i, Flag)
         i = i + 1
+
+    #The compatibility of the hierarchical algorithm is
+    before_sys_info = exp_rst_dir + 'before-system-info.txt'
+    with open(before_sys_info, 'a') as fpb:
+        fpb.write(layered_Grading.run())
 
     #20220328 generating html reports
     if mig_flag == 'A':
