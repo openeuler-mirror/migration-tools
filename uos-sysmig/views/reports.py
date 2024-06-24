@@ -1,9 +1,11 @@
 import os
+import json
 from logger import *
 from connect_sql import DBHelper
 import pandas as pd
 from datetime import datetime
 from sysmig_agent.utils import *
+from flask import send_from_directory
 
 
 os.chdir('/usr/lib/uos-sysmig-server')
@@ -18,7 +20,10 @@ def uos_migration_log(data):
     agent_ip = data.get('agent_ip')
     dbwrite = DBwrite(agent_ip)
     dbwrite.write_completed_log()
-    return 'success'
+    report_pwd = "/var/uos-migration/"
+    report_name = dbwrite.write_completed_log()
+    data = {'report_pwd': report_pwd,'report_name': report_name}
+    return data
 
 
 def migration_completed_report(data):
@@ -28,8 +33,10 @@ def migration_completed_report(data):
     """
     agent_ip = data.get('agent_ip')
     dbwrite = DBwrite(agent_ip)
-    dbwrite.write_completed_html()
-    return 'success'
+    report_pwd = "/var/uos-migration/"
+    report_name = dbwrite.write_completed_html()
+    data = {'report_pwd': report_pwd,'report_name': report_name}
+    return data
 
 
 def analysis_report(data):
@@ -39,8 +46,10 @@ def analysis_report(data):
     """
     agent_ip = data.get('agent_ip')
     dbwrite = DBwrite(agent_ip)
-    dbwrite.write_analysis_html()
-    return 'success'
+    report_pwd = "/var/uos-migration/"
+    report_name = dbwrite.write_analysis_html()
+    data = {'report_pwd': report_pwd,'report_name': report_name}
+    return data
 
 
 def analysis_report_add(data):
@@ -50,8 +59,10 @@ def analysis_report_add(data):
     """
     agent_ip = data.get('agent_ip')
     dbwrite = DBwrite(agent_ip)
-    dbwrite.write_analysis_add_html()
-    return 'success'
+    report_pwd = "/var/uos-migration/"
+    report_name = dbwrite.write_analysis_add_html()
+
+    return send_from_directory(directory=report_pwd, filename=report_name, as_attachment=True)
 
 
 def export_host_info(data):
@@ -77,10 +88,14 @@ def export_host_info(data):
             data[i].append(task_status)
     df = pd.DataFrame(data)
     df.columns = ['主机IP', '主机名', '在线状态', '操作系统类型', '架构',  '历史失败原因', '迁移时间', '迁移状态']
-    time = datetime.now().strftime('%Y-%-m-%d %H:%M:%S')
-    xls = "/var/uos-migration/主机列表_%s.xls" % time
+    time = datetime.now().strftime('%Y-%-m-%d-%H-%M-%S')
+    xls = "/var/uos-migration/host_info_%s.xls" % time
     df.to_excel(xls)
-    return 'success'
+
+    report_pwd = "/var/uos-migration/"
+    report_name = "host_info_%s.xls" % time
+    data = {'report_pwd': report_pwd,'report_name': report_name}
+    return data
 
 
 def migration_success_list(data):
@@ -105,8 +120,11 @@ def migration_success_list(data):
             data[i].append(task_Updatetime)
     df = pd.DataFrame(data)
     df.columns = ['主机ip', '主机名', '迁移前OS版本', '迁移后OS版本', '架构', '迁移时间']
-    time = datetime.now().strftime('%Y-%-m-%d %H:%M:%S')
-    xls = "/var/uos-migration/迁移成功主机列表_%s.xls" % time
+    time = datetime.now().strftime('%Y-%-m-%d-%H-%M-%S')
+    xls = "/var/uos-migration/migration_success_host_info_%s.xls" % time
     df.to_excel(xls)
-    return 'success'
+    report_pwd = "/var/uos-migration/"
+    report_name = "migration_success_host_info_%s.xls" % time
+    data = {'report_pwd': report_pwd,'report_name': report_name}
+    return data
 
