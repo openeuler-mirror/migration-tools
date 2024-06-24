@@ -29,8 +29,11 @@ def packages_tabs():
             get_cur_sys_version() + '","data":' + \
             rpmpkg_formatting(FixedInfo.unique_pkgname) + '},'
 
-    return softpkg_page + FixedInfo.total_head_info + ',"data":' + \
+    json_str = softpkg_page + FixedInfo.total_head_info + ',"data":' + \
             rpmpkg_formatting(FixedInfo.total_pkgname)+"}}," 
+    #logger.info('packages_tabs: '.format(json_str))
+    return json_str
+
 def main():
     packages_tabs()
 

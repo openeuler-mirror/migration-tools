@@ -20,7 +20,7 @@ def get_local_ip():
     s.close()
     return ip
 
-def xlsTohtml():
+def xlsTohtml(log):
     '''
         应用场景：存量替换迁移评估检查
         功    能：按照前后端接口生成json格式数据,包括系统基本信息、软件包对比、
@@ -28,7 +28,11 @@ def xlsTohtml():
         输入参数：无
         返 回 值：json数据
     '''
-    json_str = general_tabs('A')+packages_tabs()+rpm_tabs()+sysconffile_tabs()+hardware_tabs()+confscan_tabs()+rpmscan_tabs()+'}'
+    json_str = general_tabs('A', log)+packages_tabs()+\
+    rpm_tabs()+sysconffile_tabs()+hardware_tabs(log)+\
+    confscan_tabs(log)+rpmscan_tabs(log)+'}'
+
+    log.info('stock replace check json data:{}'.format(json_str))
 
     return json_str
 

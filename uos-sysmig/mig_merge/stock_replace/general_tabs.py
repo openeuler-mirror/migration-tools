@@ -9,14 +9,16 @@ from mig_merge.config import FixedInfo
 from mig_merge.migrationTools.scanHardware import utils
 from mig_merge.stock_replace.confirm import get_cur_sys_version
 
-def general_tabs(sFlag):
+def general_tabs(sFlag, logger):
     '''
         应用场景：存量替换迁移检测-系统基本信息
         功    能：1xxxa版系统基本信息，按照前后端接口生成json格式系统基本信息
         输入参数：sFlag - A/E标识
         返 回 值：json数据
     '''
+
     line_num = 0
+    layered_flag = False
 
     sysinfo_name = FixedInfo.inventory_dir + '/before-system-info.txt'
     for line in open(sysinfo_name, 'r'):
@@ -57,13 +59,18 @@ def general_tabs(sFlag):
             package_count = line.strip().split('|')[2]
             
         if line_num == 9:
+            layered_flag = True
             layered_grading = ',根据分层分级算法的兼容度为%s%%' %(line.strip())
             middle_data = '"software_package_count": "'+ package_count + layered_grading +'"},'
             system_list = system_list + middle_data
 
-    #migration_log.info('Get the current system info:{}'.format(system_list))
-    return system_list
+    if not layered_flag:
+        middle_data = '"software_package_count": "'+ package_count + '"},'
+        system_list = system_list + middle_data
+        logger.info('Failed to write the compatibility of the hierarchical algorithm Procedure,Json data is not affected')
+        logger.info('Please check whether to write file of the 9 number of line {}'.format(sysinfo_name))
 
+    return system_list
 
 def main():
     general_tabs()

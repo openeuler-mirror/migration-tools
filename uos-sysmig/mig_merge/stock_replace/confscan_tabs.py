@@ -49,19 +49,21 @@ def write_data_json(data, name):
         data_content = json.dumps(data)
         file.write(data_content)
 
-def confscan_tabs():
+def confscan_tabs(logger):
     """
     收集当前系统上的信息配置信息
     """
 
     conf_dir = PathConf.run_dir
-    new_conf_dir = FixedInfo.system_data_path+'/system-config/'+gen_system_mark()+'/x86_64'
+    repo_mark = gen_system_mark()
+    logger.info('Repo source of mark:{}'.format(repo_mark))
+    new_conf_dir = FixedInfo.system_data_path+'/system-config/'+repo_mark+'/x86_64'
 
     get_all_data()
     gen_report = gen_conf_data
-    json_str = '"confscan_tabs": ' + gen_report(conf_dir, new_conf_dir) + ','
+    confscan_tabs_json = '"confscan_tabs": ' + gen_report(conf_dir, new_conf_dir) + ','
 
-    return json_str
+    return confscan_tabs_json
 
 if __name__ == "__main__":
     scan_conf = confscan_tabs()

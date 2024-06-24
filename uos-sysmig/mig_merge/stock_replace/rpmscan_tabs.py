@@ -5,11 +5,11 @@ import os
 import json
 import platform
 
-from logger import migration_log
 from mig_merge.migrationTools.scanRPM.scan_rpm import parsed_pkg_to_json,get_current_pkg_list
+from mig_merge.stock_replace.system_mark import gen_system_mark
 from mig_merge.migrationTools.scanRPM.scan_rpm import ParsedPkgInfoAdd
 
-def rpmscan_tabs():
+def rpmscan_tabs(logger):
     exclude_fonts = True
     add_tags = True
 
@@ -33,8 +33,10 @@ def rpmscan_tabs():
             filted_installed_pkgs.append(pkg)
         installed_pkgs = filted_installed_pkgs
 
+    repo_mark = gen_system_mark()
+    logger.info('Repo source of mark:{}' .format(repo_mark))
     for pkg_name in installed_pkgs:
-        tmp_pkg_info = ParsedPkgInfoAdd(pkg_name, add_tags)
+        tmp_pkg_info = ParsedPkgInfoAdd(pkg_name, add_tags, repo_mark)
         parsed_pkgs.append(tmp_pkg_info)
 
     only_show_leap = True
@@ -49,9 +51,10 @@ def rpmscan_tabs():
     )[0] + " " + platform.linux_distribution()[1] + '"'
 
     target_OS = current_OS + ',"target_os": "UnionTech OS Server 20",'
-    json_str = target_OS + '"data": ' + parsed_pkg_to_json(parsed_pkgs) + '}'
+    rpmscan_tabs_json = target_OS + '"data": ' + parsed_pkg_to_json(parsed_pkgs) + '}'
+    #logger.info('Get rpmscan tabs json data:' .format(rpmscan_tabs_json))
 
-    return json_str
+    return rpmscan_tabs_json
 
 def main():
     rpmscan_tabs()
