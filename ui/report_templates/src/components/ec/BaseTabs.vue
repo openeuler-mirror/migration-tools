@@ -3,6 +3,24 @@
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane>
         <template #label>
+          <span>{{ $root.data.general_tabs.name }}</span>
+        </template>
+        <GeneralTabs />
+      </el-tab-pane>
+      <el-tab-pane>
+        <template #label>
+          <span>{{ $root.data.packages_tabs.name }}</span>
+        </template>
+        <PackagesTabs />
+      </el-tab-pane>
+      <el-tab-pane>
+        <template #label>
+          <span>{{ $root.data.rpm_tabs.name }}</span>
+        </template>
+        <RPMTabs />
+      </el-tab-pane>
+      <el-tab-pane>
+        <template #label>
           <span>硬件兼容性评估</span>
         </template>
         <HardwareTabs />
@@ -15,7 +33,7 @@
       </el-tab-pane>
       <el-tab-pane>
         <template #label>
-          <span> RPM 兼容性评估 </span>
+          <span>RPM 兼容性评估</span>
         </template>
         <RpmScanTabs />
       </el-tab-pane>
@@ -30,6 +48,9 @@
 </template>
 
 <script>
+import GeneralTabs from "../rc/GeneralTabs.vue";
+import PackagesTabs from "../rc/PackagesTabs.vue";
+import RPMTabs from "../rc/RPMTabs.vue";
 import HardwareTabs from "./HardwareTabs.vue";
 import ConfigScanTabs from "./ConfigScanTabs.vue";
 import RpmScanTabs from "./RpmScanTabs.vue";
@@ -38,6 +59,9 @@ import SysConfFileTabs from "./SysConfFileTabs.vue";
 export default {
   name: "BaseTabs",
   compantnets: {
+    GeneralTabs,
+    PackagesTabs,
+    RPMTabs,
     HardwareTabs,
     ConfigScanTabs,
     RpmScanTabs,
