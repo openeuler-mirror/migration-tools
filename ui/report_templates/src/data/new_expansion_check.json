@@ -249685,5 +249685,100 @@
         ]
       }
     ]
+  },
+  "general_tabs": {
+    "name": "系统基本信息",
+    "current_os_version": "CentOS Linux 8 (Core)",
+    "current_os_kennel_version": "4.18.0-29-generic",
+    "var_cache_available_space": "1.5G",
+    "architecture": "x86_64",
+    "replaced_software_package_count": "1",
+    "compatible_software_package_count": "3",
+    "incompatible_software_package_count": "4",
+    "software_package_count": 5
+  },
+  "packages_tabs": {
+    "name": "软件包列表",
+    "current_os_item": {
+      "name": "当前系统特有（不替换）CentOS Linux 8 (Core)",
+      "data": [
+        "centos-backgrounds",
+        "centos-gpg-keys"
+      ]
+    },
+    "total_list_item": {
+      "name": "迁移系统软件包总列表 UOS Server Enterprise-C 20",
+      "data": [
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr",
+        "anaconda",
+        "apr"
+      ]
+    }
+  },
+  "rpm_tabs": {
+    "name": "RPM 兼容性",
+    "data": [
+      {
+        "name": "389-ds-base",
+        "is_compatible": false,
+        "current_version": "1.2.3",
+        "future_version": "1.2.4",
+        "incompatible_type": "库差异",
+        "incompatible_source": "libback-ldbm.so",
+        "description": "5 Removed, 9 Added function symbols not referenced by debug info"
+      },
+      {
+        "name": "389-ds-base",
+        "is_compatible": false,
+        "current_version": "1.2.3",
+        "future_version": "1.2.4",
+        "incompatible_type": "库差异",
+        "incompatible_source": "libback-ldbm.so",
+        "description": "5 Removed, 9 Added function symbols not referenced by debug info"
+      },
+      {
+        "name": "389-ds-base",
+        "is_compatible": false,
+        "current_version": "1.2.3",
+        "future_version": "1.2.4",
+        "incompatible_type": "库差异",
+        "incompatible_source": "libback-ldbm.so",
+        "description": "5 Removed, 9 Added function symbols not referenced by debug info"
+      },
+      {
+        "name": "nss_wrapper",
+        "is_compatible": true
+      },
+      {
+        "name": "opa-libopamgt",
+        "is_compatible": true
+      },
+      {
+        "name": "perl-libintl-perl",
+        "is_compatible": true
+      },
+      {
+        "name": "389-ds-base",
+        "is_compatible": false,
+        "current_version": "1.2.3",
+        "future_version": "1.2.4",
+        "incompatible_type": "库差异",
+        "incompatible_source": "libback-ldbm.so",
+        "description": "5 Removed, 9 Added function symbols not referenced by debug info"
+      }
+    ]
   }
 }
