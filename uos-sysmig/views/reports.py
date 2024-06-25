@@ -70,8 +70,16 @@ def export_host_info(data):
     主机列表
     :return:
     """
-    sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_arch," \
-          "agent_history_faild_reason from agent_info;"
+    agent_ip = data.get('agent_ip')
+    if agent_ip == '':
+        sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_arch," \
+              "agent_history_faild_reason from agent_info;"
+    else if len(agent_ip) == 1:
+        sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_arch," \
+              "agent_history_faild_reason from agent_info where agent_ip='%s';" % agent_ip[0]
+    else:
+        sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_arch," \
+              "agent_history_faild_reason from agent_info where agent_ip in {};".format(tuple(agent_ip))
     data = DBHelper().execute(sql).fetchall()
     data = list(data)
     for i in range(0, len(data)):
