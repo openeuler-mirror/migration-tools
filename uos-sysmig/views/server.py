@@ -39,12 +39,13 @@ def import_host_info(data):
             agent_ip_list.append(i[0])
     for i in agent_info:
         agent_ip = i.get('agent_ip')
-        agent_username = i.get('agent_hostname')
+        agent_username = i.get('hostname')
         agent_passwd = i.get('agent_password')
         check_type = i.get('type')
         migration_type = i.get('migration_type')
         if agent_ip in agent_ip_list:
-            pass
+            sql = "update agent_info set agent_online_status = 0 where agent_ip = '%s';" % agent_ip
+            DBHelper().execute(sql)
         else:
             val = ((agent_ip, agent_username, agent_passwd, check_type, migration_type),)
             info = DBHelper().insert(sql, val)
@@ -113,7 +114,6 @@ def check_user(data):
     else:
         data = {"data": "success", "num": data}
     json_data = json.dumps(data)
-    time.sleep(5)
     return json_data
 
 
@@ -167,7 +167,7 @@ def host_info_display(data):
     res = {}
     res['num'] = len(data)
     info_list = []
-    info_dict_keys_list = ['agent_ip', 'agent_hostname', 'agent_status', 'agent_os', 'migration_type', 'agent_arch',
+    info_dict_keys_list = ['agent_ip', 'hostname', 'agent_online_status', 'agent_os', 'migration_type', 'agent_arch',
                            'failure_reasons', 'task_CreateTime', 'task_status']
     for i in data:
         info_list.append(dict(zip(info_dict_keys_list, i)))
@@ -478,10 +478,10 @@ def get_download_center_data(data):
             info[i] += ["", "", ""]
         else:
             agent_info = list(agent_info[0])
+            info[i].pop()
             info[i] += agent_info
     for i in info:
         info_list.append(dict(zip(info_dict_keys_list, i)))
-
 
     res['info'] = info_list
     json_res = json.dumps(res)
@@ -517,8 +517,8 @@ def export_reports(data):
             except:
                 migration_log.war("export report mkdir war:%s" % mkdir_log_pwd)
 
-        report_type(data)
-    return 'success'
+        data = report_type(data)
+    return data
 
 
 def migration_records(data):
