@@ -68,14 +68,13 @@ class DBwrite(DBHelper):
                 return 1
             for i in range(len(ret)):
                 filename = self.path.strip('\n') + ret[i][0]
-                print(filename)
                 content = str(ret[i][1])
                 if os.path.exists(filename):
                     filename = filename.strip('\n') + '.new'
                 with open(filename, 'w+') as f:
                     f.write(content)
                     f.close()
-            return True
+            return os.path.basename(filename)
         except Exception as e:
             migration_log.error(e)
             return False
@@ -83,26 +82,22 @@ class DBwrite(DBHelper):
     def write_analysis_html(self):
         sql = "SELECT report_name,report_content FROM report_info WHERE agent_ip='{}' and report_type LIKE " \
               "'%存量替换%';".format(self.getip)
-        self.write_file(sql)
-        return 'y'
+        return self.write_file(sql)
 
     def write_analysis_add_html(self):
         sql = "SELECT report_name,report_content FROM report_info WHERE agent_ip='{}' and report_type LIKE " \
               "'%新增扩容%';".format(self.getip)
-        self.write_file(sql)
-        return 'y'
+        return self.write_file(sql)
 
     def write_completed_html(self):
         sql = "SELECT report_name,report_content FROM report_info WHERE agent_ip='{}' and report_type LIKE " \
               "'%迁移分析%';".format(self.getip)
-        self.write_file(sql)
-        return 'y'
+        return self.write_file(sql)
 
     def write_completed_log(self):
         sql = "SELECT report_name,report_content FROM report_info WHERE agent_ip='{}' and report_type LIKE " \
               "'%日志%';".format(self.getip)
-        self.write_file(sql)
-        return 'y'
+        return self.write_file(sql)
 
 
 def selfDestruct(task_id):
