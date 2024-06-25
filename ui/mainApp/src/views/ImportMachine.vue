@@ -147,52 +147,6 @@ export default {
 .input-file {
   display: none;
 }
-    # migration kernel
-    def download_kernel(self):
-        disable_exclude()
-        cwd = self.downlaod_dir
-        if os.path.exists(cwd):
-            if [kernel for kernel in os.listdir(cwd) if 'kernel-{}'.format(self.kernel_version)]:
-                migration_log.info(os.listdir(cwd))
-                return True
-            else:
-                migrate_stage_log.debug('Removing bad kernel rpm.')
-                shutil.rmtree(cwd)
-        os.makedirs(cwd)
-        cmd = 'rpm -qa | grep "kernel\|bpftool\|perf" |xargs -i rpm -q --qf "%{NAME}\\n" {}'
-        if '0' == self.kernel_version:
-            self.ifnot_mig_kernel()
-        else:
-            if not os.path.exists('/usr/bin/yumdownloader'):
-                run_subprocess('dnf install -y "/usr/bin/yumdownloader"')
-            migrate_stage_log.debug(self.kernel_version)
-            migrate_stage_log.debug(get_old_kernel())
-            down_cmd = '/usr/bin/yumdownloader  --destdir {} '.format(self.downlaod_dir)
-            ret = os.popen(cmd).readlines()
-            for i in ret:
-                downpackage = down_cmd + ' ' + i.strip() + '-' + self.kernel_version
-                run_subprocess(downpackage)
-            if not os.listdir(cwd):
-                migration_log.info('Can not download kernel .')
-                return False
-        if [kernel for kernel in os.listdir(cwd) if 'kernel-{}'.format(self.kernel_version)]:
-            migration_log.info("Download kernel success.")
-            migration_log.info(os.listdir(cwd))
-            return True
-        migrate_stage_log.debug('下载内核错误')
-
-    def install_kernel(self, remove_old=False):
-        if not ConfShare(get_local_ip()).repo_kernel:
-            migration_log.info('Skip installing local kernel pakages.')
-            return
-        _ = str(subprocess.check_output('rpm -q --qf "%{VERSION}-%{RELEASE} " kernel', shell=True), 'utf-8')
-        kernels = [k for k in _.split(' ', -1) if k != self.kernel_version and k]
-        if not kernels:
-            migration_log.info('Install kernel skipped, installed kernel version.')
-            return
-        if get_old_kernel() == self.kernel_version:
-            run_subprocess('dnf -y remove kernel*-{}*'.format(self.kernel_version))
-        cmd = 'rpm -Uvh "{}*" --nodeps --oldpackage --reinstall --force '.form
 .loading {
   animation: rotate 1s linear infinite;
 }
