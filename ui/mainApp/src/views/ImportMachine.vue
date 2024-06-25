@@ -105,7 +105,24 @@ export default {
       isLoadSuccess: false,
       isLoadFailed: false,
     };
-  },,
+  },
+  methods: {
+    selectFile() {
+      this.$refs.upload.click();
+    },
+    showMsgBox: function () {
+      // 创建消息提示框
+      ElMessageBox.alert("待填充的文案", "SSHD 配置", {
+        customStyle: {
+          width: "700px",
+        },
+        callback: (res) => {
+          console.log(res);
+        },
+        closeOnClickModal: true,
+        showClose: false,
+      });
+    },
 };
 </script>
 
