@@ -187,8 +187,9 @@ def deal_repo_rpm():
         migration_log.info('current unique rpms list same of repo source!!')
         return '-1'
 
-    #下载repo源中存在包名差异的rpm包
-    os.system('yumdownloader --destdir=%s%s --skip-broken' %(FixedInfo.repo_diff_path, pkg_str))
+    #20220411 add 1xxxe specified repo source
+    specified_repo = '/var/tmp/uos-migration/migration_after.repo'
+    os.system('yumdownloader --config=%s --destdir=%s%s --skip-broken' %(specified_repo, FixedInfo.repo_diff_path, pkg_str))
 
     #将下载的存在包名差异的rpm包重命名为当前系统rpm包
     for diff_line in open(FixedInfo.diff_rpmpkg, 'r'):
