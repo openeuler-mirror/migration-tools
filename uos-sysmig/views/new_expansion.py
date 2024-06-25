@@ -37,19 +37,19 @@ def get_add_repo_data(data):
 
         get_repo_status = DBHelper().execute(repo_status_sql).fetchall()
         for i in range(0, len(get_repo_status)):
-            if get_repo_status[i][0] == '1':
+            if get_repo_status[i][0][0] == '1':
                 data["migration_before_x86_64"] = 'failed'
             else:
                 data["migration_before_x86_64"] = 'success'
-            if get_repo_status[i][1] == '1':
+            if get_repo_status[i][0][1] == '1':
                 data["migration_after_x86_64"] = 'failed'
             else:
                 data["migration_after_x86_64"] = 'success'
-            if get_repo_status[i][2] == '1':
+            if get_repo_status[i][0][2] == '1':
                 data["migration_before_aarch64"] = 'failed'
             else:
                 data["migration_before_aarch64"] = 'success'
-            if get_repo_status[i][3] == '1':
+            if get_repo_status[i][0][3] == '1':
                 data["migration_after_aarch64"] = 'failed'
             else:
                 data["migration_after_aarch64"] = 'success'
@@ -65,20 +65,18 @@ def get_add_environment_data(data):
     """
     agent_ip_list = json.loads(data).get('agent_ip')
     if agent_ip_list == []:
-        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
-                                  "and migration_type='new_expansion';"
+        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task;"
     elif len(agent_ip_list) == 1:
         get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task " \
-                                  "and migration_type='new_expansion' and agent_ip='%s';" % agent_ip_list[0]
+                                  "where agent_ip='%s';" % agent_ip_list[0]
     else:
-        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task where agent_ip in {} " \
-                                  "and migration_type='new_expansion';".format(tuple(agent_ip_list))
+        get_environment_pro_sql = "select agent_ip,task_progress,task_status from agent_task where agent_ip in {};".format(tuple(agent_ip_list))
     progress = DBHelper().execute(get_environment_pro_sql).fetchall()
     res = {}
     info_list = []
     finall_progress = []
     for i in progress:
-        sql = "select agent_id from agent_info where agent_ip='%s' and agent_online_status=0 and repo_status='0' " \
+        sql = "select agent_id from agent_info where agent_ip='%s' and agent_online_status=0 and repo_status='0000' " \
               "and agent_migration_os is null;" % i[0]
         get_sql = DBHelper().execute(sql).fetchall()
         if get_sql:
