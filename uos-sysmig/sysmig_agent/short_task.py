@@ -59,8 +59,8 @@ def os_repo_kernel():
                 if 'uelc' in ret[n]:
                     # kernel_version = re.sub('kernel-.* ', '', ret[n])
                     kernel_version = re.sub('-.*$', '', ret[n])
-                    kernel_version = kernel_version.split(' ',-1)
-                    kernel_version = kernel_version[len(kernel_version)-1]
+                    kernel_version = kernel_version.split(' ', -1)
+                    kernel_version = kernel_version[len(kernel_version) - 1]
                     version_list.append(kernel_version.strip())
                     if not str_kernel:
                         str_kernel = kernel_version.strip()
@@ -74,7 +74,7 @@ def check_kernel(data):
     # 更新SQL任务开始状态
     sql_task_statue('1', task_id)
     # 发送消息给Server更新任务流状态
-    post_server('task_start', task_id )
+    post_server('task_start', task_id)
     # agent kernel
     agent_kernel = os_kernel()
     # agent repo kernel
@@ -119,6 +119,7 @@ def check_info(data):
     sql_task_statue(statue, task_id)
     post_server('task_close', task_id)
     return 'success'
+
 
 def get_agent_os():
     os_version_ret = platform.dist()
@@ -296,7 +297,7 @@ def check_repo(data):
 def initRepoFile_add(filename, baseurl):
     if os.path.exists(os.path.join(AGENT_DIR, filename + '.repo')):
         os.remove(os.path.join(AGENT_DIR, filename + '.repo'))
-    if not repoFileCheck(baseurl+'/repodata'):
+    if repoFileCheck(baseurl+'/repodata'):
         path_310 = baseurl + '/kernel-3.10'
         path_ext = baseurl + '/external'
         repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = ''' + baseurl.strip(
