@@ -1,0 +1,9 @@
+# Ignore artifacts:
+node_modules
+package.json
+package-lock.json
+dist
+*.html
+.eslintrc.js
+.gitignore
+babel.config.js
