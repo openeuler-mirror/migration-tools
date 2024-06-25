@@ -861,7 +861,15 @@ def migrate_before_abi_chk(q_query, task_status, mig_flag):
         log.info('The current progress exit:' + str(msg_tup))
         #return False
 
-    os.system('yumdownloader --destdir=%s%s --skip-broken' %(download_path, current_packages_string))
+    #20220411 add 1xxxe specified repo source
+    if mig_flag == 'E':
+        specified_repo = '/var/tmp/uos-migration/migration_after.repo'
+        log.info('1xxxe using the specified repo source:' +specified_repo)
+        os.system('yumdownloader --config=%s --destdir=%s%s --skip-broken' %(specified_repo, download_path, current_packages_string))
+    else:
+        #1xxxa local repo source
+        log.info('1xxxa using the local repo source...')
+        os.system('yumdownloader --destdir=%s%s --skip-broken' %(download_path, current_packages_string))
 
     download_list = get_system_pkg_list(migration_download_list)
     if not download_list:
