@@ -19,7 +19,7 @@
 
 int check_user_authority(void);
 int perm_check(char *perm_sql);
-int restart_ser(char *yum_shell, char *cp_shell, char *s_ser_shell, char *c_ser_shell);
+int restart_ser(char *yum_shell, char *cp_shell, char *mv_shell, char *s_ser_shell, char *c_ser_shell);
 int c_Sec(char *check_sql);
 int add_knownhost(char *ip);
 int free_Sec(char *ip, char *user, char *password);
@@ -57,7 +57,9 @@ int check_user_authority(void)
 	char *yum_shell;
 	char *c_ssh_shell;
 	char *perm_shell;
+	char *perm_shell_1;
 	char *cp_shell;
+	char *mv_shell;
 	char *s_ser_shell;
 	char *c_ser_shell;
 
@@ -66,10 +68,12 @@ int check_user_authority(void)
 	check_sql_2 = (char*)malloc(sizeof(char) * 100);
 	c_ssh_shell = (char*)malloc(sizeof(char) * 100);
 	perm_shell = (char*)malloc(sizeof(char) * 100);
-	yum_shell = (char*)malloc(sizeof(char) * 100);
-	cp_shell = (char*)malloc(sizeof(char) * 100);
-	s_ser_shell = (char*)malloc(sizeof(char) * 100);
-	c_ser_shell = (char*)malloc(sizeof(char) * 100);
+	perm_shell_1 = (char*)malloc(sizeof(char) * 200);
+	yum_shell = (char*)malloc(sizeof(char) * 200);
+	cp_shell = (char*)malloc(sizeof(char) * 200);
+	mv_shell = (char*)malloc(sizeof(char) * 200);
+	s_ser_shell = (char*)malloc(sizeof(char) * 200);
+	c_ser_shell = (char*)malloc(sizeof(char) * 200);
 	db_pwd =  (unsigned long*)malloc(sizeof(unsigned long) * 20);
 	memset(db_pwd, 0, 20);
 	db_pwd1 =  (unsigned long*)malloc(sizeof(unsigned long) * 20);
@@ -119,7 +123,7 @@ int check_user_authority(void)
 			{
 				if(!add_knownhost(data[i].ip))
 				{
-					sprintf(check_sql_1, "sshpass -e ssh -q -t %s@%s date", data[i].user, data[i].ip);
+					sprintf(check_sql_1, "sshpass -e ssh -q -t %s@%s date >> /dev/null  2>&1 ", data[i].user, data[i].ip);
 					setenv("SSHPASS","",1); 
 					sec = c_Sec(check_sql_1);
 
@@ -127,7 +131,7 @@ int check_user_authority(void)
 				if(sec)
 				{
 					
-					sprintf(check_sql_2, "sshpass -p %s ssh  %s@%s date", data[i].password, data[i].user, data[i].ip);
+					sprintf(check_sql_2, "sshpass -p %s ssh  %s@%s date >> /dev/null  2>&1 ", data[i].password, data[i].user, data[i].ip);
 					r_psw = c_Sec(check_sql_2);
 					if(r_psw)
 						do_check = 1;//密码错误
@@ -145,44 +149,53 @@ int check_user_authority(void)
 						{
 							//未免密
 							sprintf(c_ssh_shell, "sshpass -p  %s ssh %s@%s date", data[i].password, data[i].user, data[i].ip);
-							sprintf(perm_shell, "sshpass -p %s ssh %s@%s sudo -v", data[i].password, data[i].user, data[i].ip);
-                                                        sprintf(yum_shell, "sshpass -p %s ssh %s@%s yum install -y %s", data[i].password, data[i].user, data[i].ip, PACK_NAME);
-                                                        sprintf(cp_shell, "sshpass -p %s scp %s %s@%s:%s", data[i].password, CONF_NAME, data[i].user, data[i].ip, CONF_NAME);
-                                                        sprintf(s_ser_shell, "sshpass -p %s ssh %s@%s systemctl restart %s.service", data[i].password, data[i].user, data[i].ip, PACK_NAME);
-                                                        sprintf(c_ser_shell,"sshpass -p %s ssh %s@%s systemctl status %s.service |grep running", data[i].password, data[i].user, data[i].ip, PACK_NAME);
+							sprintf(perm_shell, "sshpass -p %s ssh %s@%s \" sudo -v >> /dev/null  2>&1 \"", data[i].password, data[i].user, data[i].ip);
+							sprintf(perm_shell_1,"sshpass -p %s ssh %s@%s \" echo '%s\n'|sudo -S -l -U %s >> /dev/null  2>&1 \"", data[i].password, data[i].user, data[i].ip, data[i].password, data[i].user);
+                                                        sprintf(yum_shell, "sshpass -p %s ssh %s@%s \" echo '%s\n'|sudo -S yum install -y %s >> /dev/null  2>&1\"", data[i].password, data[i].user, data[i].ip, data[i].password, PACK_NAME);
+							sprintf(cp_shell, "sshpass -p %s scp %s %s@%s:%s", data[i].password, CONF_PATH, data[i].user, data[i].ip, "/tmp");
+							sprintf(mv_shell, "sshpass -p %s ssh %s@%s \" echo '%s\n'|sudo -S mv %s/%s %s >> /dev/null  2>&1\" ", data[i].password, data[i].user, data[i].ip, data[i].password, "/tmp", CONF_NAME, CONF_PATH);
+							sprintf(s_ser_shell, "sshpass -p %s ssh %s@%s \" echo '%s\n'|sudo -S systemctl restart %s.service >> /dev/null  2>&1\"", data[i].password, data[i].user, data[i].ip, data[i].password, PACK_NAME);
+                                                        sprintf(c_ser_shell,"sshpass -p %s ssh %s@%s \" systemctl status %s.service |grep running >> /dev/null  2>&1 \"", data[i].password, data[i].user, data[i].ip, PACK_NAME);
 						}
 					}			
 				}
 				if(!sec)
 				{
 					//免密
-					sprintf(perm_shell, "ssh %s@%s sudo -v", data[i].user, data[i].ip);
-                                        sprintf(yum_shell, "ssh %s@%s yum install -y %s", data[i].user, data[i].ip, PACK_NAME);
-                                        sprintf(cp_shell, "scp %s %s@%s:%s", CONF_NAME, data[i].user, data[i].ip, CONF_NAME);
-                                        sprintf(s_ser_shell, "ssh %s@%s systemctl restart %s.service", data[i].user, data[i].ip, PACK_NAME);
-                                        sprintf(c_ser_shell,"ssh %s@%s systemctl status %s.service |grep running", data[i].user, data[i].ip, PACK_NAME);	
+					sprintf(perm_shell, "ssh %s@%s \" sudo -v >> /dev/null  2>&1\"", data[i].user, data[i].ip);
+					sprintf(perm_shell_1,"ssh %s@%s \" echo '%s\n'|sudo -S -l -U %s >> /dev/null  2>&1\"", data[i].user, data[i].ip, data[i].password, data[i].user);
+                                        sprintf(yum_shell, "ssh %s@%s \" echo '%s\n'|sudo -S yum install -y %s >> /dev/null  2>&1\"", data[i].user, data[i].ip,  data[i].password, PACK_NAME);
+					sprintf(cp_shell, "scp %s %s@%s:%s", CONF_PATH, data[i].user, data[i].ip, "/tmp");
+                                        sprintf(mv_shell, "ssh %s@%s \" echo '%s\n'|sudo -S mv %s/%s %s >> /dev/null  2>&1\" ", data[i].user, data[i].ip, data[i].password, "/tmp", CONF_NAME, CONF_PATH);
+					sprintf(s_ser_shell, "ssh %s@%s \" echo '%s\n'|sudo -S systemctl restart %s.service >> /dev/null  2>&1\"", data[i].user, data[i].ip, data[i].password, PACK_NAME);
+                                        sprintf(c_ser_shell,"ssh %s@%s \" systemctl status %s.service |grep running >> /dev/null  2>&1 \"", data[i].user, data[i].ip, PACK_NAME);
+
 				}
 
 				if(do_check)
 					sprintf(sql, "update agent_info set agent_online_status =2, agent_history_faild_reason = \"agent连接失败\" where agent_ip = \"%s\"", data[i].ip);//agent连接失败
 				else
 				{
-					if(!strcmp(data[i].ip,"root"))
+					if(strcmp(data[i].user,"root"))
 					{
 						perm_res=perm_check(perm_shell);
+						if(perm_res)
+							perm_res=perm_check(perm_shell_1);
 					}
 					if(perm_res)
-						sprintf(sql, "update agent_info set agent_online_status =1, agent_history_faild_reason = \"权限验证失败\" where agent_ip = \"%s\"", data[i].ip);//权限检测失败
-					restart_ser_res=restart_ser(yum_shell, cp_shell, s_ser_shell, c_ser_shell); //重启agent服务
-					if(!perm_res && restart_ser_res)
+						sprintf(sql, "update agent_info set agent_online_status =1, agent_history_faild_reason = \"权限验证失败\" where agent_ip = \"%s\" and agent_username = \"%s\"", data[i].ip, data[i].user);//权限检测失败
+					else
 					{
+						restart_ser_res=restart_ser(yum_shell, cp_shell, mv_shell, s_ser_shell, c_ser_shell); //重启agent服务
 						if (restart_ser_res ==4)
-							sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent安装失败\" where agent_ip = \"%s\"",restart_ser_res, data[i].ip);//agent安装失败
+							sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent安装失败\" where agent_ip = \"%s\" and agent_username = \"%s\"",restart_ser_res, data[i].ip,  data[i].user);//agent安装失败
 						else if (restart_ser_res ==5)
-							sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent重启服务失败\" where agent_ip = \"%s\"",restart_ser_res, data[i].ip);//agent重启服务失败
+							sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent重启服务失败\" where agent_ip = \"%s\" and agent_username = \"%s\"",restart_ser_res, data[i].ip, data[i].user);//agent重启服务失败
+						else {
+							sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = NULL where agent_ip = \"%s\" and agent_username = \"%s\"",restart_ser_res, data[i].ip, data[i].user);//成功
+							num++;
+						}
 					}
-					if(!(perm_res ||restart_ser_res))
-						num++;
 				}
 				get_Len(db_user, db_password, db_database, sql);
 			}
@@ -212,10 +225,16 @@ int check_user_authority(void)
 	yum_shell = NULL;
 	free(cp_shell);
 	cp_shell = NULL;
+        free(mv_shell);
+        mv_shell = NULL;
 	free(perm_shell);
 	perm_shell = NULL;
+	free(perm_shell_1);
+        perm_shell_1 = NULL;
 	free(sql);
+	sql = NULL;
 	free(check_sql_1);
+	check_sql_1 = NULL;
 	free(check_sql_2);
 	check_sql_2 = NULL;
 	fflush(stdout);

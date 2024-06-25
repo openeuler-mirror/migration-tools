@@ -20,8 +20,8 @@ int add_knownhost(char *ip)
 
         f_host = (char*)malloc(sizeof(char)*100);
         add_host = (char*)malloc(sizeof(char)*100);
-	sprintf(f_host, "cat ~/.ssh/known_hosts |grep %s", ip);
-        sprintf(add_host, "ssh-keyscan %s >> ~/.ssh/known_hosts", ip);
+	sprintf(f_host, "cat ~/.ssh/known_hosts |grep %s  >> /dev/null  2>&1", ip);
+        sprintf(add_host, "ssh-keyscan %s >> ~/.ssh/known_hosts  >> /dev/null  2>&1", ip);
 
 	if(system(f_host))//与agent_ip没有连接过
                 add_ip = system(add_host);//添加agentip
@@ -47,7 +47,7 @@ int free_Sec(char *ip, char *user, char *password)
         }
 
         f_sec_bak = (char*)malloc(sizeof(char)*100);
-	sprintf(f_sec_bak, "sshpass -p %s ssh-copy-id -f -i $HOME/.ssh/id_rsa.pub %s@%s", password, user, ip);
+	sprintf(f_sec_bak, "sshpass -p %s ssh-copy-id -f -i $HOME/.ssh/id_rsa.pub %s@%s  >> /dev/null  2>&1", password, user, ip);
 
 	if(!system(f_sec_bak))
 	{
@@ -57,10 +57,10 @@ int free_Sec(char *ip, char *user, char *password)
 	f_sec = (char*)malloc(sizeof(char)*100);
 	t_sec = (char*)malloc(sizeof(char)*100);
 
-        sprintf(f_sec, "sshpass -p %s ssh-copy-id -f -i $HOME/.ssh/id_rsa.pub %s@%s", password, user, ip);
-	sprintf(t_sec, " ssh -tt %s@%s ls ", user, ip);
+        sprintf(f_sec, "sshpass -p %s ssh-copy-id -f -i $HOME/.ssh/id_rsa.pub %s@%s  >> /dev/null  2>&1", password, user, ip);
+	sprintf(t_sec, " ssh -tt %s@%s date ", user, ip);
 
-	ssh_key = system("echo -e 'y\n'|ssh-keygen  -t rsa -b 2048 -N '' -f $HOME/.ssh/id_rsa");//强制重新生成密钥
+	ssh_key = system("echo -e 'y\n'|ssh-keygen  -t rsa -b 2048 -N '' -f $HOME/.ssh/id_rsa  >> /dev/null  2>&1");//强制重新生成密钥
 	if(ssh_key)
 		return ssh_key;
 

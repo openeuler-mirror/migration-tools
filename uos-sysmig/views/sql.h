@@ -116,9 +116,7 @@ void connection(const char* db_user, const char* db_password, const char* db_dat
     	mysql_init(&conn); // 注意取地址符&
 
 	if (mysql_real_connect(&conn, "localhost", db_user, db_password, db_database, 0, NULL, 0)) 
-	{
-        	printf("Connection success!\n");
-	}
+        	fprintf(stdin, "Connection success!\n");
 	else
 	{
         	fprintf(stderr, "Connection failed!\n");
