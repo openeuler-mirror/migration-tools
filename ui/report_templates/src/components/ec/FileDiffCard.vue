@@ -30,10 +30,8 @@ import "diff2html/bundles/css/diff2html.min.css";
 export default {
   name: "FileDiffCard",
   props: {
-    // TODO: 去除用于开发时设置的默认值，
     name: {
       type: String,
-      default: "aaa",
     },
     items: Array,
   },
