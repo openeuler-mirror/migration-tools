@@ -22,7 +22,7 @@ def uos_migration_log(data):
     dbwrite.write_completed_log()
     report_pwd = "/var/uos-migration/%s" % agent_ip
     report_name = dbwrite.write_completed_log()
-    data = {'report_pwd': report_pwd,'report_name': report_name}
+    data = {'report_pwd': report_pwd, 'report_name': report_name}
     return data
 
 
@@ -35,7 +35,7 @@ def migration_completed_report(data):
     dbwrite = DBwrite(agent_ip)
     report_pwd = "/var/uos-migration/%s" % agent_ip
     report_name = dbwrite.write_completed_html()
-    data = {'report_pwd': report_pwd,'report_name': report_name}
+    data = {'report_pwd': report_pwd, 'report_name': report_name}
     return data
 
 
@@ -48,7 +48,7 @@ def analysis_report(data):
     dbwrite = DBwrite(agent_ip)
     report_pwd = "/var/uos-migration/%s" % agent_ip
     report_name = dbwrite.write_analysis_html()
-    data = {'report_pwd': report_pwd,'report_name': report_name}
+    data = {'report_pwd': report_pwd, 'report_name': report_name}
     return data
 
 
@@ -61,8 +61,8 @@ def analysis_report_add(data):
     dbwrite = DBwrite(agent_ip)
     report_pwd = "/var/uos-migration/%s" % agent_ip
     report_name = dbwrite.write_analysis_add_html()
-
-    return send_from_directory(directory=report_pwd, filename=report_name, as_attachment=True)
+    data = {'report_pwd': report_pwd, 'report_name': report_name}
+    return data
 
 
 def export_host_info(data):
