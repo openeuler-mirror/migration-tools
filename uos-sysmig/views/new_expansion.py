@@ -30,7 +30,7 @@ def get_add_repo_data(data):
                               "and agent_ip='%s';" % agent_ip_list[0]
         else:
             repo_status_sql = "select repo_status from agent_info where agent_online_status='0' " \
-                              "agent_migration_os is null and agent_ip in {} and " \
+                              "and agent_migration_os is null and agent_ip in {} and " \
                               "migration_type='new_expansion';".format(tuple(agent_ip_list))
 
         data = {}
