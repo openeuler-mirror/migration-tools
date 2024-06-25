@@ -31,6 +31,12 @@
         </template>
         <RpmScanTabs />
       </el-tab-pane>
+      <el-tab-pane>
+        <template #label>
+          <span>系统修改配置</span>
+        </template>
+        <SysConfFileTabs :tabsData="sysConfFileTabsData" />
+      </el-tab-pane>
     </el-tabs>
   </el-main>
 </template>
@@ -41,6 +47,7 @@ import PackagesTabs from "./PackagesTabs.vue";
 import RPMTabs from "./RPMTabs.vue";
 import ConfigScanTabs from "../ec/ConfigScanTabs.vue";
 import RpmScanTabs from "../ec/RpmScanTabs.vue";
+import SysConfFileTabs from "../ec/SysConfFileTabs.vue";
 export default {
   name: "BaseTabs",
   components: {
@@ -49,11 +56,17 @@ export default {
     RPMTabs,
     ConfigScanTabs,
     RpmScanTabs,
+    SysConfFileTabs,
   },
   data() {
     return {
       activeName: "",
     };
+  },
+  computed: {
+    sysConfFileTabsData() {
+      return this.$root.data.sysconffile_tabs;
+    },
   },
   created() {
     console.log("created @ Tabs.vue");
