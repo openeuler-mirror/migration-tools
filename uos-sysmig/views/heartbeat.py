@@ -32,8 +32,11 @@ def check_heartbeat(q):
 
 def get_db_agent_ip():
     sql = "select agent_ip from agent_info;"
-    get_sql = DBHelper().execute(sql).fetchall()
     agent_ip_list = []
+    try:
+        get_sql = DBHelper().execute(sql).fetchall()
+    except:
+        return agent_ip_list
     for i in get_sql:
         agent_ip_list.append(i[0])
     return agent_ip_list

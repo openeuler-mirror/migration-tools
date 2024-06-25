@@ -74,7 +74,7 @@ def export_host_info(data):
     if agent_ip == '':
         sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_arch," \
               "agent_history_faild_reason from agent_info;"
-    else if len(agent_ip) == 1:
+    elif len(agent_ip) == 1:
         sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_arch," \
               "agent_history_faild_reason from agent_info where agent_ip='%s';" % agent_ip[0]
     else:
