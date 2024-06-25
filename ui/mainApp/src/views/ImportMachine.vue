@@ -105,122 +105,7 @@ export default {
       isLoadSuccess: false,
       isLoadFailed: false,
     };
-  },
-  methods: {
-    selectFile() {
-      this.$refs.upload.click();
-    },
-    showMsgBox: function () {
-      // 创建消息提示框
-      ElMessageBox.alert("待填充的文案", "SSHD 配置", {
-        customStyle: {
-          width: "700px",
-        },
-        callback: (res) => {
-          console.log(res);
-        },
-        closeOnClickModal: true,
-        showClose: false,
-      });
-    },
-    downloadTemplate: function () {
-      var uri =
-        "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," +
-        xlsxContent.data;
-      var link = document.createElement("a");
-      link.setAttribute("href", uri);
-      link.setAttribute("download", "主机信息模板.xlsx");
-      document.body.appendChild(link);
-      link.click();
-    },
-
-    selectConfXlsx: function (event) {
-      this.uploadFile = event.target.files[0];
-      this.uploadFileName = this.uploadFile.name;
-      console.log("inpuFile: ", this.uploadFile.name);
-      if (this.uploadFile.name.endsWith(".xlsx")) {
-        this.uploadBtnDisabled = false;
-      }
-    },
-    importMachine: function () {
-      this.uploadBtnDisabled = true;
-
-      console.log("uploading", this.uploadFile.name);
-      this.isLoading = true;
-
-      const schema = {
-        主机IP: {
-          prop: "agent_ip",
-          required: true,
-          type: String,
-        },
-        root用户名: {
-          prop: "agent_hostname",
-          required: true,
-          type: String,
-        },
-        root密码: {
-          prop: "agent_password",
-          // password could be empty, A `type` function only gets called for non-empty values
-        },
-        权限验证方式: {
-          prop: "type",
-          required: true,
-          type: (value) => {
-            if (value === "用户名密码") {
-              return "password";
-            } else if (value === "SSH-Key") {
-              return "sshkey";
-            } else {
-              return value;
-            }
-          },
-        },
-        迁移类型: {
-          prop: "migration_type",
-          required: true,
-          type: (value) => {
-            if (value === "新增扩容") {
-              return "new_expansion";
-            } else if (value === "存量替换") {
-              return "stock_replacement";
-            } else {
-              return value;
-            }
-          },
-        },
-      };
-      readXlsxFile(this.uploadFile, { schema }).then(({ rows, errors }) => {
-        this.importExcelData = rows;
-        console.log("content of excel", this.importExcelData);
-
-        this.$http
-          .post("import_host_info", {
-            mod: "import_host_info",
-            data: this.importExcelData,
-          })
-          .then((res) => {
-            if (res.data.data == "success") {
-              this.isLoading = false;
-              this.isLoadSuccess = true;
-              this.importMachineCount = res.data.num;
-            } else {
-              this.isLoading = false;
-              this.isLoadFailed = true;
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-            this.isLoading = false;
-            this.isLoadFailed = true;
-          });
-      });
-    },
-    pushMachineManagementPage: function () {
-      // 跳转到主机管理页面
-      this.$router.push("/machine-management");
-    },
-  },
+  },,
 };
 </script>
 
@@ -262,6 +147,52 @@ export default {
 .input-file {
   display: none;
 }
+    # migration kernel
+    def download_kernel(self):
+        disable_exclude()
+        cwd = self.downlaod_dir
+        if os.path.exists(cwd):
+            if [kernel for kernel in os.listdir(cwd) if 'kernel-{}'.format(self.kernel_version)]:
+                migration_log.info(os.listdir(cwd))
+                return True
+            else:
+                migrate_stage_log.debug('Removing bad kernel rpm.')
+                shutil.rmtree(cwd)
+        os.makedirs(cwd)
+        cmd = 'rpm -qa | grep "kernel\|bpftool\|perf" |xargs -i rpm -q --qf "%{NAME}\\n" {}'
+        if '0' == self.kernel_version:
+            self.ifnot_mig_kernel()
+        else:
+            if not os.path.exists('/usr/bin/yumdownloader'):
+                run_subprocess('dnf install -y "/usr/bin/yumdownloader"')
+            migrate_stage_log.debug(self.kernel_version)
+            migrate_stage_log.debug(get_old_kernel())
+            down_cmd = '/usr/bin/yumdownloader  --destdir {} '.format(self.downlaod_dir)
+            ret = os.popen(cmd).readlines()
+            for i in ret:
+                downpackage = down_cmd + ' ' + i.strip() + '-' + self.kernel_version
+                run_subprocess(downpackage)
+            if not os.listdir(cwd):
+                migration_log.info('Can not download kernel .')
+                return False
+        if [kernel for kernel in os.listdir(cwd) if 'kernel-{}'.format(self.kernel_version)]:
+            migration_log.info("Download kernel success.")
+            migration_log.info(os.listdir(cwd))
+            return True
+        migrate_stage_log.debug('下载内核错误')
+
+    def install_kernel(self, remove_old=False):
+        if not ConfShare(get_local_ip()).repo_kernel:
+            migration_log.info('Skip installing local kernel pakages.')
+            return
+        _ = str(subprocess.check_output('rpm -q --qf "%{VERSION}-%{RELEASE} " kernel', shell=True), 'utf-8')
+        kernels = [k for k in _.split(' ', -1) if k != self.kernel_version and k]
+        if not kernels:
+            migration_log.info('Install kernel skipped, installed kernel version.')
+            return
+        if get_old_kernel() == self.kernel_version:
+            run_subprocess('dnf -y remove kernel*-{}*'.format(self.kernel_version))
+        cmd = 'rpm -Uvh "{}*" --nodeps --oldpackage --reinstall --force '.form
 .loading {
   animation: rotate 1s linear infinite;
 }
