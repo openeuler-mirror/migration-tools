@@ -170,7 +170,7 @@ def gen_reporpm_list():
     migration_log.info('Specific software package string same of current unique list')
     return '-1'
 
-def deal_repo_rpm():
+def deal_repo_rpm(logger):
     '''
         应用场景：特定软件包映射
         功    能：repo源的特定软件包映射到当前系统包列表
