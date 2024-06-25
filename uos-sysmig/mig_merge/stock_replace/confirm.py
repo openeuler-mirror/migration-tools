@@ -36,6 +36,7 @@ def get_cur_sys_version():
     fp.close()
     return line.split('=',1)[1].replace('"','').replace('\n','')
 
+
 def gen_migration_behind_rpms():
     '''
         应用场景：系统迁移成功后，rpm包列表
@@ -50,8 +51,9 @@ def gen_migration_behind_rpms():
 
     behind_rpms_list = []
     for rpm_pkg in mi:
-        if dist in rpm_pkg['release']:
-            behind_rpms_list.append(rpm_pkg['name'])
+        print(rpm_pkg['release'].decode())
+        if dist in rpm_pkg['release'].decode():
+            behind_rpms_list.append(rpm_pkg['name'].decode()+'\n')
     return json.dumps(behind_rpms_list)
 
 
