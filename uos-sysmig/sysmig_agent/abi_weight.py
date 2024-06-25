@@ -2,8 +2,7 @@
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 
 import os
-from config import *
-import config
+from sysmig_agent.config import *
 
 # ABI_INCOMPAT_PATH = '/home/xzx/nfs/abi-incompat-pkg.txt'
 # ABI_COMPAT_PATH = '/home/xzx/nfs/abi-compat-pkg.txt'
@@ -20,11 +19,12 @@ def get_list_pkg(path):
 
 
 # 调用
-def get_abi_incompat_pkg():
+def get_abi_incompat_pkg(path):
     query = []
-    rpms = get_list_pkg(ABI_INCOMPAT_PATH)
+    rpms = get_list_pkg(path)
+    #ignore_abi = get_list_pkg(ignore_abi_check_8)
     for i in range(len(rpms)):
-        rpm = rpms[i].split('|', -1)
+        rpm = rpms[i].split(',', -1)
         if len(query) > 0:
             for q in range(len(query)):
                 if str(rpm[0]).strip() == str(query[q]):
@@ -63,11 +63,11 @@ def rpm_priority(rpm_compat_query, rpm_incompat_query):
     app_weight = 50
     base_weight = 50
 
-    app_weight_percent = (total_compat_app / (total_incompat_app + total_compat_app)) * app_weight
-    base_weight_percent = (total_compat_base / (total_incompat_base + total_compat_base)) * base_weight
-    AllWeight = app_weight_percent + base_weight_percent
-    AllWeight = format(AllWeight, '.0f')
-    return AllWeight
+    #app_weight_percent = (total_compat_app / (total_incompat_app + total_compat_app)) * app_weight
+    #base_weight_percent = (total_compat_base / (total_incompat_base + total_compat_base)) * base_weight
+    #AllWeight = app_weight_percent + base_weight_percent
+    #AllWeight = format(AllWeight, '.0f')
+    #return AllWeight
 
 
 def first_high_weight(rpm_incompat_query):
@@ -80,7 +80,7 @@ def first_high_weight(rpm_incompat_query):
 
 
 def abi_check_priority():
-    rpm_incompat_query = get_abi_incompat_pkg()
+    rpm_incompat_query = get_abi_incompat_pkg(ABI_INCOMPAT_PATH)
     rpm_compat_query = get_list_pkg(ABI_COMPAT_PATH)
     del rpm_incompat_query[:2]
     del rpm_compat_query[0]
@@ -92,8 +92,8 @@ def abi_check_priority():
 
 
 class LayeredGrading(object):
-    layered = {'app_weight': 50, 'base_weight': 50}
-    layered_file = {'app_weight': AppStream, 'base_weight': BaseOS}
+    layered = [50, 50]
+    layered_file = [AppStream, BaseOS]
 
     def __init__(self):
         self.rpm_incompat_query = ''
@@ -101,8 +101,9 @@ class LayeredGrading(object):
         self.compatibility = 0
 
     def get_data(self):
-        self.rpm_incompat_query = get_abi_incompat_pkg()
-        self.rpm_compat_query = get_list_pkg(ABI_COMPAT_PATH)
+        self.rpm_incompat_query = get_abi_incompat_pkg(ABI_INCOMPAT_PATH)
+        # self.rpm_compat_query = get_list_pkg(ABI_COMPAT_PATH)
+        self.rpm_compat_query = get_abi_incompat_pkg(ABI_COMPAT_PATH)
 
     def run(self):
         self.get_data()
@@ -110,9 +111,11 @@ class LayeredGrading(object):
         for i in range(len(self.layered)):
             tmp_incompat = match_rpm(self.layered_file[i], self.rpm_incompat_query)
             tmp_compat = match_rpm(self.layered_file[i], self.rpm_compat_query)
-            self.compatibility = self.compatibility + (tmp_compat / (tmp_incompat + tmp_compat)) * self.layered[i]
-            return first_high_weight(self.rpm_incompat_query) or self.compatibility
+            self.compatibility =  (tmp_compat / (tmp_incompat + tmp_compat)) * self.layered[i]
+            if first_high_weight(self.rpm_incompat_query):
+                self.compatibility += self.compatibility
+        return format(self.compatibility, '.0f')
 
 
-
-
+layered_Grading = LayeredGrading()
+# layered_Grading.run()
