@@ -34,11 +34,20 @@
           :filter-method="filterCompatible"
         >
           <template #default="scope">
-            <el-tag
+            <!-- <el-tag
+              effect="dark"
               :type="scope.row.is_compatible ? 'success' : 'danger'"
               disable-transitions
-              >{{ scope.row.is_compatible ? "兼容" : "不兼容" }}</el-tag
+            >{{ scope.row.is_compatible ? "兼容" : "不兼容" }}</el-tag>-->
+            <div
+              class="pkgTag"
+              :class="{
+                itemTagSame: scope.row.is_compatible == true,
+                itemTagDifferent: scope.row.is_compatible == false,
+              }"
             >
+              {{ scope.row.is_compatible ? "兼容" : "不兼容" }}
+            </div>
           </template>
         </el-table-column>
         <!-- 当前版本 -->
@@ -113,4 +122,25 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.pkgTag {
+  padding: 0px 5px 0px 5px;
+  border-radius: 4px;
+  border-width: 1px;
+  width: 90px;
+  text-align: center;
+  margin-right: 10px;
+  margin-left: 10px;
+  color: #606266;
+  border-style: solid;
+  font-family: "Helvetica";
+}
+.itemTagSame {
+  border-color: #ccff99;
+  background: #ccff99;
+}
+.itemTagDifferent {
+  border-color: #ffcc66;
+  background: #ffcc66;
+}
+</style>
