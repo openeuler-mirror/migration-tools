@@ -233,6 +233,31 @@ export default {
         element.selectedTargetKernel = "不迁移内核";
       });
     },
+    onUserSelect: function (selection, row) {
+      // 选择可能分页，可能需要加比较
+      console.log(selection);
+      if (selection.length != 0) {
+        this.currentPageHasSelection = true;
+      } else {
+        this.currentPageHasSelection = false;
+      }
+    },
+    onUserSelectAll: function (selection) {
+      if (selection.length != 0) {
+        this.currentPageHasSelection = true;
+      } else {
+        this.currentPageHasSelection = false;
+      }
+    },
+    cancelMigrate: function () {
+      this.$router.push("machine-management");
+    },
+    nextStep: function () {
+      this.$router.replace({
+        name: "EnvCheckBeforeMigrate",
+        params: { machines: JSON.stringify(this.machineList) },
+      });
+    },
   },
   mounted() {
     window.onbeforeunload = function (e) {
