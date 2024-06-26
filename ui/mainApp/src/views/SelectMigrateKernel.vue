@@ -274,6 +274,28 @@ export default {
   unmouted() {
     window.onbeforeunload = null;
   },
+  beforeRouteLeave(to, from, next) {
+    // 导航离开该组件的对应路由时调用
+    // 可以访问组件实例 `this`
+    // 该导航可以通过 next(false) 来取消。
+    if (to.name === "EnvCheckBeforeMigrate") {
+      next();
+      return false;
+    }
+    ElMessageBox({
+      title: "确定退出迁移吗？",
+      confirmButtonText: "退出",
+      cancelButtonText: "取消",
+      showCancelButton: true,
+      showClose: false,
+    })
+      .then((res) => {
+        next();
+      })
+      .catch((err) => {
+        next(false);
+      });
+  },
 };
 </script>
 
