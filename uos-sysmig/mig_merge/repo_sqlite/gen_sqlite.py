@@ -120,3 +120,36 @@ def gen_repo_sqlite(Flag):
         
     os.chdir(pwd_dir)
     return sqlite_list 
+
+
+def gen_baseurl_list():
+    '''
+        应用场景：repo源baseurl列表
+        功    能：获取repo源所有baseurl
+        输入参数：无
+        返 回 值：baseurl列表
+    '''
+
+    baseurl_list = []
+
+    cmd = 'grep -r "^baseurl" /etc/yum.repos.d/*.repo'
+    stat, baseurl_data, error = run_cmd(cmd)
+    if stat != 0:
+        print('error = %s' %(error))
+        return '-1'
+
+    cmd = 'grep -r "^enabled" /etc/yum.repos.d/*.repo'
+    stat, enabled_data, error = run_cmd(cmd)
+    if stat != 0:
+        print('error = %s' %(error))
+        return '-1'
+
+    num = 0
+    for line in enabled_data:
+        if line == '':
+            continue
+        if line.split('=')[1].strip() == '1':
+            baseurl_list.append(baseurl_data[num])
+        num += 1
+
+    return baseurl_list
