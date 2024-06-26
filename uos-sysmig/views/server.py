@@ -490,7 +490,7 @@ def get_download_center_data(data):
 
 
 reports_type = {
-    "migration_log": uos_migration_log,    # 存量替换迁移日志
+    "uos_migration_log": uos_migration_log,    # 存量替换迁移日志
     "migration_completed_report": migration_completed_report,    # 存量替换迁移分析报告
     "analysis_report": analysis_report,    # 存量替换迁移检测报告
     "analysis_report_add": analysis_report_add,    # 新增扩容迁移检测报告
