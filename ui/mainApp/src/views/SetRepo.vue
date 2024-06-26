@@ -345,6 +345,23 @@ export default {
           this.isc8aarch64Exist = true;
       }
     },
+    showDialog: function (system, arch, repoBindStr) {
+      this.dialogTitle = system + " 系列平台-" + arch + "-软件仓库路径";
+      this.dialogVisible = true;
+      this.dialogBind = repoBindStr;
+      console.log(this.dialogBind);
+    },
+    cancelMigrate: function () {
+      this.$router.push("machine-management");
+    },
+    nextStep: function () {
+      // this.$router.replace("/select-migrate-kernel");
+      console.log("@DEBUG: 迁移下一步", this.machineList);
+      this.$router.replace({
+        name: "SelectMigrateKernel",
+        params: { machines: JSON.stringify(this.machineList) },
+      });
+    },
   },
   mounted() {
     window.onbeforeunload = function (e) {
