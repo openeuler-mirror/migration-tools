@@ -133,6 +133,14 @@ export default {
       document.body.appendChild(link);
       link.click();
     },
+    selectConfXlsx: function (event) {
+      this.uploadFile = event.target.files[0];
+      this.uploadFileName = this.uploadFile.name;
+      console.log("inpuFile: ", this.uploadFile.name);
+      if (this.uploadFile.name.endsWith(".xlsx")) {
+        this.uploadBtnDisabled = false;
+      }
+    },
 };
 </script>
 
