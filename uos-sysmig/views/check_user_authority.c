@@ -113,6 +113,7 @@ int check_user_authority(void)
 		get_Data(db_user, db_password, db_database, len, &data);
 		for( i=0; i<len; i++)
 		{
+			do_check = 0;
 	        	if(strcmp(data[i].mode,SSH)||strcmp(data[i].mode,PSW))
 			{
 				if(!add_knownhost(data[i].ip))
@@ -123,9 +124,10 @@ int check_user_authority(void)
 					unsetenv("SSHPASS");
 
 				}
+				else
+					do_check = 1;
 				if(sec)
 				{
-					
 					sprintf(check_sql_2, "sshpass -p %s ssh  %s@%s date >> /dev/null  2>&1 ", data[i].password, data[i].user, data[i].ip);
 					r_psw = c_Sec(check_sql_2);
 					if(r_psw)
