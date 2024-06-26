@@ -129,9 +129,22 @@ def gen_eln_rpms(eln_name, uos_rpms_list):
     for rpm_pkg in mi:
         #迁移前获取rpm包信息，过滤掉release为uelc20的包
         if dist not in rpm_pkg['release'].decode():
-            if rpm_pkg['name'] not in uos_rpms_list:
+            if rpm_pkg['name'].decode() not in uos_rpms_list:
                 fp.write(rpm_pkg['name'].decode() + '\n')
     fp.close()
+
+    return True
+
+def gen_system_info(sysinfo_name):
+    '''
+        应用场景：跳过存量替换迁移检查，获取系统信息文件，如：'CentOS Linux 8 (Core)'
+        功    能：将当前系统信息写入临时文件，供生成迁移分析报告使用
+        输入参数：无
+        返 回 值：True-生成系统信息文件成功
+    '''
+
+    with open(sysinfo_name, 'w') as file_object:
+        file_object.write(get_cur_sys_version())
 
     return True
 
@@ -145,6 +158,7 @@ def migration_confirm():
 
     file_eln = FixedInfo.migration_eln
     file_uelc = FixedInfo.migration_uelc
+    file_sysinfo = FixedInfo.inventory_dir + '/sys-version-tmp'
 
     if os.path.isfile(file_eln) and os.path.isfile(file_uelc): 
         migration_log.info('migration before the current system rpms files exist!!!')
@@ -156,6 +170,9 @@ def migration_confirm():
 
     if gen_eln_rpms(file_eln,uelc_list):
         migration_log.info('get eln unique rpms file success')
+
+    if gen_system_info(file_sysinfo):
+        migration_log.info('get system info file success')
 
     return '1'
 
