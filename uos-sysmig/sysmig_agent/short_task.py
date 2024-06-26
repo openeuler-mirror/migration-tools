@@ -1,7 +1,4 @@
-# SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
-# SPDX-License-Identifier:   MulanPubL-2.0-or-later
 from sysmig_agent.share import *
-from flask import Flask, render_template, url_for, redirect, make_response, session, Response
 import urllib.request
 from sysmig_agent.agent_request import post_server
 
@@ -94,14 +91,15 @@ def check_kernel(data):
     return 's'
 
 
-def check_info(data):
+def check_info():
+    '''
     task_id = json.loads(data).get('task_id')
     # 更新SQL任务状态
     statue = 1
     sql_task_statue(statue, task_id)
     # 发送消息给Server更新任务流状态
-    post_server('task_start', task_id)
-    # 获取agent系统类型
+    post_server('task_start', task_id)'''
+    #取agent系统类型
     agent_os = get_agent_os()
     # agent storage
     agent_storage = os_storage()
@@ -114,10 +112,10 @@ def check_info(data):
         statue = 2
     except:
         statue = 3
-        sql_task_statue(statue, task_id)
+   #    sql_task_statue(statue, task_id)
     # 更新SQL任务状态
-    sql_task_statue(statue, task_id)
-    post_server('task_close', task_id)
+ #  sql_task_statue(statue, task_id)
+ #  post_server('task_close', task_id)
     return 'success'
 
 
@@ -253,8 +251,8 @@ def repoFileCheck(baseurl):
         dst_status = urllib.request.urlopen(baseurl, timeout=5).code
         return 0
     except Exception as err:
+        migration_log.error(baseurl)
         return 1
-        pass
 
 
 def check_repo(data):
@@ -282,7 +280,7 @@ def check_repo(data):
     else:
         repo_state = 1
 
-    sql = "UPDATE agent_info SET repo_status = {} WHERE agent_ip = '{}';".format(repo_state, get_local_ip())
+    sql = "UPDATE agent_info SET repo_status = '{}' WHERE agent_ip = '{}';".format(repo_state, get_local_ip())
     try:
         ret = DBHelper().execute(sql)
         statue = 2
@@ -297,7 +295,7 @@ def check_repo(data):
 def initRepoFile_add(filename, baseurl):
     if os.path.exists(os.path.join(AGENT_DIR, filename + '.repo')):
         os.remove(os.path.join(AGENT_DIR, filename + '.repo'))
-    if repoFileCheck(baseurl+'/repodata'):
+    if not repoFileCheck(baseurl+'/repodata'):
         path_310 = baseurl + '/kernel-3.10'
         path_ext = baseurl + '/external'
         repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = ''' + baseurl.strip(
@@ -359,7 +357,7 @@ class RepoFileAdd(object):
                 self.before_baseurl + '/repodata'))
             repo_state = repo_state + '0' + str(repoFileCheck(self.after_baseurl + '/AppStream/repodata') and repoFileCheck(
                 self.after_baseurl + '/repodata'))
-        sql = "UPDATE agent_info SET repo_status = {} WHERE agent_ip = '{}';".format(repo_state, get_local_ip())
+        sql = "UPDATE agent_info SET repo_status = '{}' WHERE agent_ip = '{}';".format(repo_state, get_local_ip())
         try:
             ret = DBHelper().execute(sql)
             statue = 2
