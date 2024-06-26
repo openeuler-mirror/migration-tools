@@ -153,3 +153,63 @@ def gen_baseurl_list():
         num += 1
 
     return baseurl_list
+
+def gen_sqlite(baseurl_list):
+    '''
+        应用场景：下载repo源sqlite文件
+        功    能：从指定repo源下载sqlite压缩文件，解压生成sqlite文件列表
+        输入参数：无
+        返 回 值：sqlite列表
+    '''
+
+    sqlite_list = []
+    #os.system('yum clean all & yum makecache')
+    cmd = 'grep -r primary.sqlite %s' %(FixedInfo.repo_cache)
+    print('cmd = %s' %(cmd))
+    stat, data, error = run_cmd(cmd)
+    print('stat = %s' %(stat))
+    print('data = %s' %(data))
+    print('error = %s' %(error))
+    if stat == 0:
+        for line in data:
+            if '-primary.sqlite' in line:
+                string = line.split('href="')[1].split('"')[0]
+                print('string = %s' %(string))
+                suffix = string.rsplit('.', 1)[1]
+                compression_sqlite = FixedInfo.sqlite_dir + '/' + string.split('/')[1]
+
+                for baseurl in baseurl_list:
+                    cmd = 'wget %s/%s -P %s' %(baseurl, string, FixedInfo.sqlite_dir)
+                    print('cmd = %s' %(cmd))
+                    stat, data, error = run_cmd(cmd)
+                    print('stat = %s' %(stat))
+                    if os.path.isfile(compression_sqlite):
+                        print('file exit %s' %(compression_sqlite))
+
+                        #解压sqlite.bx2
+                        if suffix == 'xz':
+                            unpack_cmd = 'xz -d'
+                        elif suffix == 'bz':
+                            unpack_cmd = 'bzip2 -d'
+                        else:
+                            print('add file suffix %s deal!!!' %(unpack_cmd))
+
+                        cmd = '%s %s' %(unpack_cmd, compression_sqlite)
+                        code, data, error = run_cmd(cmd)
+                        print('code-0001 = %s' %(code))
+                        if code == 0:
+                            sqlite_list.append(compression_sqlite.rsplit('.', 1)[0])
+
+    print('sqlite_list = %s' %(sqlite_list))
+
+
+    
+                        
+def main():
+    #print(gen_repo_sqlite('A'))
+    baseurl_list = gen_baseurl_list()
+    print(gen_sqlite(baseurl_list))
+
+if __name__ == "__main__":
+    main()
+
