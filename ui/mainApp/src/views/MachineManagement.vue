@@ -232,6 +232,37 @@ export default {
     this.getData();
   },
   methods: {
+    getData: function () {
+      axios
+        .post("/host_info_display", { mod: "host_info_display" })
+        .then((res) => {
+          this.machineList = res.data.info;
+          for (let i = 0; i < this.machineList.length; i++) {
+            // 将从服务器请求来的信息加上自定义字段，目前只加了选中标记
+            this.machineList[i].isSelected = false;
+            this.machineList[i].migration_type_option = [
+              "存量替换",
+              "新增扩容",
+            ];
+            if (
+              this.machineList[i].agent_status != "离线" &&
+              this.machineList[i].task_status != "迁移中"
+            ) {
+              this.machineList[i].allowMigrateType = "migrate"; // 迁移目标为 a 版是 migrate，目标为 e 是 analyze，无法迁移是 none
+            } else {
+              this.machineList[i].allowMigrateType = "none";
+            }
+          }
+          this.currentPageMachineList = this.machineList.slice(
+            0,
+            this.pageSize
+          );
+          this.isDataLoaded = true;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     handleSizeChange: function () {
       // 处理改变页面大小
       this.currentPageMachineList = this.machineList.slice(0, this.pageSize);
