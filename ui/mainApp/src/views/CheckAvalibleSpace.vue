@@ -190,6 +190,59 @@ export default {
     cancelMigrate: function () {
       this.$router.replace("machine-management");
     },
+    nextStep: function () {
+      let migrateMachines = [];
+      this.machineList.forEach((element) => {
+        console.log(
+          "element.agent_storage",
+          element.agent_storage,
+          parseInt(element.agent_storage)
+        );
+        //  大于 10 G 的主机才迁移
+        if (parseInt(element.agent_storage) >= 10) {
+          migrateMachines.push(element);
+        }
+      });
+      let successCounter = migrateMachines.length;
+      let failedCounter = this.machineList.length - successCounter;
+      ElMessageBox({
+        title: successCounter + " 台主机可用空间充足， 点击“确定”继续迁移",
+        message:
+          failedCounter +
+          " 台主机可用空间不足或无法检测可用空间，迁移失败。" +
+          "请检查 /var/cache 目录，确认后再重新执行迁移。",
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        showCancelButton: true,
+        showClose: false,
+      }).then((res) => {
+        this.$router.replace({
+          name: "SetRepo",
+          params: { machines: JSON.stringify(migrateMachines) },
+        });
+      });
+    },
+  },
+  mounted() {
+    window.onbeforeunload = function (e) {
+      e = e || window.event;
+      // 兼容IE8和Firefox 4之前的版本
+      if (e) {
+        e.returnValue = "关闭提示";
+      }
+      // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+      return "关闭提示";
+    };
+
+    this.timer = setInterval(() => {
+      setTimeout(() => {
+        this.freshData();
+      }, 0);
+    }, 5000);
+  },
+  unmounted() {
+    clearInterval(this.timer);
+    window.onbeforeunload = null;
   },
   beforeRouteLeave(to, from, next) {
     // 导航离开该组件的对应路由时调用
