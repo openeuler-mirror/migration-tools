@@ -362,6 +362,94 @@ export default {
         params: { machines: JSON.stringify(this.machineList) },
       });
     },
+    checkRepo: function () {
+      this.$http
+        .post("/check_repo", {
+          mod: "check_repo",
+          centos7_x86_64: this.c7x86repo,
+          centos7_aarch64: this.c8x86repo,
+          centos8_x86_64: this.c7aarch64repo,
+          centos8_aarch64: this.c8aarch64repo,
+        })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      this.isConnecting = true;
+      this.isc7x86Connecting = true;
+      this.isc8x86Connecting = true;
+      this.isc7aarch64Connecting = true;
+      this.isc8aarch64Connecting = true;
+      this.isc7x86ConnectFailed = this.isc7x86ConnectSuccess = false;
+      this.isc7aarch64ConnectFailed = this.isc7aarch64ConnectSuccess = false;
+      this.isc8aarch64ConnectFailed = this.isc8aarch64ConnectSuccess = false;
+      this.isc8x86ConnectFailed = this.isc8x86ConnectSuccess = false;
+      let num = 0;
+      this.timer = setInterval(() => {
+        this.$http
+          .post("/get_repo_data", {
+            mod: "get_repo_data",
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .then((res) => {
+            console.log(res);
+            //  c7 x86
+            if (res.data.centos7_x86 == "success") {
+              this.isc7x86Connecting = false;
+              this.isc7x86ConnectSuccess = true;
+            } else {
+              this.isc7x86Connecting = false;
+              this.isc7x86ConnectFailed = true;
+            }
+            // c8 x86
+            if (res.data.centos8_x86 == "success") {
+              this.isc8x86Connecting = false;
+              this.isc8x86ConnectSuccess = true;
+            } else {
+              this.isc8x86Connecting = false;
+              this.isc8x86ConnectFailed = true;
+            }
+            //  c7 aarch64
+            if (res.data.centos7_aarch64 == "success") {
+              this.isc7aarch64Connecting = false;
+              this.isc7aarch64ConnectSuccess = true;
+            } else {
+              this.isc7aarch64Connecting = false;
+              this.isc7aarch64ConnectFailed = true;
+            }
+            //  c8 aarch64
+            if (res.data.centos8_aarch64 == "success") {
+              this.isc8aarch64Connecting = false;
+              this.isc8aarch64ConnectSuccess = true;
+            } else {
+              this.isc8aarch64Connecting = false;
+              this.isc8aarch64ConnectFailed = true;
+            }
+            // if (this.isc7x86ConnectSuccess && this.isc8x86ConnectSuccess
+            //     && this.isc7aarch64ConnectSuccess && this.isc8aarch64ConnectSuccess) {
+            if (
+              !(this.isc7x86Exist ^ this.isc7x86ConnectSuccess) &&
+              !(this.isc7aarch64Exist ^ this.isc7aarch64ConnectSuccess) &&
+              !(this.isc8x86Exist ^ this.isc8x86ConnectSuccess) &&
+              !(this.isc8aarch64Exist ^ this.isc8aarch64ConnectSuccess)
+            ) {
+              clearInterval(this.timer);
+              console.log("连接成功");
+              setTimeout(() => {
+                this.nextStep();
+              }, 1000);
+            }
+            num++;
+            if (num > 10) {
+              clearInterval(this.timer);
+            }
+          });
+      }, 1000);
+    },
   },
   mounted() {
     window.onbeforeunload = function (e) {
