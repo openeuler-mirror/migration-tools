@@ -351,6 +351,69 @@ export default {
           // 取消，什么事都不会发生
         });
     },
+    migrateMachine: function (agent_datarow) {
+      ElMessageBox({
+        message: "即将对主机 " + agent_datarow.agent_ip + " 进行迁移。",
+        title: "确定开始迁移吗？",
+        confirmButtonText: "迁移",
+        cancelButtonText: "取消",
+        showCancelButton: true,
+        showClose: false,
+      })
+        .then((res) => {
+          this.$router.replace({
+            name: "MigrateMachine",
+            params: { machines: JSON.stringify([agent_datarow]) },
+          });
+        })
+        .catch((err) => {
+          // 取消，什么事都不会发生
+        });
+    },
+    migrateMachines: function () {
+      // 负责迁移已选中的或全部的主机。根据 this.hasSelecton 值决定
+      ElMessageBox({
+        // 这里其实还应该加个判断，就是没有可迁移机器的情况。。
+        message: "即将对“在线”，且不在“迁移中”的主机进行迁移。",
+        title: "确定开始迁移吗？",
+        confirmButtonText: "迁移",
+        cancelButtonText: "取消",
+        showCancelButton: true,
+        showClose: false,
+      })
+        .then((res) => {
+          let migrateMachines = [];
+          if (this.hasSelecton) {
+            this.machineList.forEach((machine) => {
+              if (
+                machine.isSelected &&
+                machine.migration_type == "存量替换" &&
+                machine.agent_status == "在线" &&
+                machine.task_status != "迁移中"
+              ) {
+                migrateMachines.push(machine);
+              }
+            });
+          } else {
+            this.machineList.forEach((machine) => {
+              if (
+                machine.migration_type == "存量替换" &&
+                machine.agent_status == "在线" &&
+                machine.task_status != "迁移中"
+              ) {
+                migrateMachines.push(machine);
+              }
+            });
+          }
+          this.$router.replace({
+            name: "MigrateMachine",
+            params: { machines: JSON.stringify(migrateMachines) },
+          });
+        })
+        .catch((err) => {
+          // 取消，什么事都不会发生
+        });
+    },
     },
   },
 };
