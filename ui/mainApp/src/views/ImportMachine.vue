@@ -123,6 +123,16 @@ export default {
         showClose: false,
       });
     },
+    downloadTemplate: function () {
+      var uri =
+        "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," +
+        xlsxContent.data;
+      var link = document.createElement("a");
+      link.setAttribute("href", uri);
+      link.setAttribute("download", "主机信息模板.xlsx");
+      document.body.appendChild(link);
+      link.click();
+    },
 };
 </script>
 
