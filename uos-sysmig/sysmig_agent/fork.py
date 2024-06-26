@@ -99,12 +99,11 @@ def timed_task_migrate(task_id, kernel_version):
                 sql_mig_statue('15')
                 # Migration state weight : 90
                 res = mig_whether_success()
-
                 # new system regen sql
                 get_new_osversion()
                 # tar.gz type
                 # targz_mig_dir_log()
-                targz_mig_dir_report()
+                # targz_mig_dir_report()
                 time_task_m.shutdown()
                 sql_abi_progress(100)
                 if 80 > int(res):
@@ -115,7 +114,7 @@ def timed_task_migrate(task_id, kernel_version):
                 else:
                     sql_task_statue('2', task_id)
                     sql_mig_statue('09')
-                    selfDestruct(task_id)
+                    # selfDestruct(task_id)
                     return 0
                     # data = '迁移成功。'
             time.sleep(3)  # 其他任务是独立的线程执行
