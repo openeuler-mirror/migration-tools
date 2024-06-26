@@ -241,6 +241,7 @@ def check_add_environment(data):
     # 系统兼容性检测的html存入数据库
     # db_write = DBwrite(get_local_ip())
     anilysis_DBconnect(PRE_MIG_DIR_ADD)
+    sql_task_statue('2', task_id)
     post_server('task_close', task_id)
 
 
