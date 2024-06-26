@@ -141,6 +141,85 @@ export default {
         this.uploadBtnDisabled = false;
       }
     },
+    importMachine: function () {
+      this.uploadBtnDisabled = true;
+
+      console.log("uploading", this.uploadFile.name);
+      this.isLoading = true;
+
+      const schema = {
+        主机IP: {
+          prop: "agent_ip",
+          required: true,
+          type: String,
+        },
+        root用户名: {
+          prop: "agent_hostname",
+          required: true,
+          type: String,
+        },
+        root密码: {
+          prop: "agent_password",
+          // password could be empty, A `type` function only gets called for non-empty values
+        },
+        权限验证方式: {
+          prop: "type",
+          required: true,
+          type: (value) => {
+            if (value === "用户名密码") {
+              return "password";
+            } else if (value === "SSH-Key") {
+              return "sshkey";
+            } else {
+              return value;
+            }
+          },
+        },
+        迁移类型: {
+          prop: "migration_type",
+          required: true,
+          type: (value) => {
+            if (value === "新增扩容") {
+              return "new_expansion";
+            } else if (value === "存量替换") {
+              return "stock_replacement";
+            } else {
+              return value;
+            }
+          },
+        },
+      };
+      readXlsxFile(this.uploadFile, { schema }).then(({ rows, errors }) => {
+        this.importExcelData = rows;
+        console.log("content of excel", this.importExcelData);
+
+        this.$http
+          .post("import_host_info", {
+            mod: "import_host_info",
+            data: this.importExcelData,
+          })
+          .then((res) => {
+            if (res.data.data == "success") {
+              this.isLoading = false;
+              this.isLoadSuccess = true;
+              this.importMachineCount = res.data.num;
+            } else {
+              this.isLoading = false;
+              this.isLoadFailed = true;
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            this.isLoading = false;
+            this.isLoadFailed = true;
+          });
+      });
+    },
+    pushMachineManagementPage: function () {
+      // 跳转到主机管理页面
+      this.$router.push("/machine-management");
+    },
+  },
 };
 </script>
 
