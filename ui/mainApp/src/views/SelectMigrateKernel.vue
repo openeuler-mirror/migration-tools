@@ -227,6 +227,12 @@ export default {
         val * this.pageSize
       );
     },
+    batchOperate: function () {
+      this.visible = false;
+      this.machineList.forEach((element) => {
+        element.selectedTargetKernel = "不迁移内核";
+      });
+    },
   },
   mounted() {
     window.onbeforeunload = function (e) {
