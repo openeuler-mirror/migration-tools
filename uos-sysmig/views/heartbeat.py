@@ -31,7 +31,7 @@ def check_heartbeat(q):
 
 
 def get_db_agent_ip():
-    sql = "select agent_ip from agent_info;"
+    sql = "select agent_ip from agent_info where agent_storage is not null;"
     agent_ip_list = []
     try:
         get_sql = DBHelper().execute(sql).fetchall()
