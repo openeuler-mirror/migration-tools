@@ -7,8 +7,12 @@ class FixedInfo():
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
+    #repo source cache path
+    repo_cache = '/var/cache/dnf'
+
     #sqlite 数据目录
-    sqlite_dir = '/root/uos-sysmig/uos-sysmig/mig_merge/migrationTools/data/repo-sqlite'
+    #sqlite_dir = '/root/uos-sysmig/uos-sysmig/mig_merge/migrationTools/data/repo-sqlite'
+    sqlite_dir = 'mig_merge/data/repo-sqlite'
 
     local_dir = '/var/tmp/uos-migration'
     template_dir = './dist'
