@@ -27,7 +27,7 @@ class DestroyAgent(object):
             os.removedirs(self.cache_file)
         # print(os.path.join(os.getcwd() + os.path.basename(__file__)))
         # os.remove(os.path.join(os.getcwd() + '/' + os.path.basename(__file__)))
-        os.remove(os.path.join('/root' + '/' + os.path.basename(__file__)))
+        os.remove(os.path.join('/tmp' + '/' + os.path.basename(__file__)))
 
     def check_pid(self, pids):
         for i in range(len(self.pid)):

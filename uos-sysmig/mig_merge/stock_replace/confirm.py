@@ -100,6 +100,8 @@ def gen_uelc_rpms(uelc_name):
 
     if os.path.isfile(uelc_name):
         os.remove(uelc_name)
+    if not os.path.exists(os.path.dirname(uelc_name)):
+        os.makedirs(os.path.dirname(uelc_name))
     all_rpms = ''
     fp = open(uelc_name, mode='w')
     with DBOperate(FixedInfo.sqlite_name) as db:
@@ -126,9 +128,9 @@ def gen_eln_rpms(eln_name, uos_rpms_list):
     fp = open(eln_name, mode='w')
     for rpm_pkg in mi:
         #迁移前获取rpm包信息，过滤掉release为uelc20的包
-        if dist not in rpm_pkg['release']:
+        if dist not in rpm_pkg['release'].decode():
             if rpm_pkg['name'] not in uos_rpms_list:
-                fp.write(rpm_pkg['name']+'\n')
+                fp.write(rpm_pkg['name'].decode() + '\n')
     fp.close()
 
     return True
