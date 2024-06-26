@@ -277,6 +277,34 @@ export default {
       );
       this.setSelect();
     },
+    onUserSelect: function (selection, row) {
+      row.isSelected = !row.isSelected;
+      if (selection.length) {
+        this.hasSelecton = true;
+      } else {
+        this.hasSelecton = false;
+      }
+    },
+    onUserSelectAll: function (selection) {
+      for (let i = 0; i < selection.length; i++) {
+        selection[i].isSelected = !selection[i].isSelected;
+      }
+      if (selection.length) {
+        this.hasSelecton = true;
+      } else {
+        this.hasSelecton = false;
+      }
+    },
+    setSelect: function () {
+      for (let i = 0; i < this.currentPageMachineList.length; i++) {
+        if (this.currentPageMachineList[i].isSelected) {
+          this.$nextTick(() => {
+            this.tableRef.toggleRowSelection(this.currentPageMachineList[i]);
+          });
+        }
+      }
+    },
+    },
   },
 };
 </script>
