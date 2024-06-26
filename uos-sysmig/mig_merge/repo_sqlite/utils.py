@@ -61,3 +61,23 @@ def get_valid_lines(lines):
 
     return valid_lines
 
+
+def systemd_escape_lines(lines):
+    '''
+    returns lines with escaped characters.
+
+    Args:
+        lines(list): input content
+
+    Returns:
+        list: valid lines
+    '''
+    valid_lines = list()
+    lines = list(lines)
+    for line in lines:
+        if '\\x2d' in line:
+            logger.debug(f"systemd escape line: {line}")
+            line = line.replace('\\x2d', '-')
+        valid_lines.append(line)
+
+    return valid_lines
