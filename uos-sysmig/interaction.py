@@ -2,7 +2,7 @@ import requests
 import json
 from miscellaneous import getSysMigConf
 
-headers = {'content-type': 'application/json'}
+headers = {'content-type': 'application/json', 'Connection': 'close'}
 
 class Interaction:
     def __init__(self, url, data):
