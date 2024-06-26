@@ -329,6 +329,28 @@ export default {
           // 取消，什么事都不会发生
         });
     },
+    analyzeMachine: function (agent_datarow) {
+      ElMessageBox({
+        message:
+          "即将对主机 " +
+          agent_datarow.agent_ip +
+          " 进行新增扩容场景下的迁移分析。",
+        title: "确定开始迁移分析吗？",
+        confirmButtonText: "分析",
+        cancelButtonText: "取消",
+        showCancelButton: true,
+        showClose: false,
+      })
+        .then((res) => {
+          this.$router.replace({
+            name: "MigrationAnalyze",
+            params: { machines: JSON.stringify([agent_datarow]) },
+          });
+        })
+        .catch((err) => {
+          // 取消，什么事都不会发生
+        });
+    },
     },
   },
 };
