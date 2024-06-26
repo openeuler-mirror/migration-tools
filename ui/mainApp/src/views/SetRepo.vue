@@ -313,6 +313,39 @@ export default {
   created() {
     this.getData();
   },
+  methods: {
+    getData: function () {
+      if (this.$route.params.machines === undefined) {
+        console.log("从路由或者url来的，应该拒绝该跳转请求并跳回到主页");
+        this.$router.push("/");
+        return;
+      }
+      this.machineList = JSON.parse(this.$route.params.machines);
+      console.log(this.machineList);
+      for (let i = 0; i < this.machineList.length; i++) {
+        if (
+          this.machineList[i].agent_arch == "x86_64" &&
+          this.machineList[i].agent_os == "Centos 7"
+        )
+          this.isc7x86Exist = true;
+        if (
+          this.machineList[i].agent_arch == "aarch64" &&
+          this.machineList[i].agent_os == "Centos 7"
+        )
+          this.isc7aarch64Exist = true;
+        if (
+          this.machineList[i].agent_arch == "x86_64" &&
+          this.machineList[i].agent_os == "Centos 8"
+        )
+          this.isc8x86Exist = true;
+        if (
+          this.machineList[i].agent_arch == "aarch64" &&
+          this.machineList[i].agent_os == "Centos 8"
+        )
+          this.isc8aarch64Exist = true;
+      }
+    },
+  },
   mounted() {
     window.onbeforeunload = function (e) {
       e = e || window.event;
