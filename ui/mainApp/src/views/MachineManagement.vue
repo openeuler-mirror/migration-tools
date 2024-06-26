@@ -304,6 +304,31 @@ export default {
         }
       }
     },
+    exportAllMachineList: function () {
+      let filename = "主机列表_202112011118.xlsx"; // 这里应该是从 server 获取到的文件名
+      this.dialogTitle = "确定导出" + filename + "吗？";
+      this.dialogVisible = true;
+    },
+    toDownloadCenter: function () {
+      this.$router.replace("/download-center");
+    },
+    analyzeMachines: function () {
+      ElMessageBox({
+        message:
+          "即将对“在线”，且不在“迁移中”的主机进行新增扩容场景下的迁移分析。",
+        title: "确定开始迁移分析吗？",
+        confirmButtonText: "分析",
+        cancelButtonText: "取消",
+        showCancelButton: true,
+        showClose: false,
+      })
+        .then((res) => {
+          this.$router.replace({ name: "MigrationAnalyze" });
+        })
+        .catch((err) => {
+          // 取消，什么事都不会发生
+        });
+    },
     },
   },
 };
