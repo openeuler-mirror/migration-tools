@@ -414,6 +414,22 @@ export default {
           // 取消，什么事都不会发生
         });
     },
+    modifyMigrationType: function (row) {
+      let agent_ip = row.agent_ip;
+      let migration_type = row.migration_type;
+      if (migration_type == "新增扩容") {
+        migration_type = "new_expansion";
+      } else if (migration_type == "存量替换") {
+        migration_type = "stock_replacement";
+      }
+      console.log(agent_ip, migration_type);
+      this.$http.post("/modify_migration_type", {
+        mod: "modify_migration_type",
+        info: {
+          agent_ip: agent_ip,
+          migration_type: migration_type,
+        },
+      });
     },
   },
 };
