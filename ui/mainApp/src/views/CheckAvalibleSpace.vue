@@ -90,6 +90,13 @@
         style="width: 130px; color: #1b67b3"
         >取消</el-button
       >
+      <el-button
+        @click="nextStep()"
+        style="width: 130px; color: white"
+        color="#1b67b3"
+        :disabled="!isCheckFinished"
+        >下一步</el-button
+      >
     </div>
   </div>
 </template>
@@ -122,6 +129,23 @@ export default {
       machineList: [],
       currentPageMachineList: [],
     };
+  },
+  computed: {
+    isCheckFinished() {
+      let migrateMachines = [];
+      this.machineList.forEach((element) => {
+        console.log(
+          "element.agent_storage",
+          element.agent_storage,
+          parseInt(element.agent_storage)
+        );
+        //  大于 10 G 的主机才迁移
+        if (parseInt(element.agent_storage) >= 10) {
+          migrateMachines.push(element);
+        }
+      });
+      return migrateMachines.length > 0 ? true : false;
+    },
   },
   created() {
     this.getData();
