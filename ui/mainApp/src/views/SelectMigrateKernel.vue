@@ -170,6 +170,50 @@ export default {
     },
   },
   methods: {
+    getData: function (page, pageSize) {
+      if (this.$route.params.machines === undefined) {
+        console.log("从路由或者url来的，应该拒绝该跳转请求并跳回到主页");
+        this.$router.push("/");
+        return;
+      }
+
+      this.machineList = JSON.parse(this.$route.params.machines);
+      this.currentPageMachineList = this.machineList.slice(0, this.pageSize);
+      console.log("@DEBUG: 获取到的主机列表", this.machineList);
+      this.$http
+        .post("/check_kernel", {
+          mod: "/check_kernel",
+          agent_ip: this.machineList.map((item) => item.agent_ip),
+        })
+        .then((res) => {
+        });
+
+      this.freshData(this.machineList.map((item) => item.agent_ip));
+      this.currentPageData = this.machineList;
+    },
+    freshData: function (agent_ips) {
+      this.$http
+        .post("/get_kernel_data", {
+          mod: "/get_kernel_data",
+          agent_ip: agent_ips,
+        })
+        .then((res) => {
+          console.log(res.data.info);
+          let info = res.data.info;
+          for (let i = 0; i < info.length; i++) {
+            for (let j = 0; j < this.machineList.length; j++) {
+              if (info[i].agent_ip === this.machineList[j].agent_ip) {
+                this.machineList[j].agent_repo_kernel =
+                  info[i].agent_repo_kernel.split(",");
+                this.machineList[j].agent_repo_kernel.unshift("不迁移内核");
+                this.machineList[j].agent_kernel = info[i].agent_kernel;
+                this.machineList[j].selectedTargetKernel = "";
+                break;
+              }
+            }
+          }
+        });
+    },
     handleSizeChange: function (val) {
       console.log(`每页 ${val} 条`);
       this.pageSize = val;
