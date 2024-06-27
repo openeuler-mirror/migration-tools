@@ -190,6 +190,58 @@ export default {
           }
         });
     },
+    getData: function () {
+      if (this.$route.params.machines === undefined) {
+        console.log("从路由或者url来的，应该拒绝该跳转请求并跳回到主页");
+        this.$router.push("/");
+        return;
+      }
+      this.machineList = JSON.parse(this.$route.params.machines);
+      console.log("machineList", this.machineList);
+      this.machineList.forEach((element) => {
+        element.progress = 0;
+        element.task_status = 1;
+      });
+
+      let agentIpGroup = this.machineList.map((item) => {
+        item.agent_ip;
+      });
+      this.$http
+        .post("/check_environment", {
+          mod: "check_environment",
+          agent_ip: agentIpGroup,
+        })
+        .then((res) => {
+          console.log(res);
+          //   收到回复会开始定时获取数据
+          this.timer = setInterval(() => {
+            this.refreshData(agentIpGroup);
+          }, 5000);
+        });
+    },
+    progressFormat: function (value) {
+      return "";
+    },
+    exportMigrationReport: function () {
+      let filename =
+        "UOS_migration_report_10.0.2.3_cy.server_202109301634.html";
+      ElMessageBox({
+        message: "文件将下载到本地，也可稍后前往下载中心下载。",
+        title: "确定导出“" + filename + "”吗？",
+        confirmButtonText: "导出",
+        cancelButtonText: "取消",
+        showCancelButton: true,
+        showClose: false,
+        customStyle: { width: "700px" },
+      })
+        .then((res) => {})
+        .catch((err) => {
+          // 取消，什么事都不会发生
+        });
+    },
+    cancelMigrate: function () {
+      this.$router.replace("machine-management");
+    },
     nextStep: function () {
       ElMessageBox({
         // 这里其实还应该加个判断，就是没有可迁移机器的情况。。
