@@ -163,6 +163,33 @@ export default {
     this.getData();
   },
   methods: {
+    refreshData: function (agentIpGroup) {
+      this.$http
+        .post("/get_environment_data", {
+          mod: "get_environment_data",
+          agent_ip: agentIpGroup,
+        })
+        .then((res) => {
+          let isAllFinishFlag = true;
+          this.freshData = res.data.info;
+          this.machineList.forEach((item) => {
+            let freshItem = this.freshData.find((freshItem) => {
+              return freshItem.agent_ip == item.agent_ip;
+            });
+            if (freshItem) {
+              item.task_status = freshItem.task_status;
+              item.progress = freshItem.progress;
+            }
+            if (item.task_status == 1) {
+              isAllFinishFlag = false;
+            }
+          });
+          if (this.timer && isAllFinishFlag) {
+            clearInterval(this.timer);
+            this.timer = null;
+          }
+        });
+    },
     nextStep: function () {
       ElMessageBox({
         // 这里其实还应该加个判断，就是没有可迁移机器的情况。。
