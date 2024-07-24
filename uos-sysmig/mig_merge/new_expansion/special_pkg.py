@@ -43,7 +43,6 @@ def judge_rpmpkg_exitrepo(rpm_name):
         返 回 值：True - 存在；False - 不存在
     '''
 
-    time_num = 0
     repo_rpmpkg = rpm_name.rsplit('-', 2)[0]
 
     cmd = 'yum list %s' %(repo_rpmpkg)
@@ -51,10 +50,8 @@ def judge_rpmpkg_exitrepo(rpm_name):
     for data in data_list:
         if repo_rpmpkg in data:
             time_num += 1
-    if time_num >= 1:
-        return True
-    else:
-        return False
+                return True
+    return False
 
 def judge_bin_ynrepo(bin_name):
     '''
@@ -68,7 +65,7 @@ def judge_bin_ynrepo(bin_name):
     cmd = 'repoquery --info %s' %(bin_name)
     _, data, _ = run_cmd(cmd)
     if data == '':
-        migration_log.inifo('the current system of repo not exit file: ' +bin_name)
+        migration_log.inifo('the current system of repo not exist file: ' +bin_name)
         return False
     else:
         rpm_name = ''
@@ -155,7 +152,7 @@ def gen_reporpm_list():
             #repo源存在特定软件包
             repo_not = True
         else:
-            migration_log.info('repo of rpm not exit: ' +pkg)
+            migration_log.info('repo of rpm not exist: ' +pkg)
             fps.write(pkg+'\n')
             continue
     fpd.close()
@@ -202,7 +199,7 @@ def deal_repo_rpm(logger):
         pkgname_repo = FixedInfo.repo_diff_path+'/'+element_line[1]
 
         if not os.path.exists(pkgname_repo):
-            migration_log.info('repo source not exit file:' +pkgname_repo)
+            migration_log.info('repo source not exist file:' +pkgname_repo)
             continue
 
         #将repo上特定包重名为当前系统包
