@@ -5,7 +5,7 @@ After=network-online.target
 [Service]
 Type=simple
 ExecStart=/usr/bin/python3 /usr/lib/migration-tools-agent/migration-tools-client.py
-ExecStop=/bin/kill-INT $MAINPID
+ExecStop=/bin/kill -INT $MAINPID
 
 [Install]
 WantedBy=multi-user.target
