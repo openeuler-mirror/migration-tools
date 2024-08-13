@@ -244,44 +244,44 @@ def get_repo_data(data):
         return json_data
     else:
         if len(agent_ip_list) == 1:
-            centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
-                              "and agent_arch='x86_64' and repo_status='1' and agent_online_status='0' and " \
-                              "agent_migration_os is null and migration_type='stock_replacement' and" \
-                              " agent_ip='%s';" % agent_ip_list[0]
+            centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7' " \
+                              "or agent_os='anolis7') and agent_arch='x86_64' and repo_status='1' and " \
+                              "agent_online_status='0' and agent_migration_os is null and " \
+                              "migration_type='stock_replacement' and agent_ip='%s';" % agent_ip_list[0]
 
-            centos8_x86_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
-                              "and agent_arch='x86_64' and repo_status='1' and agent_online_status='0' and " \
-                              "agent_migration_os is null and migration_type='stock_replacement' " \
-                              "and agent_ip='%s';" % agent_ip_list[0]
+            centos8_x86_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8' " \
+                              "or agent_os='anolis8') and agent_arch='x86_64' and repo_status='1' and " \
+                              "agent_online_status='0' and agent_migration_os is null and " \
+                              "migration_type='stock_replacement' and agent_ip='%s';" % agent_ip_list[0]
 
-            centos7_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
-                                  "and agent_arch='aarch64' and repo_status='1' and agent_online_status='0' and " \
-                                  "agent_migration_os is null and migration_type='stock_replacement' " \
-                                  "and agent_ip='%s';" % agent_ip_list[0]
+            centos7_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7' " \
+                                  "or agent_os='anolis7') and agent_arch='aarch64' and repo_status='1' and " \
+                                  "agent_online_status='0' and agent_migration_os is null and " \
+                                  "migration_type='stock_replacement' and agent_ip='%s';" % agent_ip_list[0]
 
-            centos8_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
-                                  "and agent_arch='aarch64' and repo_status='1' and agent_online_status='0' and " \
-                                  "agent_migration_os is null and migration_type='stock_replacement' " \
-                                  "and agent_ip='%s';" % agent_ip_list[0]
+            centos8_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8' " \
+                                  "or agent_os='anolis8') and agent_arch='aarch64' and repo_status='1' and " \
+                                  "agent_online_status='0' and agent_migration_os is null and " \
+                                  "migration_type='stock_replacement' and agent_ip='%s';" % agent_ip_list[0]
         else:
-            centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
-                              "and agent_arch='x86_64' and repo_status='1' and agent_online_status='0' and " \
-                              "agent_migration_os is null and agent_ip in {} and migration_type='stock_replacement'" \
-                              ";".format(tuple(agent_ip_list))
+            centos7_x86_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7' or " \
+                              "agent_os='anolis7') and agent_arch='x86_64' and repo_status='1' and " \
+                              "agent_online_status='0' and agent_migration_os is null and agent_ip in {} and " \
+                              "migration_type='stock_replacement';".format(tuple(agent_ip_list))
 
-            centos8_x86_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
-                              "and agent_arch='x86_64' and repo_status='1' and agent_online_status='0' and " \
-                              "agent_migration_os is null and agent_ip in {} and migration_type='stock_replacement'" \
-                              ";".format(tuple(agent_ip_list))
+            centos8_x86_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8' or " \
+                              "agent_os='anolis8') and agent_arch='x86_64' and repo_status='1' and " \
+                              "agent_online_status='0' and agent_migration_os is null and agent_ip in {} and " \
+                              "migration_type='stock_replacement';".format(tuple(agent_ip_list))
 
-            centos7_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7') " \
-                                  "and agent_arch='aarch64' and repo_status='1' and agent_online_status='0' and " \
-                                  "agent_migration_os is null and agent_ip in {} and " \
+            centos7_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos7' or agent_os='redhat7'" \
+                                  " or agent_os='anolis7') and agent_arch='aarch64' and repo_status='1' and " \
+                                  "agent_online_status='0' and agent_migration_os is null and agent_ip in {} and " \
                                   "migration_type='stock_replacement';".format(tuple(agent_ip_list))
 
-            centos8_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8') " \
-                                  "and agent_arch='aarch64' and repo_status='1' and agent_online_status='0' and " \
-                                  "agent_migration_os is null and agent_ip in {} and " \
+            centos8_aarch64_sql = "select agent_ip from agent_info where (agent_os='centos8' or agent_os='redhat8' " \
+                                  "or agent_os='anolis8') and agent_arch='aarch64' and repo_status='1' and " \
+                                  "agent_online_status='0' and agent_migration_os is null and agent_ip in {} and " \
                                   "migration_type='stock_replacement';".format(tuple(agent_ip_list))
 
         data = {}
