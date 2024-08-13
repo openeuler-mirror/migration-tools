@@ -3,7 +3,7 @@
   <el-card class="cardBox">
     <h2 class="darkblueHeaderText">导入条件</h2>
     <ul class="smallPaddingUl">
-      <li>支持的操作系统：CentOS 7/8、RHEL 7/8、Anolis OS、UOS V20</li>
+      <li>支持的操作系统：CentOS 7/8、RHEL 7/8、Anolis OS 7/8</li>
       <li>主机防火墙确保能与统信服务端通信</li>
       <li>
         开启主机 SSHD 服务 |
