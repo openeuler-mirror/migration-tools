@@ -554,7 +554,7 @@ def system_version_id():
         if 'VERSION_ID' in line:
             break
     fp.close()
-    return line.split('=',1)[1].replace('"','').replace('\n','')
+    return line.split('=',1)[1].replace('"','').replace('\n','')[0]
 
 def get_cur_sys_version():
     fp = open('/etc/os-release', 'r')
