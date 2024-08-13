@@ -300,10 +300,12 @@ def system_migration(data):
     dbconnect = DBupload(db_log)
     dbconnect.upload_html()
     post_server('task_close', task_id)
-    if mig_whether_success() < 80:
-        os.system('python3 /var/tmp/destroy.py')
+    if mig_whether_success() > 85:
+        t = Process(target=kill_agent)
+        t.start()
 
-
+def kill_agent():
+    os.system('python3 /var/tmp/destroy.py')
 
 def if_env_check(data):
     agent_ips = list(json.loads(data).get('agent_ip'))

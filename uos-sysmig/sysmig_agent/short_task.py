@@ -276,13 +276,12 @@ def check_repo(data):
     # 传递baseurl，配置repo文件
     initRepoFile(baseurl)
     # 建立软件源缓存，判断软件源是否可用
-    state = checkRepoMakeCache()
-    sql = ''
-    repo_state = -1
-    if state == 0:
-        repo_state = repoFileCheck(baseurl)
+    if '8' in agent_os:
+        repo_state = repoFileCheck(baseurl + '/AppStream/repodata')
+    elif '7' in agent_os:
+        repo_state = repoFileCheck(baseurl + '/repodata')
     else:
-        repo_state = 1
+        repo_state = '1'
 
     sql = "UPDATE agent_info SET repo_status = '{}' WHERE agent_ip = '{}';".format(repo_state, get_local_ip())
     try:
