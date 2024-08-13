@@ -257,6 +257,10 @@ def repoFileCheck(baseurl):
 
 def check_repo(data):
     agent_os = get_agent_os()
+    if '7' in agent_os:
+        agent_os = 'centos7'
+    elif '8' in agent_os:
+        agent_os = 'centos8'
     os_type = agent_os + '_' + platform.machine().strip('')
     baseurl = json.loads(data).get(os_type)
     if not baseurl:
