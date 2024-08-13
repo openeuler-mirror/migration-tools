@@ -262,7 +262,7 @@ def check_repo(data):
     elif '8' in agent_os:
         agent_os = 'centos8'
     os_type = agent_os + '_' + platform.machine().strip('')
-    baseurl = json.loads(data).get(os_type)
+    baseurl = json.loads(data).get(os_type).replace('$basearch',platform.machine().strip('')).strip('/')
     if not baseurl:
         baseurl = '1'
     task_id = json.loads(data).get('task_id')
