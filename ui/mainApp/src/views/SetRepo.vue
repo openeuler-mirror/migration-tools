@@ -326,28 +326,32 @@ export default {
         if (
           this.machineList[i].agent_arch == "x86_64" &&
           (this.machineList[i].agent_os == "Centos 7" ||
-           this.machineList[i].agent_os == "anolis7"
+           this.machineList[i].agent_os == "anolis7" ||
+           this.machineList[i].agent_os == "redhat7"
           )
         )
           this.isc7x86Exist = true;
         if (
           this.machineList[i].agent_arch == "aarch64" &&
           (this.machineList[i].agent_os == "Centos 7" ||
-           this.machineList[i].agent_os == "anolis7"
+           this.machineList[i].agent_os == "anolis7" ||
+           this.machineList[i].agent_os == "redhat7"
           )
         )
           this.isc7aarch64Exist = true;
         if (
           this.machineList[i].agent_arch == "x86_64" &&
           (this.machineList[i].agent_os == "Centos 8" ||
-           this.machineList[i].agent_os == "anolis8"
+           this.machineList[i].agent_os == "anolis8" ||
+           this.machineList[i].agent_os == "redhat8"
           )
         )
           this.isc8x86Exist = true;
         if (
           this.machineList[i].agent_arch == "aarch64" &&
           (this.machineList[i].agent_os == "Centos 8" ||
-           this.machineList[i].agent_os == "anolis8"
+           this.machineList[i].agent_os == "anolis8" ||
+           this.machineList[i].agent_os == "redhat8"
           )
         )
           this.isc8aarch64Exist = true;
