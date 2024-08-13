@@ -61,7 +61,7 @@ class DestroyAgent(object):
     def run(self):
         self.get_running_pid(self.program_file)
         self.get_running_pid(self.cache_file)
-        self.kill_pid()
+        #self.kill_pid()
         self.destroy_self()
 
 
