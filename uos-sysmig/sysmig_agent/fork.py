@@ -318,7 +318,8 @@ def post_task(data):
     task_mod = json.loads(data).get('mod')
     t = None
     if 'check_info' == task_mod:
-        t = threading.Thread(target=check_info, args=[data])
+        return 'y'
+        #t = threading.Thread(target=check_info, args=[data])
     elif 'check_repo' == task_mod:
         t = threading.Thread(target=check_repo, args=[data])
     elif 'check_add_repo' == task_mod:
