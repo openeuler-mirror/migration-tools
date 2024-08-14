@@ -35,3 +35,5 @@ ignore_abi_check_8 = 'sysmig_agent/data/ignore_abi_check_8.txt'
 CACHE_SPACE = 10.0
 # abi结果更新数据库
 abi_file = '/var/tmp/uos-migration/data/exp-rst/agent_ABI_check_result.csv'
+# 兼容性检测、分层分级结果对比、迁移风险阈值：
+COMP = 95

@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
+import os
 import threading
 from multiprocessing import Process, Queue
 from sysmig_agent.utils import DBwrite, selfDestruct, DBupload
@@ -14,7 +15,6 @@ from sysmig_agent.migration import *
 from sysmig_agent.agent_request import post_server
 
 q = Queue(maxsize=0)
-
 
 # 定时任务
 def up_to_date_sql_abi():
@@ -181,6 +181,7 @@ def check_environment(data):
     Args:
         data:
         json 数据传入
+        兼容性阈值：95
     Returns:
 
     """
@@ -240,7 +241,14 @@ def check_add_environment(data):
     # 系统兼容性检测的html存入数据库
     # db_write = DBwrite(get_local_ip())
     anilysis_DBconnect(PRE_MIG_DIR_ADD)
-    sql_task_statue('2', task_id)
+    compatible_status = '2'
+    ret = os.listdir(PRE_MIG_DIR)
+    if not ret:
+        compatible_status = '3'
+    from sysmig_agent.abi_weight import layered_Grading
+    if int(layered_Grading.run()) < COMP:
+        compatible_status = '4'
+    sql_task_statue(compatible_status, task_id)
     post_server('task_close', task_id)
 
 
