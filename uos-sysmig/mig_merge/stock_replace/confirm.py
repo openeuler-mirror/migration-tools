@@ -20,7 +20,7 @@ def system_version_id():
         if 'VERSION_ID' in line:
             break
     fp.close()
-    return line.split('=',1)[1].replace('"','').replace('\n','')
+    return line.split('=',1)[1].replace('"','').replace('\n','')[0]
 
 def get_cur_sys_version():
     '''
@@ -50,10 +50,18 @@ def gen_migration_behind_rpms():
     mi = ts.dbMatch()
 
     behind_rpms_list = []
-    for rpm_pkg in mi:
-        print(rpm_pkg['release'].decode())
-        if dist in rpm_pkg['release'].decode():
-            behind_rpms_list.append(rpm_pkg['name'].decode()+'\n')
+
+    if system_version_id() == '7':
+        for rpm_pkg in mi:
+            print(rpm_pkg['release'].decode())
+            if dist in rpm_pkg['release'].decode():
+                behind_rpms_list.append(rpm_pkg['name'].decode()+'\n')
+    else:
+        for rpm_pkg in mi:
+            print(rpm_pkg['release'])
+            if dist in rpm_pkg['release']:
+                behind_rpms_list.append(rpm_pkg['name']+'\n')
+
     return json.dumps(behind_rpms_list)
 
 
@@ -126,11 +134,18 @@ def gen_eln_rpms(eln_name, uos_rpms_list):
     mi = ts.dbMatch()
 
     fp = open(eln_name, mode='w')
-    for rpm_pkg in mi:
-        #迁移前获取rpm包信息，过滤掉release为uelc20的包
-        if dist not in rpm_pkg['release'].decode():
-            if rpm_pkg['name'].decode() not in uos_rpms_list:
-                fp.write(rpm_pkg['name'].decode() + '\n')
+    if system_version_id() == '7':
+        for rpm_pkg in mi:
+            #迁移前获取rpm包信息，过滤掉release为uelc20的包
+            if dist not in rpm_pkg['release'].decode():
+                if rpm_pkg['name'].decode() not in uos_rpms_list:
+                    fp.write(rpm_pkg['name'].decode() + '\n')
+    else:
+        for rpm_pkg in mi:
+            if dist not in rpm_pkg['release']:
+                if rpm_pkg['name'] not in uos_rpms_list:
+                    fp.write(rpm_pkg['name'] + '\n')
+
     fp.close()
 
     return True
