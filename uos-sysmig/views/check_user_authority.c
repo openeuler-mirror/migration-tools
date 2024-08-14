@@ -82,19 +82,18 @@ int check_user_authority(void)
                 	{
                         	if(!strcmp(data[i].user,"root"))
                         	{
-					sprintf(mk, "mkdir -p /etc/uos-sysmig&&echo $?");
-					sprintf(mv, "mv %s/%s %s&&echo $?", "/tmp", CONF_NAME, CONF_PATH);
-                                	sprintf(yum, "yum install %s -y&&echo $?", PACK_NAME);
-                                	sprintf(systemctl, "systemctl %s %s.service&&echo $?", "restart", PACK_NAME);
+                                        sprintf(mk, "mkdir -p /etc/uos-sysmig && echo $?");
+                                        sprintf(mv, "mv -f %s/%s %s && echo $?", "/tmp", CONF_NAME, CONF_PATH);
+                                        sprintf(yum, "yum install %s -y && echo $?", PACK_NAME);
+                                        sprintf(systemctl, "systemctl %s %s.service && echo success", "restart", PACK_NAME);
                         	}
                         	else
                         	{
-					sprintf(mk, "echo '%s\n'|sudo -S mkdir -p /etc/%s&&echo $?", data[i].password, "uos-sysmig");
-                                	sprintf(sudo, "echo '%s\n'|sudo -S -v&&echo $?", data[i].password);
-                                	sprintf(mv, "echo '%s\n'|sudo -S mv %s/%s %s&&echo $?", data[i].password, "/tmp", CONF_NAME, CONF_PATH);
-                                	sprintf(yum, "echo '%s\n'|sudo -S yum install %s -y&&echo $?", data[i].password, PACK_NAME);
-                                	//sprintf(yum, "id&&echo $?");
-                                	sprintf(systemctl, "echo '%s\n'|sudo -S systemctl %s %s.service&&echo $?", data[i].password, "restart", PACK_NAME);
+                                        sprintf(mk, "echo '%s\n'|sudo -S mkdir -p /etc/%s && echo $?", data[i].password, "uos-sysmig");
+                                        sprintf(sudo, "echo '%s\n'|sudo -S -v && echo $?", data[i].password);
+                                        sprintf(mv, "echo '%s\n'|sudo -S mv -f %s/%s %s && echo $?", data[i].password, "/tmp", CONF_NAME, CONF_PATH);
+                                        sprintf(yum, "echo '%s\n'|sudo -S yum install %s -y && echo $?", data[i].password, PACK_NAME);
+                                        sprintf(systemctl, "echo '%s\n'|sudo -S systemctl %s %s.service && echo $?", data[i].password, "restart", PACK_NAME);
                         	}
                         	up_sql = ssh_command(data[i].ip, data[i].user, data[i].password, sudo, yum, systemctl, mv, mk);
 				switch(up_sql)
