@@ -99,14 +99,19 @@
           </el-table-column>
         </el-table>
         <el-pagination
+          background
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="currentPage"
           :page-size="pageSize"
-          :page-sizes="[5, 10, 50, 100]"
+          :page-sizes="[5, 10, 25, 50, 100]"
           :total="machineList.length"
-          layout="sizes, prev, pager, next"
-        ></el-pagination>
+          layout="sizes, prev, pager, next, jumper, slot"
+        >
+          <template #default>
+            <el-button type="text"> 确定 </el-button>
+          </template>
+        </el-pagination>
       </el-card>
     </div>
     <div class="footerBar">
