@@ -99,7 +99,10 @@ def check_info():
     sql_task_statue(statue, task_id)
     # 发送消息给Server更新任务流状态
     post_server('task_start', task_id)'''
-    #取agent系统类型
+    from sysmig_agent.migration import get_old_osnameversion
+    if get_old_osnameversion():
+        return
+        # 取agent系统类型
     agent_os = get_agent_os()
     # agent storage
     agent_storage = os_storage()
@@ -112,10 +115,10 @@ def check_info():
         statue = 2
     except:
         statue = 3
-   #    sql_task_statue(statue, task_id)
+    #    sql_task_statue(statue, task_id)
     # 更新SQL任务状态
- #  sql_task_statue(statue, task_id)
- #  post_server('task_close', task_id)
+    #  sql_task_statue(statue, task_id)
+    #  post_server('task_close', task_id)
     return 'success'
 
 
@@ -262,7 +265,7 @@ def check_repo(data):
     elif '8' in agent_os:
         agent_os = 'centos8'
     os_type = agent_os + '_' + platform.machine().strip('')
-    baseurl = json.loads(data).get(os_type).replace('$basearch',platform.machine().strip('')).strip('/')
+    baseurl = json.loads(data).get(os_type).replace('$basearch', platform.machine().strip('')).strip('/')
     if not baseurl:
         baseurl = '1'
     task_id = json.loads(data).get('task_id')
