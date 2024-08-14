@@ -1,14 +1,16 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import { makeServer } from "./server";
+//import { makeServer } from "./server";
 
 import axios from "axios";
 import VueAxios from "vue-axios";
 import installElementPlus from "./plugins/element";
 
 if (process.env.NODE_ENV === "development") {
-  makeServer();
+  //makeServer();
+  const { worker } = require("./mocks/browser");
+  worker.start();
 }
 
 const app = createApp(App);
