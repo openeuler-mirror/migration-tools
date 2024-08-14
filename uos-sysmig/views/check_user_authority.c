@@ -103,19 +103,19 @@ int check_user_authority(void)
                                                 num++;
 						break;
 					case 1:
-						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"insufficent agent user permissions\" where agent_ip = \"%s\" and agent_username = \"%s\"", up_sql, data[i].ip, data[i].user);
+						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"insufficent agent user permissions\" where agent_ip = \"%s\" and agent_username = \"%s\"", F_IMPORT, data[i].ip, data[i].user);
 						break;
 					case 2:
-						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent can not connect server\" where agent_ip = \"%s\" and agent_username = \"%s\"", up_sql, data[i].ip, data[i].user);
+						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent can not connect server\" where agent_ip = \"%s\" and agent_username = \"%s\"", F_IMPORT, data[i].ip, data[i].user);
 						break;
                                         case 3:
-                                                sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"can not find conf file\" where agent_ip = \"%s\" and agent_username = \"%s\"", up_sql, data[i].ip, data[i].user);
+						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"can not find conf file\" where agent_ip = \"%s\" and agent_username = \"%s\"", F_IMPORT, data[i].ip, data[i].user);
                                                 break;
 					case 4:
-						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent can not yum packages\" where agent_ip = \"%s\" and agent_username = \"%s\"", up_sql, data[i].ip, data[i].user);
+						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent can not yum packages\" where agent_ip = \"%s\" and agent_username = \"%s\"", F_IMPORT, data[i].ip, data[i].user);
 						break;
 					case 5:
-						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent restart service failed\" where agent_ip = \"%s\" and agent_username = \"%s\"", up_sql, data[i].ip, data[i].user);
+						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent restart service failed\" where agent_ip = \"%s\" and agent_username = \"%s\"", F_IMPORT, data[i].ip, data[i].user);
 						break;
 					default:
 						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason =NULL where agent_ip = \"%s\" and agent_username = \"%s\"", up_sql, data[i].ip, data[i].user);
