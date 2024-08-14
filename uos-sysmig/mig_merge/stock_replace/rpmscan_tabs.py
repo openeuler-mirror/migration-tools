@@ -6,8 +6,8 @@ import json
 import platform
 
 from mig_merge.migrationTools.scanRPM.scan_rpm import parsed_pkg_to_json,get_current_pkg_list
-from mig_merge.stock_replace.system_mark import gen_system_mark
 from mig_merge.migrationTools.scanRPM.scan_rpm import ParsedPkgInfoAdd
+from mig_merge.merge.gen_sqlite import gen_sqlite
 
 def rpmscan_tabs(logger):
     exclude_fonts = True
@@ -33,11 +33,14 @@ def rpmscan_tabs(logger):
             filted_installed_pkgs.append(pkg)
         installed_pkgs = filted_installed_pkgs
 
-    repo_mark = gen_system_mark()
-    logger.info('Repo source of mark:{}' .format(repo_mark))
+    sqlite_list = gen_sqlite(logger)
+    if sqlite_list == '-1':
+        return '-1'
+
     for pkg_name in installed_pkgs:
-        tmp_pkg_info = ParsedPkgInfoAdd(pkg_name, add_tags, repo_mark)
-        parsed_pkgs.append(tmp_pkg_info)
+        for sqlite in sqlite_list:
+            tmp_pkg_info = ParsedPkgInfoAdd(pkg_name, sqlite, add_tags)
+            parsed_pkgs.append(tmp_pkg_info)
 
     only_show_leap = True
     if only_show_leap:
