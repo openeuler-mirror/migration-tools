@@ -92,6 +92,9 @@ def abi_check_priority():
 
 
 class LayeredGrading(object):
+    """
+    Layered grading: layered and layered_file have corresponding weights
+    """
     layered = [50, 50]
     layered_file = [AppStream, BaseOS]
 
