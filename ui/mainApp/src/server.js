@@ -419,7 +419,7 @@ export function makeServer({ environment = "development" } = {}) {
             { agent_ip: "2.2.2.2", task_status: 1, progress: 60 },
             { agent_ip: "3.3.3.3", task_status: 2, progress: 60 },
             { agent_ip: "4.4.4.4", task_status: 3, progress: 60 },
-            { agent_ip: "5.5.5.5", task_status: 0, progress: 60 },
+            { agent_ip: "5.5.5.5", task_status: 4, progress: 60 },
             { agent_ip: "6.6.6.6", task_status: 1, progress: 60 },
             { agent_ip: "7.7.7.7", task_status: 2, progress: 60 },
             { agent_ip: "8.8.8.8", task_status: 3, progress: 60 },
