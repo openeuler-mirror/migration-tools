@@ -70,20 +70,23 @@ def export_host_info(data):
     主机列表
     :return:
     """
+    agent_online_status_tmp = (0, 1)
     agent_ip = data.get('agent_ip')
     if agent_ip == '':
         sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_arch," \
-              "agent_history_faild_reason from agent_info;"
+              "agent_history_faild_reason from agent_info where agent_online_status in {};".format(agent_online_status_tmp)
     elif len(agent_ip) == 1:
         sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_arch," \
-              "agent_history_faild_reason from agent_info where agent_ip='%s';" % agent_ip[0]
+              "agent_history_faild_reason from agent_info where agent_ip={} and agent_online_status in {};"\
+            .format(agent_ip[0], agent_online_status_tmp)
     else:
         sql = "select agent_ip,hostname,agent_online_status,agent_os,agent_arch," \
-              "agent_history_faild_reason from agent_info where agent_ip in {};".format(tuple(agent_ip))
+              "agent_history_faild_reason from agent_info where agent_ip in {} and agent_online_status in {};"\
+            .format(tuple(agent_ip), agent_online_status_tmp)
     data = DBHelper().execute(sql).fetchall()
     data = list(data)
     for i in range(0, len(data)):
-        agent_task = "select task_CreateTime,task_status from agent_task where agent_ip='%s';" % data[i][0]
+        agent_task = "select task_CreateTime,task_data from agent_task where agent_ip='%s';" % data[i][0]
         get_agent_task = DBHelper().execute(agent_task)
         data[i] = list(data[i])
         get_agent_task = list(get_agent_task)
@@ -92,6 +95,14 @@ def export_host_info(data):
         else:
             task_CreateTime = get_agent_task[0][0].strftime('%Y-%-m-%d %H:%M:%S')
             task_status = get_agent_task[0][1]
+            if task_status == '00':
+                task_status = '未迁移'
+            elif task_status == '09':
+                task_status = "迁移成功"
+            elif task_status[1] == "8":
+                task_status = "迁移失败"
+            else:
+                task_status = "迁移中"
             data[i].append(task_CreateTime)
             data[i].append(task_status)
     df = pd.DataFrame(data)
