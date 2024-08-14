@@ -82,14 +82,14 @@ int check_user_authority(void)
                 	{
                         	if(!strcmp(data[i].user,"root"))
                         	{
-					sprintf(mk, "mkdir -p /etc/uos-sysmig");
+					sprintf(mk, "mkdir -p /etc/uos-sysmig&&echo $?");
 					sprintf(mv, "mv %s/%s %s&&echo $?", "/tmp", CONF_NAME, CONF_PATH);
                                 	sprintf(yum, "yum install %s -y&&echo $?", PACK_NAME);
                                 	sprintf(systemctl, "systemctl %s %s.service&&echo $?", "restart", PACK_NAME);
                         	}
                         	else
                         	{
-					sprintf(mk, "echo '%s\n'|sudo -S mkdir -p /etc/%s", data[i].password, "uos-sysmig");
+					sprintf(mk, "echo '%s\n'|sudo -S mkdir -p /etc/%s&&echo $?", data[i].password, "uos-sysmig");
                                 	sprintf(sudo, "echo '%s\n'|sudo -S -v&&echo $?", data[i].password);
                                 	sprintf(mv, "echo '%s\n'|sudo -S mv %s/%s %s&&echo $?", data[i].password, "/tmp", CONF_NAME, CONF_PATH);
                                 	sprintf(yum, "echo '%s\n'|sudo -S yum install %s -y&&echo $?", data[i].password, PACK_NAME);
@@ -116,7 +116,7 @@ int check_user_authority(void)
 						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent can not yum packages\" where agent_ip = \"%s\" and agent_username = \"%s\"", up_sql, data[i].ip, data[i].user);
 						break;
 					case 5:
-						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent restatr service failed\" where agent_ip = \"%s\" and agent_username = \"%s\"", up_sql, data[i].ip, data[i].user);
+						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent restart service failed\" where agent_ip = \"%s\" and agent_username = \"%s\"", up_sql, data[i].ip, data[i].user);
 						break;
 					default:
 						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason =NULL where agent_ip = \"%s\" and agent_username = \"%s\"", up_sql, data[i].ip, data[i].user);
