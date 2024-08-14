@@ -146,8 +146,10 @@ def host_info_display(data):
     agent_history_faild_reason,task_CreateTime,task_status
     :return:
     """
+    agent_online_status_tmp = (0, 1)
     sql = "select agent_ip,hostname,agent_online_status,agent_os,migration_type,agent_arch," \
-          "agent_history_faild_reason from agent_info;"
+          "agent_history_faild_reason from agent_info where " \
+          "agent_online_status in {};".format(agent_online_status_tmp)
     data = DBHelper().execute(sql).fetchall()
     data = list(data)
     for i in range(0, len(data)):
