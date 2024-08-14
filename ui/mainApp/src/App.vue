@@ -2,8 +2,6 @@
   <div class="layout">
     <el-container class="container">
       <el-aside
-        @mouseenter="isMouseEnter = true"
-        @mouseleave="isMouseEnter = false"
         :class="{
           'aside-collapsed': isCollapse == true,
           'aside-expand': isCollapse == false,
@@ -30,7 +28,7 @@
           :default-active="currentRouter"
           :router="true"
           :collapse="isCollapse"
-          :collapse-transition="true"
+          :collapse-transition="false"
         >
           <el-menu-item index="/import-machine">
             <el-icon><document /></el-icon>
@@ -97,8 +95,7 @@ export default {
   },
   data() {
     return {
-      isAsideExpand: false,
-      isMouseEnter: false,
+      isAsideExpand: true,
       buttonIcon: this.isAsideExpand ? Fold : Expand,
       currentRouter: "/",
     };
@@ -107,8 +104,6 @@ export default {
   computed: {
     isCollapse() {
       if (this.isAsideExpand) {
-        return false;
-      } else if (this.isMouseEnter) {
         return false;
       } else {
         return true;
