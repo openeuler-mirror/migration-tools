@@ -81,9 +81,10 @@ class ParsedPkgInfo(object):
                         tmp_uos_pkg_provide_tuple['p'] = 0
                     if provide_tuple['v'] != None and row[3] != None:
                         tmp_uos_pkg_provide_tuple['v'] = row[3]
-                        if provide_tuple['v'][0] == tmp_uos_pkg_provide_tuple[
-                                'v'][0]:
-                            self.is_version_leaped = False
+                        #数据库表 provides 中 version 相同也在报告中显示
+                        #if provide_tuple['v'][0] == tmp_uos_pkg_provide_tuple[
+                        #        'v'][0]:
+                        #    self.is_version_leaped = False
                     else:
                         tmp_uos_pkg_provide_tuple['v'] = None
                     tmp_provide_map_item.uos_pkg_provide = tmp_uos_pkg_provide_tuple
