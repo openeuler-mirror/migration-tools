@@ -50,10 +50,11 @@ class ParsedPkgInfo(object):
         pkg_provides_map: list, 当前系统（待迁移系统）上该包每个 provide 到 uos 上的 provide 的映射关系 list 。
                           每个 provide 都将被描述，该 list 中的元素是 ProvideMapItem 实例
     '''
-    def __init__(self, pkg_name: str, add_tags: bool = True):
+    def __init__(self, pkg_name: str, repodb_path: str, add_tags: bool = True):
         self.pkg_name = pkg_name
         self.is_version_leaped = True
         self.tags = []
+        self.repodb_path = repodb_path
         self.pkg_provides_map = []
 
         self.fill_provides_item()
@@ -62,11 +63,6 @@ class ParsedPkgInfo(object):
         ''' 填充当前包的信息（填充本类中的各个属性）
         '''
         provides_tuple_list = get_pkg_provides_by_name(self.pkg_name)
-
-        if PathConf.arch == "aarch64":
-            repodb_path = PathConf.data_path + "/repo-sqlite/uos-1020e/aarch64/63ab13615c7e35a77bfb0719b6c2af5c4298a609132950963f4a0ea99b341112-primary.sqlite"
-        elif PathConf.arch == "x86_64":
-            repodb_path = PathConf.data_path + "/repo-sqlite/uos-1020e/x86_64/2ad7cabc63634d5c75336929453bf9ff2054434547844df0c279c4759cd05409-primary.sqlite"
 
         with DBOperate(repodb_path) as db:
             for provide_tuple in provides_tuple_list:
