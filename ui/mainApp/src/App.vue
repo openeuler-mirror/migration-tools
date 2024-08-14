@@ -30,7 +30,7 @@
           :default-active="currentRouter"
           :router="true"
           :collapse="isCollapse"
-          :collapse-transition="false"
+          :collapse-transition="true"
         >
           <el-menu-item index="/import-machine">
             <el-icon><document /></el-icon>
@@ -65,7 +65,6 @@ import Header from "./components/Header.vue";
 
 import { Fold, Expand, Document } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
-import { ElMessageBox } from "element-plus";
 
 export default {
   name: "App",
@@ -98,13 +97,29 @@ export default {
   },
   data() {
     return {
-      isCollapse: false,
-      currentRouter: "/import-machine",
+      isAsideExpand: false,
+      isMouseEnter: false,
+      buttonIcon: this.isAsideExpand ? Fold : Expand,
+      currentRouter: "/",
     };
   },
+
+  computed: {
+    isCollapse() {
+      if (this.isAsideExpand) {
+        return false;
+      } else if (this.isMouseEnter) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+  },
+
   methods: {
     toggleMenu: function () {
-      this.isCollapse = !this.isCollapse;
+      this.isAsideExpand = !this.isAsideExpand;
+      this.buttonIcon = this.isAsideExpand ? Fold : Expand;
     },
   },
 };
@@ -152,6 +167,7 @@ export default {
   width: 24px;
   height: 24px;
   color: #ffffff;
+  cursor: pointer;
 }
 
 .menu-text {
