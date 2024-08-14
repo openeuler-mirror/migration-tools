@@ -415,7 +415,7 @@ def getSysMigConf():
                 elif re.search('\[Server\]', line):
                     server = 1
                     continue
-                else:
+                elif '=' in line:
                     p = ret = ''
                     if re.match('\=', line):
                         continue
