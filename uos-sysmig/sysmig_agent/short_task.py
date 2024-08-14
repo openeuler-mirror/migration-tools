@@ -301,7 +301,7 @@ def check_repo(data):
 def initRepoFile_add(filename, baseurl):
     if os.path.exists(os.path.join(AGENT_DIR, filename + '.repo')):
         os.remove(os.path.join(AGENT_DIR, filename + '.repo'))
-    if not repoFileCheck(baseurl+'/repodata'):
+    if not repoFileCheck(baseurl + '/repodata'):
         path_310 = baseurl + '/kernel-3.10'
         path_ext = baseurl + '/external'
         repostr_uos = '''[UniontechOS-AppStream]\nname = UniontechOS AppStream\nbaseurl = ''' + baseurl.strip(
@@ -321,7 +321,7 @@ def initRepoFile_add(filename, baseurl):
             '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-4.19.0]\nname = UniontechOS Kernel-4.19.0\nbaseurl = ''' + path_419.strip(
             '\n') + '''\nenabled = 1\ngpgcheck = 0\nskip_if_unavailable = 1\n\n[UniontechOS-kernel-5.10.0]\nname = UniontechOS Kernel-5.10.0\nbaseurl = ''' + path_510.strip(
             '\n') + '''\nenabled = 0\ngpgcheck = 0\nskip_if_unavailable = 1\n\n'''
-    with open(os.path.join(AGENT_DIR, filename+'.repo'), 'a') as frepo:
+    with open(os.path.join(AGENT_DIR, filename + '.repo'), 'a') as frepo:
         frepo.write(repostr_uos)
         frepo.close()
 
@@ -339,8 +339,11 @@ class RepoFileAdd(object):
         self.after_repo = self.migration_after + '_' + platform.machine().strip('')
         self.after_baseurl = ''
         self.task_id = json.loads(self.data).get('task_id')
-        self.before_baseurl = json.loads(self.data).get(self.before_repo).replace('$basearch',platform.machine().strip('')).strip('/')
-        self.after_baseurl = json.loads(self.data).get(self.after_repo).replace('$basearch',platform.machine().strip('')).strip('/')
+        self.before_baseurl = json.loads(self.data).get(self.before_repo).replace('$basearch',
+                                                                                  platform.machine().strip('')).strip(
+            '/')
+        self.after_baseurl = json.loads(self.data).get(self.after_repo).replace('$basearch',
+                                                                                platform.machine().strip('')).strip('/')
 
     def run(self):
         if not self.before_baseurl or not self.after_baseurl:
@@ -361,8 +364,9 @@ class RepoFileAdd(object):
         else:
             repo_state = '0' + str(repoFileCheck(self.before_baseurl + '/AppStream/repodata') and repoFileCheck(
                 self.before_baseurl + '/repodata'))
-            repo_state = repo_state + '0' + str(repoFileCheck(self.after_baseurl + '/AppStream/repodata') and repoFileCheck(
-                self.after_baseurl + '/repodata'))
+            repo_state = repo_state + '0' + str(
+                repoFileCheck(self.after_baseurl + '/AppStream/repodata') and repoFileCheck(
+                    self.after_baseurl + '/repodata'))
         sql = "UPDATE agent_info SET repo_status = '{}' WHERE agent_ip = '{}';".format(repo_state, get_local_ip())
         try:
             ret = DBHelper().execute(sql)
