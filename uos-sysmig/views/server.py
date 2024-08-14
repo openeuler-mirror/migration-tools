@@ -41,6 +41,10 @@ def import_host_info(data):
         agent_ip = i.get('agent_ip')
         agent_username = i.get('hostname')
         agent_passwd = i.get('agent_password')
+        if 'agent_password' in i:
+            agent_passwd = i.get('agent_password')
+        else:
+            agent_passwd = ''
         check_type = i.get('type')
         migration_type = i.get('migration_type')
         if agent_ip in agent_ip_list:
