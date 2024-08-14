@@ -2,14 +2,24 @@
   <div class="layout">
     <el-container class="container">
       <el-aside
+        @mouseenter="isMouseEnter = true"
+        @mouseleave="isMouseEnter = false"
         :class="{
           'aside-collapsed': isCollapse == true,
           'aside-expand': isCollapse == false,
         }"
       >
         <div class="head">
-          <fold class="menu-icon" v-if="!isCollapse" @click="toggleMenu()" />
-          <expand class="menu-icon" v-if="isCollapse" @click="toggleMenu()" />
+          <fold
+            class="menu-icon"
+            v-show="!isAsideExpand"
+            @click="toggleMenu()"
+          />
+          <expand
+            class="menu-icon"
+            v-show="isAsideExpand"
+            @click="toggleMenu()"
+          />
           <span v-if="!isCollapse">统信服务器系统迁移软件</span>
         </div>
         <div class="line" />
