@@ -73,5 +73,7 @@ if __name__ == '__main__':
     app.config["JSON_AS_ASCII"] = False
     uos_sysmig_conf = json.loads(getSysMigConf())
     ip = json.loads(uos_sysmig_conf).get('agentip').strip()[1:-1]
-    port = int(json.loads(uos_sysmig_conf).get('agentport').strip()[1:-1])
-    app.run(debug=True, host=ip, port=port,use_reloader=False)
+    port = json.loads(uos_sysmig_conf).get('agentport').strip()[1:-1]
+    if '"' in port:
+        port = port.split('"', -1)[0]
+    app.run(debug=True, host=ip, port=int(port), use_reloader=False)

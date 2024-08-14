@@ -279,7 +279,7 @@ def mig_distro_sync(skip,task_id):
         cmd = 'yum -y distro-sync --skip-broken'
     wt, code = run_subprocess(cmd)
     if 0 != code:
-        cmd = 'yum -y update --skip-broken'
+        cmd = 'yum -y update --skip-broken --nobest'
         wt_try, code_try = run_subprocess(cmd)
         if 0 != code_try:
             sql_mig_statue('48')
