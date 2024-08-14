@@ -87,15 +87,19 @@
       </el-table-column>
     </el-table>
     <el-pagination
+      background
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
-      :page-sizes="[5, 20, 50, 100]"
+      :page-sizes="[5, 10, 25, 50, 100]"
       :pager-count="11"
       :total="allData.length"
       @size-change="handleSizeChange()"
       @current-change="handleCurrentChange()"
-      layout="sizes, prev, pager, next"
+      layout="sizes, prev, pager, next, jumper, slot"
     >
+      <template #default>
+        <el-button type="text"> 确定 </el-button>
+      </template>
     </el-pagination>
   </el-card>
 </template>
