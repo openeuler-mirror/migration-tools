@@ -90,6 +90,16 @@
                   <span style="margin-left: 10px">检查失败</span>
                 </el-row>
               </div>
+              <div v-if="scope.row.task_status == 4 && !scope.row.isChecking">
+                <el-row justify="center">
+                  <div>
+                    <el-icon size="medium" color="#e6a23c"
+                      ><warning-filled
+                    /></el-icon>
+                  </div>
+                  <span style="margin-left: 10px">存在风险</span>
+                </el-row>
+              </div>
             </template>
           </el-table-column>
           <el-table-column
@@ -114,12 +124,17 @@
           </el-table-column>
         </el-table>
         <el-pagination
+          background
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
-          :page-sizes="[5, 20, 50, 100]"
+          :page-sizes="[5, 10, 25, 50, 100]"
           :total="machineList.length"
-          layout="sizes, prev, pager, next"
-        ></el-pagination>
+          layout="sizes, prev, pager, next, jumper, slot"
+        >
+          <template #default>
+            <el-button type="text"> 确定 </el-button>
+          </template>
+        </el-pagination>
       </el-card>
     </div>
     <div class="footerBar">
@@ -143,11 +158,13 @@
 import StyledSubheaderBlock from "@/components/StyledSubheaderBlock.vue";
 
 import { ElMessageBox } from "element-plus";
+import { WarningFilled } from "@element-plus/icons-vue";
 
 export default {
   name: "EnvCheckBeforeMigrate",
   components: {
     StyledSubheaderBlock,
+    WarningFilled,
   },
   data() {
     return {

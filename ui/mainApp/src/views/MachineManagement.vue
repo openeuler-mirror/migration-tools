@@ -184,6 +184,7 @@
       </el-table-column>
     </el-table>
     <el-pagination
+      background
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
       :page-sizes="[5, 10, 25, 50, 100]"
@@ -191,8 +192,12 @@
       :total="machineList.length"
       @size-change="handleSizeChange()"
       @current-change="handleCurrentChange()"
-      layout="sizes, prev, pager, next"
-    ></el-pagination>
+      layout="sizes, prev, pager, next, jumper, slot"
+    >
+      <template #default>
+        <el-button type="text"> 确定 </el-button>
+      </template>
+    </el-pagination>
   </el-card>
 </template>
 
