@@ -89,6 +89,10 @@ def export_host_info(data):
         agent_task = "select task_CreateTime,task_data from agent_task where agent_ip='%s';" % data[i][0]
         get_agent_task = DBHelper().execute(agent_task)
         data[i] = list(data[i])
+        if data[i][2] == 0:
+            data[i][2] = '在线'
+        else:
+            data[i][2] = '离线'
         get_agent_task = list(get_agent_task)
         if get_agent_task == []:
             data[i] += ["", ""]
@@ -109,11 +113,11 @@ def export_host_info(data):
     df.columns = ['主机IP', '主机名', '在线状态', '操作系统类型', '架构',  '历史失败原因', '迁移时间', '迁移状态']
     time = datetime.now().strftime('%Y-%-m-%d-%H-%M-%S')
     xls = "/var/uos-migration/host_info_%s.xls" % time
-    df.to_excel(xls)
+    df.to_excel(xls, index=False)
 
     report_pwd = "/var/uos-migration/"
     report_name = "host_info_%s.xls" % time
-    data = {'report_pwd': report_pwd,'report_name': report_name}
+    data = {'report_pwd': report_pwd, 'report_name': report_name}
     return data
 
 
@@ -141,9 +145,9 @@ def migration_success_list(data):
     df.columns = ['主机ip', '主机名', '迁移前OS版本', '迁移后OS版本', '架构', '迁移时间']
     time = datetime.now().strftime('%Y-%-m-%d-%H-%M-%S')
     xls = "/var/uos-migration/migration_success_host_info_%s.xls" % time
-    df.to_excel(xls)
+    df.to_excel(xls, index=False)
     report_pwd = "/var/uos-migration/"
     report_name = "migration_success_host_info_%s.xls" % time
-    data = {'report_pwd': report_pwd,'report_name': report_name}
+    data = {'report_pwd': report_pwd, 'report_name': report_name}
     return data
 
