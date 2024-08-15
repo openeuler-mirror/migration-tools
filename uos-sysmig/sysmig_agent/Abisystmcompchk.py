@@ -467,7 +467,7 @@ def process_data(threadName, q, queueLock, incompfw, compfw, Queue, pro_log):
     global deal_rpm_num
     status = '1'
 
-    rpm_pkg_path = local_dir + 'uos/rpms/'
+    rpm_pkg_path = FixedInfo.local_dir + '/data/uos/rpms/'
 
     abisys =str(abi_check_sys())
     while not exitFlag:
@@ -496,13 +496,13 @@ def process_data(threadName, q, queueLock, incompfw, compfw, Queue, pro_log):
 
 def get_system_pkg_list(migbeflist):
     download_rpm_nums = 0
-    migration_rpm_pkg_path = local_dir + 'uos/rpms'
+    migration_rpm_pkg_path = FixedInfo.local_dir + '/data/uos/rpms'
 
     #clean history data
-    if os.path.exists(migration_system_total):
-        os.remove(migration_system_total)
+    if os.path.exists(FixedInfo.total_pkgname):
+        os.remove(FixedInfo.total_pkgname)
 
-    ftw = open(migration_system_total, 'w')
+    ftw = open(FixedInfo.total_pkgname, 'w')
     items = os.listdir(migration_rpm_pkg_path)
     newlist = []
     for names in items:
@@ -520,7 +520,7 @@ def get_system_pkg_list(migbeflist):
 def incomp_pkg_num():
     tmp=''
     num=0
-    for line in open(abi_incomp_chk, 'r').readlines():
+    for line in open(FixedInfo.abi_incomp, 'r').readlines():
         tmp_01 = line.split(',')[0]
         if tmp!=tmp_01:
             num = num + 1
@@ -543,30 +543,10 @@ def get_cur_sys_version():
     fp.close()
     return line.split('=',1)[1].replace('"','').replace('\n','')
  
-def get_migration_sys_info():
-
-    behind_sys_info = exp_rst_dir + 'before-system-info.txt'
-    with open(behind_sys_info, 'r') as file_object:
-        behind_list_info = file_object.readlines()
-
-    migration_sys_info = '1|2|' + get_cur_sys_version()
-    behind_list_info.append(migration_sys_info)
-
-    #20220107 modify lihp: get kernel version 
-    #migration_kernel_verison = '2|2|' + platform.release()  
-    migration_kernel_verison = '2|2|' + platform_release('1')  
-    behind_list_info.append(migration_kernel_verison)
-
-    with open(migration_system_install, 'r') as frm:
-        install_pkgs_num = str(len(frm.readlines()))
-    behind_list_info.append('8|2|' + install_pkgs_num)
-
-    return behind_list_info
-
 
 #Create data list for write to .xls of sheet[0]
 #ge：['1|1|CentOS Linux 8 (Core)', '2|1|4.18.0-147.el8.x86_64', '4|1|26.4GB', '5|1|x86_64', '8|1|1278', '11|1|1', '12|1|2', '13|1|2']
-def get_cur_sys_info_list():
+def get_cur_sys_info_list(migFlg):
     list_info = []
     before_sys_info = exp_rst_dir + 'before-system-info.txt'
     sys_version_tmp = exp_rst_dir + 'sys-version-tmp'
@@ -579,8 +559,6 @@ def get_cur_sys_info_list():
     cur_sys_info = '1|1|' + get_cur_sys_version()
     list_info.append(cur_sys_info) 
 
-    #current kernel version, write sheet[0]:2-row,1-column
-    #20220107 modify lihp: get kernel version of migrate before
     #cur_kernel_verison = '2|1|' + platform.release()  
     cur_kernel_verison = '2|1|' + platform_release('0')  
     list_info.append(cur_kernel_verison) 
@@ -594,23 +572,24 @@ def get_cur_sys_info_list():
     list_info.append(cur_arch) 
 
     #Be replaced rpm packages number,write sheet[0]:8-row,1-column
-    with open(migration_system_total, 'r') as fr:
+    with open(FixedInfo.total_pkgname, 'r') as fr:
         replace_pkgs_num = str(len(fr.readlines()))
     list_info.append('8|1|' + replace_pkgs_num) 
 
-    #Compatible with the number, write sheet[0]:11-row,1-column
-    with open(abi_comp_chk, 'r') as fc:
-        comp_num_int = len(fc.readlines())
-        comp_num = '11|1|' + str(comp_num_int)
-    list_info.append(comp_num) 
+    if migFlg == 'A':
+        #Compatible with the number, write sheet[0]:11-row,1-column
+        with open(FixedInfo.abi_comp, 'r') as fc:
+            comp_num_int = len(fc.readlines())
+            comp_num = '11|1|' + str(comp_num_int)
+        list_info.append(comp_num) 
 
-    #Icompatible with the number,write sheet[0]:12-row,1-column
-    incomp_num = '12|1|' + str(incomp_pkg_num())
-    list_info.append(incomp_num) 
+        #Icompatible with the number,write sheet[0]:12-row,1-column
+        incomp_num = '12|1|' + str(incomp_pkg_num())
+        list_info.append(incomp_num)
 
-    #The total number of packages，write sheet[0]:13-row,1-column
-    sum_num = comp_num_int + incomp_pkg_num()
-    list_info.append('13|1|' + str(sum_num))
+        #The total number of packages，write sheet[0]:13-row,1-column
+        sum_num = comp_num_int + incomp_pkg_num()
+        list_info.append('13|1|' + str(sum_num))
 
     #write to file,report generation after migration
     with open(before_sys_info, 'w') as fpbsi:
@@ -619,9 +598,10 @@ def get_cur_sys_info_list():
         fpbsi.write(cur_var_cache + '\n')
         fpbsi.write(cur_arch + '\n')
         fpbsi.write('8|1|' + replace_pkgs_num + '\n')
-        fpbsi.write(comp_num + '\n')
-        fpbsi.write(incomp_num + '\n')
-        fpbsi.write('13|1|'+str(sum_num)+'\n')
+        if migFlg == 'A':
+            fpbsi.write(comp_num + '\n')
+            fpbsi.write(incomp_num + '\n')
+            fpbsi.write('13|1|'+str(sum_num)+'\n')
 
     return list_info
 
