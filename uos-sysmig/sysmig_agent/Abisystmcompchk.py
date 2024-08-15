@@ -664,36 +664,21 @@ def migrate_before_abi_chk(q_query, task_status, mig_flag):
 
     get_system_unique_pkg(list(current_list), migration_download_list)
 
-    #20220328 add special software package deal
-    if mig_flag == 'E':
-        special_list = deal_repo_rpm(log)
-        if special_list != '-1':
-            download_list = download_list + special_list
+    if mig_flag == 'A':
+        cur_dir = os.getcwd()
+        os.chdir(download_path)
+        rst = MutilThread(download_list, q_query, log)
+        os.chdir(cur_dir)
 
-    cur_dir = os.getcwd()
-    os.chdir(download_path)
-    rst = MutilThread(download_list, q_query, log)
-    os.chdir(cur_dir)
+        agent_ABI_check_result()
 
-    agent_ABI_check_result()
+    get_cur_sys_info_list(mig_flag)
 
-    migrate_before_report_name = create_migrate_report_name(Flag, log)
-    if not migrate_before_report_name:
-        msg_tup = ('0', task_status)
-        q_query.put(msg_tup)
-        log.info('The current progress exit:' + str(msg_tup))
-        #return False
-
-    while i < 4:
-        write_migrate_report_rst =switch_write_migrate_report(migrate_before_report_name, i, Flag)
-        i = i + 1
-
-    os.remove(migrate_before_report_name)
-
-    #The compatibility of the hierarchical algorithm is
-    before_sys_info = exp_rst_dir + 'before-system-info.txt'
-    with open(before_sys_info, 'a') as fpb:
-        fpb.write(layered_Grading.run())
+    if mig_flag == 'A':
+        #The compatibility of the hierarchical algorithm is
+        before_sys_info = exp_rst_dir + 'before-system-info.txt'
+        with open(before_sys_info, 'a') as fpb:
+            fpb.write(layered_Grading.run())
 
     #20220328 generating html reports
     if mig_flag == 'A':
@@ -723,8 +708,8 @@ def MutilThread(nameList, Query, muth_logger):
     threadID = 10 
     #threadID = 1
 
-    fw = open(abi_incomp_chk, 'w')
-    fr = open(abi_comp_chk, 'w')
+    fw = open(FixedInfo.abi_incomp, 'w')
+    fr = open(FixedInfo.abi_comp, 'w')
 
     #Creating new thread
     for tName in threadList:

@@ -43,26 +43,34 @@ def general_tabs(sFlag, logger):
             middle_data = '"architecture": "'+line.strip().split('|')[2]+'",'
             system_list = system_list + middle_data
 
-        if line_num == 5:
-            if sFlag == 'A':
+        if sFlag == 'A':
+            if line_num == 5:
                 middle_data = '"replaced_software_package_count": "'+line.strip().split('|')[2]+'",'
                 system_list = system_list + middle_data
-            else:
+
+            if line_num == 6:
+                middle_data = '"compatible_software_package_count": "'+line.strip().split('|')[2]+'",'
+                system_list = system_list + middle_data
+
+            if line_num == 7:
+                middle_data = '"incompatible_software_package_count": "'+line.strip().split('|')[2]+'",'
+                system_list = system_list + middle_data
+
+            if line_num == 8:
+                package_count = line.strip().split('|')[2]
+        else: 
+            if line_num == 5:
                 middle_data = '"replaced_software_package_count": " ",'
                 system_list = system_list + middle_data
 
-        if line_num == 6:
-            middle_data = '"compatible_software_package_count": "'+line.strip().split('|')[2]+'",'
-            system_list = system_list + middle_data
+            if line_num == 6:
+                middle_data = '"compatible_software_package_count": " ",'
+                system_list = system_list + middle_data
 
-        if line_num == 7:
-            middle_data = '"incompatible_software_package_count": "'+line.strip().split('|')[2]+'",'
-            system_list = system_list + middle_data
+            if line_num == 7:
+                middle_data = '"incompatible_software_package_count": " ",'
+                system_list = system_list + middle_data
 
-        if line_num == 8:
-            if sFlag == 'A':
-                package_count = line.strip().split('|')[2]
-            
         if line_num == 9:
             layered_flag = True
             if sFlag == 'A':
