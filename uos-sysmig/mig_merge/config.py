@@ -46,6 +46,8 @@ class FixedInfo():
     unique_pkgname = os.path.join(inventory_dir, 'current-system-unique.csv')
     migrate_pkgname = os.path.join(inventory_dir, 'migration-system-install.csv')
     total_pkgname = os.path.join(inventory_dir, 'migration-system-total.csv')
+    abi_comp = os.path.join(inventory_dir, 'abi-comp-chk.csv')
+    abi_incomp = os.path.join(inventory_dir, 'abi-incomp-chk.csv')
 
     diff_rpmpkg = os.path.join(inventory_dir, 'repo-diff-rpmpkg.txt')
     same_rpmpkg = os.path.join(inventory_dir, 'repo-current-system-unique.txt')

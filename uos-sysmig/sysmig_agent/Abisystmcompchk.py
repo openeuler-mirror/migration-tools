@@ -4,13 +4,12 @@
 
 import queue,os,string
 import threading,codecs
-import time,rpm,stat,re
+import rpm,stat,re
 import datetime
 import platform
-import json,xlrd,xlwt
+import json
 import socket
-from xlutils.copy import copy
-from shutil import copyfile
+
 #from sysmig_agent.share import *
 from multiprocessing import Process 
 from multiprocessing import cpu_count
@@ -19,23 +18,23 @@ from mig_merge.stock_check import stock_replace_check
 from mig_merge.expansion_check import new_expansion_check
 from sysmig_agent.abi_weight import layered_Grading
 from mig_merge.merge.utils import gen_pkg_version
+from mig_merge.config import FixedInfo
 
 from logger import *
-#from connect_sql import DBHelper
 
 workQueue = queue.Queue()
 queueLock = threading.Lock()
 
 #为便于测试将变量、接口从share.py中拷贝到当前文件，待联调通过后删除即可
 ######################## add for test start ########################
-local_dir = '/var/tmp/uos-migration/data/'
-exp_rst_dir = local_dir+'exp-rst/'
+exp_rst_dir =FixedInfo.local_dir + '/data/exp-rst/'
 
 current_system_unique = exp_rst_dir + 'current-system-unique.csv'
 migration_system_install = exp_rst_dir + 'migration-system-install.csv'
 migration_system_total = exp_rst_dir + 'migration-system-total.csv'
 abi_comp_chk = exp_rst_dir + 'abi-comp-chk.csv'
 abi_incomp_chk = exp_rst_dir + 'abi-incomp-chk.csv'
+exp_rst_dir =FixedInfo.local_dir + '/data/exp-rst/'
 exitFlag = 0
 total_rpm_nums = 0
 percentage = ''
