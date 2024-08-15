@@ -2,25 +2,52 @@ import os
 import sys
 import rpm
 import json
+import re
 
 from logger import migration_log
 from mig_merge.migrationTools.scanRPM.scan_rpm import get_current_pkg_list
 from mig_merge.migrationTools.scanRPM.db_operates import DBOperate
 from mig_merge.config import FixedInfo
 
+def c_abi_check_sys_type():
+    path = '/etc/os-version'
+    if os.path.exists(path):
+        with open(path,'r') as v:
+            ret = v.readlines()
+            localos=ostype=''
+            for i in range(len(ret)):
+                if not ret[i]:
+                    continue
+                if 'MinorVersion' in ret[i]:
+                    strminor = str(ret[i])
+                    _, localos = strminor.split('=',1)
+                if 'EditionName[zh_CN]' in ret[i]:
+                    strminor = str(ret[i])
+                    _, ostype = strminor.split('=',1)
+                    ostype = re.sub('[^a-zA-Z]+','',ostype)
+            localos = localos.strip().strip('\n') + ostype.strip().strip('\n')
+            #localos = new_os.format(localos.strip().strip('\n'))
+            return localos
+
+
 def system_version_id():
-    '''
-        应用场景：获取系统版本标识,获取当前系统rpm包不同的方式
-        功    能：centos8.*标识'8',centos7.*标识'7'
-        输入参数：无
-        返 回 值：系统标识8/7
-    '''
-    fp = open('/etc/os-release', 'r')
-    for line in fp:
-        if 'VERSION_ID' in line:
-            break
-    fp.close()
-    return line.split('=',1)[1].replace('"','').replace('\n','')[0]
+    c8 = ['1020a', '1021a', '1050a']
+    c7 = ['1000c', '1001c', '1002a','1002c']
+    system_type = c_abi_check_sys_type()
+    print('---------'+system_type)
+    if not system_type:
+        os_version_ret = platform.dist()
+        osname = os_version_ret[1].strip()
+        osn = osname.split('.',-1)[0]
+        return osn.strip('\n')
+    for i in range(len(c8)):
+        if c8[i] in system_type:
+            return '8'
+    for i in range(len(c7)):
+        if  c7[i] in system_type:
+            return '7'
+    return None
+
 
 def get_cur_sys_version():
     '''
