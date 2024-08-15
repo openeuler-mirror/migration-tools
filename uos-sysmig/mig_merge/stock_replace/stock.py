@@ -30,7 +30,7 @@ def xlsTohtml(log):
     '''
     json_str = general_tabs('A', log)+packages_tabs()+\
     rpm_tabs()+sysconffile_tabs()+','+hardware_tabs(log)+\
-    confscan_tabs(log)+rpmscan_tabs(log)+'}'
+    confscan_tabs(log)+rpmscan_tabs('A', log)+'}'
 
     log.info('stock replace check json data:{}'.format(json_str))
 
