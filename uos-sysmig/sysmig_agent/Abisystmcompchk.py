@@ -29,20 +29,12 @@ queueLock = threading.Lock()
 ######################## add for test start ########################
 exp_rst_dir =FixedInfo.local_dir + '/data/exp-rst/'
 
-current_system_unique = exp_rst_dir + 'current-system-unique.csv'
-migration_system_install = exp_rst_dir + 'migration-system-install.csv'
-migration_system_total = exp_rst_dir + 'migration-system-total.csv'
-abi_comp_chk = exp_rst_dir + 'abi-comp-chk.csv'
-abi_incomp_chk = exp_rst_dir + 'abi-incomp-chk.csv'
-exp_rst_dir =FixedInfo.local_dir + '/data/exp-rst/'
 exitFlag = 0
 total_rpm_nums = 0
 percentage = ''
 deal_rpm_num = 0
-agent_abi_check_result = exp_rst_dir + 'agent_ABI_check_result.csv'
-suffix_list = ['.mo', '.gz', '.xml', '.conf', '.png', '.page', '.woff', '.ttf', '.pyc', '.typelib', '.pdf', '.ppt', '.txt', '.ico', '.icc', '.tcc', '.gif', '.oga', '.rom', '.jpg', '.dict', '.webm', '.pyc', '.wav', '.ucode', '.ttc', '.gresource', '.otf', '.t1', '.db', '.elc', '.cache', '.fd', '.iso', '.efi', '.mmdb', '.bz2', '.img', '.bin', '.fw', '.cis', '.itb', '.inp', '.sbcf', '.ddc', '.sfi', '.bseq', '.mfa2', '.chk', '.mgc', '.stub', '.dfu', '.dat', '.sys', '.bts', '.dlmem', '.brd', '.hwm', '.pwd', '.pwi', '.exe', '.der', '.p12', '.ogg', '.signed', '.dafsa', '.gpg', '.tri', '.x86_64']
 
-#Queue = queue.Queue()
+Queue = queue.Queue()
 
 def os_storage():
     """
@@ -117,10 +109,7 @@ def abi_check_sys():
     return None
 
 ######################## add for test end ########################
-######################## add for test end ########################
 
-
-#20220107 add by lihp
 #20220112 modify by lihp: add deal kernel migration fail 
 def platform_release(Flag):
     if Flag == '0':
@@ -140,28 +129,19 @@ def platform_release(Flag):
 def agent_ABI_check_result():
     string = ',,,,Y,,\n'
 
-    #mycopyfile(abi_incomp_chk, agent_abi_check_result, abi_log)
-    facp = open(agent_abi_check_result, 'w')
-    for line in open(abi_incomp_chk):
+    facp = open(FixedInfo.agent_abi_result, 'w')
+    for line in open(FixedInfo.abi_incomp):
 
         tmp01 = line.split(',', 6)
         tmp = tmp01[5]
 
-        #if tmp == '库差异':
-        #    str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',1,'+tmp01[5]
-        #elif tmp == '二进制差异':
-        #    str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',2,'+tmp01[5]
-        #elif tmp == '可执行文件差异':
-        #    str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',3,'+tmp01[5]
-        #elif tmp == '视频文件差异':
-        #    str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+',4,'+tmp01[5]
         str_01 = tmp01[0]+','+tmp01[1]+','+tmp01[2]+','+tmp01[3]+','+tmp01[4]+','+tmp01[5]+','+tmp01[6]
 
         facp.write(str_01)
     facp.close()
 
-    fp = open(agent_abi_check_result, 'a')
-    for rpm_name in open(abi_comp_chk):
+    fp = open(FixedInfo.agent_abi_result, 'a')
+    for rpm_name in open(FixedInfo.abi_comp):
         fp.write(rpm_name.split(',')[0] + string)
     fp.close()
 
@@ -207,8 +187,8 @@ def is_ELFfile(filepath, logger):
 #Get migration behind rpm list, filter dist of '.uelc20'
 def get_migrate_behind_rpm_pkg():
     dist='.uelc20'
-    migration_before_uelc20_rpm = exp_rst_dir + 'migration-before-uelc20-rpm.csv'
-    migration_behind_uelc20_rpm = exp_rst_dir + 'migration-behind-uelc20-rpm.csv'
+    migration_before_uelc20_rpm = FixedInfo.migration_uelc
+    migration_behind_uelc20_rpm = FixedInfo.migration_eln
 
     rpm_pkg_list=[]
 
@@ -278,10 +258,10 @@ def get_system_pkg_name(flag, mig_logger):
             with open(migration_before_uelc20_rpm, 'r') as fbfu: 
                 fbfu_list = fbfu.readlines()
 
-            if os.path.exists(migration_system_install):
-                os.remove(migration_system_install)
+            if os.path.exists(FixedInfo.migrate_pkgname):
+                os.remove(FixedInfo.migrate_pkgname)
 
-            fbhe = open(migration_system_install, 'w') 
+            fbhe = open(FixedInfo.migrate_pkgname, 'w') 
             rst = str(abi_check_sys())
             if rst == '7':
                 for rpm_pkg in mi:
@@ -366,7 +346,7 @@ def deal_files_list(fwincomp, fwcomp, cur_file_list, trn_file_list, rpm_full_pkg
     link_flag = '0'
     cur_file_deal = ''
 
-    rpm_pkg_dir = local_dir + 'uos/rpms'
+    rpm_pkg_dir = FixedInfo.local_dir + '/data/uos/rpms'
     rpm_info = rpm_full_pkg_name.rsplit('.',2)[0].rsplit('-', 2)
     rpm_pkg_name = rpm_full_pkg_name.rsplit('-',2)[0]
     uos_pkg_version = rpm_info[1]+'-'+rpm_info[2]
@@ -383,7 +363,7 @@ def deal_files_list(fwincomp, fwcomp, cur_file_list, trn_file_list, rpm_full_pkg
             continue
 
         if '.' in cur_file_binwary.rsplit('/',1)[1]:
-            if '.'+cur_file_binwary.rsplit('.',1)[1] in suffix_list:
+            if '.'+cur_file_binwary.rsplit('.',1)[1] in FixedInfo.suffix_list:
                 continue
 
         if not is_ELFfile(cur_file_binwary, list_log):
