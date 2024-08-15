@@ -22,7 +22,7 @@ from mig_merge.new_expansion.confscan_tabs import confscan_tabs
 def MigrationMerge(log):
     #return sysconffile_tabs()+hardware_tabs()+confscan_tabs()+rpmscan_tabs()+general_tabs('E')+packages_tabs()+rpm_tabs().rsplit(',',1)[0]+'}'
     expansion_json_data = general_tabs('E', log)+packages_tabs()+\
-            rpm_tabs()+hardware_tabs()+confscan_tabs()+\
+            rpm_tabs('E')+hardware_tabs()+confscan_tabs()+\
             rpmscan_tabs('E', log)+sysconffile_tabs()+'}'
 
     log.info('new expansion check json data:{}'.format(expansion_json_data))
