@@ -44,8 +44,12 @@ def general_tabs(sFlag, logger):
             system_list = system_list + middle_data
 
         if line_num == 5:
-            middle_data = '"replaced_software_package_count": "'+line.strip().split('|')[2]+'",'
-            system_list = system_list + middle_data
+            if sFlag == 'A':
+                middle_data = '"replaced_software_package_count": "'+line.strip().split('|')[2]+'",'
+                system_list = system_list + middle_data
+            else:
+                middle_data = '"replaced_software_package_count": " ",'
+                system_list = system_list + middle_data
 
         if line_num == 6:
             middle_data = '"compatible_software_package_count": "'+line.strip().split('|')[2]+'",'
@@ -56,16 +60,24 @@ def general_tabs(sFlag, logger):
             system_list = system_list + middle_data
 
         if line_num == 8:
-            package_count = line.strip().split('|')[2]
+            if sFlag == 'A':
+                package_count = line.strip().split('|')[2]
             
         if line_num == 9:
             layered_flag = True
-            layered_grading = ',根据分层分级算法的兼容度为%s%%' %(line.strip())
-            middle_data = '"software_package_count": "'+ package_count + layered_grading +'"},'
-            system_list = system_list + middle_data
+            if sFlag == 'A':
+                layered_grading = ',根据分层分级算法的兼容度为%s%%' %(line.strip())
+                middle_data = '"software_package_count": "'+ package_count + layered_grading +'"},'
+                system_list = system_list + middle_data
+            else:
+                middle_data = '"software_package_count": " "},'
+                system_list = system_list + middle_data
 
     if not layered_flag:
-        middle_data = '"software_package_count": "'+ package_count + '"},'
+        if sFlag == 'A':
+            middle_data = '"software_package_count": "'+ package_count + '"},'
+        else:
+            middle_data = '"software_package_count": " "},'
         system_list = system_list + middle_data
         logger.info('Failed to write the compatibility of the hierarchical algorithm Procedure,Json data is not affected')
         logger.info('Please check whether to write file of the 9 number of line {}'.format(sysinfo_name))
