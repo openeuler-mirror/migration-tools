@@ -3,6 +3,7 @@ import sys
 import rpm
 import json
 import re
+import platform
 
 from logger import migration_log
 from mig_merge.migrationTools.scanRPM.scan_rpm import get_current_pkg_list
@@ -11,6 +12,8 @@ from mig_merge.config import FixedInfo
 
 def c_abi_check_sys_type():
     path = '/etc/os-version'
+    if not os.path.exists(path):
+        os.system("yum -y install license-config")
     if os.path.exists(path):
         with open(path,'r') as v:
             ret = v.readlines()
@@ -34,7 +37,6 @@ def system_version_id():
     c8 = ['1020a', '1021a', '1050a']
     c7 = ['1000c', '1001c', '1002a','1002c']
     system_type = c_abi_check_sys_type()
-    print('---------'+system_type)
     if not system_type:
         os_version_ret = platform.dist()
         osname = os_version_ret[1].strip()
