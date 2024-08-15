@@ -742,10 +742,6 @@ def MutilThread(nameList, Query, muth_logger):
     return True
 
 #print('=============================  START TIME ： %s  =============================' %(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-#rst = migrate_before_abi_chk(Queue, 1)
-#rst = migrate_behind_abi_chk()
-#rst = agent_ABI_check_result()
+#rst = migrate_before_abi_chk(Queue, 1, 'A')
 #Queue.queue.clear() 
-#print(rst)
 #print('=============================  END TIME ：%s  =============================' %(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-
