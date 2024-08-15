@@ -174,7 +174,7 @@ CREATE TABLE `report_info` (
   `report_name` varchar(256) DEFAULT NULL,
   `report_type` varchar(256) DEFAULT NULL,
   `agent_ip` varchar(256) DEFAULT NULL,
-  `report_contect` mediumtext
+  `report_contect` longtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
