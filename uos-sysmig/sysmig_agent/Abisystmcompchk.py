@@ -605,196 +605,12 @@ def get_cur_sys_info_list(migFlg):
 
     return list_info
 
-def mycopyfile(srcfile, dstfile, logger):
-    if not os.path.exists(srcfile):
-        logger.info("Please check!!!! src file not exit:" +  srcfile)
-        return False 
-    else:
-        fpath,fname=os.path.split(dstfile)
-        if not os.path.exists(fpath):
-            os.makedirs(fpath)
-        copyfile(srcfile,dstfile)
-
-    return dstfile
-
-#Generate report name
-def create_migrate_report_name(flag, logg):
-
-    migrate_before_report_path = '/var/tmp/uos-migration/UOS_analysis_report/'
-    migrate_behind_report_path = '/var/tmp/uos-migration/UOS_migration_completed_report/'
-
-    migrate_report_before_sample_name = 'UOS_migration_report_HOSTIP_HOSTNAME_YYYYMMDDHHMM-BEFORE.xls'
-    migrate_report_behind_sample_name = 'UOS_migration_report_HOSTIP_HOSTNAME_YYYYMMDDHHMM-BEHIND.xls'
-
-    hostip = get_local_ip()
-    hostname = socket.gethostname()
-    hosttime = datetime.datetime.now().strftime('%Y%m%d%H%M')
-    abs_path = os.path.abspath('sysmig_agent/data/')
-
-    if not os.path.exists(migrate_behind_report_path):
-        os.makedirs(migrate_behind_report_path)
-
-    #migration before
-    if flag=='0':
-        migrate_name_01 = migrate_report_before_sample_name.replace('HOSTIP', hostip)
-        migrate_name_02 = migrate_name_01.replace('HOSTNAME', hostname)
-        migrate_name = migrate_before_report_path + migrate_name_02.replace('YYYYMMDDHHMM-BEFORE', hosttime)
-        migrate_path_name_sample = abs_path + '/' +  migrate_report_before_sample_name
-
-    #migration behind
-    elif flag=='1':
-        migrate_name_01 = migrate_report_behind_sample_name.replace('HOSTIP', hostip)
-        migrate_name_02 = migrate_name_01.replace('HOSTNAME', hostname)
-        migrate_name = migrate_behind_report_path + migrate_name_02.replace('YYYYMMDDHHMM-BEHIND', hosttime)
-        migrate_path_name_sample = abs_path + '/' + migrate_report_behind_sample_name
-
-    #Rename the real report name
-    return mycopyfile(migrate_path_name_sample, migrate_name, logg)
-
-def write_row_and_column(report_name_rc, value_list, index):
-
-    row_column_rb = xlrd.open_workbook(report_name_rc, formatting_info=True)
-    r_sheet = row_column_rb.sheet_by_index(index)
-    row_column_wb = copy(row_column_rb)
-    row_column_sheet = row_column_wb.get_sheet(index)
-
-    for data in value_list:
-        row_column_sheet.write(int(data.split('|')[0]),int(data.split('|')[1]),data.split('|')[2])
-    row_column_wb.save(report_name_rc)
-
-def write_column_by_column(report_name_cc, column_value_list, row, column, index):
-
-    column_column_rb = xlrd.open_workbook(report_name_cc, formatting_info=True)
-    r_sheet = column_column_rb.sheet_by_index(index)
-    column_column_wb = copy(column_column_rb)
-    column_column_sheet = column_column_wb.get_sheet(index)
-
-    row_cc = row
-    for column_data in column_value_list:
-        column_column_sheet.write(row_cc, column, column_data.replace('\n','').split(',')[0])
-        row_cc = row_cc + 1
-
-    column_column_wb.save(report_name_cc)
-
-def write_row_by_row(report_name_rr, row_value_list, row, column, index):
-
-    row_row_rb = xlrd.open_workbook(report_name_rr, formatting_info=True)
-    r_sheet = row_row_rb.sheet_by_index(index)
-    row_row_wb = copy(row_row_rb)
-    row_row_sheet = row_row_wb.get_sheet(index)
-
-    before_summary_info = r_sheet.row_values(0)[0].replace('INCOMP_NUM', str(incomp_pkg_num()))
-    row_row_sheet.write(0, 0, before_summary_info)
-
-    row_rr = row
-    column_rr = column
-    for row_data in row_value_list:
-        row_list = row_data.replace('\n','').split(',')
-        i = column 
-        column_rr = column
-        while i < (len(row_list) - 1):
-            if i==2 or i==3:
-                i = i + 1
-                continue
-            elif i==5:
-                row_row_sheet.write(row_rr, column_rr, row_list[i]+','+row_list[i+1])
-            else:
-                row_row_sheet.write(row_rr, column_rr, row_list[i])
-            i = i + 1
-            column_rr = column_rr + 1
-        row_rr = row_rr + 1
-    row_row_wb.save(report_name_rr)
-
-def write_summary_data(report_name_summary, index, flag):
-    summary_rb = xlrd.open_workbook(report_name_summary, formatting_info=True)
-    r_sheet = summary_rb.sheet_by_index(index)
-    summary_wb = copy(summary_rb)
-    summary_sheet = summary_wb.get_sheet(index)
-    
-    if flag=='0':
-        with open(abi_comp_chk, 'r') as fs:
-            comp_num = len(fs.readlines())
-        before_summary_num = comp_num + incomp_pkg_num()
-
-        before_summary_info = r_sheet.row_values(0)[0].replace('REPLACE_NUM', str(before_summary_num))
-        summary_sheet.write(0, 0, before_summary_info)
-        summary_sheet.write(2, 0, get_cur_sys_version())
-
-    elif flag=='1':
-        migrbef_sysver = exp_rst_dir + 'sys-version-tmp'
-
-        with open(abi_comp_chk, 'r') as fsp:
-            comp_num = len(fsp.readlines())
-
-        with open(migration_system_install, 'r') as fsmp:
-            install_comp_num = str(len(fsmp.readlines()))
-        behind_summary_num = comp_num + incomp_pkg_num()
-
-        with open(migrbef_sysver, 'r') as file_object:
-            sys_version = file_object.read()
-
-        #20220107 modify lihp: keep the history data
-        #os.remove(migrbef_sysver)  
-
-        behind_summary_info_tmp = r_sheet.row_values(0)[0].replace('REPLACE_NUM', str(behind_summary_num))
-        behind_summary_info = behind_summary_info_tmp.replace('INSTALL_NUM', install_comp_num)
-        summary_sheet.write(0, 0, behind_summary_info)
-        summary_sheet.write(2, 0, sys_version)
-        summary_sheet.write(2, 2, get_cur_sys_version())
-
-    summary_wb.save(report_name_summary)
-
-#Deal report of sheet by num value
-def switch_write_migrate_report(report_name, num, flag):
-    #sheet[0]-system info: write data:row|column|value
-    if num == 0:
-        if flag=='0':
-            migration_value_list = get_cur_sys_info_list()
-        elif flag=='1':
-            migration_value_list = get_migration_sys_info()
-        write_row_and_column(report_name, migration_value_list, num)
-    #sheet[1]-rpm package 
-    elif num == 1:
-        with open(current_system_unique, 'r') as fr_cur:
-            column_cur_list = fr_cur.readlines()
-        write_column_by_column(report_name, column_cur_list, 3, 0, num)
-
-        if flag=='0':
-            #sheet[1]:2-column
-            with open(migration_system_total, 'r') as fr_migr:
-                column_migr_list = fr_migr.readlines()
-            write_column_by_column(report_name, column_migr_list, 3, 1, num)
-        elif flag=='1':
-            #sheet[1]:2-column
-            with open(migration_system_install, 'r') as fr_migr:
-                column_migr_list = fr_migr.readlines()
-            write_column_by_column(report_name, column_migr_list, 3, 1, num)
-
-            #sheet[1]:3-row
-            with open(migration_system_total, 'r') as fr_migr:
-                column_migr_list = fr_migr.readlines()
-            write_column_by_column(report_name, column_migr_list, 3, 2, num)
-
-        #summary data write to sheet[1]
-        write_summary_data(report_name, num, flag)
-
-    #sheet[2]-ABI compartion
-    elif num == 2:
-        with open(abi_comp_chk, 'r') as fr_comp:
-            column_comp_list = fr_comp.readlines()
-        write_column_by_column(report_name, column_comp_list, 1, 0, num)
-    #sheet[3]-ABI Incompartion
-    elif num == 3:
-        with open(abi_incomp_chk, 'r') as fr_incomp:
-            column_incomp_list = fr_incomp.readlines()
-        write_row_by_row(report_name, column_incomp_list, 2, 0, num)
-    
 def get_system_unique_pkg(current_pkg_list, download_pkg_list):
     #clean history data
-    if os.path.exists(current_system_unique):
-        os.remove(current_system_unique)
+    if os.path.exists(FixedInfo.unique_pkgname):
+        os.remove(FixedInfo.unique_pkgname)
 
-    fcw = open(current_system_unique, 'w')
+    fcw = open(FixedInfo.unique_pkgname, 'w')
     for data in set(current_pkg_list).difference(set(download_pkg_list)):
         fcw.write(data + '\n')
     fcw.close()
@@ -812,7 +628,7 @@ def migrate_before_abi_chk(q_query, task_status, mig_flag):
     log = logger_init()
     log.info('==============  START TIME ：'+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+' ==============')
 
-    download_path = local_dir + 'uos/rpms'
+    download_path = FixedInfo.local_dir + '/data/uos/rpms'
     current_packages_string = get_system_pkg_name(Flag, log)
     if not current_packages_string:
         msg_tup = ('0', task_status_error)
@@ -892,28 +708,6 @@ def migrate_before_abi_chk(q_query, task_status, mig_flag):
     q_query.put(msg_tup)
     log.info('The current progress has been completed:' + str(msg_tup))
     log.info('==============  END TIME ：'+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+' ==============')
-
-    return '0'
-
-
-#Check the environment after the migration and generate a detection report
-def migrate_behind_abi_chk():
-    i=0
-    Flag='1'
-
-    log = logger_init()
-
-    current_install_uos_list = get_system_pkg_name(Flag, log)
-    if not current_install_uos_list:
-        return False
-
-    migrate_behind_report_name = create_migrate_report_name(Flag, log)
-    if not migrate_behind_report_name:
-        return False
-
-    while i < 4:
-        write_migrate_report_rst =switch_write_migrate_report(migrate_behind_report_name, i, Flag)
-        i = i + 1
 
     return '0'
 
