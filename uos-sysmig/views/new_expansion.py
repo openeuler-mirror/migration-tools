@@ -20,7 +20,7 @@ def get_add_repo_data(data):
                           "agent_ip in {};".format(tuple(agent_ip_list))
     get_task_status = DBHelper().execute(task_status_sql).fetchall()
     if len(get_task_status) != len(agent_ip_list):
-        data = {"centos7_x86": "", "centos8_x86": "", "centos7_aarch64": "", "centos8_aarch64": ""}
+        data = {"migration_after_aarch64": "", "migration_after_x86_64": ""}
         json_data = json.dumps(data)
         return json_data
     else:
@@ -37,18 +37,10 @@ def get_add_repo_data(data):
 
         get_repo_status = DBHelper().execute(repo_status_sql).fetchall()
         for i in range(0, len(get_repo_status)):
-            if get_repo_status[i][0][0] == '1':
-                data["migration_before_x86_64"] = 'failed'
-            else:
-                data["migration_before_x86_64"] = 'success'
-            if get_repo_status[i][0][1] == '1':
+            if get_repo_status[i][0][2] == '1':
                 data["migration_after_x86_64"] = 'failed'
             else:
                 data["migration_after_x86_64"] = 'success'
-            if get_repo_status[i][0][2] == '1':
-                data["migration_before_aarch64"] = 'failed'
-            else:
-                data["migration_before_aarch64"] = 'success'
             if get_repo_status[i][0][3] == '1':
                 data["migration_after_aarch64"] = 'failed'
             else:
