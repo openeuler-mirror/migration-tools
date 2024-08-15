@@ -9,7 +9,7 @@ from mig_merge.migrationTools.scanRPM.scan_rpm import parsed_pkg_to_json,get_cur
 from mig_merge.migrationTools.scanRPM.scan_rpm import ParsedPkgInfoAdd
 from mig_merge.merge.gen_sqlite import gen_sqlite
 
-def rpmscan_tabs(logger):
+def rpmscan_tabs(mig_flag, logger):
     exclude_fonts = True
     add_tags = True
 
@@ -33,7 +33,7 @@ def rpmscan_tabs(logger):
             filted_installed_pkgs.append(pkg)
         installed_pkgs = filted_installed_pkgs
 
-    sqlite_list = gen_sqlite(logger)
+    sqlite_list = gen_sqlite(logger, mig_flag)
     if sqlite_list == '-1':
         return '-1'
 
