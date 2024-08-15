@@ -331,29 +331,19 @@ class RepoFileAdd(object):
     增量扩容场景下,检测并配置repo源
     '''
     def __init__(self, data):
-        self.migration_before = "migration_before"
         self.migration_after = "migration_after"
         self.data = data
-        self.before_repo = self.migration_before + '_' + platform.machine().strip('')
-        self.before_baseurl = ''
         self.after_repo = self.migration_after + '_' + platform.machine().strip('')
         self.after_baseurl = ''
         self.task_id = json.loads(self.data).get('task_id')
-        self.before_baseurl = json.loads(self.data).get(self.before_repo).replace('$basearch',
-                                                                                  platform.machine().strip('')).strip(
-            '/')
-        self.after_baseurl = json.loads(self.data).get(self.after_repo).replace('$basearch',
-                                                                                platform.machine().strip('')).strip('/')
+        self.after_baseurl = json.loads(self.data).get(self.after_repo).replace('$basearch',platform.machine().strip('')).strip('/')
 
     def run(self):
-        if not self.before_baseurl or not self.after_baseurl:
-            self.before_baseurl = self.after_baseurl = '1'
         # 更新SQL任务状态
         statue = 1
         sql_task_statue(statue, self.task_id)
         # 发送消息给Server更新任务流状态
         post_server('task_start', self.task_id)
-        initRepoFile_add(self.migration_before, self.before_baseurl)
         initRepoFile_add(self.migration_after, self.after_baseurl)
         repo_state = ''
         if 'x86_64' == platform.machine().strip(''):
