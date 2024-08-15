@@ -5,6 +5,7 @@ from connect_sql import DBHelper
 import pandas as pd
 from datetime import datetime
 from sysmig_agent.utils import *
+from sysmig_agent.share import getSysMigConf
 from flask import send_from_directory
 
 
@@ -112,6 +113,11 @@ def export_host_info(data):
     df = pd.DataFrame(data)
     df.columns = ['主机IP', '主机名', '在线状态', '操作系统类型', '架构',  '历史失败原因', '迁移时间', '迁移状态']
     time = datetime.now().strftime('%Y-%-m-%d-%H-%M-%S')
+    uos_sysmig_conf = json.loads(getSysMigConf())
+    ip = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
+    insert_report_sql = "insert into report_info(create_time, report_name, report_type, agent_ip) values (%s, %s, %s, %s);"
+    val = ((time, "host_info_%s.xls" % time, "主机列表", ip),)
+    DBHelper().insert(insert_report_sql, val)
     xls = "/var/uos-migration/host_info_%s.xls" % time
     df.to_excel(xls, index=False)
 
