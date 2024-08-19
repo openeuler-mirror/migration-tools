@@ -4,8 +4,8 @@ import glob
 import os
 import shutil
 
-from sysmig_agent.migrationTools.scanConf.utils import run_cmd
-from sysmig_agent.migrationTools.utils.logger import Logger
+from mig_merge.migrationTools.scanConf.utils import run_cmd
+from mig_merge.migrationTools.utils.logger import Logger
 
 logger = Logger(__name__)
 
@@ -54,6 +54,7 @@ class ParamData():
                 new_conf.update({"confName": conf["confName"]})
                 new_conf.update({"desc": conf["desc"]})
                 new_conf.update({"diff": conf["diff"]})
+                new_conf.update({"diffContent": conf["diffContent"]})
                 if len(new_conf) > 0:
                     new_confList.append(new_conf)
 
@@ -128,6 +129,14 @@ class ParamData():
                 run_cmd(cmd)
                 os.chdir(pwd)
                 conf.update({"diff": diff_dir + "/" + diff_basename})
+
+                cmd1 = f"cat {diff_dir}/{diff_basename}"
+                returncode, stdout, stderr = run_cmd(cmd1)
+                diff_tmp = ""
+                for tmp in stdout:
+                    tmp_01 = tmp+'\n'
+                    diff_tmp = diff_tmp + tmp_01
+                conf.update({"diffContent": diff_tmp})
         logger.info("The diff file has been generated.")
         # logger.info("data: %s" % self.data)
 

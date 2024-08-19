@@ -6,6 +6,8 @@ import json
 
 from mig_merge.config import FixedInfo
 from mig_merge.migrationTools.scanHardware import utils
+from mig_merge.migrationTools.exportSysConf.paramdata import ParamData
+from mig_merge.migrationTools.utils.config import PathConf
 
 def sysconffile_tabs():
     '''硬件兼容性分析
