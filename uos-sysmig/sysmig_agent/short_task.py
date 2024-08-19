@@ -2,7 +2,7 @@ from sysmig_agent.share import *
 import urllib.request
 from sysmig_agent.agent_request import post_server
 
-from sysmig_agent.migration import get_old_osnameversion
+from sysmig_agent.migration import get_old_osnameversion, get_old_osversion
 from connect_sql import DBHelper
 
 
@@ -15,9 +15,7 @@ def os_kernel():
 
 def os_repo_kernel():
     version_list = []
-    os_version_ret = platform.dist()
-    version = os_version_ret[1].split('.', -1)
-    AGENT_OS = os_version_ret[0] + version[0]
+    version = get_old_osversion()
     try:
         ret = os.popen("yum repolist all|awk '{print $1}'")
     except:
@@ -260,7 +258,7 @@ def repoFileCheck(baseurl):
 
 
 def check_repo(data):
-    agent_os = get_agent_os()
+    agent_os = get_old_osversion()
     if '7' in agent_os:
         agent_os = 'centos7'
     elif '8' in agent_os:
@@ -278,21 +276,18 @@ def check_repo(data):
     # 初始化去除旧的repo文件
     init_remove_oldrepo()
     # 传递baseurl，配置repo文件
-    initRepoFile(baseurl)
-    # 建立软件源缓存，判断软件源是否可用
-    if '8' in agent_os:
-        repo_state = repoFileCheck(baseurl + '/AppStream/repodata')
-    elif '7' in agent_os:
-        repo_state = repoFileCheck(baseurl + '/repodata')
-    else:
-        repo_state = '1'
+    # initRepoFile(baseurl)
+    with open('/etc/yum.repos.d/switch-to-uos.repo', 'w+') as frepo:
+        frepo.write(baseurl)
+        frepo.close()
+    repo_state = 0
 
     sql = "UPDATE agent_info SET repo_status = '{}' WHERE agent_ip = '{}';".format(repo_state, get_local_ip())
     try:
         ret = DBHelper().execute(sql)
         statue = 2
-    except:
-        statue = 2
+    except Exception as e:
+        statue = 3
         sql_task_statue(statue, task_id)
     sql_task_statue(statue, task_id)
     post_server('task_close', task_id)
