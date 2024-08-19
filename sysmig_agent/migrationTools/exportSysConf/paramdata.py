@@ -205,8 +205,9 @@ class ParamData():
 
             if returncode != 0:
                 ## package changed
-                if rpm.split('.')[-2] == "centos-release":
-                    rpm = "centos-linux-release"
+                #if rpm.split('.')[-2] == "centos-release":
+                if (rpm.split('.')[-2] == "centos-release") or (rpm.split('.')[-2] == "centos-linux-release"):
+                    rpm = "uos-release"
                     cmd = f'yumdownloader --destdir={dl_dir} {rpm}'
                     logger.info(f"running: {cmd}")
                     returncode, stdout, stderr = run_cmd(cmd)
