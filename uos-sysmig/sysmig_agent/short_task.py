@@ -2,7 +2,7 @@ from sysmig_agent.share import *
 import urllib.request
 from sysmig_agent.agent_request import post_server
 
-from sysmig_agent.migration import get_old_osnameversion, get_old_osversion
+from sysmig_agent.migration import get_old_osnameversion, get_old_osversion, disable_exclude
 from connect_sql import DBHelper
 
 
@@ -73,8 +73,14 @@ def check_kernel(data):
     post_server('task_start', task_id)
     # agent kernel
     agent_kernel = os_kernel()
+    agent_repo_kernel = "0"
     # agent repo kernel
-    agent_repo_kernel = os_repo_kernel()
+    # disable yum exclude configuration
+    try:
+        disable_exclude()
+        agent_repo_kernel = os_repo_kernel()
+    except Exception as e:
+        migration_log.error(e)
     agent_ip = get_local_ip()
     statue = 1
     sql = "UPDATE agent_info SET agent_kernel = '{}',agent_repo_kernel = '{}' WHERE agent_ip = '{}';".format(
