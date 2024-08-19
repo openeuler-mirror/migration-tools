@@ -2,6 +2,7 @@ from sysmig_agent.share import *
 import urllib.request
 from sysmig_agent.agent_request import post_server
 
+from sysmig_agent.migration import get_old_osnameversion
 from connect_sql import DBHelper
 
 
@@ -99,7 +100,7 @@ def check_info():
     sql_task_statue(statue, task_id)
     # 发送消息给Server更新任务流状态
     post_server('task_start', task_id)'''
-    from sysmig_agent.migration import get_old_osnameversion
+
     if get_old_osnameversion():
         return
         # 取agent系统类型
