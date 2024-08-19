@@ -3,7 +3,6 @@
 
 import os
 import json
-import platform
 
 from mig_merge.config import FixedInfo
 from mig_merge.migrationTools.scanHardware import utils
@@ -13,8 +12,14 @@ def sysconffile_tabs():
         按照前后端接口，生成json格式数据，对应html报告tab页
     '''
 
-    json_str = '"sysconffile_tabs": {"confGroupName": "文件系统配置","confList": []}'
-    return json_str
+    sysconffile_tabs_json = '"sysconffile_tabs": {"name": "SysSconf","data": '
+
+    PARAM_CONFIG_DIR = os.path.join(PathConf.data_path, "export-config")
+    param_config_file = os.path.join(PARAM_CONFIG_DIR, "param_config.json")
+    param_data = ParamData(param_config_file)
+
+    sysconf_str = sysconffile_tabs_json + str(json.dumps(param_data.return_data)) + '}'
+    return sysconf_str
 
 def main():
     sysconffile_tabs()
