@@ -54,7 +54,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/migration-tools
 cp -r ut-Migration-tools/* $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
 
 # Install server config
-%{__cp} -r $RPM_BUILD_ROOT/usr/lib/migration-tools-server/server/migration-tools.conf $RPM_BUILD_ROOT/etc/migration-tools
+%{__cp} -r $RPM_BUILD_ROOT/usr/lib/migration-tools-server/server/migration-tools-server.service $RPM_BUILD_ROOT/etc/migration-tools
 
 
 %post -n migration-tools-server
