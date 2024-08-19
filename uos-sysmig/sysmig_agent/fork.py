@@ -256,6 +256,8 @@ def check_add_environment(data):
 def mig_modify_statue(task_id):
     if not get_mig_state(task_id):
         sql_mig_statue('00')
+    if get_mig_state(task_id) == "48":
+        sql_mig_statue('02')
         '''
     else:
         # Too many migration requests
