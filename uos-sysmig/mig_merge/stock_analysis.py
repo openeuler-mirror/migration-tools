@@ -6,8 +6,8 @@ import socket
 
 from mig_merge.config import FixedInfo
 from mig_merge.merge.utils import dataplaceholder_replace
-import mig_merge.stock_replace.stock as stock
-import mig_merge.stock_replace.confirm as confirm 
+from sysmig_agent.share import get_local_ip
+from mig_merge.stock_replace.confirm import gen_migration_info
 
 def stock_replace_analysis():
     '''
@@ -18,7 +18,7 @@ def stock_replace_analysis():
     '''
     
     fixed_name = 'UOS_migration_completed_report_'
-    hostinfo = stock.get_local_ip() + '_' + socket.gethostname()
+    hostinfo = get_local_ip() + '_' + socket.gethostname()
     report_name = fixed_name + hostinfo + "_" + FixedInfo.timestamp + ".html"
 
     report_analysis_dir = FixedInfo.report_analysis_dir
@@ -28,7 +28,7 @@ def stock_replace_analysis():
     report_html = os.path.join(report_analysis_dir, report_name)
 
     return dataplaceholder_replace(FixedInfo.stock_template_analysis,
-            report_html, confirm.gen_migration_info())
+            report_html, gen_migration_info())
 
 def main():
     stock_replace_analysis()

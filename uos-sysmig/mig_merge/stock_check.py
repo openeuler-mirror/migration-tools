@@ -7,7 +7,8 @@ from mig_merge.config import FixedInfo
 from mig_merge.merge.utils import dataplaceholder_replace
 from mig_merge.migrationTools.utils.logger import Logger
 from mig_merge.migrationTools.scanHardware import utils
-import mig_merge.stock_replace.stock as stock 
+from mig_merge.stock_replace.stock import xlsTohtml
+from sysmig_agent.share import get_local_ip
 
 logger = Logger(__name__)
 
@@ -21,7 +22,7 @@ def stock_replace_check(logger):
     '''
 
     fixed_name = 'UOS_migration_report_'
-    hostinfo = stock.get_local_ip() + '_' + socket.gethostname()
+    hostinfo = get_local_ip() + '_' + socket.gethostname()
     report_name = fixed_name + hostinfo + "_" + FixedInfo.timestamp + ".html"
 
     report_check_dir = FixedInfo.report_check_dir
@@ -30,7 +31,7 @@ def stock_replace_check(logger):
     report_html = report_check_dir + '/' + report_name 
 
     return dataplaceholder_replace(FixedInfo.stock_template_check, 
-            report_html, stock.xlsTohtml(logger))
+            report_html, xlsTohtml(logger))
 
 if __name__ == "__main__":
     stock_replace_check()
