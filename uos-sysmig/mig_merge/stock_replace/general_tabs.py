@@ -2,12 +2,41 @@ import os
 import sys
 import json
 import socket
-from shutil import copyfile
 
 from logger import migration_log
 from mig_merge.config import FixedInfo
-from mig_merge.migrationTools.scanHardware import utils
 from mig_merge.stock_replace.confirm import get_cur_sys_version
+from mig_merge.migrationTools.scanConf.utils import run_cmd
+
+def deal_i686_pkg():
+    rst_data = ''
+    head_data = '"abnormal_pkg":{"name":"异常安装包:",'
+    #cmd = 'rpm -qa | grep noarch'
+    cmd = 'rpm -qa | grep i686'
+    status, data, error = run_cmd(cmd)
+    if status == 0:
+        Num = 0
+        rst_data = '"data":['
+        for line in data:
+            if line.strip() == '':
+                continue
+
+            if (Num%2) == 0:
+                rst_data = rst_data +'{"soft_package":"'+line+'",'
+            else:
+                rst_data = rst_data +'"ware_package":"'+line+'"},'
+
+            Num = Num + 1
+
+        if (Num%2) == 1:
+            rst_data = rst_data.rsplit(',',1)[0]+'},'
+
+        rst_data = rst_data.rsplit(',',1)[0]+']'
+        rst_data = head_data+'"num":"'+str(Num)+'",'+rst_data+'}'
+    else:
+        rst_data = head_data + '"num":"0","data":[]}'
+
+    return rst_data
 
 def general_tabs(sFlag, logger):
     '''
@@ -90,12 +119,5 @@ def general_tabs(sFlag, logger):
         logger.info('Failed to write the compatibility of the hierarchical algorithm Procedure,Json data is not affected')
         logger.info('Please check whether to write file of the 9 number of line {}'.format(sysinfo_name))
 
-    return system_list
-
-def main():
-    general_tabs()
-
-
-if __name__ == "__main__":
-    main()
-
+    rst_data = system_list+deal_i686_pkg()+'},'
+    return rst_data
