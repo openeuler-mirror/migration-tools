@@ -11,9 +11,10 @@ from flask import request
 import time
 import json
 import re
+import base64
 
 
-os.chdir('/usr/lib/uos-sysmig-server')
+os.chdir('/usr/lib/migration-tools-server')
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 
 
@@ -42,7 +43,7 @@ def import_host_info(data):
         agent_username = i.get('hostname')
         agent_passwd = i.get('agent_password')
         if 'agent_password' in i:
-            agent_passwd = i.get('agent_password')
+            agent_passwd = base64.b64decode(i.get('agent_password')).decode()
         else:
             agent_passwd = ''
         check_type = i.get('type')
