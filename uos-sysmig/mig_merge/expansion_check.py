@@ -6,10 +6,10 @@ import socket
 
 from mig_merge.config import FixedInfo
 from mig_merge.merge.utils import dataplaceholder_replace
-from mig_merge.stock_replace.stock import get_local_ip
+from sysmig_agent.share import get_local_ip
 from mig_merge.new_expansion.expansion import MigrationMerge
 
-def new_expansion_check(logger):
+def new_expansion_check(logger, query, status):
     '''
         应用场景：新增扩容迁移检查-系统基本信息、软件包对比、RPM兼容性、
                   硬件兼容性评估、配置兼容性评估、RPM兼容性评估、系统修改配置
@@ -28,7 +28,7 @@ def new_expansion_check(logger):
     report_html = os.path.join(report_expansion_dir, report_name)
 
     return dataplaceholder_replace(FixedInfo.expansion_template,
-        report_html, MigrationMerge(logger))
+        report_html, MigrationMerge(logger, query, status))
 
 if __name__ == "__main__":
     new_expansion_check()

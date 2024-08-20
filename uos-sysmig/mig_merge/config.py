@@ -22,6 +22,13 @@ class FixedInfo():
     report_expansion_dir = os.path.join(local_dir, 'UOS_analysis_report_add')
     report_analysis_dir = os.path.join(local_dir, 'UOS_migration_completed_report')
 
+    #公关招投标，信息收集导出json文件目录
+    pr_json_path = os.path.join(local_dir, 'data/sysconf')
+    pr_data_path = os.path.join(local_dir, 'data/.a')
+    pr_diff_path = os.path.join(local_dir, 'data/.diff')
+    pr_cfg_path = 'mig_merge/data/pr_conf'
+    pr_cfg_file = os.path.join(pr_cfg_path, 'pr_confsysconf.json')
+
     #前端html报告模板
     stock_template_analysis = os.path.join(template_dir, 'stock_replace_analysis.html')
     stock_template_check = os.path.join(template_dir, 'stock_replace_check.html')
@@ -56,7 +63,7 @@ class FixedInfo():
     compatability_rpmpkg = os.path.join(inventory_dir, 'agent_ABI_check_result.csv')
 
     #存量替换迁移检查-前后端接口中涉及固定格式数据
-    page_system_info = '{"type": "stock_replace_check","general_tabs": {"name": "系统基本信息",'
+    page_system_info = '{"type": "stock_replace_check","general_tabs": {"system_info":{"name": "系统基本信息",'
     page_softpkg = '"packages_tabs": {"name": "软件包对比",'
     current_head_info = page_softpkg + '"current_os_item": {"name": "当前系统特有（不替换）'
     total_head_info = '"total_list_item": {"name": "迁移系统软件包总列表 UOS Server Enterprise-C 20"'
@@ -71,7 +78,7 @@ class FixedInfo():
     expansion_haed = '{"type": "new_expansion_check",'
     page_hardware_tabs = '"hardware_tabs": {"name": "硬件兼容性","data": '
     page_rpm_tabs = '"rpm_tabs": {"name": "RPM兼容性","data": ['
-    expansion_gen_tabs = '{"type": "new_expansion_check","general_tabs": {"name": "系统基本信息",'
+    expansion_gen_tabs = '{"type": "new_expansion_check","general_tabs": {"system_info":{"name": "系统基本信息",'
 
     #融合1xxxe版
     expansion_page_head = '{"type": "new_expansion_check","sysconffile_tabs": {"name": "SysSconf","data": ['
