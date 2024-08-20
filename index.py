@@ -5,7 +5,7 @@
 import os
 import json
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
-os.chdir('/usr/lib/uos-sysmig-server')
+os.chdir('/usr/lib/migration-tools-server')
 from connect_sql import *
 from logger import *
 from sysmig_agent.share import getSysMigConf
@@ -16,7 +16,7 @@ from flask_cors import CORS
 
 
 # import MySQLdb
-os.chdir('/usr/lib/uos-sysmig-server')
+os.chdir('/usr/lib/migration-tools-server')
 app = Flask(__name__)
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 CORS(app, resources=r'/*')
