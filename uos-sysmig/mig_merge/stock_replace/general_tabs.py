@@ -114,7 +114,7 @@ def general_tabs(sFlag, logger):
         if sFlag == 'A':
             middle_data = '"software_package_count": "'+ package_count + '" '
         else:
-            middle_data = '"software_package_count": " "},'
+            middle_data = '"software_package_count": " "'
         system_list = system_list + middle_data
         logger.info('Failed to write the compatibility of the hierarchical algorithm Procedure,Json data is not affected')
         logger.info('Please check whether to write file of the 9 number of line {}'.format(sysinfo_name))
