@@ -160,6 +160,7 @@ export default {
         },
         root密码: {
           prop: "agent_password",
+          type: String,
           // password could be empty, A `type` function only gets called for non-empty values
         },
         权限验证方式: {
@@ -192,7 +193,13 @@ export default {
       readXlsxFile(this.uploadFile, { schema }).then(({ rows, errors }) => {
         this.importExcelData = rows;
         console.log("content of excel", this.importExcelData);
-
+        this.importExcelData.map((item,index)=>{
+          if(item){
+              let Base64=require("js-base64").Base64
+             this.importExcelData[index].agent_password=Base64.encode(this.importExcelData[index].agent_password)
+            }
+       })
+       console.log("zhi",this.importExcelData)
         this.$http
           .post("import_host_info", {
             mod: "import_host_info",
