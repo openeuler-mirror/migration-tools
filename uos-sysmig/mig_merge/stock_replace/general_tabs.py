@@ -104,20 +104,20 @@ def general_tabs(sFlag, logger):
             layered_flag = True
             if sFlag == 'A':
                 layered_grading = ',根据分层分级算法的兼容度为%s%%' %(line.strip())
-                middle_data = '"software_package_count": "'+ package_count + layered_grading +'"},'
+                middle_data = '"software_package_count": "'+ package_count + layered_grading +'",'
                 system_list = system_list + middle_data
             else:
-                middle_data = '"software_package_count": " "},'
+                middle_data = '"software_package_count": " "'
                 system_list = system_list + middle_data
 
     if not layered_flag:
         if sFlag == 'A':
-            middle_data = '"software_package_count": "'+ package_count + '"},'
+            middle_data = '"software_package_count": "'+ package_count + '" '
         else:
             middle_data = '"software_package_count": " "},'
         system_list = system_list + middle_data
         logger.info('Failed to write the compatibility of the hierarchical algorithm Procedure,Json data is not affected')
         logger.info('Please check whether to write file of the 9 number of line {}'.format(sysinfo_name))
 
-    rst_data = system_list+deal_i686_pkg()+'},'
+    rst_data = system_list+'},'
     return rst_data
