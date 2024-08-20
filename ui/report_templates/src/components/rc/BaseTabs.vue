@@ -3,7 +3,7 @@
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane>
         <template #label>
-          <span>{{ $root.data.general_tabs.name }}</span>
+          <span>{{ $root.data.general_tabs.system_info.name }}</span>
         </template>
         <GeneralTabs />
       </el-tab-pane>
