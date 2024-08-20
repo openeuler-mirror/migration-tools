@@ -69,12 +69,84 @@
         </el-row>
       </el-card>
     </div>
+    <div>
+          <h1 :style="tishiAccount_style"> 异常安装包：{{ $root.data.general_tabs.abnormal_pkg.num}} 个</h1>
+          <div style="width: 100%">
+            <el-table :data="fworkTable.slice(
+            (currentPage - 1) * pageSize,
+            currentPage * pageSize
+          )" 
+               style="margin-top: -25px">
+              <el-table-column prop="soft_package" />
+              <el-table-column prop="ware_package"  />
+              </el-table>
+          </div>
+           <div style="margin-top: 30px">
+      <el-pagination
+        v-model:current-page="currentPage"
+        :page-sizes="[10, 15, 30, 50, 100]"
+        :page-size="pageSize"
+        :pager-count="16"
+        @current-change="currentPageChange"
+        @size-change="handleSizeChange"
+        layout="total, sizes, prev, pager, next"
+        :total="fworkTable.length"
+      >
+      </el-pagination>
+    </div>
+  </div>
   </div>
 </template>
 
 <script>
+import { ref } from "vue";
 export default {
   name: "GeneralTabs",
+   setup() {
+    console.log("setup");
+    const handleChange = (val) => {
+      console.log(val);
+    };
+    const currentPageChange = (val) => {
+      console.log(val);
+      window.scrollTo(0, 460); // TODO: 换成动态计算的
+    };
+
+    return {
+      rpmKeyword: ref(""),
+      handleChange,
+      currentPageChange,
+    };
+  },
+  data(){
+    return {
+      fworkTable:[],
+      currentPage:1,
+       pageSize: 10,
+        tishiAccount_style: {
+        color: "",
+      },
+
+    }
+  },
+  created() {
+   console.log("获取的值",this.$root.data.general_tabs.abnormal_pkg.num)
+    this.fworkTable = this.$root.data.general_tabs.abnormal_pkg.data;
+    if(this.$root.data.general_tabs.abnormal_pkg.num>0){
+        this.tishiAccount_style.color = "red !important";
+
+    }else{
+      this.tishiAccount_style.color = "#303133 !important";
+    }
+   
+    
+  },
+  methods:{
+        handleSizeChange: function (size) {
+      this.pageSize = size;
+     
+    },
+  }
 };
 </script>
 
