@@ -15,6 +15,7 @@ def os_kernel():
 
 def os_repo_kernel():
     version_list = []
+    os_version_ret = platform.dist()
     version = get_old_osversion()
     try:
         ret = os.popen("yum repolist all|awk '{print $1}'")
@@ -22,16 +23,17 @@ def os_repo_kernel():
         ret = os.popen("yum repolist --all|awk '{print $1}'")
     kernel_repo = kernel_repo_name = []
     str_kernel = ''
-    for r in ret.readlines():
-        if not r:
-            continue
-        if 'UniontechOS' in r:
-            kernel_repo.append(r.strip('\n'))
+    rets = ret.readlines()
+    for r in range(1, len(rets)):
+        kernel_repo.append(rets[r].strip('\n'))
     if '8' == version[0]:
         for i in range(len(kernel_repo)):
             # cmd = 'yum repoquery  --nvr kernel --enablerepo ' + kernel_repo[i]
             cmd = 'yum repoquery --repo ' + kernel_repo[i] + ' kernel'
-            ret = str(subprocess.check_output(cmd, shell=True), 'utf-8')[:-1]
+            try:
+                ret = str(subprocess.check_output(cmd, shell=True), 'utf-8')[:-1]
+            except Exception as e:
+                continue
             # except Exception:
             ret = ret.split('\n', -1)
             for i in range(len(ret)):
@@ -45,23 +47,43 @@ def os_repo_kernel():
                         str_kernel = str_kernel + ',' + kernel_version.strip()
                     # print(version_list)
     elif '7' == version[0]:
-        for i in range(len(kernel_repo)):
-            cmd = 'yum list --enablerepo {} kernel'.format(kernel_repo[i])
-            if '3.10.0' in kernel_repo[i]:
-                cmd = 'yum list --enablerepo {} --disablerepo UniontechOS-AppStream  kernel'.format(kernel_repo[i])
+        cmd = "yum provides kernel|grep uelc20"
+        try:
             ret = str(subprocess.check_output(cmd, shell=True), 'utf-8')[:-1]
-            ret = ret.split('\n', -1)
-            for n in range(len(ret)):
-                if 'uelc' in ret[n]:
-                    # kernel_version = re.sub('kernel-.* ', '', ret[n])
-                    kernel_version = re.sub('-.*$', '', ret[n])
-                    kernel_version = kernel_version.split(' ', -1)
-                    kernel_version = kernel_version[len(kernel_version) - 1]
-                    version_list.append(kernel_version.strip())
-                    if not str_kernel:
-                        str_kernel = kernel_version.strip()
-                    else:
-                        str_kernel = str_kernel + ',' + kernel_version.strip()
+        except Exception as e:
+            migration_log.debug(e)
+        lines = ret.split("\n", -1)
+        for line in lines:
+            k = line.split("-", -1)
+            ktmp = k[len(k) - 2].strip()
+            if " " in ktmp:
+                continue
+            if ktmp in str_kernel:
+                continue
+            if str_kernel:
+                str_kernel = str_kernel + ',' + ktmp
+            else:
+                str_kernel += ktmp
+    # for i in range(len(kernel_repo)):
+        #     cmd = 'yum list --enablerepo {} kernel'.format(kernel_repo[i])
+        #     if '3.10.0' in kernel_repo[i]:
+        #         cmd = 'yum list --enablerepo {} --disablerepo *  kernel'.format(kernel_repo[i])
+        #     try:
+        #         ret = str(subprocess.check_output(cmd, shell=True), 'utf-8')[:-1]
+        #     except Exception as e:
+        #         continue
+        #     ret = ret.split('\n', -1)
+        #     for n in range(len(ret)):
+        #         if 'uelc' in ret[n]:
+        #             # kernel_version = re.sub('kernel-.* ', '', ret[n])
+        #             kernel_version = re.sub('-.*$', '', ret[n])
+        #             kernel_version = kernel_version.split(' ', -1)
+        #             kernel_version = kernel_version[len(kernel_version) - 1]
+        #             version_list.append(kernel_version.strip())
+        #             if not str_kernel:
+        #                 str_kernel = kernel_version.strip()
+        #             else:
+        #                 str_kernel = str_kernel + ',' + kernel_version.strip()
     return str_kernel
 
 
