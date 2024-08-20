@@ -62,12 +62,14 @@ int check_user_authority(void)
         char *systemctl = NULL;
         char *mv = NULL;
 	char *mk = NULL;
+	char *gp = NULL;
 
         sudo = (char*)malloc(sizeof(char) * 100);
 	mk = (char*)malloc(sizeof(char) * 100);
         mv = (char*)malloc(sizeof(char) * 100);
         yum = (char*)malloc(sizeof(char) * 200);
         systemctl = (char*)malloc(sizeof(char) * 200);
+	gp = (char*)malloc(sizeof(char) * 200);
 
 	strcpy(sql, "select agent_ip, agent_username from agent_info where agent_online_status = 0");
 	len = get_Len(db_user, db_password, db_database, sql);
@@ -82,20 +84,22 @@ int check_user_authority(void)
                 	{
                         	if(!strcmp(data[i].user,"root"))
                         	{
+					sprintf(gp, "grep VERSION_ID /etc/os-release | awk -F '\\\"' '{print $2}'");
                                         sprintf(mk, "mkdir -p /etc/uos-sysmig && echo $?");
                                         sprintf(mv, "mv -f %s/%s %s && echo $?", "/tmp", CONF_NAME, CONF_PATH);
-                                        sprintf(yum, "yum install %s -y && echo $?", PACK_NAME);
+					sprintf(yum, "yum install %s -y ", PACK_NAME);
                                         sprintf(systemctl, "systemctl %s %s.service && echo success", "restart", PACK_NAME);
                         	}
                         	else
                         	{
+					sprintf(gp, "echo '%s\n'|sudo -S grep VERSION_ID /etc/os-release | awk -F '\\\"' '{print $2}'", data[i].password);
                                         sprintf(mk, "echo '%s\n'|sudo -S mkdir -p /etc/%s && echo $?", data[i].password, "uos-sysmig");
                                         sprintf(sudo, "echo '%s\n'|sudo -S -v && echo $?", data[i].password);
                                         sprintf(mv, "echo '%s\n'|sudo -S mv -f %s/%s %s && echo $?", data[i].password, "/tmp", CONF_NAME, CONF_PATH);
-                                        sprintf(yum, "echo '%s\n'|sudo -S yum install %s -y && echo $?", data[i].password, PACK_NAME);
+					sprintf(yum, "echo '%s\n'|sudo -S yum install %s -y ", data[i].password, PACK_NAME);
                                         sprintf(systemctl, "echo '%s\n'|sudo -S systemctl %s %s.service && echo $?", data[i].password, "restart", PACK_NAME);
                         	}
-                        	up_sql = ssh_command(data[i].ip, data[i].user, data[i].password, sudo, yum, systemctl, mv, mk);
+				up_sql = ssh_command(data[i].ip, data[i].user, data[i].password, sudo, yum, systemctl, mv, mk, gp);
 				switch(up_sql)
 				{
 					case 0:
@@ -160,6 +164,8 @@ int check_user_authority(void)
         free(mv);
         mv = NULL;
         free(yum);
+        gp = NULL;
+        free(gp);
         yum = NULL;
         free(systemctl);
         systemctl = NULL;
