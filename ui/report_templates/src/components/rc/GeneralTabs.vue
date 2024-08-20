@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>{{ $root.data.general_tabs.name }}</h1>
+    <h1>{{ $root.data.general_tabs.system_info.name }}</h1>
     <div id="headerInfo">
       <el-card
         shadow="hover"
@@ -10,13 +10,13 @@
         <el-row class="infoItemLineMargin">
           <el-col :span="6" class="infoItemTitle">当前系统版本</el-col>
           <el-col :span="18" style="margin-top: 5px">
-            {{ $root.data.general_tabs.current_os_version }}
+            {{ $root.data.general_tabs.system_info.current_os_version }}
           </el-col>
         </el-row>
         <el-row class="infoItemLineMargin">
           <el-col :span="6" class="infoItemTitle">当前系统内核版本</el-col>
           <el-col :span="18" style="margin-top: 5px">
-            {{ $root.data.general_tabs.current_os_kennel_version }}
+            {{ $root.data.general_tabs.system_info.current_os_kennel_version }}
           </el-col>
         </el-row>
       </el-card>
@@ -28,13 +28,13 @@
         <el-row class="infoItemLineMargin">
           <el-col :span="6" class="infoItemTitle">系统架构</el-col>
           <el-col :span="18" style="margin-top: 5px">
-            {{ $root.data.general_tabs.architecture }}
+            {{ $root.data.general_tabs.system_info.architecture }}
           </el-col>
         </el-row>
         <el-row class="infoItemLineMargin">
           <el-col :span="6" class="infoItemTitle">/var/cache 可用空间</el-col>
           <el-col :span="18" style="margin-top: 5px">
-            {{ $root.data.general_tabs.var_cache_available_space }}
+            {{ $root.data.general_tabs.system_info.var_cache_available_space }}
           </el-col>
         </el-row>
       </el-card>
@@ -46,25 +46,25 @@
         <el-row class="infoItemLineMargin">
           <el-col :span="6" class="infoItemTitle">被替换的软件包数量</el-col>
           <el-col :span="18" style="margin-top: 5px">
-            {{ $root.data.general_tabs.replaced_software_package_count }}
+            {{ $root.data.general_tabs.system_info.replaced_software_package_count }}
           </el-col>
         </el-row>
         <el-row class="infoItemLineMargin">
           <el-col :span="6" class="infoItemTitle">兼容软件包数量</el-col>
           <el-col :span="18" style="margin-top: 5px">
-            {{ $root.data.general_tabs.compatible_software_package_count }}
+            {{ $root.data.general_tabs.system_info.compatible_software_package_count }}
           </el-col>
         </el-row>
         <el-row class="infoItemLineMargin">
           <el-col :span="6" class="infoItemTitle">不兼容软件包数量</el-col>
           <el-col :span="18" style="margin-top: 5px">
-            {{ $root.data.general_tabs.incompatible_software_package_count }}
+            {{ $root.data.general_tabs.system_info.incompatible_software_package_count }}
           </el-col>
         </el-row>
         <el-row class="infoItemLineMargin">
           <el-col :span="6" class="infoItemTitle">迁移软件包总数量</el-col>
           <el-col :span="18" style="margin-top: 5px">
-            {{ $root.data.general_tabs.software_package_count }}
+            {{ $root.data.general_tabs.system_info.software_package_count }}
           </el-col>
         </el-row>
       </el-card>
