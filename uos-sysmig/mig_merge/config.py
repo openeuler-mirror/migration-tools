@@ -63,7 +63,7 @@ class FixedInfo():
     compatability_rpmpkg = os.path.join(inventory_dir, 'agent_ABI_check_result.csv')
 
     #存量替换迁移检查-前后端接口中涉及固定格式数据
-    page_system_info = '{"type": "stock_replace_check","general_tabs": {"system_info":{"name": "系统基本信息",'
+    page_system_info = '{"type": "stock_replace_check","general_tabs":{"name": "系统基本信息",'
     page_softpkg = '"packages_tabs": {"name": "软件包对比",'
     current_head_info = page_softpkg + '"current_os_item": {"name": "当前系统特有（不替换）'
     total_head_info = '"total_list_item": {"name": "迁移系统软件包总列表 UOS Server Enterprise-C 20"'
