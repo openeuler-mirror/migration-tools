@@ -59,10 +59,6 @@ def get_cur_sys_version():
         返 回 值：CentOS Linux 8 (Core)
     '''
 
-    if not os.path.exists('/etc/os-release'):
-        print("Please CHECK /etc/os-release WHETHER EXIT!!!")
-        return "-1"
-
     fp = open('/etc/os-release', 'r')
     for line in fp:
         if 'PRETTY_NAME' in line:
