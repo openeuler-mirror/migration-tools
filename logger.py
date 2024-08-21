@@ -32,3 +32,5 @@ class Logger:
 
     def cri(self,message):
         self.logger.critical(message)
+
+migration_log = Logger('/var/tmp/uos-migration/UOS_migration_log/migration.log', logging.DEBUG, logging.DEBUG)
