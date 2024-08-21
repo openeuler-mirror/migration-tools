@@ -6,7 +6,7 @@ import os
 import json
 import re
 import socket
-#os.chdir('/usr/lib/uos-sysmig-server')
+#os.chdir('/usr/lib/migration-tools-server')
 from logger import *
 
 

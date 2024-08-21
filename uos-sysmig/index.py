@@ -3,7 +3,7 @@
 import os
 import json
 from flask import Flask, render_template, url_for, request, redirect, make_response, session, Response
-os.chdir('/usr/lib/uos-sysmig-server/')
+os.chdir('/usr/lib/migration-tools-server/')
 from connect_sql import *
 from logger import *
 from miscellaneous import *
@@ -17,7 +17,7 @@ from flask import send_from_directory
 
 
 # import MySQLdb
-os.chdir('/usr/lib/uos-sysmig-server/')
+os.chdir('/usr/lib/migration-tools-server/')
 app = Flask(__name__, static_folder='../static', template_folder='../templates')
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 CORS(app, resources=r'/*')
