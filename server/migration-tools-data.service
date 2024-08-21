@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/bash /usr/lib/uos-sysmig-server/server/nodejs.sh
+ExecStart=/usr/bin/bash /usr/lib/migration-tools-server/server/nodejs.sh
 ExecStop=/bin/kill -INT $MAINPID
 
 [Install]
