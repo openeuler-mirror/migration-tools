@@ -10,8 +10,8 @@ from connect_sql import *
 from logger import *
 from sysmig_agent.share import getSysMigConf
 from miscellaneous import *
-from views.migration import *
-from views.server import *
+from uos-sysmig.views.migration import *
+from uos-sysmig.views.server import *
 from flask_cors import CORS
 
 
