@@ -1,7 +1,7 @@
 import pymysql
 import json
 import os
-#os.chdir('/usr/lib/uos-sysmig-server')
+#os.chdir('/usr/lib/migration-tools-server')
 from logger import *
 from miscellaneous import getSysMigConf
 

@@ -59,7 +59,7 @@ cp -r ut-Migration-tools/* $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
 
 %post -n migration-tools-server
 mkdir -p /etc/migration-tools
-mkdir -p /var/tmp/uos-migration
+mkdir -p /var/tmp/uos-migration/UOS_migration_log
 cp -r /usr/lib/migration-tools-server/server/migration-tools-server.service /usr/lib/systemd/system/
 chmod +x /usr/lib/migration-tools-server/server/start_webview.sh
 ln -s /usr/lib/migration-tools-server/server/start_webview.sh /usr/bin/migration-tools

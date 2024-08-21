@@ -9,7 +9,7 @@ from sysmig_agent.share import getSysMigConf
 from flask import send_from_directory
 
 
-os.chdir('/usr/lib/uos-sysmig-server')
+os.chdir('/usr/lib/migration-tools-server')
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 
 
