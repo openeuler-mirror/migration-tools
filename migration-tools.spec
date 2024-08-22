@@ -46,9 +46,9 @@ Migration software server side
 %setup -c
 
 %build
-pushd ui/uyi-reports
+pushd ut-Migration-tools/ui/report_templates
+npm install
 make
-popd
 
 %install
 rm -rf %{buildroot}
