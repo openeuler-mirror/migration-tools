@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define PACK_NAME "uos-sysmig-agent"
+#define PACK_NAME "migration-tools-agent"
 
 int restart_ser(char *yum_shell, char *cp_shell, char *mv_shell, char *s_ser_shell, char *c_ser_shell);
 

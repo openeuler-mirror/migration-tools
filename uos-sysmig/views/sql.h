@@ -11,7 +11,7 @@
 
 #define CONF_PATH "/etc/migration-tools/migration-tools.conf"
 #define CONF_NAME "migration-tools.conf"
-#define PACK_NAME "migration-tools--agent"
+#define PACK_NAME "migration-tools-agent"
 #define SSH "ssh" 
 #define PSW "password"
 
