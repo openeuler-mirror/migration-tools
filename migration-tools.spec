@@ -45,6 +45,11 @@ Migration software server side
 %prep
 %setup -c
 
+%build
+pushd ui/uyi-reports
+make
+popd
+
 %install
 rm -rf %{buildroot}
 mkdir -p $RPM_BUILD_ROOT/usr/lib/migration-tools-server
