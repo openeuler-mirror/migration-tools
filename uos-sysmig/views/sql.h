@@ -9,9 +9,9 @@
 #include "/usr/include/mysql/errmsg.h"
 #include "/usr/include/mysql/mysqld_error.h"
 
-#define CONF_PATH "/etc/uos-sysmig/uos-sysmig.conf"
-#define CONF_NAME "uos-sysmig.conf"
-#define PACK_NAME "uos-sysmig-agent"
+#define CONF_PATH "/etc/migration-tools/migration-tools.conf"
+#define CONF_NAME "migration-tools.conf"
+#define PACK_NAME "migration-tools--agent"
 #define SSH "ssh" 
 #define PSW "password"
 
