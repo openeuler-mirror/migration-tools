@@ -32,7 +32,6 @@ release:
 	declare -A pages=(
 		[rc]="stock_replace_check"
 		[ra]="stock_replace_analysis"
-		[ec]="new_expansion_check"
 	)
 	for key in $$(echo $${!pages[@]});do \
 		value=$${pages[$$key]}; \
@@ -58,7 +57,6 @@ dev:
 	declare -A pages=(
 		[rc]="stock_replace_check"
 		[ra]="stock_replace_analysis"
-		[ec]="new_expansion_check"
 	)
 	for key in $$(echo $${!pages[@]});do \
 		value=$${pages[$$key]}; \
