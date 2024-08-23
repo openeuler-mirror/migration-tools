@@ -5,13 +5,8 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 	ssh_session my_ssh_session;
 	ssh_bind sshbind;
 
-	int rc = 0, ds = 0, pm = 0, pw = 0, dc = 0, run = 0;;
+	int rc = 0, ds = 0, pw = 0;
 	char *yum_p = NULL;
-
-        char *ppFld[32];
-        char sTmp[64+1];		
-	char send_f[256+1];
-        char yum_install_agent[256+1];
 
 	yum_p = (char*)malloc(sizeof(char) * 200);
 
