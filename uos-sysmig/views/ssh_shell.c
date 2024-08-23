@@ -7,16 +7,18 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 
 	int rc = 0, ds = 0, pm = 0, pw = 0, dc = 0, run = 0;;
 	char *yum_p = NULL;
+	char *check_conf = NULL;
 
         char *ppFld[32];
         char sTmp[64+1];		
 	char send_f[256+1];
-	char agent_repo_dir[64+1];
         char yum_install_agent[256+1];
-	char install_agent_repo[64+1];
         char iGetSepFldsnstall_agent_repo[64+1];
 
 	yum_p = (char*)malloc(sizeof(char) * 200);
+	check_conf = (char*)malloc(sizeof(char) * 200);
+
+ 	sprintf(check_conf, "ls %s", CONF_PATH);
 
 	// Open session and set options
 	my_ssh_session = ssh_new();
@@ -32,6 +34,14 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 	if (rc != SSH_OK)
 	{
 		fprintf(stderr, "Error connecting to localhost: %s\n", ssh_get_error(my_ssh_session));
+		ssh_free(my_ssh_session);
+		return 2;
+	}
+	// Verify the server's identity
+	// For the source code of verify_knownhost(), check previous example
+	if (verify_knownhost(my_ssh_session) < 0)
+	{
+		ssh_disconnect(my_ssh_session);
 		ssh_free(my_ssh_session);
 		return 2;
 	}
@@ -114,6 +124,7 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 				{
 					ds=show_remote_processes(my_ssh_session, mk);
 					ds=show_remote_processes(my_ssh_session, mv);
+					ds=show_remote_processes(my_ssh_session, check_conf);
 					if(ds)
 					{
 						ds = 3;
@@ -155,10 +166,154 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 	ssh_free(my_ssh_session);
 	free(yum_p);
 	yum_p = NULL;
+	free(check_conf);
+	check_conf = NULL;
 
 	return ds;
 }
 
+
+int verify_knownhost(ssh_session session)
+{
+#ifdef OPENEULER
+    enum ssh_server_known_e state;
+#else
+    enum ssh_known_hosts_e state;
+#endif
+    unsigned char *hash = NULL;
+    ssh_key srv_pubkey = NULL;
+    size_t hlen;
+    char buf[10];
+    char *hexa;
+    char *p;
+    int cmp;
+    int rc;
+
+#ifdef OPENEULER
+	rc = ssh_get_publickey(session, &srv_pubkey);
+#else
+	rc = ssh_get_server_publickey(session, &srv_pubkey);
+#endif
+    if (rc < 0) {
+        return -1;
+    }
+    rc = ssh_get_publickey_hash(srv_pubkey,
+                                SSH_PUBLICKEY_HASH_SHA1,
+                                &hash,
+                                &hlen);
+    ssh_key_free(srv_pubkey);
+    if (rc < 0) {
+        return -1;
+    }
+
+#ifdef OPENEULER
+		state = ssh_is_server_known(session);
+		switch (state)
+		{
+			case SSH_SERVER_KNOWN_OK:
+				/* OK */ /*value = 1*/
+				 break;
+
+			case SSH_SERVER_KNOWN_CHANGED:
+				/*value = 2*/
+				fprintf(stderr, "Host key for server changed now\n");
+				fprintf(stderr, "For security reasons, connection will be stopped\n");
+				ssh_clean_pubkey_hash(&hash);
+				//return -1;
+
+			case SSH_SERVER_FOUND_OTHER:
+				/*value = 3*/
+				fprintf(stderr, "The host key for this server was not found but an other"
+				        "type of key exists.\n");
+				fprintf(stderr, "An attacker might change the default server key to"
+				        "confuse your client into thinking the key does not exist\n");
+				ssh_clean_pubkey_hash(&hash);				
+				//return -1;
+
+			case SSH_SERVER_FILE_NOT_FOUND:
+				/*value = 4*/
+				fprintf(stderr, "Could not find known host file.\n");
+				fprintf(stderr, "If you accept the host key here, the file will be"
+				        "automatically created.\n");
+				
+				/* FALL THROUGH to SSH_SERVER_NOT_KNOWN behavior */
+			case SSH_SERVER_NOT_KNOWN:
+				/*value = 0*/
+				fprintf(stderr,"The server is unknown. add the host key to known host file\n");
+				sprintf(buf,"yes",3);
+				cmp = strncasecmp(buf, "yes", 3);
+				if (cmp != 0)
+				{
+	 		               return -1;
+				}
+				rc = ssh_write_knownhost(session);
+				if (rc < 0)
+				{
+					fprintf(stderr, "Error %s\n", strerror(errno));
+					return -1;
+				}
+				break;
+			case SSH_SERVER_ERROR:
+				/*value = -1*/
+				fprintf(stderr, "Error %s", ssh_get_error(session));
+		}
+#else
+		state = ssh_session_is_known_server(session);
+		switch (state)
+		{
+			case SSH_KNOWN_HOSTS_OK:
+				/* OK */ /*value = 1*/
+				
+				break;
+			case SSH_KNOWN_HOSTS_CHANGED:
+				/*value = 2*/
+				fprintf(stderr, "Host key for server changed now\n");
+				fprintf(stderr, "For security reasons, connection will be stopped\n");
+				ssh_clean_pubkey_hash(&hash);
+				
+				return -1;
+			case SSH_KNOWN_HOSTS_OTHER:
+				/*value = 3*/
+				fprintf(stderr, "The host key for this server was not found but an other"
+				        "type of key exists.\n");
+				fprintf(stderr, "An attacker might change the default server key to"
+				        "confuse your client into thinking the key does not exist\n");
+				ssh_clean_pubkey_hash(&hash);
+				
+				return -1;
+			case SSH_KNOWN_HOSTS_NOT_FOUND:
+				/*value = -1*/
+				fprintf(stderr, "Could not find known host file.\n");
+				fprintf(stderr, "If you accept the host key here, the file will be"
+				        "automatically created.\n");
+				
+				/* FALL THROUGH to SSH_SERVER_NOT_KNOWN behavior */
+				
+			case SSH_KNOWN_HOSTS_UNKNOWN:
+				/*value = 0*/
+				fprintf(stderr,"The server is unknown. add the host key to known host file\n");
+				sprintf(buf,"yes",3);
+				cmp = strncasecmp(buf, "yes", 3);
+				if (cmp != 0) {
+				    return -1;
+				}
+				rc = ssh_session_update_known_hosts(session);
+				if (rc < 0) {
+				    fprintf(stderr, "Error %s\n", strerror(errno));
+				    return -1;
+				}
+				
+				break;
+			case SSH_KNOWN_HOSTS_ERROR:
+				/*value = -2*/
+				fprintf(stderr, "Error %s", ssh_get_error(session));
+				ssh_clean_pubkey_hash(&hash);
+				return -1;
+		}
+#endif
+	ssh_clean_pubkey_hash(&hash);
+	return 0;
+}
 
 int show_remote_processes(ssh_session session,char *cmd)
 {
