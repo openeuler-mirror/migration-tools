@@ -12,6 +12,7 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
         char *ppFld[32];
         char sTmp[64+1];		
 	char send_f[256+1];
+        char agent_repo_dir[64+1];
         char yum_install_agent[256+1];
         char install_agent_repo[64+1];
 	
@@ -113,8 +114,17 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
                                 return 3;
                         }
 
+                        //Send the repo file to the Agent system
+                        memset(agent_repo_dir, 0x00, sizeof(agent_repo_dir));
+                        ds = get_cfg_value(INSTALL_REPO_PATH ,"agent_repo_path", INSTALL_REPO_CFG, agent_repo_dir);
+                        if(ds != 0)
+                        {
+                                fprintf(stderr, "Get Agent System Cfg Value Error [%d]!!\n", ds);
+                                return 3;
+                        }
+
                         memset(send_f, 0x00, sizeof(send_f));
-                        sprintf(send_f, "sshpass -p %s scp %s %s@%s:%s", password, install_agent_repo, user, hostadr);
+                        sprintf(send_f, "sshpass -p %s scp %s %s@%s:%s", password, install_agent_repo, user, hostadr, agent_repo_dir);
                         ds = system(send_f);
                         if(ds)
                                 //ds = 4;
@@ -130,7 +140,7 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 			{
                                 //install the Agent Service
                                 memset(yum_install_agent, 0x00, sizeof(yum_install_agent));
-                                //sprintf(yum_install_agent, "%s \" yum -y install migration-tools-agent -c %s && echo $? \"", yum_p, ppFld[rc-1]);
+                                //sprintf(yum_install_agent, "%s \" yum -y install migration-tools-agent -c %s/%s && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
 				sprintf(yum_install_agent, "%s \" yum -y install --disablerepo=* -c %s/%s --enablerepo=uyi* uos-sysmig-agent && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
                                 system(yum_install_agent);
 
@@ -555,6 +565,79 @@ int execution_return_values(ssh_session session,char *cmd, char *vp)
                 return -1;
         }
 
+        ret = get_cfg_value(INSTALL_REPO_NAME ,key, INSTALL_REPO_CFG, vp);
+        if(ret != 0)
+        {
+                fprintf(stderr, "Get Agent System Cfg Value Error [%d]!!\n", ret);
+                return -1;
+        }
+
         return SSH_OK;
+}
+
+
+/*
+ *函数名：get_cfg_value
+ *参  数：title    配置项
+ *        key      子配置项索引
+ *        filename 配置文件名
+ *        buf      子配置项索引值
+ *返回值：0 成功；-1 失败
+ *作  者：lihaipeng
+ *日  期：2024-07-28
+ *功  能：获取指定子配置项索引值
+ */
+int get_cfg_value(char *title, char *key, char *filename, char *buf)
+{
+        FILE *fp;
+        int  flag = 0;
+        char kkey[64];
+        char cfgfile[128];
+        char sTitle[64], *wTmp;
+        char sLine[1024];
+
+        memset(kkey, 0x00, sizeof(kkey));
+        memset(cfgfile, 0x00, sizeof(cfgfile));
+        memset(sTitle, 0x00, sizeof(kkey));
+
+        sprintf(kkey, "%s", key);
+        sprintf(cfgfile, "%s", filename);
+        sprintf(sTitle, "[%s]", title);
+
+        if(NULL == (fp = fopen(cfgfile, "r")))
+        {
+                perror("fopen");
+                return -1;
+        }
+        while (NULL != fgets(sLine, 1024, fp))
+        {
+                // 这是注释行
+                if (0 == strncmp("//", sLine, 2)) continue;
+                if ('#' == sLine[0])              continue;
+                wTmp = strchr(sLine, '=');
+                if ((NULL != wTmp) && (1 == flag))
+                {
+                        if (0 == strncmp(kkey, sLine, strlen(kkey)))
+                        { // 长度依文件读取的为准
+                                sLine[strlen(sLine) - 1] = '\0';
+                                fclose(fp);
+                                while(*(wTmp + 1) == ' ')
+                                {
+                                        wTmp++;
+                                }
+                                strcpy(buf,wTmp + 1);
+                                return 0;
+                        }
+                }
+                else
+                {
+                        if (0 == strncmp(sTitle, sLine, strlen(sTitle)))
+                        { // 长度依文件读取的为准
+                                flag = 1; // 找到标题位置
+                        }
+                }
+        }
+        fclose(fp);
+        return -1;
 }
 
