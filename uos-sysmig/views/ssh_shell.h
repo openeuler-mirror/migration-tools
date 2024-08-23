@@ -12,5 +12,6 @@
 #include <sys/utsname.h>
 #include <fcntl.h>
 
+int show_remote_processes(ssh_session session, char *cmd);
 //int ssh_command(CHECK_DATA *data, int i, char *sudo, char *yum, char *systemctl, char *mv)
 int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum, char *systemctl, char *mv, char *mk, char *gp);
