@@ -37,6 +37,8 @@ Requires:	sshpass
 Requires:	python3-paramiko
 Requires:	python3-flask
 Requires:	python3-requests
+Requires:	mysql-server
+Requires:	mysql-devel
 
 %description -n migration-tools-server
 Migration software server side
@@ -68,6 +70,7 @@ mkdir -p /var/tmp/uos-migration/UOS_migration_log
 cp -r /usr/lib/migration-tools-server/server/migration-tools-server.service /usr/lib/systemd/system/
 chmod +x /usr/lib/migration-tools-server/server/start_webview.sh
 ln -s /usr/lib/migration-tools-server/server/start_webview.sh /usr/bin/migration-tools
+cd /usr/lib/migration-tools-server/uos-sysmig/views;make
 systemctl daemon-reload
 systemctl restart migration-tools-server.service
 systemctl enable migration-tools-server.service
