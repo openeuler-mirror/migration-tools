@@ -14,7 +14,7 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 	char send_f[256+1];
         char yum_install_agent[256+1];
         char iGetSepFldsnstall_agent_repo[64+1];
-
+GetSepFlds	
 	yum_p = (char*)malloc(sizeof(char) * 200);
 	check_conf = (char*)malloc(sizeof(char) * 200);
 
@@ -96,6 +96,15 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 			ds = 1;
 		else
 		{
+                        memset(sTmp, 0x00, sizeof(sTmp));
+                        sprintf(sTmp, "%s", install_agent_repo);
+                        rc = GetSepFlds(sTmp, strlen(sTmp), ppFld, '/');
+                        if(rc < 0)
+                        {
+                                fprintf(stderr, "GetSepFlds Error [%d]!!\n", rc);
+                                return 3;
+                        }
+
                         memset(send_f, 0x00, sizeof(send_f));
                         sprintf(send_f, "sshpass -p %s scp %s %s@%s:%s", password, install_agent_repo, user, hostadr);
                         ds = system(send_f);
