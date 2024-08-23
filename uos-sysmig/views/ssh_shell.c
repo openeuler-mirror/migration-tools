@@ -175,7 +175,7 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 
 int verify_knownhost(ssh_session session)
 {
-#ifdef OPENEULER
+#ifdef CENTOS7
     enum ssh_server_known_e state;
 #else
     enum ssh_known_hosts_e state;
@@ -189,7 +189,7 @@ int verify_knownhost(ssh_session session)
     int cmp;
     int rc;
 
-#ifdef OPENEULER
+#ifdef CENTOS7
 	rc = ssh_get_publickey(session, &srv_pubkey);
 #else
 	rc = ssh_get_server_publickey(session, &srv_pubkey);
@@ -206,7 +206,7 @@ int verify_knownhost(ssh_session session)
         return -1;
     }
 
-#ifdef OPENEULER
+#ifdef CENTOS7
 		state = ssh_is_server_known(session);
 		switch (state)
 		{
@@ -367,6 +367,56 @@ int show_remote_processes(ssh_session session,char *cmd)
 	return SSH_OK;
 }
 
+int scp_file(ssh_session session, ssh_scp scp)
+{
+	int rc,tc,yc,uc,ic,oc;
+	char *buf;
+	long len;
+	FILE *f;
+
+	//read conf file to buf
+	f=fopen(CONF_PATH,"rb");
+	fseek(f,0,SEEK_END);
+	len=ftell(f);
+	fseek(f,0,SEEK_SET);
+	buf=(char*)malloc((sizeof(char))*(len+1));
+	fread(buf,1,len+1,f);
+	buf[len]='\0';
+
+	//set up directory for scp
+	/*rc = ssh_scp_push_directory(scp, "/etc/migration-tools/", S_IRUSR |  S_IWUSR | S_IRGRP | S_IROTH);
+        
+        
+	if (rc != SSH_OK)
+	{
+		fprintf(stderr, "Can't create remote directory: %s\n", ssh_get_error(session));
+		return rc;
+	}
+
+	*/
+
+	//touch file for scp 0666
+	tc = ssh_scp_push_file(scp, CONF_NAME, len, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
+	if (tc != SSH_OK)
+	{
+		fprintf(stderr, "Can't open remote file: %s\n", ssh_get_error(session));
+		free(buf);
+		return tc;
+	}
+
+	//write buf to scp file
+	yc = ssh_scp_write(scp, buf, len);
+	free(buf);
+        buf = NULL;
+	fclose(f);
+	if (yc != SSH_OK)
+	{
+		fprintf(stderr, "Can't write to remote file: %s\n", ssh_get_error(session));
+		return yc;
+	}
+
+	return SSH_OK;
+}
 
 int authenticate_pubkey(ssh_session session)
 {
