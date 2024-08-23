@@ -13,10 +13,17 @@
 #include <fcntl.h>
 
 #define CONF_PATH "/etc/migration-tools/migration-tools.conf"
+#define CONF_NAME "migration-tools.conf"
+
 #define CENTOS7 ((judge_version()!=7)? (0):(1))
+
+#define INSTALL_REPO_NAME "REPO_NAME"
+#define INSTALL_REPO_PATH "AGENT_REPO_DIR"
+#define INSTALL_REPO_CFG "/usr/lib/migration-tools-server/uos-sysmig/views/cfg.ini"
 
 int verify_knownhost(ssh_session session);
 int show_remote_processes(ssh_session session, char *cmd);
+int scp_write(ssh_session session);
 int scp_file(ssh_session session, ssh_scp scp);
 int authenticate_pubkey(ssh_session session);
 //int ssh_command(CHECK_DATA *data, int i, char *sudo, char *yum, char *systemctl, char *mv)
