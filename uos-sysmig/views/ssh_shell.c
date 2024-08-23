@@ -102,19 +102,12 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
                         if(ds)
                                 //ds = 4;
                                 ds = 3;
-
-
-
-			
-			/*ds = system(yum_p);
-			if(ds)
-				ds = 4; */
 			else
 			{
                                 //install the Agent Service
                                 memset(yum_install_agent, 0x00, sizeof(yum_install_agent));
                                 //sprintf(yum_install_agent, "%s \" yum -y install migration-tools-agent -c %s && echo $? \"", yum_p, ppFld[rc-1]);
-				sprintf(yum_install_agent, "%s \" yum -y install --disablerepo=* -c %s/%s --enablerepo=uyi* uos-sysmig-agent && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
+				sprintf(yum_install_agent, "%s \" yum -y install --disablerepo=* -c %s/%s --enablerepo=uyi* migration-tools-agent && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
                                 system(yum_install_agent);
 
 				//scp
@@ -382,18 +375,6 @@ int scp_file(ssh_session session, ssh_scp scp)
 	buf=(char*)malloc((sizeof(char))*(len+1));
 	fread(buf,1,len+1,f);
 	buf[len]='\0';
-
-	//set up directory for scp
-	/*rc = ssh_scp_push_directory(scp, "/etc/migration-tools/", S_IRUSR |  S_IWUSR | S_IRGRP | S_IROTH);
-        
-        
-	if (rc != SSH_OK)
-	{
-		fprintf(stderr, "Can't create remote directory: %s\n", ssh_get_error(session));
-		return rc;
-	}
-
-	*/
 
 	//touch file for scp 0666
 	tc = ssh_scp_push_file(scp, CONF_NAME, len, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
