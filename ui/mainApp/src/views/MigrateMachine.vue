@@ -87,6 +87,123 @@
           </el-select>
         </el-form-item>
       </el-form>
+      <el-card>
+        <div class="cardBoxTitleContainer">
+          <p style="font-weight: bold; margin: 4px 0 0 0">
+            {{ machineList.length }} 项
+          </p>
+          <div class="horizontalBtnSet" v-if="hasSelecton">
+            <el-button type="text" @click="deleteSelectedMachine()"
+              >删除</el-button
+            >
+          </div>
+        </div>
+        <el-table
+          :v-if="isDataLoaded"
+          :data="
+            filterTableData.slice(
+              (currentPage - 1) * pageSize,
+              currentPage * pageSize
+            )
+          "
+          style="width: 100%"
+          @selection-change="handleSelectionChange"
+          :row-key="(row) => row.id"
+          ref="tableRef"
+        >
+          <el-table-column
+            type="selection"
+            :reserve-selection="true"
+            width="40"
+          />
+          <el-table-column
+            align="center"
+            :show-overflow-tooltip="true"
+            prop="task_CreateTime"
+            label="迁移时间"
+          />
+          <el-table-column
+            align="center"
+            :show-overflow-tooltip="true"
+            prop="agent_ip"
+            label="主机IP"
+          />
+          <el-table-column
+            align="center"
+            :show-overflow-tooltip="true"
+            prop="hostname"
+            label="主机名称"
+          />
+          <el-table-column
+            align="center"
+            :show-overflow-tooltip="true"
+            prop="onlineStatus"
+            label="在线状态"
+            width="100"
+          >
+          </el-table-column>
+          <el-table-column
+            align="center"
+            :show-overflow-tooltip="true"
+            prop="agent_os"
+            label="操作系统类型"
+          />
+          <el-table-column
+            align="center"
+            :show-overflow-tooltip="true"
+            prop="agent_arch"
+            label="架构"
+          />
+          <el-table-column
+            align="center"
+            :show-overflow-tooltip="true"
+            prop="migrationStatus"
+            label="迁移状态"
+          >
+            <template #default="scope">
+              <span v-if="scope.row.migrationStatus == 'not_yet'">未迁移</span>
+              <span v-if="scope.row.migrationStatus == 'success'"
+                >迁移成功</span
+              >
+              <span v-if="scope.row.migrationStatus == 'failed'">迁移失败</span>
+              <span v-if="scope.row.migrationStatus == 'running'">迁移中</span>
+              <span v-if="scope.row.migrationStatus == 'unknown'"
+                >未知状态</span
+              >
+            </template>
+          </el-table-column>
+          <el-table-column
+            align="center"
+            :show-overflow-tooltip="true"
+            prop="failure_reasons"
+            label="历史失败原因"
+          />
+          <el-table-column
+            align="center"
+            :show-overflow-tooltip="true"
+            label="操作"
+          >
+            <template #default="scope">
+              <el-button type="text" @click="deleteMachine(scope.row)"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          background
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[5, 10, 25, 50, 100]"
+          :pager-count="11"
+          :total="filterTableData.length"
+          layout="sizes, prev, pager, next, jumper, slot"
+        >
+          <template #default>
+            <el-button type="text"> 确定 </el-button>
+          </template>
+        </el-pagination>
+      </el-card>
     </div>
     <div class="footerBar">
       <el-button
@@ -136,6 +253,58 @@ export default {
         }
       }
       return cache;
+    },
+
+    filterTableData() {
+      let filterData = this.machineList;
+
+      //  ip
+      filterData = filterData.filter((item) => {
+        return (
+          !this.filterForm.ip || item.agent_ip.includes(this.filterForm.ip)
+        );
+      });
+      //  hostname
+      filterData = filterData.filter((item) => {
+        return (
+          !this.filterForm.hostname ||
+          item.hostname
+            .toLowerCase()
+            .includes(this.filterForm.hostname.toLowerCase())
+        );
+      });
+      //  online status
+      filterData = filterData.filter((item) => {
+        return (
+          !this.filterForm.onlineStatus ||
+          item.onlineStatus == this.filterForm.onlineStatus
+        );
+      });
+      //  os
+      filterData = filterData.filter((item) => {
+        return !this.filterForm.os || item.agent_os == this.filterForm.os;
+      });
+      //  arch
+      filterData = filterData.filter((item) => {
+        return !this.filterForm.arch || item.agent_arch == this.filterForm.arch;
+      });
+      // migration status
+      filterData = filterData.filter((item) => {
+        return (
+          !this.filterForm.migrationStatus ||
+          item.migrationStatus == this.filterForm.migrationStatus
+        );
+      });
+      // failure reason
+      filterData = filterData.filter((item) => {
+        return (
+          !this.filterForm.failureReason ||
+          item.failure_reasons == this.filterForm.failureReason
+        );
+      });
+
+      console.log("正在筛选数据", this.filterForm);
+      return filterData;
     },
   },
 
@@ -199,6 +368,11 @@ export default {
       }
       this.currentPageMachineList = this.machineList.slice(0, this.pageSize);
       this.isDataLoaded = true;
+    },
+    handleSelectionChange(val) {
+      this.hasSelecton = val.length > 0;
+      this.multipleSelection = val;
+      console.log("选中的机器", this.multipleSelection);
     },
     deleteMachine: function (row) {
       ElMessageBox({
