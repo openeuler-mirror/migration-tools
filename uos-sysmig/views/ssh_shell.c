@@ -13,8 +13,8 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
         char sTmp[64+1];		
 	char send_f[256+1];
         char yum_install_agent[256+1];
-        char iGetSepFldsnstall_agent_repo[64+1];
-GetSepFlds	
+        char install_agent_repo[64+1];
+	
 	yum_p = (char*)malloc(sizeof(char) * 200);
 	check_conf = (char*)malloc(sizeof(char) * 200);
 
@@ -96,6 +96,14 @@ GetSepFlds
 			ds = 1;
 		else
 		{
+                        //Get the repo file name based on the Agent system id
+                        memset(install_agent_repo, 0x00, sizeof(install_agent_repo));
+                        rc = execution_return_values(my_ssh_session, gp, install_agent_repo);
+                        if(rc == -1)
+                        {
+                                return 3;
+                        }
+
                         memset(sTmp, 0x00, sizeof(sTmp));
                         sprintf(sTmp, "%s", install_agent_repo);
                         rc = GetSepFlds(sTmp, strlen(sTmp), ppFld, '/');
@@ -473,5 +481,80 @@ int authenticate_pubkey(ssh_session session)
 	}
 
 	return rc;
+}
+
+/*
+ *函数名：execution_return_values
+ *参  数：session  ssh远程会话链接
+ *        cmd      待执行命令
+ *        vp       远程执行命令结果
+ *返回值：SSH_OK 成功；SSH_ERROR 失败
+ *作  者：lihaipeng
+ *日  期：2024-07-28
+ *功  能：获取远程执行命令结果
+ */
+int execution_return_values(ssh_session session,char *cmd, char *vp)
+{
+        ssh_channel channel;
+        int rc,ret;
+        int nbytes = 0;
+        char key[64];
+        char buffer[512];
+        char tmp[128];
+
+        channel = ssh_channel_new(session);
+        if (channel == NULL)
+                return SSH_ERROR;
+
+        rc = ssh_channel_open_session(channel);
+        if (rc != SSH_OK)
+        {
+                ssh_channel_free(channel);
+                return rc;
+        }
+
+        rc = ssh_channel_request_exec(channel, cmd);
+        if (rc != SSH_OK)
+        {
+                ssh_channel_close(channel);
+                ssh_channel_free(channel);
+                return rc;
+        }
+
+        int timeout_ms = 100;
+        memset(buffer, 0x00, sizeof(buffer));
+        nbytes = ssh_channel_read_timeout(channel, buffer, sizeof(buffer), 0, timeout_ms);
+        if ( nbytes == 0 )
+        {
+                ssh_channel_close(channel);
+                ssh_channel_free(channel);
+                return SSH_ERROR;
+        }
+        while (nbytes > 0)
+        {
+                if (write(1, buffer, nbytes) != (unsigned int) nbytes)
+                {
+                        ssh_channel_close(channel);
+                        ssh_channel_free(channel);
+                        return SSH_ERROR;
+                }
+                nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
+        }
+
+        ssh_channel_send_eof(channel);
+        ssh_channel_close(channel);
+        ssh_channel_free(channel);
+
+        if(buffer[0] != ' ')
+        {
+                memset(key, 0x00, sizeof(key));
+                sprintf(key, "repo_name_%c", buffer[0]);
+        }
+        else{
+                fprintf(stderr, "Get Agent System Makr [%c] Error!!\n", buffer[0]);
+                return -1;
+        }
+
+        return SSH_OK;
 }
 
