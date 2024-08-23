@@ -109,6 +109,7 @@
 <script>
 import StyledSubheaderBlock from "@/components/StyledSubheaderBlock.vue";
 
+import { ElMessageBox } from "element-plus";
 import { ref } from "vue";
 
 export default {
@@ -199,6 +200,29 @@ export default {
       this.currentPageMachineList = this.machineList.slice(0, this.pageSize);
       this.isDataLoaded = true;
     },
+    deleteMachine: function (row) {
+      ElMessageBox({
+        title: "确定删除所选主机的迁移任务吗？",
+        confirmButtonText: "删除",
+        cancelButtonText: "取消",
+        showCancelButton: true,
+        showClose: false,
+      })
+        .then((res) => {
+          for (let i = 0; i < this.machineList.length; i++) {
+            if (this.machineList[i].agent_ip == row.agent_ip) {
+              this.machineList.splice(i, 1); // 删掉用户选择删除的
+            }
+          }
+          // 处理当前行是否为选中后点击 操作 删除
+          if (row) {
+            this.$refs.tableRef.toggleRowSelection(row, false);
+          }
+        })
+        .catch((err) => {
+          // 取消，什么事都不会发生
+        });
+    },
     deleteSelectedMachine: function () {
       ElMessageBox({
         title: "确定删除所选主机的迁移任务吗？",
@@ -252,6 +276,25 @@ export default {
 
   unmouted() {
     window.onbeforeunload = null;
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === "MigrationNotice") {
+      next();
+      return false;
+    }
+    ElMessageBox({
+      title: "确定退出迁移吗？",
+      confirmButtonText: "退出",
+      cancelButtonText: "取消",
+      showCancelButton: true,
+      showClose: false,
+    })
+      .then((res) => {
+        next();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   },
 };
 </script>
