@@ -20,6 +20,7 @@
 #define INSTALL_REPO_NAME "REPO_NAME"
 #define INSTALL_REPO_PATH "AGENT_REPO_DIR"
 #define INSTALL_REPO_CFG "/usr/lib/migration-tools-server/uos-sysmig/views/cfg.ini"
+int GetSepFlds(char *msg, int len, char *field[], char sep);
 
 int verify_knownhost(ssh_session session);
 int show_remote_processes(ssh_session session, char *cmd);
