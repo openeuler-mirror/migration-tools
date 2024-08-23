@@ -44,6 +44,12 @@
             v-model="filterForm.os"
             placeholder="操作系统类型："
           >
+            <el-option
+              v-for="item in osOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item class="child">
@@ -141,6 +147,10 @@
             label="在线状态"
             width="100"
           >
+            <template #default="scope">
+              <span v-if="scope.row.onlineStatus == 'online'">在线</span>
+              <span v-else>离线</span>
+            </template>
           </el-table-column>
           <el-table-column
             align="center"
@@ -246,6 +256,17 @@ export default {
   computed: {
     failureReasonOptions() {
       let cache = new Set(this.machineList.map((item) => item.failure_reasons));
+      let deleteItems = ["--", null, undefined, ""];
+      for (let item of cache) {
+        if (deleteItems.includes(item)) {
+          cache.delete(item);
+        }
+      }
+      return cache;
+    },
+
+    osOptions() {
+      let cache = new Set(this.machineList.map((item) => item.agent_os));
       let deleteItems = ["--", null, undefined, ""];
       for (let item of cache) {
         if (deleteItems.includes(item)) {
