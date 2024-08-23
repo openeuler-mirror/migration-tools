@@ -12,9 +12,8 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
         char *ppFld[32];
         char sTmp[64+1];		
 	char send_f[256+1];
-        char agent_repo_dir[64+1];
         char yum_install_agent[256+1];
-        char install_agent_repo[64+1];
+        char iGetSepFldsnstall_agent_repo[64+1];
 
 	yum_p = (char*)malloc(sizeof(char) * 200);
 	check_conf = (char*)malloc(sizeof(char) * 200);
@@ -103,15 +102,23 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
                         if(ds)
                                 //ds = 4;
                                 ds = 3;
+
+
+
+			
+			/*ds = system(yum_p);
+			if(ds)
+				ds = 4; */
 			else
 			{
                                 //install the Agent Service
                                 memset(yum_install_agent, 0x00, sizeof(yum_install_agent));
                                 //sprintf(yum_install_agent, "%s \" yum -y install migration-tools-agent -c %s && echo $? \"", yum_p, ppFld[rc-1]);
-				sprintf(yum_install_agent, "%s \" yum -y install --disablerepo=* -c %s/%s --enablerepo=uyi* migration-tools-agent && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
+				sprintf(yum_install_agent, "%s \" yum -y install --disablerepo=* -c %s/%s --enablerepo=uyi* uos-sysmig-agent && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
                                 system(yum_install_agent);
 
 				//scp
+			        ds = scp_write(my_ssh_session);
 		        	if(ds)
 					ds = 3;
 			        else
@@ -361,6 +368,38 @@ int show_remote_processes(ssh_session session,char *cmd)
 	return SSH_OK;
 }
 
+int scp_write(ssh_session session)
+{
+	ssh_scp scp;
+	int rc;
+
+	scp = ssh_scp_new(session, SSH_SCP_WRITE | SSH_SCP_RECURSIVE, "/tmp");
+	if (scp == NULL)
+	{
+		fprintf(stderr, "Error allocating scp session: %s\n", ssh_get_error(session));
+		return SSH_ERROR;
+	}
+	rc = ssh_scp_init(scp);
+	if (rc != SSH_OK)
+	{
+		fprintf(stderr, "Error initializing scp session: %s\n", ssh_get_error(session));
+		ssh_scp_free(scp);
+		return rc;
+	}
+
+	rc = scp_file(session, scp);
+	if(rc != SSH_OK)
+	{
+		fprintf(stderr, "Error scp files: %s\n", ssh_get_error(session));
+		ssh_scp_free(scp);
+		return rc;
+	}
+
+	ssh_scp_close(scp);
+	ssh_scp_free(scp);
+	return SSH_OK;
+}
+
 int scp_file(ssh_session session, ssh_scp scp)
 {
 	int rc,tc,yc,uc,ic,oc;
@@ -376,6 +415,18 @@ int scp_file(ssh_session session, ssh_scp scp)
 	buf=(char*)malloc((sizeof(char))*(len+1));
 	fread(buf,1,len+1,f);
 	buf[len]='\0';
+
+	//set up directory for scp
+	/*rc = ssh_scp_push_directory(scp, "/etc/migration-tools/", S_IRUSR |  S_IWUSR | S_IRGRP | S_IROTH);
+        
+        
+	if (rc != SSH_OK)
+	{
+		fprintf(stderr, "Can't create remote directory: %s\n", ssh_get_error(session));
+		return rc;
+	}
+
+	*/
 
 	//touch file for scp 0666
 	tc = ssh_scp_push_file(scp, CONF_NAME, len, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
