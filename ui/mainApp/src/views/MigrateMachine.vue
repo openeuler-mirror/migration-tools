@@ -88,6 +88,21 @@
         </el-form-item>
       </el-form>
     </div>
+    <div class="footerBar">
+      <el-button
+        @click="cancelMigrate()"
+        type="text"
+        style="width: 130px; color: #1b67b3"
+        >取消</el-button
+      >
+      <el-button
+        @click="nextStep()"
+        :disabled="!machineList.length"
+        style="width: 130px; color: white"
+        color="#1b67b3"
+        >下一步</el-button
+      >
+    </div>
   </div>
 </template>
 
@@ -208,6 +223,18 @@ export default {
         .catch((err) => {
           // 取消，什么事都不会发生
         });
+    },
+    cancelMigrate: function () {
+      this.$router.push("machine-management");
+    },
+    nextStep: function () {
+      this.$router.replace({
+        name: "MigrationNotice",
+        params: {
+          machines: JSON.stringify(this.machineList),
+          migrationType: JSON.stringify(this.migrationType),
+        },
+      });
     },
   },
 
