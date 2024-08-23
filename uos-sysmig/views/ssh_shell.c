@@ -5,13 +5,14 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 	ssh_session my_ssh_session;
 	ssh_bind sshbind;
 
-	int rc = 0, ds = 0, pw = 0 ;
+	int rc = 0, ds = 0, pm = 0, pw = 0, dc = 0, run = 0;;
 	char *yum_p = NULL;
 
         char *ppFld[32];
         char sTmp[64+1];		
 	char send_f[256+1];
         char yum_install_agent[256+1];
+        char iGetSepFldsnstall_agent_repo[64+1];
 
 	yum_p = (char*)malloc(sizeof(char) * 200);
 
@@ -87,15 +88,24 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
                         sprintf(send_f, "sshpass -p %s scp %s %s@%s:%s", password, install_agent_repo, user, hostadr);
                         ds = system(send_f);
                         if(ds)
+                                //ds = 4;
                                 ds = 3;
+
+
+
+			
+			/*ds = system(yum_p);
+			if(ds)
+				ds = 4; */
 			else
 			{
                                 //install the Agent Service
                                 memset(yum_install_agent, 0x00, sizeof(yum_install_agent));
                                 //sprintf(yum_install_agent, "%s \" yum -y install migration-tools-agent -c %s && echo $? \"", yum_p, ppFld[rc-1]);
-				sprintf(yum_install_agent, "%s \" yum -y install --disablerepo=* -c %s/%s --enablerepo=uyi* migration-tools-agent && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
+				sprintf(yum_install_agent, "%s \" yum -y install --disablerepo=* -c %s/%s --enablerepo=uyi* uos-sysmig-agent && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
                                 system(yum_install_agent);
 
+				//scp
 		        	if(ds)
 					ds = 3;
 			        else
@@ -200,4 +210,19 @@ int show_remote_processes(ssh_session session,char *cmd)
 	return SSH_OK;
 }
 
+
+int authenticate_pubkey(ssh_session session)
+{
+	int rc;
+
+	rc = ssh_userauth_publickey_auto(session, NULL, NULL);
+
+	if (rc == SSH_AUTH_ERROR)
+	{
+		fprintf(stderr, "Authentication failed: %s\n", ssh_get_error(session));
+		return SSH_AUTH_ERROR;
+	}
+
+	return rc;
+}
 
