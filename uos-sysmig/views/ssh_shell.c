@@ -8,6 +8,9 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 	int rc = 0, ds = 0, pw = 0;
 	char *yum_p = NULL;
 
+	char send_f[256+1];
+	char yum_install_agent[256+1];
+
 	yum_p = (char*)malloc(sizeof(char) * 200);
 
 	// Open session and set options
@@ -68,6 +71,33 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 	{
 		sprintf(yum_p, "sshpass -p %s ssh %s@%s ", password, user, hostadr);
 	}
+
+        //do shell command
+        if(!ds)
+        {
+                if(strcmp(user,"root"))
+                        ds=system(sudo);
+                if(ds)
+                        ds = 1;
+                else
+                {
+                        memset(send_f, 0x00, sizeof(send_f));
+                        sprintf(send_f, "sshpass -p %s scp %s %s@%s:%s", password, install_agent_repo, user, hostadr);
+                        ds = system(send_f);
+                        if(ds)
+                                //ds = 4;
+                                ds = 3;
+                        else
+                        {
+                                //install the Agent Service
+                                memset(yum_install_agent, 0x00, sizeof(yum_install_agent));
+                                //sprintf(yum_install_agent, "%s \" yum -y install migration-tools-agent -c %s && echo $? \"", yum_p, ppFld[rc-1]);
+                                sprintf(yum_install_agent, "%s \" yum -y install --disablerepo=* -c %s/%s --enablerepo=uyi* uos-sysmig-agent && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
+                                system(yum_install_agent);
+
+                        }
+                }
+        }
 
 	//close connect
 	//free ssh
