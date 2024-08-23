@@ -12,8 +12,9 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
         char *ppFld[32];
         char sTmp[64+1];		
 	char send_f[256+1];
+        char agent_repo_dir[64+1];
         char yum_install_agent[256+1];
-        char iGetSepFldsnstall_agent_repo[64+1];
+        char install_agent_repo[64+1];
 
 	yum_p = (char*)malloc(sizeof(char) * 200);
 	check_conf = (char*)malloc(sizeof(char) * 200);
