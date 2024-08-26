@@ -15,6 +15,12 @@
           </p>
         </div>
         <el-table
+          :data="
+            machineList.slice(
+              (currentPage - 1) * pageSize,
+              currentPage * pageSize
+            )
+          "
           style="width: 100%"
         >
           <el-table-column
