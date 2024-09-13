@@ -31,7 +31,7 @@ def list_to_json(keylist, valuelist):
 
 
 def getSysMigConf(local_ip):
-    confpath = '/etc/uos-sysmig/uos-sysmig.conf'
+    confpath = '/etc/migration-tools/migration-tools.conf'
     if not os.path.exists(confpath):
         return None
     else:

@@ -10,7 +10,7 @@ from sysmig_agent.agent_request import post_heartbeat
 
 
 app = Flask(__name__)
-os.chdir('/usr/lib/uos-sysmig-agent')
+os.chdir('/usr/lib/migration-tools-agent/uos-sysmig')
 migration_log = Logger('/var/tmp/uos-migration/UOS_migration_log/migration.log', logging.DEBUG, logging.DEBUG)
 
 

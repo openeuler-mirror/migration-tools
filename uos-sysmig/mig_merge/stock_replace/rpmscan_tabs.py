@@ -7,7 +7,7 @@ import platform
 
 from mig_merge.migrationTools.scanRPM.scan_rpm import parsed_pkg_to_json,get_current_pkg_list
 from mig_merge.migrationTools.scanRPM.scan_rpm import ParsedPkgInfoAdd
-from mig_merge.merge.gen_sqlite import gen_sqlite
+from mig_merge.repo_sqlite.gen_sqlite import gen_sqlite
 
 def rpmscan_tabs(mig_flag, logger):
     exclude_fonts = True

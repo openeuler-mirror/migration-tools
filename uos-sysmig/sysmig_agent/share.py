@@ -392,7 +392,7 @@ def add_boot_option():
 
 
 def getSysMigConf():
-    confpath = '/etc/uos-sysmig/uos-sysmig.conf'
+    confpath = '/etc/migration-tools/migration-tools.conf'
     if not os.path.exists(confpath):
         return None
     else:

@@ -50,7 +50,7 @@ def judge_rpmpkg_exitrepo(rpm_name):
     for data in data_list:
         if repo_rpmpkg in data:
             time_num += 1
-                return True
+            return True
     return False
 
 def judge_bin_ynrepo(bin_name):
