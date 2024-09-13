@@ -320,5 +320,5 @@ if __name__ == '__main__':
     with open('template/src/plugins/axios.js', 'w+', encoding='utf-8') as f:
         f.write(info)
         f.close
-    app.run(debug=True, host=ip, port=port, use_reloader=False)
+    app.run(debug=False, host=ip, port=port, use_reloader=False)
 
