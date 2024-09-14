@@ -3,7 +3,7 @@
   <el-card class="cardBox">
     <h2 class="darkblueHeaderText">导入条件</h2>
     <ul class="smallPaddingUl">
-      <li>支持的操作系统：CentOS 7/8、RHEL 7/8、Anolis OS 7/8</li>
+      <li>支持的操作系统：CentOS 7</li>
       <li>主机防火墙确保能与统信服务端通信</li>
       <li>
         开启主机 SSHD 服务 |
@@ -193,13 +193,15 @@ export default {
       readXlsxFile(this.uploadFile, { schema }).then(({ rows, errors }) => {
         this.importExcelData = rows;
         console.log("content of excel", this.importExcelData);
-        this.importExcelData.map((item,index)=>{
-          if(item){
-              let Base64=require("js-base64").Base64
-             this.importExcelData[index].agent_password=Base64.encode(this.importExcelData[index].agent_password)
-            }
-       })
-       console.log("zhi",this.importExcelData)
+        this.importExcelData.map((item, index) => {
+          if (item) {
+            let Base64 = require("js-base64").Base64;
+            this.importExcelData[index].agent_password = Base64.encode(
+              this.importExcelData[index].agent_password
+            );
+          }
+        });
+        console.log("zhi", this.importExcelData);
         this.$http
           .post("import_host_info", {
             mod: "import_host_info",
