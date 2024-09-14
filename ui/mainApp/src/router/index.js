@@ -8,6 +8,7 @@ import MigrationNotice from "../views/MigrationNotice.vue";
 import MigrateMachine from "../views/MigrateMachine.vue";
 import CheckAvalibleSpace from "../views/CheckAvalibleSpace.vue";
 import SetRepo from "../views/SetRepo.vue";
+import SetAnalyzeRepo from "../views/SetAnalyzeRepo.vue";
 import SelectMigrateKernel from "../views/SelectMigrateKernel.vue";
 import EnvCheckBeforeMigrate from "../views/EnvCheckBeforeMigrate.vue";
 import MigrateRunning from "../views/MigrateRunning.vue";
@@ -62,6 +63,11 @@ const routes = [
     path: "/set-repo",
     name: "SetRepo",
     component: SetRepo,
+  },
+  {
+    path: "/set-analyze-repo",
+    name: "SetAnalyzeRepo",
+    component: SetAnalyzeRepo,
   },
   {
     path: "/select-migrate-kernel",
