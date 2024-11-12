@@ -98,6 +98,21 @@ systemctl daemon-reload
 systemctl restart migration-tools-server.service
 systemctl enable migration-tools-server.service
 
+%post -n migration-tools-agent
+mkdir -p /etc/migration-tools
+mkdir -p /var/tmp/uos-migration/UOS_migration_log
+cp -r /usr/lib/migration-tools-agent/server/migration-tools-agent.service /usr/lib/systemd/system/
+systemctl daemon-reload
+systemctl restart migration-tools-agent.service
+
+%post -n migration-tools-data
+%{__mkdir_p} /etc/migration-tools
+%{__cp} -r /usr/lib/migration-tools-data/server/migration-tools.conf /etc/migration-tools
+%{__cp} -r /usr/lib/migration-tools-data/server/migration-tools-data.service /usr/lib/systemd/system/
+chmod 777 /etc/migration-tools/migration-tools.conf
+systemctl enable migration-tools-data.service
+systemctl restart migration-tools-data.service
+
 
 %postun -n migration-tools-server
 systemctl disable migration-tools-server.service
