@@ -1,3 +1,6 @@
+%define _enable_debug_package 0
+%define debug_package %{nil}
+
 Name: 		migration-tools
 Version:	1.1.0
 Release:	0
