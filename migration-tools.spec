@@ -27,7 +27,7 @@ Requires:python3-paramiko
 Requires:python3-flask
 Requires:rsync
 Requires:yum-utils
-Requires:uos-sysmig-data
+Requires:migration-tools-data
 
 %description -n migration-tools-agent
 Migration software agent side
@@ -48,6 +48,15 @@ Requires:	mysql-devel
 %description -n migration-tools-server
 Migration software server side
 
+############################
+%package -n migration-tools-data
+AutoReqProv: no
+Summary: migration-tools-data
+License: MulanPSL-2.0
+
+%description -n migration-tools-data
+Migration software conf side
+
 
 %prep
 %setup -c
@@ -59,14 +68,22 @@ make
 
 %install
 rm -rf %{buildroot}
-mkdir -p $RPM_BUILD_ROOT/usr/lib/migration-tools-server
-mkdir -p $RPM_BUILD_ROOT/var/tmp/uos-migration
-mkdir -p $RPM_BUILD_ROOT/etc/migration-tools
+%{__mkdir_p} $RPM_BUILD_ROOT/var/tmp/uos-migration
+%{__mkdir_p} $RPM_BUILD_ROOT/etc/migration-tools
+%{__mkdir_p} $RPM_BUILD_ROOT/usr/lib/migration-tools-agent
+%{__mkdir_p} $RPM_BUILD_ROOT/usr/lib/migration-tools-server
+%{__mkdir_p} $RPM_BUILD_ROOT/usr/lib/migration-tools-data
+
+%{__cp} -r migration-tools/server/ $RPM_BUILD_ROOT/usr/lib/migration-tools-data/
 
 cp -r migration-tools/* $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
 
 # Install server config
 %{__cp} -r $RPM_BUILD_ROOT/usr/lib/migration-tools-server/server/migration-tools.conf $RPM_BUILD_ROOT/etc/migration-tools
+
+# Template
+%{__mkdir_p} $RPM_BUILD_ROOT/usr/lib/migration-tools-data/template
+%{__cp} -r migration-tools/ui/report_templates/dist/* $RPM_BUILD_ROOT/usr/lib/migration-tools-data/template/
 
 
 %post -n migration-tools-server
@@ -75,7 +92,7 @@ mkdir -p /var/tmp/uos-migration/UOS_migration_log
 cp -r /usr/lib/migration-tools-server/server/migration-tools-server.service /usr/lib/systemd/system/
 chmod +x /usr/lib/migration-tools-server/server/start_webview.sh
 ln -s /usr/lib/migration-tools-server/server/start_webview.sh /usr/bin/migration-tools
-cd /usr/lib/migration-tools-server/uos-sysmig/views;make
+cd /usr/lib/migration-tools-server/migration-tools/views;make
 systemctl daemon-reload
 systemctl restart migration-tools-server.service
 systemctl enable migration-tools-server.service
@@ -87,10 +104,27 @@ rm -rf /usr/lib/migration-tools-server/
 rm -rf /usr/lib/migration-tools
 rm -rf /usr/bin/migration-tools
 
+%postun -n migration-tools-agent
+systemctl disable migration-tools-agent.service
+rm -rf /usr/lib/migration-tools-agent
+rm -rf /usr/lib/systemd/system/migration-tools-agent.service
+rm -rf /var/tmp/uos-migration
+rm -rf /etc/migration-tools
+
+%postun -n migration-tools-data
+rm -rf /etc/migration-tools
+rm -rf /usr/lib/migration-tools-data
+rm -rf /usr/lib/systemd/system/migration-tools-data.service
 
 %files -n migration-tools-server
 /etc/migration-tools
 /usr/lib/migration-tools-server
+
+%files -n migration-tools-agent
+/usr/lib/migration-tools-agent
+
+%files -n migration-tools-data
+/usr/lib/migration-tools-data
 
 
 %changelog
