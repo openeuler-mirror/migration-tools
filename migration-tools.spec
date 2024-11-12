@@ -1,11 +1,13 @@
 Name: 		migration-tools
-Version:	1.0.0
-Release:	1
+Version:	1.1.0
+Release:	0
 License:	MulanPSL-2.0
 Summary:	A tool to help users migrate the Centos system to the UOS system and openEuler system
 
-Source0:	ut-Migration-tools.tar.gz
-BuildArch: 	noarch
+Source0:	migration-tools.tar.gz
+BuildRequires: make
+
+ExcludeArch:loongarch64 i686
 %description
 UOS Migration Software
 
@@ -48,7 +50,7 @@ Migration software server side
 %setup -c
 
 %build
-pushd ut-Migration-tools/ui/report_templates
+pushd migration-tools/ui/report_templates
 npm install
 make
 
@@ -58,7 +60,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/lib/migration-tools-server
 mkdir -p $RPM_BUILD_ROOT/var/tmp/uos-migration
 mkdir -p $RPM_BUILD_ROOT/etc/migration-tools
 
-cp -r ut-Migration-tools/* $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
+cp -r migration-tools/* $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
 
 # Install server config
 %{__cp} -r $RPM_BUILD_ROOT/usr/lib/migration-tools-server/server/migration-tools.conf $RPM_BUILD_ROOT/etc/migration-tools
@@ -89,5 +91,8 @@ rm -rf /usr/bin/migration-tools
 
 
 %changelog
+* Mon Nov 11 2024 xuezhixin <xuezhixin@uniontech.com> - 1.1.0-0
+- update to 1.1.0
+
 * Wed Aug 16 2023 lixin <lixinb@uniontech.com> - 1.0.0-1
 - init
