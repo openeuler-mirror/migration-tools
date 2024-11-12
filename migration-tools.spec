@@ -77,6 +77,7 @@ rm -rf %{buildroot}
 %{__cp} -r migration-tools/server/ $RPM_BUILD_ROOT/usr/lib/migration-tools-data/
 
 cp -r migration-tools/* $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
+cp -r migration-tools/* $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/
 
 # Install server config
 %{__cp} -r $RPM_BUILD_ROOT/usr/lib/migration-tools-server/server/migration-tools.conf $RPM_BUILD_ROOT/etc/migration-tools
@@ -121,6 +122,7 @@ rm -rf /usr/lib/systemd/system/migration-tools-data.service
 /usr/lib/migration-tools-server
 
 %files -n migration-tools-agent
+/etc/migration-tools
 /usr/lib/migration-tools-agent
 
 %files -n migration-tools-data
