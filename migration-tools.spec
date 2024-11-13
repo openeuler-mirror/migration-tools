@@ -1,6 +1,23 @@
 %define _enable_debug_package 0
 %define debug_package %{nil}
 
+
+%ifarch aarch64
+%if 0%{?rhel} < 8
+%global sa_pyenv 1xxc_aarch64
+%else
+%global sa_pyenv 1xxa_aarch64
+%endif
+%endif
+
+%ifarch x86_64
+%if 0%{?rhel} < 8
+%global sa_pyenv 1xxc_x86_64
+%else
+%global sa_pyenv 1xxa_x86_64
+%endif
+%endif
+
 Name: 		migration-tools
 Version:	1.2.0
 Release:	0
@@ -68,8 +85,8 @@ rm -rf %{buildroot}
 %{__mkdir_p}  $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/uos-sysmig
 %{__mkdir_p}  $RPM_BUILD_ROOT/usr/lib/migration-tools-server/migration-tools
 %{__mkdir_p}  /var/tmp/uos-migration
-#%{__cp} -r sa_pyenv/%{?sa_pyenv}/agent_env.tar.gz   $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/
-#%{__cp} -r sa_pyenv/%{?sa_pyenv}/server_env.tar.gz  $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
+%{__cp} -r sa_pyenv/%{?sa_pyenv}/agent_env.tar.gz   $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/
+%{__cp} -r sa_pyenv/%{?sa_pyenv}/server_env.tar.gz  $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
 %{__cp} -r uos-sysmig/*  $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/uos-sysmig/
 %{__cp} -r uos-sysmig/*  $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
 %{__cp} -r ui/report_templates/dist $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/
