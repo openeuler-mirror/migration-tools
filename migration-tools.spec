@@ -1,5 +1,6 @@
 %define _enable_debug_package 0
 %define debug_package %{nil}
+%define __os_install_post %{nil}
 
 
 %ifarch aarch64
