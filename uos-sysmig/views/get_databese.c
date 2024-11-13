@@ -66,3 +66,27 @@ int get_database(char *file_path, char *name,unsigned long **res)
 	buf = NULL;
 	return 0;
 }
+int judge_version()
+{
+        int cts = 0;
+        char *res;
+        res = (char *)malloc(sizeof(char) *100);
+        get_database(VERSION_PATH,"VERSION_ID", &res);
+        if(strstr(res,"7"))
+                cts = 7;
+	else
+	{
+		get_database("/etc/os-version","MinorVersion", &res);
+		if( strncasecmp(res,"1000",4))
+			cts = 7;
+		else if( strncasecmp(res,"1020",4))
+			cts = 8;
+		else if( strncasecmp(res,"1021",4))
+			cts = 8;
+		else
+			printf("not centos 7, 8 or uos 1000, 1020, 1021\n");
+	}
+        free(res);
+        res = NULL;
+        return cts;
+}
