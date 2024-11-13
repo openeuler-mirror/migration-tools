@@ -9,12 +9,14 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 	char *yum_p = NULL;
 	char *check_conf = NULL;
 
+	//####### 20220728 add lihp ########
         char *ppFld[32];
         char sTmp[64+1];		
 	char send_f[256+1];
         char agent_repo_dir[64+1];
         char yum_install_agent[256+1];
         char install_agent_repo[64+1];
+	//####### 20220728 add lihp ########
 	
 	yum_p = (char*)malloc(sizeof(char) * 200);
 	check_conf = (char*)malloc(sizeof(char) * 200);
@@ -97,6 +99,7 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 			ds = 1;
 		else
 		{
+			//##################### 20220728 lihp add install agent repo file start  ############################
                         //Get the repo file name based on the Agent system id
                         memset(install_agent_repo, 0x00, sizeof(install_agent_repo));
                         rc = execution_return_values(my_ssh_session, gp, install_agent_repo);
@@ -132,16 +135,17 @@ int ssh_command(char *hostadr, char *user, char *password, char *sudo, char *yum
 
 
 
+			//##################### 20220728 lihp add install agent repo file end  ############################
 			
 			/*ds = system(yum_p);
 			if(ds)
-				ds = 4; */
+				ds = 4; modify by lihp 20220728 */
 			else
 			{
                                 //install the Agent Service
                                 memset(yum_install_agent, 0x00, sizeof(yum_install_agent));
                                 //sprintf(yum_install_agent, "%s \" yum -y install migration-tools-agent -c %s/%s && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
-				sprintf(yum_install_agent, "%s \" yum -y install --disablerepo=* -c %s/%s --enablerepo=uyi* uos-sysmig-agent && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
+				sprintf(yum_install_agent, "%s \" yum -y install --disablerepo=* -c %s/%s --enablerepo=uyi* migration-tools-agent && echo $? \"", yum_p, agent_repo_dir, ppFld[rc-1]);
                                 system(yum_install_agent);
 
 				//scp
@@ -500,7 +504,7 @@ int authenticate_pubkey(ssh_session session)
  *        vp       远程执行命令结果
  *返回值：SSH_OK 成功；SSH_ERROR 失败
  *作  者：lihaipeng
- *日  期：2024-07-28
+ *日  期：2022-07-28
  *功  能：获取远程执行命令结果
  */
 int execution_return_values(ssh_session session,char *cmd, char *vp)
@@ -584,7 +588,7 @@ int execution_return_values(ssh_session session,char *cmd, char *vp)
  *        buf      子配置项索引值
  *返回值：0 成功；-1 失败
  *作  者：lihaipeng
- *日  期：2024-07-28
+ *日  期：2022-07-28
  *功  能：获取指定子配置项索引值
  */
 int get_cfg_value(char *title, char *key, char *filename, char *buf)
@@ -639,5 +643,44 @@ int get_cfg_value(char *title, char *key, char *filename, char *buf)
         }
         fclose(fp);
         return -1;
+}
+
+/*
+ *函数名：generate_cfg_str
+ *参  数：vpp 配置文件转换字符串值
+ *返回值：0 成功；-1 失败
+ *作  者：lihaipeng
+ *日  期：2022-07-28
+ *功  能：将配置文件生成字符串
+ * */
+int generate_cfg_str(char *vpp)
+{
+        FILE *fp;
+        char sLine[512];
+        char filename[256];
+
+        memset(filename, 0x00, sizeof(filename));
+        sprintf(filename, "%s", CONF_PATH);
+
+        if(NULL == (fp = fopen(filename, "r")))
+        {
+                fprintf(stderr, "Open Server Cfg File Error: %s\n", CONF_PATH);
+                perror("fopen");
+                return -1;
+        }
+
+        memset(sLine, 0x00, sizeof(sLine));
+        while (NULL != fgets(sLine, 1024, fp))
+        {
+                if (0 == strncmp("//", sLine, 2)) continue;
+                if ('#' == sLine[0]) continue;
+                if ("" == sLine) continue;
+
+                strcat(vpp, sLine);
+                memset(sLine, 0x00, sizeof(sLine));
+        }
+        fclose(fp);
+
+        return 0;
 }
 
