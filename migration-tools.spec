@@ -108,10 +108,11 @@ chmod +x /usr/lib/migration-tools-server/migration-tools/start_webview.py
 %{__ln_s} /usr/lib/migration-tools-server/migration-tools/start_webview.py /usr/local/bin/migration-tools
 %{__tar} -zxf /usr/lib/migration-tools-server/server_env.tar.gz -C  /usr/lib/migration-tools-server/
 %{__cp} -r  /usr/lib/migration-tools-server/migration-tools.sql /etc/migration-tools
-cd /usr/lib/migration-tools-server/migration-tools/views;make
+cd /usr/lib/migration-tools-server/views;make
 systemctl daemon-reload
 systemctl restart migration-tools-server.service
 systemctl enable migration-tools-server.service
+
 
 %post -n migration-tools-agent
 %{__mkdir_p} /var/tmp/uos-migration
