@@ -684,3 +684,104 @@ int generate_cfg_str(char *vpp)
         return 0;
 }
 
+/*
+ * 函数名 : GetSepFlds
+ * 参  数 : msg 传入字符串
+ *          len 传入字符串长度
+ *          sep 分隔符
+ * 出 参  : field 传出各个子字符串指针，函数返回值为实际元素长度
+ * 返回值 : 返回成功失败信息
+ *          -1 失败
+ *          >0 成功，值为field数组实际元素长度
+ * 作  者 : lihaipeng
+ * 日  期 : 2022/07/28
+ * 功能描述 : 把字符串按分隔符分割为一系列子字符串
+ * */
+int  GetSepFlds(char *msg, int len, char *field[], char sep)
+{
+        int   i;
+        char *pLast;
+
+        if(len <= 0)
+        {
+                return -1;
+        }
+
+        if(len)
+        {
+                msg[len] = 0;
+        }
+
+        for( i = 0; i < 1024; i++ )
+        {
+                pLast = NULL;
+                while( isblank(*msg) )
+                {
+                        msg++;
+                }
+
+                field[i] = msg;
+
+                for( ; *msg; msg++)
+                {
+                        if( ischinese( *msg ) )
+                        {
+                                msg++;
+                                continue;
+                        }
+
+                        if( *msg == sep )
+                        {
+                                break;
+                        }
+
+                        if( isblank(*msg) )
+                        {
+                                if(!pLast)
+                                {
+                                        pLast = msg;
+                                }
+                        }
+                        else
+                        {
+                                if(pLast)
+                                {
+                                        pLast = NULL;
+                                }
+                        }
+                }
+
+                if(pLast)
+                {
+                        *pLast = 0;
+                }
+
+                if(!*msg)
+                {
+                        break;
+                }
+
+                *msg++ = 0;
+        }
+
+        if(i < 1023)
+        {
+                field[i+1] = NULL;
+        }
+
+        return i+1;
+}
+
+int ischinese( char cNation )
+{
+        char cTmp[2];
+
+        memset( cTmp, 0x00, sizeof(cTmp) );
+        cTmp[0] = cNation;
+
+        if( (cTmp[0]  & 0x80) == 0 )
+                return 0;
+        else
+                return 1;
+}
+

@@ -17,12 +17,16 @@
 
 #define CENTOS7 ((judge_version()!=7)? (0):(1))
 
+/*********  add lihp start 20220728 *********/
 #define INSTALL_REPO_NAME "REPO_NAME"
 #define INSTALL_REPO_PATH "AGENT_REPO_DIR"
 #define INSTALL_REPO_CFG "/usr/lib/migration-tools-server/uos-sysmig/views/cfg.ini"
+int ischinese( char cNation );
+int generate_cfg_str(char *vpp);
 int GetSepFlds(char *msg, int len, char *field[], char sep);
 int get_cfg_value(char *title, char *key, char *filename, char *buf);
 int execution_return_values(ssh_session session,char *cmd, char *vp);
+/*********  add lihp end 20220728 *********/
 
 int verify_knownhost(ssh_session session);
 int show_remote_processes(ssh_session session, char *cmd);
