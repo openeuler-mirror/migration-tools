@@ -18,7 +18,7 @@ from flask import send_from_directory
 
 # import MySQLdb
 os.chdir('/usr/lib/migration-tools-server/')
-app = Flask(__name__, static_folder='../static', template_folder='../templates')
+app = Flask(__name__, static_folder='tatic', template_folder='templates')
 migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 CORS(app, resources=r'/*')
 
