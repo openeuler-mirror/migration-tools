@@ -65,12 +65,12 @@ popd
 
 %install
 rm -rf %{buildroot}
-%{__mkdir_p}  $RPM_BUILD_ROOT/usr/lib/migration-tools-agent
+%{__mkdir_p}  $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/uos-sysmig
 %{__mkdir_p}  $RPM_BUILD_ROOT/usr/lib/migration-tools-server/migration-tools
 %{__mkdir_p}  /var/tmp/uos-migration
 #%{__cp} -r sa_pyenv/%{?sa_pyenv}/agent_env.tar.gz   $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/
 #%{__cp} -r sa_pyenv/%{?sa_pyenv}/server_env.tar.gz  $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
-%{__cp} -r uos-sysmig/*  $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/
+%{__cp} -r uos-sysmig/*  $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/uos-sysmig/
 %{__cp} -r uos-sysmig/*  $RPM_BUILD_ROOT/usr/lib/migration-tools-server/
 %{__cp} -r ui/report_templates/dist $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/
 #%{__cp} -r ui/uyi-reports/dist $RPM_BUILD_ROOT/usr/lib/migration-tools-agent/
