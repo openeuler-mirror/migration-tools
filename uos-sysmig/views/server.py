@@ -112,7 +112,7 @@ def check_user(data):
     检测账户权限
     :return:
     """
-    check_user_res = CDLL('/usr/lib/migration-tools-server/uos-sysmig/views/check_user_authority.so')
+    check_user_res = CDLL('/usr/lib/migration-tools-server/views/check_user_authority.so')
     data = check_user_res.check_user_authority()
     if data == 0:
         data = {"data": "failed", "num": 0}
