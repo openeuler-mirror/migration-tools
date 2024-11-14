@@ -45,6 +45,7 @@ Requires:python3-paramiko
 Requires:python3-flask
 Requires:rsync
 Requires:yum-utils
+Requires:gcc
 
 %description -n migration-tools-agent
 Migration software agent side
@@ -104,8 +105,8 @@ rm -rf %{buildroot}
 %{__mkdir_p} /var/tmp/uos-migration/UOS_migration_log
 %{__cp} -r /usr/lib/migration-tools-server/server/migration-tools.conf /etc/migration-tools
 %{__cp} -r /usr/lib/migration-tools-server/server/migration-tools-server.service /usr/lib/systemd/system/
-chmod +x /usr/lib/migration-tools-server/migration-tools/start_webview.py
-%{__ln_s} /usr/lib/migration-tools-server/migration-tools/start_webview.py /usr/local/bin/migration-tools
+#chmod +x /usr/lib/migration-tools-server/migration-tools/start_webview.py
+#%{__ln_s} /usr/lib/migration-tools-server/migration-tools/start_webview.py /usr/local/bin/migration-tools
 %{__tar} -zxf /usr/lib/migration-tools-server/server_env.tar.gz -C  /usr/lib/migration-tools-server/
 %{__cp} -r  /usr/lib/migration-tools-server/migration-tools.sql /etc/migration-tools
 cd /usr/lib/migration-tools-server/views;make
