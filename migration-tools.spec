@@ -46,6 +46,7 @@ Requires:python3-flask
 Requires:rsync
 Requires:yum-utils
 Requires:gcc
+Requires:libssh-devel
 
 %description -n migration-tools-agent
 Migration software agent side
