@@ -1,11 +1,11 @@
 <template>
   <div class="pageContainer">
     <div>
-      <StyledSubheaderBlock subHeader="迁移前系统环境检查" />
+      <StyledSubheaderBlock :subHeader="title" />
       <div class="infoCard">
         <div class="infoIcon">i</div>
         <div>
-          对列表中的主机执行迁移环境检查，迁移检测报告可在报告生成后，前往
+          对列表中的主机执行{{ title }}，迁移检测报告可在报告生成后，前往
           下载中心 下载
         </div>
       </div>
@@ -15,7 +15,9 @@
             {{ machineList.length }} 项
           </p>
           <div class="horizontalBtnSet">
-            <el-button type="text">开始检查</el-button>
+            <el-button :disabled="isAllChecking" type="text" @click="getAllData"
+              >开始检查</el-button
+            >
           </div>
         </div>
         <el-table
@@ -42,7 +44,7 @@
           <el-table-column
             :show-overflow-tooltip="true"
             prop="hostname"
-            label="主机名"
+            label="主机名称"
             align="center"
           />
           <el-table-column
@@ -50,7 +52,13 @@
             prop="agent_online_status"
             label="在线状态"
             align="center"
-          />
+          >
+            <template #default="scope">
+              <span v-if="scope.row.agent_online_status == 0">在线</span>
+              <span v-else>离线</span>
+            </template>
+          </el-table-column>
+
           <el-table-column
             :show-overflow-tooltip="true"
             prop="agent_os"
@@ -68,13 +76,20 @@
             prop="progress"
             label="检查进度"
             align="center"
+            width="250"
           >
             <template #default="scope" align="center">
-              <div v-if="scope.row.task_status == 1">
+              <div v-if="scope.row.task_status == 0 && !scope.row.isChecking">
+                <span>未执行</span>
+              </div>
+              <div
+                v-if="scope.row.task_status == 1 || scope.row.isChecking"
+                class="progress"
+              >
                 <span>检查中...</span>
                 <el-progress :percentage="scope.row.progress"></el-progress>
               </div>
-              <div v-if="scope.row.task_status == 2">
+              <div v-if="scope.row.task_status == 2 && !scope.row.isChecking">
                 <el-row justify="center">
                   <div>
                     <img src="@/assets/load_success.svg" />
@@ -82,7 +97,7 @@
                   <span style="margin-left: 10px">检查成功</span>
                 </el-row>
               </div>
-              <div v-if="scope.row.task_status == 3">
+              <div v-if="scope.row.task_status == 3 && !scope.row.isChecking">
                 <el-row justify="center">
                   <div>
                     <img src="@/assets/load_failed.svg" />
@@ -106,18 +121,23 @@
             align="center"
             :show-overflow-tooltip="true"
             label="操作"
-            min-width="120"
           >
             <template #default="scope">
               <el-button
                 type="text"
-                :disabled="
-                  scope.row.agent_status == '离线' ||
-                  scope.row.task_status == '迁移中'
-                "
+                :disabled="scope.row.isChecking"
+                @click="getData(scope.row)"
                 >检查</el-button
               >
-              <el-button type="text" @click="exportMigrationReport()"
+              <el-button
+                type="text"
+                :disabled="
+                  !(
+                    scope.row.agent_online_status == 0 &&
+                    (scope.row.task_status == 2 || scope.row.task_status == 4)
+                  )
+                "
+                @click="exportMigrationReport(scope.row)"
                 >迁移检测报告</el-button
               >
             </template>
@@ -137,7 +157,7 @@
         </el-pagination>
       </el-card>
     </div>
-    <div class="footerBar">
+    <div v-if="isStockReplacementType" class="footerBar">
       <el-button
         @click="cancelMigrate()"
         type="text"
@@ -146,9 +166,19 @@
       >
       <el-button
         @click="nextStep()"
+        :disabled="isSomeChecking"
         style="width: 130px; color: white"
         color="#1b67b3"
         >下一步</el-button
+      >
+    </div>
+    <div v-if="isNewExpansionType" class="footerBar">
+      <el-button
+        @click="nextStep()"
+        :disabled="!isAllFinished"
+        style="width: 130px; color: white"
+        color="#1b67b3"
+        >返回</el-button
       >
     </div>
   </div>
@@ -157,7 +187,7 @@
 <script>
 import StyledSubheaderBlock from "@/components/StyledSubheaderBlock.vue";
 
-import { ElMessageBox } from "element-plus";
+import { ElMessageBox, ElMessage } from "element-plus";
 import { WarningFilled } from "@element-plus/icons-vue";
 
 export default {
@@ -166,100 +196,261 @@ export default {
     StyledSubheaderBlock,
     WarningFilled,
   },
+  computed: {
+    isNewExpansionType() {
+      return this.migrationType == "new_expansion";
+    },
+    isStockReplacementType() {
+      return this.migrationType == "stock_replacement";
+    },
+    isAllFinished() {
+      return this.machineList.every(
+        (item) =>
+          item.task_status == 2 ||
+          item.task_status == 3 ||
+          item.task_status == 4
+      );
+    },
+    isAllChecking() {
+      return this.machineList.every((item) => item.isChecking == true);
+    },
+    isSomeChecking() {
+      return this.machineList.some((item) => item.isChecking == true);
+    },
+  },
   data() {
     return {
+      migrationType: "",
       machineList: [],
-      freshData: [],
       currentPage: 1,
       pageSize: 5,
       currentPageData: [],
       timer: null,
+      title: "",
     };
   },
   created() {
-    this.getData();
+    this.initData();
   },
   methods: {
-    refreshData: function (agentIpGroup) {
+    showHelpMessageBox: function () {
+      ElMessageBox({
+        message:
+          "本功能支持统信服务器操作系统 V20 与 CentOS 7 进行迁移分析。包括软件包的 ABI 分析。。。。\n\n在使用时。。。。",
+        title: "迁移分析使用说明",
+        confirmButtonText: "关闭",
+        showClose: false,
+      });
+    },
+    getAllData: function () {
+      let cacheIpList = [];
+      //  排除掉正在检查的
+      this.machineList.forEach((item) => {
+        if (!item.isChecking) {
+          cacheIpList.push(item.agent_ip);
+          item.isChecking = true;
+        }
+      });
+      let post_mod = "check_environment";
+      if (this.migrationType == "new_expansion") {
+        post_mod = "check_add_environment";
+      }
       this.$http
-        .post("/get_environment_data", {
-          mod: "get_environment_data",
-          agent_ip: agentIpGroup,
+        .post("/" + post_mod, {
+          mod: post_mod,
+          agent_ip: cacheIpList,
         })
-        .then((res) => {
-          let isAllFinishFlag = true;
-          this.freshData = res.data.info;
-          this.machineList.forEach((item) => {
-            let freshItem = this.freshData.find((freshItem) => {
-              return freshItem.agent_ip == item.agent_ip;
-            });
-            if (freshItem) {
-              item.task_status = freshItem.task_status;
-              item.progress = freshItem.progress;
+        .then((response) => {
+          this.timer = setInterval(() => {
+            let post_mod = "get_environment_data";
+            if (this.migrationType == "new_expansion") {
+              post_mod = "get_add_environment_data";
             }
-            if (item.task_status == 1) {
-              isAllFinishFlag = false;
+            if (cacheIpList.length == 0) {
+              return;
             }
-          });
-          if (this.timer && isAllFinishFlag) {
-            clearInterval(this.timer);
-            this.timer = null;
-          }
+            this.$http
+              .post("/" + post_mod, {
+                mod: post_mod,
+                agent_ip: cacheIpList,
+              })
+              .then((res) => {
+                let freshData = res.data.info;
+                this.machineList.forEach((machine) => {
+                  let item = freshData.find((findItem) => {
+                    return findItem.agent_ip == machine.agent_ip;
+                  });
+                  if (item) {
+                    machine.task_status = item.task_status;
+                    machine.progress = item.progress;
+                    machine.isChecking = true;
+                    if (
+                      machine.task_status == 2 ||
+                      machine.task_status == 3 ||
+                      machine.task_status == 4
+                    ) {
+                      machine.isChecking = false;
+                      //  remove machine.ip from cacheIpList
+                      cacheIpList = cacheIpList.filter((ip) => {
+                        return ip != machine.agent_ip;
+                      });
+                    }
+                  }
+                });
+              });
+          }, 5000);
         });
     },
-    getData: function () {
+
+    getData: function (rowData) {
+      this.machineList.forEach((item) => {
+        if (item.agent_ip == rowData.agent_ip) {
+          item.isChecking = true;
+
+          let agentIpGroup = [rowData.agent_ip];
+
+          let post_mod = "check_environment";
+          if (this.migrationType == "new_expansion") {
+            post_mod = "check_add_environment";
+          }
+          this.$http
+            .post("/" + post_mod, {
+              mod: post_mod,
+              agent_ip: agentIpGroup,
+            })
+            .then((response) => {
+              item.timer = setInterval(() => {
+                let post_mod = "get_environment_data";
+                if (this.migrationType == "new_expansion") {
+                  post_mod = "get_add_environment_data";
+                }
+                this.$http
+                  .post("/" + post_mod, {
+                    mod: post_mod,
+                    agent_ip: agentIpGroup,
+                  })
+                  .then((res) => {
+                    let freshData = res.data.info;
+                    this.machineList.forEach((machine) => {
+                      let item = freshData.find((findItem) => {
+                        return findItem.agent_ip == machine.agent_ip;
+                      });
+                      if (item) {
+                        machine.task_status = item.task_status;
+                        machine.progress = item.progress;
+
+                        //  如果检查成功或失败，则清除定时器
+                        if (
+                          machine.task_status == 2 ||
+                          machine.task_status == 3 ||
+                          machine.task_status == 4
+                        ) {
+                          machine.isChecking = false;
+                          clearInterval(machine.timer);
+                          machine.timer = null;
+                        }
+                      }
+                    });
+                  });
+              }, 5000);
+            });
+        }
+      });
+    },
+
+    initData: function () {
       if (this.$route.params.machines === undefined) {
         console.log("从路由或者url来的，应该拒绝该跳转请求并跳回到主页");
         this.$router.push("/");
         return;
       }
+      this.migrationType = JSON.parse(this.$route.params.migrationType);
+      if (this.migrationType == "new_expansion") {
+        this.title = "迁移分析";
+      }
+      if (this.migrationType == "stock_replacement") {
+        this.title = "迁移前系统环境检查";
+      }
+
       this.machineList = JSON.parse(this.$route.params.machines);
       console.log("machineList", this.machineList);
       this.machineList.forEach((element) => {
         element.progress = 0;
-        element.task_status = 1;
+        element.task_status = 0;
+        element.timer = null;
+        element.isChecking = false;
       });
 
       let agentIpGroup = this.machineList.map((item) => {
-        item.agent_ip;
+        return item.agent_ip;
       });
-      this.$http
-        .post("/check_environment", {
-          mod: "check_environment",
-          agent_ip: agentIpGroup,
-        })
-        .then((res) => {
-          console.log(res);
-          //   收到回复会开始定时获取数据
-          this.timer = setInterval(() => {
-            this.refreshData(agentIpGroup);
-          }, 5000);
-        });
+
+      this.$http.post("/modify_task_status", {
+        mod: "modify_task_status",
+        agent_ip: agentIpGroup,
+      });
     },
+
     progressFormat: function (value) {
       return "";
     },
-    exportMigrationReport: function () {
-      let filename =
-        "UOS_migration_report_10.0.2.3_cy.server_202109301634.html";
-      ElMessageBox({
-        message: "文件将下载到本地，也可稍后前往下载中心下载。",
-        title: "确定导出“" + filename + "”吗？",
-        confirmButtonText: "导出",
-        cancelButtonText: "取消",
-        showCancelButton: true,
-        showClose: false,
-        customStyle: { width: "700px" },
-      })
-        .then((res) => {})
+    exportMigrationReport: function (item) {
+      let reportType = "analysis_report";
+      if (this.migrationType == "new_expansion") {
+        reportType = "analysis_report_add";
+      }
+      this.$http
+        .post(
+          "/export_reports",
+          {
+            mod: "export_reports",
+            reports_type: reportType,
+            agent_ip: item.agent_ip,
+            hostname: item.hostname,
+          },
+          { responseType: "blob" }
+        )
+        .then((res) => {
+          let fileData = res.data;
+          let fileName =
+            res.headers["content-disposition"].split("filename=")[1];
+          let fileType = res.headers["content-type"];
+          ElMessageBox({
+            title: "确定导出“" + fileName + "”吗？",
+            message: "文件将下载到本地，也可稍后前往下载中心下载。",
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            showCancelButton: true,
+            showConfirmButton: true,
+            showClose: false,
+            type: "info",
+          })
+            .then(() => {
+              let blob = new Blob([fileData], { type: fileType });
+              let link = document.createElement("a");
+              link.href = window.URL.createObjectURL(blob);
+              link.download = fileName;
+              link.click();
+            })
+            .catch(() => {
+              ElMessage({
+                type: "info",
+                message: "已取消导出",
+              });
+            });
+        })
         .catch((err) => {
-          // 取消，什么事都不会发生
+          this.$message.error("下载失败,请稍后重试");
         });
     },
     cancelMigrate: function () {
       this.$router.replace("machine-management");
     },
     nextStep: function () {
+      if (this.migrationType == "new_expansion") {
+        this.$router.push("/");
+        return;
+      }
       ElMessageBox({
         // 这里其实还应该加个判断，就是没有可迁移机器的情况。。
         message:
@@ -301,10 +492,7 @@ export default {
     window.onbeforeunload = null;
   },
   beforeRouteLeave(to, from, next) {
-    // 导航离开该组件的对应路由时调用
-    // 可以访问组件实例 `this`
-    // 该导航可以通过 next(false) 来取消。
-    if (to.name === "MigrateRunning") {
+    if (to.name === "MigrateRunning" || to.name === "Home") {
       next();
       return false;
     }
@@ -319,13 +507,16 @@ export default {
         next();
       })
       .catch((err) => {
-        next(false);
+        console.log(err);
       });
   },
 };
 </script>
 
 <style scoped>
+.progress {
+  width: 100%;
+}
 .pageContainer {
   height: 100%;
   display: flex;
