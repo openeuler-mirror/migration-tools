@@ -61,6 +61,7 @@ def check_info(data):
     """
     sql = "select agent_ip from agent_info where agent_online_status = 0;"
     get_agent_ip(data, sql, '/check_info')
+
     return 'success'
 
 
