@@ -37,7 +37,7 @@
         </template>
         <RpmScanTabs />
       </el-tab-pane>
-      <el-tab-pane>
+      <el-tab-pane v-if="sysConfFileTabsData">
         <template #label>
           <span>系统修改配置</span>
         </template>
@@ -58,7 +58,7 @@ import SysConfFileTabs from "./SysConfFileTabs.vue";
 
 export default {
   name: "BaseTabs",
-  compantnets: {
+  components: {
     GeneralTabs,
     PackagesTabs,
     RPMTabs,
@@ -85,7 +85,6 @@ export default {
       console.log(tab, event);
     },
   },
-  components: { HardwareTabs, ConfigScanTabs, RpmScanTabs, SysConfFileTabs },
 };
 </script>
 
