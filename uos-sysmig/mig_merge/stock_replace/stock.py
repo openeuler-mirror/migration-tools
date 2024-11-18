@@ -13,12 +13,14 @@ from mig_merge.stock_replace.hardware_tabs import hardware_tabs
 from mig_merge.stock_replace.confscan_tabs import confscan_tabs
 from mig_merge.stock_replace.rpmscan_tabs import rpmscan_tabs
 
+
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(('8.8.8.8', 80))
     ip = s.getsockname()[0]
     s.close()
     return ip
+
 
 def xlsTohtml(log):
     '''
@@ -28,13 +30,14 @@ def xlsTohtml(log):
         输入参数：无
         返 回 值：json数据
     '''
-    json_str = general_tabs('A', log)+packages_tabs()+\
-    rpm_tabs('A')+sysconffile_tabs()+','+hardware_tabs(log)+\
-    confscan_tabs(log)+rpmscan_tabs('A', log)+'}'
+    json_str = general_tabs('A', log) + packages_tabs() + \
+               rpm_tabs('A') + sysconffile_tabs() + ',' + hardware_tabs(log) + \
+               confscan_tabs(log) + rpmscan_tabs('A', log) + '}'
 
     log.info('stock replace check json data:{}'.format(json_str))
 
     return json_str
+
 
 def main():
     print(xlsTohtml())
@@ -42,4 +45,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

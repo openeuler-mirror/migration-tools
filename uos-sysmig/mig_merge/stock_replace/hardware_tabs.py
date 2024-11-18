@@ -12,7 +12,7 @@ def hardware_tabs(logger):
     '''硬件兼容性分析
         按照前后端接口，生成json格式数据，对应html报告tab页
     '''
-
+    return '{},'
     FixedInfo.hardware_tabs_head
     compatability_list = utils.get_compatability_list(
         utils.get_pci_list(), utils.get_supported_device_list(), False)
