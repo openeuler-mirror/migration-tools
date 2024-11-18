@@ -39,7 +39,12 @@
             prop="agent_online_status"
             label="在线状态"
             align="center"
-          />
+          >
+            <template #default="scope">
+              <span v-if="scope.row.agent_online_status == 0">在线</span>
+              <span v-else>离线</span>
+            </template>
+          </el-table-column>
           <el-table-column
             :show-overflow-tooltip="true"
             prop="agent_os"
@@ -171,7 +176,7 @@ export default {
       // 这里还要加一步从网络获取数据，拿来和已经有的拼起来
       this.$http
         .post("/get_page_data", {
-          mod: "/get_page_data",
+          mod: "get_page_data",
           agent_ip: this.machineList.map((item) => item.agent_ip),
         })
         .then((res) => {
@@ -222,8 +227,11 @@ export default {
         showClose: false,
       }).then((res) => {
         this.$router.replace({
-          name: "SetRepo",
-          params: { machines: JSON.stringify(migrateMachines) },
+          name: "EnvCheckBeforeMigrate",
+          params: {
+            machines: JSON.stringify(migrateMachines),
+            migrationType: this.$route.params.migrationType,
+          },
         });
       });
     },
@@ -250,10 +258,7 @@ export default {
     window.onbeforeunload = null;
   },
   beforeRouteLeave(to, from, next) {
-    // 导航离开该组件的对应路由时调用
-    // 可以访问组件实例 `this`
-    // 该导航可以通过 next(false) 来取消。
-    if (to.name === "SetRepo") {
+    if (to.name === "EnvCheckBeforeMigrate") {
       next();
       return false;
     }
@@ -268,7 +273,7 @@ export default {
         next();
       })
       .catch((err) => {
-        next(false);
+        console.log(err);
       });
   },
 };
