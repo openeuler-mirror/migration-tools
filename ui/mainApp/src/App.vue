@@ -31,19 +31,19 @@
           :collapse-transition="false"
         >
           <el-menu-item index="/import-machine">
-            <el-icon><document /></el-icon>
+            <el-icon><upload-filled /></el-icon>
             <span>导入主机</span>
           </el-menu-item>
           <el-menu-item index="/machine-management">
-            <el-icon><document /></el-icon>
+            <el-icon><grid /></el-icon>
             <span>主机管理</span>
           </el-menu-item>
           <el-menu-item index="/download-center">
-            <el-icon><document /></el-icon>
+            <el-icon><download /></el-icon>
             <span>下载中心</span>
           </el-menu-item>
           <el-menu-item index="/migration-history">
-            <el-icon><document /></el-icon>
+            <el-icon><document-checked /></el-icon>
             <span>迁移记录</span>
           </el-menu-item>
         </el-menu>
@@ -61,7 +61,14 @@
 <script>
 import Header from "./components/Header.vue";
 
-import { Fold, Expand, Document } from "@element-plus/icons-vue";
+import {
+  Fold,
+  Expand,
+  DocumentChecked,
+  UploadFilled,
+  Grid,
+  Download,
+} from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 
 export default {
@@ -70,7 +77,10 @@ export default {
     Header,
     Fold,
     Expand,
-    Document,
+    DocumentChecked,
+    UploadFilled,
+    Grid,
+    Download,
   },
   created() {
     const router = useRouter();
@@ -79,8 +89,8 @@ export default {
     });
     /*
     // 需要在跳转时弹出弹窗问一下是否确认跳转的，都加在这里
-    const specialPages = new Set(["MigrateMachine", "MigrationNotice", 
-                                "CheckAvalibleSpace", "SetRepo", 
+    const specialPages = new Set(["MigrateMachine", "MigrationNotice",
+                                "CheckAvalibleSpace", "SetRepo",
                                 "SelectMigrateKernel"]);
     router.beforeEach((to, from) => {
       if(specialPages.has(from.name)) {
@@ -110,7 +120,6 @@ export default {
       }
     },
   },
-
   methods: {
     toggleMenu: function () {
       this.isAsideExpand = !this.isAsideExpand;
