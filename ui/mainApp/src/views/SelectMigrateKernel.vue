@@ -19,7 +19,10 @@
               trigger="click"
             >
               <template #reference>
-                <el-button type="text" @click="visible = true"
+                <el-button
+                  :disabled="!isLoadFinished"
+                  type="text"
+                  @click="visible = true"
                   >选择内核版本</el-button
                 >
               </template>
@@ -53,14 +56,19 @@
             align="center"
             :show-overflow-tooltip="true"
             prop="hostname"
-            label="主机名"
+            label="主机名称"
           />
           <el-table-column
             align="center"
             :show-overflow-tooltip="true"
             prop="agent_online_status"
             label="在线状态"
-          />
+          >
+            <template #default="scope">
+              <span v-if="scope.row.agent_online_status == 0">在线</span>
+              <span v-else>离线</span>
+            </template>
+          </el-table-column>
           <el-table-column
             align="center"
             :show-overflow-tooltip="true"
@@ -86,6 +94,7 @@
           >
             <template #default="scope">
               <el-select
+                :disabled="!isLoadFinished"
                 v-model="scope.row.selectedTargetKernel"
                 placeholder="选择内核"
               >
@@ -149,6 +158,7 @@ export default {
   },
   data() {
     return {
+      isLoadFinished: false,
       visible: false,
       machineList: [],
       currentPageMachineList: [],
@@ -158,6 +168,7 @@ export default {
       currentPageHasSelection: false,
       isSelectNullKernelVersion: false,
       isCheckFinish: false,
+      timer: null,
     };
   },
   watch: {
@@ -187,35 +198,48 @@ export default {
       console.log("@DEBUG: 获取到的主机列表", this.machineList);
       this.$http
         .post("/check_kernel", {
-          mod: "/check_kernel",
+          mod: "check_kernel",
           agent_ip: this.machineList.map((item) => item.agent_ip),
         })
         .then((res) => {
+          this.timer = setInterval(() => {
+            this.freshData(this.machineList.map((item) => item.agent_ip));
+            this.currentPageData = this.machineList;
+          }, 5000);
         });
-
-      this.freshData(this.machineList.map((item) => item.agent_ip));
-      this.currentPageData = this.machineList;
+      // console.log("加载第 " + page + " 页的 " + pageSize + " 条数据");
     },
     freshData: function (agent_ips) {
       this.$http
         .post("/get_kernel_data", {
-          mod: "/get_kernel_data",
+          mod: "get_kernel_data",
           agent_ip: agent_ips,
         })
         .then((res) => {
           console.log(res.data.info);
+          let isAgentKernelNull = true;
+          let isAgentRepoKernelNull = true;
+
           let info = res.data.info;
           for (let i = 0; i < info.length; i++) {
+            isAgentKernelNull = isAgentKernelNull && info[i].agent_kernel;
+            isAgentRepoKernelNull =
+              isAgentRepoKernelNull && info[i].agent_repo_kernel;
             for (let j = 0; j < this.machineList.length; j++) {
               if (info[i].agent_ip === this.machineList[j].agent_ip) {
                 this.machineList[j].agent_repo_kernel =
-                  info[i].agent_repo_kernel.split(",");
-                this.machineList[j].agent_repo_kernel.unshift("不迁移内核");
+                  info[i].agent_repo_kernel;
                 this.machineList[j].agent_kernel = info[i].agent_kernel;
                 this.machineList[j].selectedTargetKernel = "";
                 break;
               }
             }
+          }
+          //  agent_ip 和 agetn_kernel 不为空 则代表查询成功
+          if (isAgentKernelNull && isAgentRepoKernelNull) {
+            this.isLoadFinished = true;
+            clearInterval(this.timer);
+            this.timer = null;
           }
         });
     },
@@ -238,6 +262,7 @@ export default {
         element.selectedTargetKernel = "不迁移内核";
       });
     },
+
     onUserSelect: function (selection, row) {
       // 选择可能分页，可能需要加比较
       console.log(selection);
@@ -260,7 +285,10 @@ export default {
     nextStep: function () {
       this.$router.replace({
         name: "EnvCheckBeforeMigrate",
-        params: { machines: JSON.stringify(this.machineList) },
+        params: {
+          machines: JSON.stringify(this.machineList),
+          migrationType: this.$route.params.migrationType,
+        },
       });
     },
   },
@@ -278,11 +306,10 @@ export default {
 
   unmouted() {
     window.onbeforeunload = null;
+    clearInterval(this.timer);
+    this.timer = null;
   },
   beforeRouteLeave(to, from, next) {
-    // 导航离开该组件的对应路由时调用
-    // 可以访问组件实例 `this`
-    // 该导航可以通过 next(false) 来取消。
     if (to.name === "EnvCheckBeforeMigrate") {
       next();
       return false;
@@ -298,7 +325,7 @@ export default {
         next();
       })
       .catch((err) => {
-        next(false);
+        console.log(err);
       });
   },
 };
