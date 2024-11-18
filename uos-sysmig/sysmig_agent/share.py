@@ -13,6 +13,7 @@ from datetime import datetime
 from connect_sql import DBHelper
 from sysmig_agent.config import *
 #from logger import migration_log
+from netifaces import interfaces, ifaddresses, AF_INET
 from logger import Logger
 migration_log = Logger('/var/tmp/uos-migration/UOS_migration_log/migration.log', logging.DEBUG, logging.DEBUG)
 
@@ -218,15 +219,31 @@ def sql_task_statue(statue, task_id=None):
     except Exception as e:
         migration_log.error(e)
 
-
 def get_local_ip():
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-        return ip
-    finally:
-        s.close()
+    netinterface = interfaces()
+    confpath = '/etc/migration-tools/migration-tools.conf'
+    if not os.path.exists(confpath):
+        return '127.0.0.1'
+    f = 0
+    with open(confpath) as fconf:
+        for line in fconf:
+            line = line.strip().strip('\n')
+            if not line:
+                continue
+            elif re.search('\[Agent\]', line):
+                f = 1
+            if not f:
+                continue
+            if 'IP' in line:
+                conf_ip = line.split('"',2)[1].strip('')
+                for i in range(len(netinterface)):
+                    ips = ifaddresses(netinterface[i]).setdefault(AF_INET, "")
+                    if len(ips):
+                        local_ip = ips[0].get('addr')
+                        if local_ip == conf_ip:
+                            return local_ip
+    migration_log.error("Unable to get agent's ip.")
+    return '127.0.0.1'
 
 
 def local_disabled_release_repo():
@@ -341,7 +358,7 @@ def process_special_pkgs():
     run_subprocess('rpm -q redhat-lsb-core && dnf swap -y redhat-lsb-core system-lsb-core')
     run_subprocess('rpm -q redhat-rpm-config && dnf swap -y redhat-rpm-config uos-rpm-config')
     run_subprocess('rpm -q redhat-lsb-submod-security && dnf swap -y redhat-lsb-submod-security system-lsb-submod-security')
-    subprocess.run('rpm -q rhn-client-tools && dnf -y remove rhn-client-tools python3-rhn-client-tools python3-rhnlib')
+    run_subprocess('rpm -q rhn-client-tools && dnf -y remove rhn-client-tools python3-rhn-client-tools python3-rhnlib')
     run_subprocess('rpm -q subscription-manager && dnf -y remove subscription-manager')
     run_subprocess('rpm -q python3-syspurpose && dnf -y remove python3-syspurpose')
     run_subprocess(
