@@ -22,6 +22,7 @@ export default {
     };
   },
   created() {
+    console.log("SysConfFileTabs created, tabsData:", this.tabsData);
     this.confData = this.tabsData.data;
     for (let i = 0; i < this.confData.length; i++) {
       for (let j = 0; j < this.confData[i].confList.length; j++) {
