@@ -31,7 +31,7 @@
         </template>
         <RpmScanTabs />
       </el-tab-pane>
-      <el-tab-pane>
+      <el-tab-pane v-if="sysConfFileTabsData">
         <template #label>
           <span>系统修改配置</span>
         </template>
