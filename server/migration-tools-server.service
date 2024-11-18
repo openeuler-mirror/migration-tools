@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /usr/lib/migration-tools-server/index.py
+ExecStart=/usr/lib/migration-tools-server/server_env/bin/python3 /usr/lib/migration-tools-server/index.py
 ExecStop=/bin/kill -INT $MAINPID
 
 [Install]
