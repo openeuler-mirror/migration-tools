@@ -1,8 +1,7 @@
 from sysmig_agent.share import *
 import urllib.request
 from sysmig_agent.agent_request import post_server
-
-from sysmig_agent.migration import get_old_osnameversion, get_old_osversion, disable_exclude
+from sysmig_agent.migration import get_old_osnameversion,get_old_osversion,disable_exclude
 from connect_sql import DBHelper
 
 
@@ -11,6 +10,7 @@ def os_kernel():
     systemKernelVersion = platformInfo.split('-', -1)
     agent_kernel = systemKernelVersion[1]
     return agent_kernel
+
 
 
 def os_repo_kernel():
@@ -146,6 +146,10 @@ def check_info():
     # 更新SQL任务状态
     #  sql_task_statue(statue, task_id)
     #  post_server('task_close', task_id)
+    local_disabled_release_repo()
+    repofile = "/etc/yum.repos.d/openeuler.repo"
+    with open(repofile, 'w') as f:
+        f.write(OPENEULER_REPO)
     return 'success'
 
 
@@ -354,6 +358,7 @@ class RepoFileAdd(object):
     '''
     增量扩容场景下,检测并配置repo源
     '''
+
     def __init__(self, data):
         self.migration_after = "migration_after"
         self.data = data
@@ -371,13 +376,15 @@ class RepoFileAdd(object):
         initRepoFile_add(self.migration_after, self.after_baseurl)
         repo_state = ''
         if 'x86_64' == platform.machine().strip(''):
-            repo_state = str(repoFileCheck(self.before_baseurl + '/AppStream/repodata') and repoFileCheck(
-                self.before_baseurl + '/repodata')) + '0'
+            # repo_state = str(repoFileCheck(self.before_baseurl + '/AppStream/repodata') and repoFileCheck(
+            #     self.before_baseurl + '/repodata')) + '0'
+            repo_state = '0' + '0'
             repo_state = repo_state + str(repoFileCheck(self.after_baseurl + '/AppStream/repodata') and repoFileCheck(
                 self.after_baseurl + '/repodata')) + '0'
         else:
-            repo_state = '0' + str(repoFileCheck(self.before_baseurl + '/AppStream/repodata') and repoFileCheck(
-                self.before_baseurl + '/repodata'))
+            # repo_state = '0' + str(repoFileCheck(self.before_baseurl + '/AppStream/repodata') and repoFileCheck(
+            #    self.before_baseurl + '/repodata'))
+            repo_state = '0'+'0'
             repo_state = repo_state + '0' + str(
                 repoFileCheck(self.after_baseurl + '/AppStream/repodata') and repoFileCheck(
                     self.after_baseurl + '/repodata'))
@@ -391,5 +398,4 @@ class RepoFileAdd(object):
         sql_task_statue(statue, self.task_id)
         post_server('task_close', self.task_id)
         return 'success'
-
 
