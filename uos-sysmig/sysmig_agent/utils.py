@@ -70,7 +70,8 @@ class DBwrite(DBHelper):
                 filename = self.path.strip('\n') + ret[i][0]
                 content = str(ret[i][1])
                 if os.path.exists(filename):
-                    filename = filename.strip('\n') + '.new'
+                    #filename = filename.strip('\n') + '.new'
+                    os.remove(filename)
                 with open(filename, 'w+') as f:
                     f.write(content)
                     f.close()
@@ -131,7 +132,8 @@ def anilysis_DBconnect(report_dir):
     Returns:
 
     """
-    # if os.path.exists
+    if not os.path.exists(report_dir):
+        return
     htmls = os.listdir(report_dir)
     if not len(htmls):
         return False
