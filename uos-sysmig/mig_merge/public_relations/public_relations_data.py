@@ -118,8 +118,11 @@ class public_relations():
             logger.error("config file is None.")
             return data
         try:
-            with open(config_file, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+            if os.path.exists(config_file):
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+            else:
+                return []
         except json.decoder.JSONDecodeError as error:
             logger.error("read json config file error: %s" % error)
         return list(data)
