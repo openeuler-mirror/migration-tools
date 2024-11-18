@@ -409,7 +409,7 @@ def get_environment_data(data):
     info_list = []
     finall_progress = []
     for i in progress:
-        sql = "select agent_id from agent_info where agent_ip='%s' and agent_online_status=0 and repo_status='0' " \
+        sql = "select agent_id from agent_info where agent_ip='%s' and agent_online_status=0 " \
               "and agent_storage>=10 and agent_migration_os is null;" % i[0]
         get_sql = DBHelper().execute(sql).fetchall()
         if get_sql:
@@ -446,7 +446,7 @@ def get_system_migration_data(data):
     finall_progress = []
     for i in progress:
         sql = "select agent_id from agent_info where agent_ip='%s' and agent_online_status=0 " \
-              "and repo_status='0' and agent_storage>=10;" % i[0]
+              "and agent_storage>=10;" % i[0]
         get_sql = DBHelper().execute(sql).fetchall()
         if get_sql:
             finall_progress.append(i)
