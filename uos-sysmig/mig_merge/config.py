@@ -15,7 +15,7 @@ class FixedInfo():
     sqlite_dir = 'mig_merge/data/repo-sqlite'
 
     local_dir = '/var/tmp/uos-migration'
-    template_dir = './dist'
+    template_dir = '/usr/lib/migration-tools-agent/dist'
     inventory_dir = os.path.join(local_dir, 'data/exp-rst')
     repo_diff_path = os.path.join(local_dir, 'uos/rpms')
     report_check_dir = os.path.join(local_dir, 'UOS_analysis_report')

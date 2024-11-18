@@ -21,9 +21,10 @@ def sysconffile_tabs():
 
     PARAM_CONFIG_DIR = os.path.join(PathConf.data_path, "export-config")
     param_config_file = os.path.join(PARAM_CONFIG_DIR, "param_config.json")
-    param_data = ParamData(param_config_file)
+    # param_data = ParamData(param_config_file)
 
-    sysconf_str = sysconffile_tabs_json + str(json.dumps(pr_data.return_data + param_data.return_data)) + '}'
+    # sysconf_str = sysconffile_tabs_json + str(json.dumps(pr_data.return_data + param_data.return_data)) + '}'
+    sysconf_str = sysconffile_tabs_json + '' + '}'
     return sysconf_str
 
 def main():

@@ -82,6 +82,8 @@ def gen_data_table(changed_conf_dir, original_conf_dir):
 
 def get_json_content(dirname, name):
     file = os.path.join(dirname, name)
+    if not os.path.exists(file):
+        return {}
     data = json.load(open(file))
     if data is None:
         data = {}
