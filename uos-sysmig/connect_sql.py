@@ -1,12 +1,10 @@
 import pymysql
 import json
 import os
-#os.chdir('/usr/lib/migration-tools-server')
-from logger import *
+#os.chdir('/usr/lib/uos-sysmig-server')
+from logger import migration_log
 from miscellaneous import getSysMigConf
 
-
-migration_log = Logger('/var/tmp/uos-migration/migration.log', logging.DEBUG, logging.DEBUG)
 uos_sysmig_conf = json.loads(getSysMigConf('0.0.0.0'))
 db_host = json.loads(uos_sysmig_conf).get('serverip').strip()[1:-1]
 db_name = json.loads(uos_sysmig_conf).get('db_name').strip()[1:-1]
