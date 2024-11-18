@@ -4,28 +4,13 @@ import os
 import platform
 import shutil
 import subprocess
+import sys,re
 openeuler_repo = '''[openeuler]
 name = openeuler
 baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-20.03-LTS-SP1/everything/$basearch
 enabled = 1
 gpgcheck = 0
 '''
-def get_bad_packages():
-    os_version_ret = platform.dist()
-    version = os_version_ret[1].split('.', -1)
-    local_os_version = version[0]
-    badpackages = ''
-    if '8' == local_os_version:
-        with open(badpackage8, 'r') as bf:
-            for bad_package in bf:
-                badpackages = badpackages + ' ' + bad_package.strip()
-            bf.close()
-    elif '7' == local_os_version:
-        with open(badpackage7, 'r') as bf:
-            for bad_package in bf:
-                badpackages = badpackages + ' ' + bad_package.strip()
-            bf.close()
-    return badpackages
 
 
 def local_disabled_release_repo():
@@ -50,23 +35,11 @@ def local_disabled_release_repo():
                     fdst.close()
                     os.remove(fpath)
 
-
-def check_pkg(pkg):
-    if pkg.split('/')[0] == '':
-        if os.path.exists(pkg):
-            return True
-        else:
-            return False
-
-    paths = os.environ['PATH'].split(':')
-    for path in paths:
-        if not os.path.isdir(path):
-            continue
-        for f in os.listdir(path):
-            if os.path.isfile(os.path.join(path, f)):
-                if f == pkg:
-                    return True
-    return False
+def check_pkg(rpm):
+    _, ret = run_subprocess('rpm -q {}'.format(rpm).split())
+    if ret:
+        return
+    return True
 
 
 def clean_and_exit():
@@ -123,6 +96,23 @@ def add_boot_option():
         run_subprocess(cmd.split())
     except Exception as e:
         print(e)
+
+
+def run_subprocess(cmd):
+    try:
+        process = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False,  # Avoid using shell=True
+            check=True    # Check for non-zero return code and raise exception if found
+        )
+        output = process.stdout
+        print(output)  # Print the output to console
+        return output, process.returncode
+    except subprocess.CalledProcessError as e:
+        print(e.stderr)  # Print the error output to console
+        return e.stderr, e.returncode
 
 
 def swap_release(release):
