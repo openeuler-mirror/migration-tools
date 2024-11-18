@@ -34,7 +34,7 @@ int check_user_authority(void)
         memset(db_pwd2, 0, 20);
 
 	fflush(stdout);
-	get_database(u_key,&db_pwd);
+	get_database(CONF_PATH, u_key, &db_pwd);
 	db_user = (char*)malloc(sizeof(char) * (strlen((char *)db_pwd)+1));
 	//memcpy(db_user, (char *)db_pwd, strlen((char *)db_pwd));
 	strcpy(db_user, (char *)db_pwd);
@@ -42,7 +42,7 @@ int check_user_authority(void)
 	db_pwd = NULL;
 
 	//fflush(stdout);
-	get_database(db_key,&db_pwd1);
+	get_database(CONF_PATH, db_key, &db_pwd1);
         db_database = (char*)malloc(sizeof(char) * (strlen((char *)db_pwd1)+1));
         //memcpy(db_user, (char *)db_pwd, strlen((char *)db_pwd));
         strcpy(db_database, (char *)db_pwd1);
@@ -50,7 +50,7 @@ int check_user_authority(void)
 	db_pwd1 = NULL;
 
 	fflush(stdout);
-        get_database(pw_key,&db_pwd2);
+        get_database(CONF_PATH, pw_key, &db_pwd2);
         db_password = (char*)malloc(sizeof(char) * (strlen((char *)db_pwd2)+1));
         //memcpy(db_user, (char *)db_pwd, strlen((char *)db_pwd));
         strcpy(db_password, (char *)db_pwd2);
@@ -69,7 +69,7 @@ int check_user_authority(void)
         mv = (char*)malloc(sizeof(char) * 100);
         yum = (char*)malloc(sizeof(char) * 200);
         systemctl = (char*)malloc(sizeof(char) * 200);
-	gp = (char*)malloc(sizeof(char) * 200);
+        gp = (char*)malloc(sizeof(char) * 200);
 
 	strcpy(sql, "select agent_ip, agent_username from agent_info where agent_online_status = 0");
 	len = get_Len(db_user, db_password, db_database, sql);
@@ -85,21 +85,21 @@ int check_user_authority(void)
                         	if(!strcmp(data[i].user,"root"))
                         	{
 					sprintf(gp, "grep VERSION_ID /etc/os-release | awk -F '\\\"' '{print $2}'");
-                                        sprintf(mk, "mkdir -p /etc/uos-sysmig && echo $?");
-                                        sprintf(mv, "mv -f %s/%s %s && echo $?", "/tmp", CONF_NAME, CONF_PATH);
-					sprintf(yum, "yum install %s -y ", PACK_NAME);
-                                        sprintf(systemctl, "systemctl %s %s.service && echo success", "restart", PACK_NAME);
+					sprintf(mk, "mkdir -p /etc/migration-tools && echo $?");
+					sprintf(mv, "mv -f %s/%s %s && echo $?", "/tmp", CONF_NAME, CONF_PATH);
+                                	sprintf(yum, "yum install %s -y ", PACK_NAME);
+                                	sprintf(systemctl, "systemctl %s %s.service && echo success", "restart", PACK_NAME);
                         	}
                         	else
                         	{
 					sprintf(gp, "echo '%s\n'|sudo -S grep VERSION_ID /etc/os-release | awk -F '\\\"' '{print $2}'", data[i].password);
-                                        sprintf(mk, "echo '%s\n'|sudo -S mkdir -p /etc/%s && echo $?", data[i].password, "uos-sysmig");
-                                        sprintf(sudo, "echo '%s\n'|sudo -S -v && echo $?", data[i].password);
-                                        sprintf(mv, "echo '%s\n'|sudo -S mv -f %s/%s %s && echo $?", data[i].password, "/tmp", CONF_NAME, CONF_PATH);
-					sprintf(yum, "echo '%s\n'|sudo -S yum install %s -y ", data[i].password, PACK_NAME);
-                                        sprintf(systemctl, "echo '%s\n'|sudo -S systemctl %s %s.service && echo $?", data[i].password, "restart", PACK_NAME);
+					sprintf(mk, "echo '%s\n'|sudo -S mkdir -p /etc/%s && echo $?", data[i].password, "migration-tools");
+					sprintf(sudo, "sshpass -p %s ssh %s@%s \"echo '%s'|sudo -S -v\"", data[i].password, data[i].user, data[i].ip, data[i].password);
+					sprintf(mv, "echo '%s\n'|sudo -S mv -f %s/%s %s && echo $?", data[i].password, "/tmp", CONF_NAME, CONF_PATH);
+                                	sprintf(yum, "echo '%s\n'|sudo -S yum install %s -y ", data[i].password, PACK_NAME);
+                                	sprintf(systemctl, "echo '%s\n'|sudo -S systemctl %s %s.service && echo $?", data[i].password, "restart", PACK_NAME);
                         	}
-				up_sql = ssh_command(data[i].ip, data[i].user, data[i].password, sudo, yum, systemctl, mv, mk, gp);
+                        	up_sql = ssh_command(data[i].ip, data[i].user, data[i].password, sudo, yum, systemctl, mv, mk, gp);
 				switch(up_sql)
 				{
 					case 0:
@@ -113,7 +113,7 @@ int check_user_authority(void)
 						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent can not connect server\" where agent_ip = \"%s\" and agent_username = \"%s\"", F_IMPORT, data[i].ip, data[i].user);
 						break;
                                         case 3:
-						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"can not find conf file\" where agent_ip = \"%s\" and agent_username = \"%s\"", F_IMPORT, data[i].ip, data[i].user);
+                                                sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"can not find conf file\" where agent_ip = \"%s\" and agent_username = \"%s\"", F_IMPORT, data[i].ip, data[i].user);
                                                 break;
 					case 4:
 						sprintf(sql, "update agent_info set agent_online_status =%d, agent_history_faild_reason = \"agent can not yum packages\" where agent_ip = \"%s\" and agent_username = \"%s\"", F_IMPORT, data[i].ip, data[i].user);
