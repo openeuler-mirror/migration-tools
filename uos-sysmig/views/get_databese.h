@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CONF_PATH "/etc/uos-sysmig/uos-sysmig.conf"
-#define CONF_NAME "uos-sysmig.conf"
+#define CONF_PATH "/etc/migration-tools/migration-tools.conf"
+#define CONF_NAME "migration-tools.conf"
 
 int get_database(char *name,unsigned long **res)
 {
