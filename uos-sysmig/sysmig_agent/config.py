@@ -4,6 +4,13 @@ new_os = '统信服务器操作系统V20({})'
 c8 = ['1020a', '1021a', '1050a']
 c7 = ['1000c', '1001c', '1002a']
 
+OPENEULER_REPO = '''[openeuler]
+name = openeuler
+baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-20.03-LTS-SP1/everything/$basearch
+enabled = 1
+gpgcheck = 0
+'''
+
 # agent的安装目录
 agent_install = '/usr/lib/uos-sysmig-agent/'
 # 创建和使用日志 报告的文件夹
