@@ -1,5 +1,4 @@
 import time
-
 import requests
 import json
 from logger import migration_log
@@ -36,13 +35,14 @@ def post_client_data(data):
 
 
 def post_heartbeat():
-    keylist = 'agent_ip'
-    valuelist = get_local_ip()
-    res = dict(zip(keylist, valuelist))
-    data = json.dumps(res)
+    keylist = ['agent_ip']
+    valuelist = [get_local_ip()]
+
+    data = json_list_to_json(keylist, valuelist)
     post_url = "http://" + ip + ":" + str(port) + mod_heartbeat
     post_data = PostIntranetIP(post_url, data)
     while True:
+        migration_log.info(post_url+data)
         post_data.post_intranetip()
         time.sleep(send_time)
 
