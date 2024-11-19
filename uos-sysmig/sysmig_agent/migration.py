@@ -11,7 +11,7 @@ from sysmig_agent.centos72openeuler import *
 #sys.path.append("..")
 from connect_sql import DBHelper
 
-RPMS = '/var/tmp/uos-migration/.rpms'
+RPMS = '/var/tmp/.rpms'
 
 
 # migrations function
@@ -41,7 +41,7 @@ def readline_log():
 
 def migInit_porgress():
     uelc_rpm = os.popen('rpm -qa|wc -l').readlines()
-    with open('/var/tmp/uos-migration/.rpms', 'w+') as fp:
+    with open('/var/tmp/.rpms', 'w+') as fp:
         fp.write(uelc_rpm[0])
         fp.close()
 
