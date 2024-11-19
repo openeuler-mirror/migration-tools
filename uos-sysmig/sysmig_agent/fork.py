@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 import os
+import subprocess
 import threading
 from multiprocessing import Process, Queue
 from sysmig_agent.utils import DBwrite, selfDestruct, DBupload
@@ -68,25 +69,33 @@ def timed_task_migrate(task_id, kernel_version):
             old_os_name = get_old_osname()
             old_os = get_old_osnameversion()
             if '0' == state:
-                sql_mig_statue('10')
-                if ifnot_mig_kernel(kernel_version):
-                    sql_mig_statue('18')
-                t = Process(target=centos8_main, args=(old_os, task_id,))
-                t.start()
-                t.join()
-            elif '2' == state:
-                sql_mig_statue('12')
-                ## skip broken
-                skip = 0
-                t = Process(target=mig_distro_sync, args=(skip, task_id,))
-                t.start()
-                t.join()
+                subprocess.run('python3 /usr/lib/migration-tools-agent/uos-sysmig/sysmig_agent/centos72openeuler.py>>/var/tmp/uos-migration/UOS_migration_log/mig_log.txt', shell=True)
+                sql_abi_progress(100)
+                sql_task_statue('2', task_id)
+                sql_mig_statue('09')
+                os.system('reboot')
+                # from sysmig_agent.centos72openeuler import main
+                # main()
+            #     sql_mig_statue('10')
+            #     if ifnot_mig_kernel(kernel_version):
+            #         sql_mig_statue('18')
+            #     t = Process(target=centos8_main, args=(old_os, task_id,))
+            #     t.start()
+            #     t.join()
+            # elif '2' == state:
+            #     sql_mig_statue('12')
+            #     ## skip broken
+            #     skip = 0
+            #     t = Process(target=mig_distro_sync, args=(skip, task_id,))
+            #     t.start()
+            #     t.join()
+                sql_mig_statue('05')
             elif '3' == state:
                 # Breakpoint
                 sql_mig_statue('05')
             elif '4' == state:
                 sql_mig_statue('14')
-                mig_kernel(kernel_version)
+                # mig_kernel(kernel_version)
                 main_conf(old_os_name)
                 # Migration report
                 try:
@@ -195,7 +204,14 @@ def check_environment(data):
     # targz_mig_dir_abi()
     # 系统兼容性检测的html存入数据库
     anilysis_DBconnect(PRE_MIG_DIR)
-    sql_task_statue('2', task_id)
+    compatible_status = '2'
+    ret = os.listdir(PRE_MIG_DIR)
+    if not ret:
+        compatible_status = '3'
+    from sysmig_agent.abi_weight import layered_Grading
+    if int(layered_Grading.run()) < COMP:
+        compatible_status = '4'
+    sql_task_statue(compatible_status, task_id)
     post_server('task_close', task_id)
 
 
@@ -230,6 +246,7 @@ def check_add_environment(data):
     Returns:
 
     """
+
     task_id = json.loads(data).get('task_id')
     # 更新SQL任务状态
     sql_task_statue('1', task_id)
@@ -291,9 +308,10 @@ def system_migration(data):
     Returns:
 
     """
-    kernel_version = get_info_version(data)
-    if not kernel_version:
-        return 'n'
+    # kernel_version = get_info_version(data)
+    # if not kernel_version:
+    #     return 'n'
+    kernel_version = 0
     task_id = json.loads(data).get('task_id')
     # 更新SQL任务状态
     sql_task_statue('1', task_id)
@@ -303,10 +321,11 @@ def system_migration(data):
     mig_modify_statue(task_id)
     # sql_mig_statue('00')
     # 迁移分析确认
+
     migration_confirm()
     # MIGRATION MAIN
     timed_task_migrate(task_id, kernel_version)
-    anilysis_DBconnect(MIGRATION_DIR)
+    anilysis_DBconnect(MIGRATION_REPORT_DIR)
     dbconnect = DBupload(db_log)
     dbconnect.upload_html()
     post_server('task_close', task_id)
@@ -314,8 +333,10 @@ def system_migration(data):
         t = Process(target=kill_agent)
         t.start()
 
+
 def kill_agent():
     os.system('python3 /var/tmp/destroy.py')
+
 
 def if_env_check(data):
     agent_ips = list(json.loads(data).get('agent_ip'))
@@ -331,8 +352,8 @@ def post_task(data):
     t = None
     if 'check_info' == task_mod:
         return 'y'
-        #t = threading.Thread(target=check_info, args=[data])
-    elif 'check_repo' == task_mod:
+#        t = threading.Thread(target=check_info, args=[data])
+    if 'check_repo' == task_mod:
         t = threading.Thread(target=check_repo, args=[data])
     elif 'check_add_repo' == task_mod:
         add_repo = RepoFileAdd(data)

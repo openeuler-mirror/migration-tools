@@ -262,6 +262,9 @@ def main():
         os.remove(rpm_perl)
 
     os.system("rpm -e --nodeps yum")
+    os.system('rpm -e --nodeps  python-enum34')
+    os.system('rpm -e --nodeps  python-backports')
+
     if system_sync():
         subprocess.run('dnf -y groupinstall Minimal Install', shell=True)
     else:
@@ -287,7 +290,7 @@ def main():
     run_subprocess('dnf install -y yum'.split())
     
     print("System migration completed, rebooting system")
-    os.system("reboot")
+    # os.system("reboot")
     
 
 if __name__ == '__main__':
