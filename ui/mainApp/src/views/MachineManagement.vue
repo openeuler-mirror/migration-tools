@@ -348,36 +348,207 @@ export default {
       isDataLoaded,
     };
   },
+  computed: {
+    hasSelecton() {
+      console.log(this.multipleSelection);
+      console.log(this.multipleSelection);
+      return this.multipleSelection.length > 0 ? true : false;
+    },
+    osOptions() {
+      let cache = new Set(this.machineList.map((item) => item.agent_os));
+      if (cache.has(undefined)) {
+        cache.delete(undefined);
+      }
+      if (cache.has("")) {
+        cache.delete("");
+      }
+      if (cache.has("--")) {
+        cache.delete("--");
+      }
+      if (cache.has(null)) {
+        cache.delete(null);
+      }
+      return Array.from(cache);
+    },
+    failureReasonsOptions() {
+      let cache = new Set(this.machineList.map((item) => item.failure_reasons));
+      if (cache.has(undefined)) {
+        cache.delete(undefined);
+      }
+      if (cache.has("")) {
+        cache.delete("");
+      }
+      if (cache.has("--")) {
+        cache.delete("--");
+      }
+      if (cache.has(null)) {
+        cache.delete(null);
+      }
+      return Array.from(cache);
+    },
+    filterTableData() {
+      // ip
+      var filterList = this.machineList.filter(
+        (item) =>
+          !this.filterForm.agent_ip ||
+          item.agent_ip
+            .toLowerCase()
+            .includes(this.filterForm.agent_ip.toLowerCase())
+      );
+      // hostname
+      filterList = filterList.filter(
+        (item) =>
+          !this.filterForm.hostname ||
+          item.hostname
+            .toLowerCase()
+            .includes(this.filterForm.hostname.toLowerCase())
+      );
+      // online status
+      filterList = filterList.filter(
+        (item) =>
+          !this.filterForm.onlineStatus ||
+          item.onlineStatus
+            .toLowerCase()
+            .includes(this.filterForm.onlineStatus.toLowerCase())
+      );
+      // os
+      filterList = filterList.filter(
+        (item) =>
+          !this.filterForm.agent_os ||
+          item.agent_os
+            .toLowerCase()
+            .includes(this.filterForm.agent_os.toLowerCase())
+      );
+      // arch
+      filterList = filterList.filter(
+        (item) =>
+          !this.filterForm.agent_arch ||
+          item.agent_arch
+            .toLowerCase()
+            .includes(this.filterForm.agent_arch.toLowerCase())
+      );
+      //  migration type
+      filterList = filterList.filter(
+        (item) =>
+          !this.filterForm.migration_type ||
+          item.migration_type
+            .toLowerCase()
+            .includes(this.filterForm.migration_type.toLowerCase())
+      );
+      //  migration status
+      filterList = filterList.filter(
+        (item) =>
+          !this.filterForm.migrationStatus ||
+          item.migrationStatus
+            .toLowerCase()
+            .includes(this.filterForm.migrationStatus.toLowerCase())
+      );
+      //  failure reasons
+      filterList = filterList.filter(
+        (item) =>
+          !this.filterForm.failure_reasons ||
+          item.failure_reasons
+            .toLowerCase()
+            .includes(this.filterForm.failure_reasons.toLowerCase())
+      );
+
+      return filterList;
+    },
+  },
+
   data() {
     return {
+      filterForm: {
+        agent_ip: "",
+        hostname: "",
+        onlineStatus: "",
+        agent_os: "",
+        agent_arch: "",
+        migration_type: "",
+        migrationStatus: "",
+        failure_reasons: "",
+      },
+      multipleSelection: [],
       currentPage: 1,
       pageSize: 5,
       machineList: [],
       currentPageMachineList: [],
-      hasSelecton: false,
       dialogVisible: false,
       dialogTitle: "",
+      onlineOptions: [
+        { label: "在线", value: "online" },
+        { label: "离线", value: "offline" },
+        { label: "agent 安装中", value: "installing" },
+      ],
+      archOptions: [
+        { label: "x86_64", value: "x86_64" },
+        { label: "aarch64", value: "aarch64" },
+      ],
+      migrationTypeOptions: [
+        { label: "存量替换", value: "stock_replacement" },
+        // { label: "新增扩容", value: "new_expansion" },
+      ],
+      migrationStatusOptions: [
+        { label: "未迁移", value: "not_yet" },
+        { label: "迁移中", value: "running" },
+        { label: "分析中", value: "checking" },
+        { label: "环境检查失败", value: "env_failed" },
+        { label: "迁移失败", value: "failed" },
+      ],
     };
   },
   created() {
     this.getData();
   },
   methods: {
+    // 与孟凡升的讨论结果是，当前版本不进行分页，每次请求都将直接返回所有的数据（因为数据总量再大也大不到哪里去。。。）
     getData: function () {
       axios
         .post("/host_info_display", { mod: "host_info_display" })
         .then((res) => {
           this.machineList = res.data.info;
+          //  按时间降序排序
+          this.machineList.sort((a, b) => {
+            return new Date(b.task_CreateTime) - new Date(a.task_CreateTime);
+          });
+
           for (let i = 0; i < this.machineList.length; i++) {
+            this.machineList[i].id = i;
             // 将从服务器请求来的信息加上自定义字段，目前只加了选中标记
             this.machineList[i].isSelected = false;
-            this.machineList[i].migration_type_option = [
-              "存量替换",
-              "新增扩容",
-            ];
+            if (!this.machineList[i].failure_reasons) {
+              this.machineList[i].failure_reasons = "--";
+            }
+            if (!this.machineList[i].agent_os) {
+              this.machineList[i].agent_os = "--";
+            }
+            if (!this.machineList[i].agent_arch) {
+              this.machineList[i].agent_arch = "--";
+            }
+            if (!this.machineList[i].hostname) {
+              this.machineList[i].hostname = "--";
+            }
+            if (this.machineList[i].agent_online_status == 0) {
+              this.machineList[i].onlineStatus = "online";
+            } else {
+              this.machineList[i].onlineStatus = "offline";
+            }
+            //  00: not migrate,09: success, *8: failed, other: migrating
+            if (this.machineList[i].task_status == "") {
+              this.machineList[i].migrationStatus = "unknown";
+            } else if (this.machineList[i].task_status == "00") {
+              this.machineList[i].migrationStatus = "not_yet";
+            } else if (this.machineList[i].task_status == "09") {
+              this.machineList[i].migrationStatus = "success";
+            } else if (parseInt(this.machineList[i].task_status) % 10 == 8) {
+              this.machineList[i].migrationStatus = "failed";
+            } else {
+              this.machineList[i].migrationStatus = "running";
+            }
             if (
-              this.machineList[i].agent_status != "离线" &&
-              this.machineList[i].task_status != "迁移中"
+              // 在线且不在迁移中
+              this.machineList[i].agent_online_status == 0 &&
+              this.machineList[i].migrationStatus != "running"
             ) {
               this.machineList[i].allowMigrateType = "migrate"; // 迁移目标为 a 版是 migrate，目标为 e 是 analyze，无法迁移是 none
             } else {
@@ -408,23 +579,14 @@ export default {
       );
       this.setSelect();
     },
-    onUserSelect: function (selection, row) {
-      row.isSelected = !row.isSelected;
-      if (selection.length) {
-        this.hasSelecton = true;
-      } else {
-        this.hasSelecton = false;
-      }
+    handleClearSelection: function () {
+      // 清空选中
+      this.multipleSelection = [];
+      console.log(this.tableRef);
+      this.$refs.tableRef.clearSelection();
     },
-    onUserSelectAll: function (selection) {
-      for (let i = 0; i < selection.length; i++) {
-        selection[i].isSelected = !selection[i].isSelected;
-      }
-      if (selection.length) {
-        this.hasSelecton = true;
-      } else {
-        this.hasSelecton = false;
-      }
+    handleSelectionChange: function (selection) {
+      this.multipleSelection = selection;
     },
     setSelect: function () {
       for (let i = 0; i < this.currentPageMachineList.length; i++) {
@@ -435,56 +597,110 @@ export default {
         }
       }
     },
-    exportAllMachineList: function () {
-      let filename = "主机列表_202112011118.xlsx"; // 这里应该是从 server 获取到的文件名
-      this.dialogTitle = "确定导出" + filename + "吗？";
-      this.dialogVisible = true;
+    handleExportFile: function (
+      fileName,
+      fileData,
+      fileType = "application/octet-stream"
+    ) {
+      this.dialogVisible = false;
+      let blob = new Blob([fileData], { type: fileType });
+      let link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = fileName;
+      link.click();
     },
+    // 导出选中机器的信息
+    exportSelectionMachine: function () {
+      let ipGroup = this.multipleSelection.map((item) => {
+        return item.agent_ip;
+      });
+      this.$http
+        .post(
+          "/export_reports",
+          {
+            mod: "export_reports",
+            reports_type: "export_host_info",
+            agent_ip: ipGroup,
+            hostname: "",
+          },
+          { responseType: "blob" }
+        )
+        .then((res) => {
+          let fileData = res.data;
+          let fileName =
+            res.headers["content-disposition"].split("filename=")[1];
+          let fileType = res.headers["content-type"];
+          ElMessageBox({
+            title: "确定导出“" + fileName + "”吗？",
+            message: "文件将下载到本地，也可稍后前往下载中心下载。",
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            showCancelButton: true,
+            showConfirmButton: true,
+            showClose: false,
+            type: "info",
+          })
+            .then(() => {
+              let blob = new Blob([fileData], { type: fileType });
+              let link = document.createElement("a");
+              link.href = window.URL.createObjectURL(blob);
+              link.download = fileName;
+              link.click();
+            })
+            .catch(() => {
+              ElMessage({
+                type: "info",
+                message: "已取消导出",
+              });
+            });
+        })
+        .catch((err) => {
+          this.$message.error("导出失败,请稍后重试！");
+        });
+    },
+
+    exportAllMachineList: function () {
+      this.$http
+        .post(
+          "/export_reports",
+          {
+            mod: "export_reports",
+            reports_type: "export_host_info",
+            agent_ip: "",
+            hostname: "",
+          },
+          { responseType: "blob" }
+        )
+        .then((res) => {
+          this.dialogVisible = true;
+          this.fileName =
+            res.headers["content-disposition"].split("filename=")[1];
+          this.dialogTitle = "确定导出“" + this.fileName + "”吗？";
+          this.fileType = res.headers["content-type"];
+          this.fileData = res.data;
+        })
+        .catch((err) => {
+          this.$message.error("导出失败，请稍后重试！");
+        });
+    },
+
     toDownloadCenter: function () {
       this.$router.replace("/download-center");
     },
-    analyzeMachines: function () {
-      ElMessageBox({
-        message:
-          "即将对“在线”，且不在“迁移中”的主机进行新增扩容场景下的迁移分析。",
-        title: "确定开始迁移分析吗？",
-        confirmButtonText: "分析",
-        cancelButtonText: "取消",
-        showCancelButton: true,
-        showClose: false,
-      })
-        .then((res) => {
-          this.$router.replace({ name: "MigrationAnalyze" });
-        })
-        .catch((err) => {
-          // 取消，什么事都不会发生
-        });
-    },
-    analyzeMachine: function (agent_datarow) {
-      ElMessageBox({
-        message:
+    migrateMachine: function (agent_datarow) {
+      let migrationType = agent_datarow.migration_type;
+      let msg = "";
+      if (migrationType == "stock_replacement") {
+        msg = "即将对主机 " + agent_datarow.agent_ip + " 进行迁移。";
+      }
+      if (migrationType == "new_expansion") {
+        msg =
           "即将对主机 " +
           agent_datarow.agent_ip +
-          " 进行新增扩容场景下的迁移分析。",
-        title: "确定开始迁移分析吗？",
-        confirmButtonText: "分析",
-        cancelButtonText: "取消",
-        showCancelButton: true,
-        showClose: false,
-      })
-        .then((res) => {
-          this.$router.replace({
-            name: "MigrationAnalyze",
-            params: { machines: JSON.stringify([agent_datarow]) },
-          });
-        })
-        .catch((err) => {
-          // 取消，什么事都不会发生
-        });
-    },
-    migrateMachine: function (agent_datarow) {
+          " 进行新增扩容场景下的迁移分析。";
+      }
       ElMessageBox({
-        message: "即将对主机 " + agent_datarow.agent_ip + " 进行迁移。",
+        message: msg,
         title: "确定开始迁移吗？",
         confirmButtonText: "迁移",
         cancelButtonText: "取消",
@@ -494,18 +710,29 @@ export default {
         .then((res) => {
           this.$router.replace({
             name: "MigrateMachine",
-            params: { machines: JSON.stringify([agent_datarow]) },
+            params: {
+              machines: JSON.stringify([agent_datarow]),
+              migrationType: JSON.stringify(migrationType),
+            },
           });
         })
         .catch((err) => {
           // 取消，什么事都不会发生
         });
     },
-    migrateMachines: function () {
+    migrateMachines: function (migrationType) {
       // 负责迁移已选中的或全部的主机。根据 this.hasSelecton 值决定
+      let msg = "";
+      if (migrationType == "stock_replacement") {
+        msg = "即将对“在线”，且不在“迁移中”的主机进行迁移。";
+      }
+      if (migrationType == "new_expansion") {
+        msg =
+          "即将对“在线”，且不在“迁移中”的主机进行新增扩容场景下的迁移分析。";
+      }
       ElMessageBox({
         // 这里其实还应该加个判断，就是没有可迁移机器的情况。。
-        message: "即将对“在线”，且不在“迁移中”的主机进行迁移。",
+        message: msg,
         title: "确定开始迁移吗？",
         confirmButtonText: "迁移",
         cancelButtonText: "取消",
@@ -515,12 +742,11 @@ export default {
         .then((res) => {
           let migrateMachines = [];
           if (this.hasSelecton) {
-            this.machineList.forEach((machine) => {
+            this.multipleSelection.forEach((machine) => {
               if (
-                machine.isSelected &&
-                machine.migration_type == "存量替换" &&
-                machine.agent_status == "在线" &&
-                machine.task_status != "迁移中"
+                machine.migration_type == migrationType &&
+                machine.agent_online_status == 0 &&
+                machine.migrationStatus != "running"
               ) {
                 migrateMachines.push(machine);
               }
@@ -528,9 +754,9 @@ export default {
           } else {
             this.machineList.forEach((machine) => {
               if (
-                machine.migration_type == "存量替换" &&
-                machine.agent_status == "在线" &&
-                machine.task_status != "迁移中"
+                machine.migration_type == migrationType &&
+                machine.onlineStatus == "online" &&
+                machine.migrationStatus != "running"
               ) {
                 migrateMachines.push(machine);
               }
@@ -538,7 +764,10 @@ export default {
           }
           this.$router.replace({
             name: "MigrateMachine",
-            params: { machines: JSON.stringify(migrateMachines) },
+            params: {
+              machines: JSON.stringify(migrateMachines),
+              migrationType: JSON.stringify(migrationType),
+            },
           });
         })
         .catch((err) => {
@@ -548,9 +777,9 @@ export default {
     modifyMigrationType: function (row) {
       let agent_ip = row.agent_ip;
       let migration_type = row.migration_type;
-      if (migration_type == "新增扩容") {
+      if (migration_type == "new_expansion") {
         migration_type = "new_expansion";
-      } else if (migration_type == "存量替换") {
+      } else if (migration_type == "stock_replacement") {
         migration_type = "stock_replacement";
       }
       console.log(agent_ip, migration_type);
@@ -560,6 +789,12 @@ export default {
           agent_ip: agent_ip,
           migration_type: migration_type,
         },
+      });
+      this.machineList.forEach((machine) => {
+        if (machine.agent_ip == agent_ip) {
+          machine.migration_type = migration_type;
+          console.log(agent_ip + " modify migration type to " + migration_type);
+        }
       });
     },
   },
