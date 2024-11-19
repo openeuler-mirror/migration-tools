@@ -72,7 +72,13 @@ def timed_task_migrate(task_id, kernel_version):
                 subprocess.run('python3 /usr/lib/migration-tools-agent/uos-sysmig/sysmig_agent/centos72openeuler.py>>/var/tmp/uos-migration/UOS_migration_log/mig_log.txt', shell=True)
                 sql_abi_progress(100)
                 sql_task_statue('2', task_id)
-                sql_mig_statue('09')
+                sql = "UPDATE agent_task SET task_data = '{}' , task_Updatetime = NOW() WHERE task_id = '{}';".format(
+                    '09',
+                    task_id)
+                try:
+                    ret = DBHelper().execute(sql)
+                except Exception as e:
+                    migration_log.error(e)
                 os.system('reboot')
                 # from sysmig_agent.centos72openeuler import main
                 # main()
