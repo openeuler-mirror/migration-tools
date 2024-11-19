@@ -1,27 +1,101 @@
 <template>
   <StyledSubheaderBlock subHeader="主机管理" />
   <SubheaderInfoCard info="“主机管理”用于管理未完成迁移工作的主机" />
-  <el-form class="dropMenuContainer">
+  <el-form :model="filterForm" class="dropMenuContainer">
     <el-form-item class="child">
-      <el-select placeholder="主机IP："></el-select>
+      <el-input
+        clearable
+        v-model="filterForm.agent_ip"
+        placeholder="主机IP： 🔍️"
+      ></el-input>
     </el-form-item>
     <el-form-item class="child">
-      <el-select placeholder="主机名："></el-select>
+      <el-input
+        clearable
+        v-model="filterForm.hostname"
+        placeholder="️主机名：🔍️"
+      ></el-input>
     </el-form-item>
     <el-form-item class="child">
-      <el-select placeholder="在线状态："></el-select>
+      <el-select
+        clearable
+        v-model="filterForm.onlineStatus"
+        placeholder="️在线状态："
+      >
+        <el-option
+          v-for="item in onlineOptions"
+          :key="item.label"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
     </el-form-item>
     <el-form-item class="child">
-      <el-select placeholder="操作系统类型："></el-select>
+      <el-select
+        clearable
+        v-model="filterForm.agent_os"
+        placeholder="操作系统类型："
+      >
+        <el-option
+          v-for="item in osOptions"
+          :key="item"
+          :label="item"
+          :value="item"
+        ></el-option>
+      </el-select>
     </el-form-item>
     <el-form-item class="child">
-      <el-select placeholder="架构："></el-select>
+      <el-select clearable v-model="filterForm.agent_arch" placeholder="架构：">
+        <el-option
+          v-for="item in archOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        ></el-option>
+      </el-select>
     </el-form-item>
     <el-form-item class="child">
-      <el-select placeholder="迁移状态："></el-select>
+      <el-select
+        clearable
+        v-model="filterForm.migration_type"
+        placeholder="迁移类型："
+      >
+        <el-option
+          v-for="item in migrationTypeOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        ></el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item class="child">
+      <el-select
+        clearable
+        v-model="filterForm.migrationStatus"
+        placeholder="迁移状态："
+      >
+        <el-option
+          v-for="item in migrationStatusOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        ></el-option>
+      </el-select>
     </el-form-item>
     <el-form-item>
-      <el-select placeholder="失败原因："></el-select>
+      <el-select
+        clearable
+        v-model="filterForm.failure_reasons"
+        placeholder="失败原因："
+      >
+        <el-option
+          v-for="item in failureReasonsOptions"
+          :key="item"
+          :label="item"
+          :value="item"
+        >
+        </el-option>
+      </el-select>
     </el-form-item>
   </el-form>
   <el-card>
@@ -51,7 +125,7 @@
           <template #footer>
             <el-button @click="dialogVisible = false">取消</el-button>
             <el-button
-              @click="dialogVisible = false"
+              @click="handleExportFile(fileName, fileData)"
               style="color: white"
               color="#1b67b3"
               >导出</el-button
@@ -63,35 +137,59 @@
             <el-button type="text">全部迁移</el-button>
           </template>
           <div class="popoverMenu">
-            <div class="popoverItem" @click="migrateMachines">存量替换</div>
-            <div class="popoverItem" @click="analyzeMachines">新增扩容</div>
+            <div
+              class="popoverItem"
+              @click="migrateMachines('stock_replacement')"
+            >
+              存量替换
+            </div>
+            <div class="popoverItem" @click="migrateMachines('new_expansion')">
+              新增扩容
+            </div>
           </div>
         </el-popover>
       </div>
       <div class="horizontalBtnSet" v-if="hasSelecton">
-        <el-button style="margin-right: 15px" type="text">导出</el-button>
+        <el-button
+          @click="exportSelectionMachine"
+          style="margin-right: 15px"
+          type="text"
+          >导出</el-button
+        >
         <el-popover placement="bottom" trigger="click">
           <template #reference>
             <el-button type="text">迁移</el-button>
           </template>
           <!-- 这里应该只处理已勾选的机器 -->
           <div class="popoverMenu">
-            <div class="popoverItem" @click="migrateMachines">存量替换</div>
-            <div class="popoverItem" @click="analyzeMachines">新增扩容</div>
+            <div
+              class="popoverItem"
+              @click="migrateMachines('stock_replacement')"
+            >
+              存量替换
+            </div>
+            <div class="popoverItem" @click="migrateMachines('new_expansion')">
+              新增扩容
+            </div>
           </div>
         </el-popover>
       </div>
     </div>
     <el-table
       :v-if="isDataLoaded"
-      :data="currentPageMachineList"
+      :data="
+        filterTableData.slice(
+          (currentPage - 1) * pageSize,
+          currentPage * pageSize
+        )
+      "
       style="width: 100%"
-      @select="onUserSelect"
-      @select-all="onUserSelectAll"
+      @selection-change="handleSelectionChange"
+      :row-key="(row) => row.id"
       ref="tableRef"
     >
       <!--产品会不会想要让不满足迁移条件的机器对应的 checkbox disable？如果要这样，那这个框框可能要自己实现了-->
-      <el-table-column type="selection" width="40" />
+      <el-table-column type="selection" :reserve-selection="true" width="40" />
       <el-table-column
         align="center"
         :show-overflow-tooltip="true"
@@ -103,19 +201,27 @@
         :show-overflow-tooltip="true"
         prop="agent_ip"
         label="主机IP"
+        width="180"
       />
       <el-table-column
         align="center"
         :show-overflow-tooltip="true"
-        prop="agent_hostname"
-        label="主机名"
+        prop="hostname"
+        label="主机名称"
+        width="180"
       />
       <el-table-column
         align="center"
         :show-overflow-tooltip="true"
-        prop="agent_status"
+        prop="onlineStatus"
         label="在线状态"
-      />
+        width="100"
+      >
+        <template #default="scope">
+          <span v-if="scope.row.onlineStatus == 'online'">在线</span>
+          <span v-else>离线</span>
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
         :show-overflow-tooltip="true"
