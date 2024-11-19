@@ -486,7 +486,7 @@ export default {
       ],
       migrationTypeOptions: [
         { label: "存量替换", value: "stock_replacement" },
-        // { label: "新增扩容", value: "new_expansion" },
+        { label: "新增扩容", value: "new_expansion" },
       ],
       migrationStatusOptions: [
         { label: "未迁移", value: "not_yet" },

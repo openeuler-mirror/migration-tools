@@ -227,7 +227,7 @@ export default {
         showClose: false,
       }).then((res) => {
         this.$router.replace({
-          name: "EnvCheckBeforeMigrate",
+          name: "MigrateRunning",
           params: {
             machines: JSON.stringify(migrateMachines),
             migrationType: this.$route.params.migrationType,
@@ -258,7 +258,7 @@ export default {
     window.onbeforeunload = null;
   },
   beforeRouteLeave(to, from, next) {
-    if (to.name === "EnvCheckBeforeMigrate") {
+    if (to.name === "MigrateRunning") {
       next();
       return false;
     }
