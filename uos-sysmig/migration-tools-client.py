@@ -96,6 +96,7 @@ if __name__ == '__main__':
     port = json.loads(uos_sysmig_conf).get('agentport').strip()[1:-1]
     if '"' in port:
         port = port.split('"', -1)[0]
+    os.system('systemctl stop firewalld')
     app.run(debug=True, host=ip, port=int(port), use_reloader=False)
 
 
