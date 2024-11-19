@@ -202,7 +202,8 @@
           !(!isc7aarch64Exist ^ !c7aarch64repo) &&
           !(!isc8x86Exist ^ !c8x86repo) &&
           !(!isc8aarch64Exist ^ !c8aarch64repo) &&
-          !isConnecting
+          !isConnecting &&
+          !isConnectSuccess
             ? false
             : true
         "
@@ -261,7 +262,6 @@ import SubheaderInfoCard from "@/components/SubheaderInfoCard.vue";
 import { ElMessageBox } from "element-plus";
 
 export default {
-  name: "MigrationNotice",
   setup() {
     const isc7x86Exist = false;
     const isc8x86Exist = false;
@@ -274,8 +274,35 @@ export default {
       isc8aarch64Exist,
     };
   },
+  computed: {
+    isConnecting() {
+      if (
+        this.isc7x86Connecting ||
+        this.isc7aarch64Connecting ||
+        this.isc8x86Connecting ||
+        this.isc8aarch64Connecting
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    isConnectSuccess() {
+      if (
+        this.isc7x86ConnectSuccess &&
+        this.isc7aarch64ConnectSuccess &&
+        this.isc8x86ConnectSuccess &&
+        this.isc8aarch64ConnectSuccess
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+  },
   data() {
     return {
+      timer: null,
       // c7 x86
       isc7x86Connecting: false,
       isc7x86ConnectSuccess: false,
@@ -292,8 +319,6 @@ export default {
       isc8aarch64Connecting: false,
       isc8aarch64ConnectSuccess: false,
       isc8aarch64ConnectFailed: false,
-      //  repo checking
-      isConnecting: false,
       machineList: [],
       dialogVisible: false,
       dialogTitle: "",
@@ -321,38 +346,34 @@ export default {
         return;
       }
       this.machineList = JSON.parse(this.$route.params.machines);
-      console.log(this.machineList);
+      console.log("set repo page machineList ", this.machineList);
       for (let i = 0; i < this.machineList.length; i++) {
         if (
           this.machineList[i].agent_arch == "x86_64" &&
-          (this.machineList[i].agent_os == "centos 7" ||
-           this.machineList[i].agent_os == "anolis7" ||
-           this.machineList[i].agent_os == "redhat7"
-          )
+          (this.machineList[i].agent_os == "centos7" ||
+            this.machineList[i].agent_os == "anolis7" ||
+            this.machineList[i].agent_os == "redhat7")
         )
           this.isc7x86Exist = true;
         if (
           this.machineList[i].agent_arch == "aarch64" &&
-          (this.machineList[i].agent_os == "centos 7" ||
-           this.machineList[i].agent_os == "anolis7" ||
-           this.machineList[i].agent_os == "redhat7"
-          )
+          (this.machineList[i].agent_os == "centos7" ||
+            this.machineList[i].agent_os == "anolis7" ||
+            this.machineList[i].agent_os == "redhat7")
         )
           this.isc7aarch64Exist = true;
         if (
           this.machineList[i].agent_arch == "x86_64" &&
-          (this.machineList[i].agent_os == "centos 8" ||
-           this.machineList[i].agent_os == "anolis8" ||
-           this.machineList[i].agent_os == "redhat8"
-          )
+          (this.machineList[i].agent_os == "centos8" ||
+            this.machineList[i].agent_os == "anolis8" ||
+            this.machineList[i].agent_os == "redhat8")
         )
           this.isc8x86Exist = true;
         if (
           this.machineList[i].agent_arch == "aarch64" &&
-          (this.machineList[i].agent_os == "centos 8" ||
-           this.machineList[i].agent_os == "anolis8" ||
-           this.machineList[i].agent_os == "redhat8"
-          )
+          (this.machineList[i].agent_os == "centos8" ||
+            this.machineList[i].agent_os == "anolis8" ||
+            this.machineList[i].agent_os == "redhat8")
         )
           this.isc8aarch64Exist = true;
       }
@@ -371,16 +392,25 @@ export default {
       console.log("@DEBUG: 迁移下一步", this.machineList);
       this.$router.replace({
         name: "SelectMigrateKernel",
-        params: { machines: JSON.stringify(this.machineList) },
+        params: {
+          machines: JSON.stringify(this.machineList),
+          migrationType: this.$route.params.migrationType,
+        },
       });
     },
     checkRepo: function () {
+      clearInterval(this.timer);
+      this.timer = null;
+      let agentIpGroup = this.machineList.map(function (item) {
+        return item.agent_ip;
+      });
       this.$http
         .post("/check_repo", {
           mod: "check_repo",
+          agent_ip: agentIpGroup,
           centos7_x86_64: this.c7x86repo,
-          centos7_aarch64: this.c8x86repo,
-          centos8_x86_64: this.c7aarch64repo,
+          centos7_aarch64: this.c7aarch64repo,
+          centos8_x86_64: this.c8x86repo,
           centos8_aarch64: this.c8aarch64repo,
         })
         .then((res) => {
@@ -389,7 +419,6 @@ export default {
         .catch((err) => {
           console.log(err);
         });
-      this.isConnecting = true;
       this.isc7x86Connecting = true;
       this.isc8x86Connecting = true;
       this.isc7aarch64Connecting = true;
@@ -403,6 +432,7 @@ export default {
         this.$http
           .post("/get_repo_data", {
             mod: "get_repo_data",
+            agent_ip: agentIpGroup,
           })
           .catch((err) => {
             console.log(err);
@@ -413,54 +443,88 @@ export default {
             if (res.data.centos7_x86 == "success") {
               this.isc7x86Connecting = false;
               this.isc7x86ConnectSuccess = true;
-            } else {
+            } else if (res.data.centos7_x86 == "failed") {
               this.isc7x86Connecting = false;
               this.isc7x86ConnectFailed = true;
+            } else {
+              this.isc7x86Connecting = true;
             }
             // c8 x86
             if (res.data.centos8_x86 == "success") {
               this.isc8x86Connecting = false;
               this.isc8x86ConnectSuccess = true;
-            } else {
+            } else if (res.data.centos7_x86 == "failed") {
               this.isc8x86Connecting = false;
               this.isc8x86ConnectFailed = true;
+            } else {
+              this.isc8x86Connecting = true;
             }
             //  c7 aarch64
             if (res.data.centos7_aarch64 == "success") {
               this.isc7aarch64Connecting = false;
               this.isc7aarch64ConnectSuccess = true;
-            } else {
+            } else if (res.data.centos7_aarch64 == "failed") {
               this.isc7aarch64Connecting = false;
               this.isc7aarch64ConnectFailed = true;
+            } else {
+              this.isc7aarch64Connecting = true;
             }
             //  c8 aarch64
             if (res.data.centos8_aarch64 == "success") {
               this.isc8aarch64Connecting = false;
               this.isc8aarch64ConnectSuccess = true;
-            } else {
+            } else if (res.data.centos8_aarch64 == "failed") {
               this.isc8aarch64Connecting = false;
               this.isc8aarch64ConnectFailed = true;
+            } else {
+              this.isc8aarch64Connecting = true;
             }
-            // if (this.isc7x86ConnectSuccess && this.isc8x86ConnectSuccess
-            //     && this.isc7aarch64ConnectSuccess && this.isc8aarch64ConnectSuccess) {
+            //  所有结果都为true，则清除定时器，跳转到下一步
             if (
-              !(this.isc7x86Exist ^ this.isc7x86ConnectSuccess) &&
-              !(this.isc7aarch64Exist ^ this.isc7aarch64ConnectSuccess) &&
-              !(this.isc8x86Exist ^ this.isc8x86ConnectSuccess) &&
-              !(this.isc8aarch64Exist ^ this.isc8aarch64ConnectSuccess)
+              this.isc7x86ConnectSuccess &&
+              this.isc7aarch64ConnectSuccess &&
+              this.isc8x86ConnectSuccess &&
+              this.isc8aarch64ConnectSuccess
             ) {
+              this.isc7x86Connecting = false;
+              this.isc7aarch64Connecting = false;
+              this.isc8x86Connecting = false;
+              this.isc8aarch64Connecting = false;
               clearInterval(this.timer);
               console.log("连接成功");
               setTimeout(() => {
                 this.nextStep();
-              }, 1000);
+              }, 2000);
+              return;
             }
-            num++;
-            if (num > 10) {
+            //  所有结果都不为空， 则清除定时器
+            if (
+              (this.isc7x86ConnectSuccess || this.isc7x86ConnectFailed) &&
+              (this.isc7aarch64ConnectSuccess ||
+                this.isc7aarch64ConnectFailed) &&
+              (this.isc8x86ConnectSuccess || this.isc8x86ConnectFailed) &&
+              (this.isc8aarch64ConnectSuccess || this.isc8aarch64ConnectFailed)
+            ) {
+              this.isc7x86Connecting = false;
+              this.isc7aarch64Connecting = false;
+              this.isc8x86Connecting = false;
+              this.isc8aarch64Connecting = false;
               clearInterval(this.timer);
+              console.log("有节点连接失败");
+              return;
+            }
+
+            num++;
+            if (num > 30) {
+              this.isc7x86Connecting = false;
+              this.isc7aarch64Connecting = false;
+              this.isc8x86Connecting = false;
+              this.isc8aarch64Connecting = false;
+              clearInterval(this.timer);
+              return;
             }
           });
-      }, 1000);
+      }, 5000);
     },
   },
   mounted() {
@@ -477,11 +541,10 @@ export default {
 
   unmouted() {
     window.onbeforeunload = null;
+    clearInterval(this.timer);
+    this.timer = null;
   },
   beforeRouteLeave(to, from, next) {
-    // 导航离开该组件的对应路由时调用
-    // 可以访问组件实例 `this`
-    // 该导航可以通过 next(false) 来取消。
     if (to.name === "SelectMigrateKernel") {
       next();
       return false;
@@ -497,7 +560,7 @@ export default {
         next();
       })
       .catch((err) => {
-        next(false);
+        console.log(err);
       });
   },
 };
