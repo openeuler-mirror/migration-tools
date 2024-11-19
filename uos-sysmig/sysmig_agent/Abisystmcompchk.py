@@ -2,6 +2,7 @@
 # SPDX-License-Identifier:   MulanPubL-2.0-or-later
 #!/usr/bin/python3
 
+from netifaces import interfaces, ifaddresses, AF_INET
 import queue,os,string
 import threading,codecs
 import rpm,stat,re
@@ -27,6 +28,7 @@ queueLock = threading.Lock()
 
 #为便于测试将变量、接口从share.py中拷贝到当前文件，待联调通过后删除即可
 ######################## add for test start ########################
+
 exp_rst_dir =FixedInfo.local_dir + '/data/exp-rst/'
 
 exitFlag = 0
@@ -34,7 +36,7 @@ total_rpm_nums = 0
 percentage = ''
 deal_rpm_num = 0
 
-Queue = queue.Queue()
+#Queue = queue.Queue()
 
 def os_storage():
     """
@@ -62,14 +64,31 @@ def os_storage():
         # data = '可用空间为'+ava_cache+'GB,请清理/var/cache的空间后重试。'
         # return list_to_json(keylist,valuelist)
 
+
 def get_local_ip():
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-        return ip
-    finally:
-        s.close()
+    netinterface = interfaces()
+    confpath = '/etc/uos-sysmig/uos-sysmig.conf'
+    if not os.path.exists(confpath):
+        return '127.0.0.1'
+    f = 0
+    with open(confpath) as fconf:
+        for line in fconf:
+            line = line.strip().strip('\n')
+            if not line:
+                continue
+            elif re.search('\[Agent\]', line):
+                f = 1
+            if not f:
+                continue
+            if 'IP' in line:
+                conf_ip = line.split('"',2)[1].strip('')
+                for i in range(len(netinterface)):
+                    ips = ifaddresses(netinterface[i]).setdefault(AF_INET, "")
+                    if len(ips):
+                        local_ip = ips[0].get('addr')
+                        if local_ip == conf_ip:
+                            return local_ip
+    return '127.0.0.1'
 
 def abi_check_sys_type():
     path = '/etc/os-version'
@@ -327,6 +346,7 @@ def is_binwary_file(filename):
     with open(filename, 'rb') as file:
         CHUNKSIZE = 8192
         initial_bytes = file.read(CHUNKSIZE)
+        file.close
     return not any(initial_bytes.startswith(bom) for bom in TEXT_BOMS) and b'\0' in initial_bytes
 
 def incomp_binwary_desc(binwary_file):
@@ -585,7 +605,7 @@ def get_cur_sys_info_list(migFlg):
 
         #Icompatible with the number,write sheet[0]:12-row,1-column
         incomp_num = '12|1|' + str(incomp_pkg_num())
-        list_info.append(incomp_num)
+        list_info.append(incomp_num) 
 
         #The total number of packages，write sheet[0]:13-row,1-column
         sum_num = comp_num_int + incomp_pkg_num()
@@ -640,7 +660,7 @@ def migrate_before_abi_chk(q_query, task_status, mig_flag):
     if mig_flag == 'E':
         specified_repo = '/var/tmp/uos-migration/migration_after.repo'
         log.info('1xxxe using the specified repo source:' +specified_repo)
-        os.system('yumdownloader --config=%s --destdir=%s%s --skip-broken' %(specified_repo, download_path, current_packages_string))
+        os.system('yumdownloader --config=%s --destdir=%s%s --archlist=aarch64 --skip-broken' %(specified_repo, download_path, current_packages_string))
     else:
         #1xxxa local repo source
         log.info('1xxxa using the local repo source...')
@@ -664,6 +684,12 @@ def migrate_before_abi_chk(q_query, task_status, mig_flag):
 
     get_system_unique_pkg(list(current_list), migration_download_list)
 
+    #20220328 add special software package deal
+    #if mig_flag == 'E':
+    #    special_list = deal_repo_rpm(log)
+    #    if special_list != '-1':
+    #        download_list = download_list + special_list
+
     if mig_flag == 'A':
         cur_dir = os.getcwd()
         os.chdir(download_path)
@@ -673,6 +699,7 @@ def migrate_before_abi_chk(q_query, task_status, mig_flag):
         agent_ABI_check_result()
 
     get_cur_sys_info_list(mig_flag)
+
 
     if mig_flag == 'A':
         #The compatibility of the hierarchical algorithm is
@@ -743,5 +770,8 @@ def MutilThread(nameList, Query, muth_logger):
 
 #print('=============================  START TIME ： %s  =============================' %(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 #rst = migrate_before_abi_chk(Queue, 1, 'A')
+#rst = agent_ABI_check_result()
 #Queue.queue.clear() 
+#print(rst)
 #print('=============================  END TIME ：%s  =============================' %(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+
