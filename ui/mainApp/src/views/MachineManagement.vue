@@ -233,6 +233,7 @@
         :show-overflow-tooltip="true"
         prop="agent_arch"
         label="架构"
+        width="100"
       />
       <el-table-column
         align="center"
@@ -243,13 +244,17 @@
         <template #default="scope">
           <el-select
             v-model="scope.row.migration_type"
-            :disabled="scope.row.task_status == '迁移中'"
+            :disabled="
+              scope.row.migrationStatus == 'running' ||
+              scope.row.onlineStatus == 'offline'
+            "
             @change="modifyMigrationType(scope.row)"
           >
             <el-option
-              v-for="item in scope.row.migration_type_option"
-              :key="item"
-              :value="item"
+              v-for="item in migrationTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
             ></el-option>
           </el-select>
         </template>
@@ -257,9 +262,17 @@
       <el-table-column
         align="center"
         :show-overflow-tooltip="true"
-        prop="task_status"
+        prop="migrationStatus"
         label="迁移状态"
-      />
+      >
+        <template #default="scope">
+          <span v-if="scope.row.migrationStatus == 'not_yet'">未迁移</span>
+          <span v-if="scope.row.migrationStatus == 'success'">迁移成功</span>
+          <span v-if="scope.row.migrationStatus == 'failed'">迁移失败</span>
+          <span v-if="scope.row.migrationStatus == 'running'">迁移中</span>
+          <span v-if="scope.row.migrationStatus == 'unknown'">未知状态</span>
+        </template>
+      </el-table-column>
       <el-table-column
         align="center"
         :show-overflow-tooltip="true"
@@ -273,15 +286,7 @@
       >
         <template #default="scope">
           <el-button
-            v-if="scope.row.migration_type == '存量替换'"
             @click="migrateMachine(scope.row)"
-            type="text"
-            :disabled="scope.row.allowMigrateType == 'none'"
-            >迁移</el-button
-          >
-          <el-button
-            v-if="scope.row.migration_type == '新增扩容'"
-            @click="analyzeMachine(scope.row)"
             type="text"
             :disabled="scope.row.allowMigrateType == 'none'"
             >迁移</el-button
@@ -289,13 +294,27 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-row>
+      <el-col :span="1">
+        <el-button
+          type="text"
+          @click="handleClearSelection"
+          style="margin-right: 15px"
+        >
+          清空选择
+        </el-button>
+      </el-col>
+      <el-col :span="2">
+        <span>共选择 {{ multipleSelection.length }} 项</span>
+      </el-col>
+    </el-row>
     <el-pagination
       background
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
       :page-sizes="[5, 10, 25, 50, 100]"
       :pager-count="11"
-      :total="machineList.length"
+      :total="filterTableData.length"
       @size-change="handleSizeChange()"
       @current-change="handleCurrentChange()"
       layout="sizes, prev, pager, next, jumper, slot"
@@ -311,6 +330,7 @@
 import StyledSubheaderBlock from "@/components/StyledSubheaderBlock.vue";
 import SubheaderInfoCard from "@/components/SubheaderInfoCard.vue";
 import { ElMessageBox } from "element-plus";
+import { ElMessage } from "element-plus";
 import { ref } from "vue";
 import axios from "axios";
 
