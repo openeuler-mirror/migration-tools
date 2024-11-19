@@ -104,7 +104,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             align="center"
             :show-overflow-tooltip="true"
             label="操作"
@@ -116,7 +116,9 @@
                 :disabled="
                   !(
                     scope.row.agent_online_status == 0 &&
-                    (scope.row.task_status == 2 || scope.row.task_status == 4)
+                    (scope.row.task_status == 2 ||
+                      scope.row.task_status == 4) &&
+                    false
                   )
                 "
                 @click="exportMigrationReport(scope.row, 'uos_migration_log')"
@@ -127,7 +129,9 @@
                 :disabled="
                   !(
                     scope.row.agent_online_status == 0 &&
-                    (scope.row.task_status == 2 || scope.row.task_status == 4)
+                    (scope.row.task_status == 2 ||
+                      scope.row.task_status == 4) &&
+                    true
                   )
                 "
                 @click="
@@ -136,7 +140,7 @@
                 >迁移分析报告</el-button
               >
             </template>
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
         <el-pagination
           background
@@ -169,6 +173,7 @@ import StyledSubheaderBlock from "@/components/StyledSubheaderBlock.vue";
 
 import { ElMessageBox, ElMessage } from "element-plus";
 import { WarningFilled } from "@element-plus/icons-vue";
+import { Factory } from "miragejs";
 
 export default {
   name: "EnvCheckBeforeMigrate",
