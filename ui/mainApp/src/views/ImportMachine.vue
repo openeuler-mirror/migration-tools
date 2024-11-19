@@ -3,10 +3,10 @@
   <el-card class="cardBox">
     <h2 class="darkblueHeaderText">导入条件</h2>
     <ul class="smallPaddingUl">
-      <li>支持的操作系统：CentOS 7</li>
+      <li>支持的操作系统：CentOS 7/8</li>
       <li>主机防火墙确保能与统信服务端通信</li>
       <li>
-        开启主机 SSHD 服务 |
+        开启主机 sshd 服务 |
         <a @click="showMsgBox()" class="textBtn">查看配置</a>
       </li>
       <li>导入的主机信息包含主机信息及 root 权限信息</li>
@@ -41,35 +41,37 @@
       <el-button
         @click="importMachine()"
         :disabled="uploadBtnDisabled"
-        style="margin-left: 10px"
+        style="margin-left: 20px; width: 130px; color: white"
+        color="#1b67b3"
         >导入</el-button
       >
     </div>
-
-    <el-row v-if="isLoading">
-      <div>
-        <img src="@/assets/loading.png" class="loading" />
-      </div>
-      <span>导入中...</span>
-    </el-row>
-    <el-row v-if="isLoadSuccess">
-      <div>
-        <img src="@/assets/load_success.svg" />
-      </div>
-      <span>
-        导入成功，共导入
-        {{ this.importMachineCount }}
-        台主机， 请前往
-        <a @click="pushMachineManagementPage()" class="textBtn">主机管理</a
-        >查看导入结果
-      </span>
-    </el-row>
-    <el-row v-if="isLoadFailed">
-      <div>
-        <img src="@/assets/load_failed.svg" />
-      </div>
-      <span>导入失败，请下载指定模板，填写数据后重新导入</span>
-    </el-row>
+    <div style="margin-top: 10px">
+      <el-row v-if="isLoading">
+        <div>
+          <img src="@/assets/loading.png" class="loading" />
+        </div>
+        <span class="left">导入中...</span>
+      </el-row>
+      <el-row v-if="isLoadSuccess">
+        <div>
+          <img src="@/assets/load_success.svg" />
+        </div>
+        <span class="left">
+          导入成功，共导入
+          {{ this.importMachineCount }}
+          台主机， 请前往
+          <a @click="pushMachineManagementPage()" class="textBtn">主机管理</a
+          >查看导入结果
+        </span>
+      </el-row>
+      <el-row v-if="isLoadFailed">
+        <div>
+          <img src="@/assets/load_failed.svg" />
+        </div>
+        <span class="left">导入失败，请下载指定模板，填写数据后重新导入</span>
+      </el-row>
+    </div>
   </el-card>
 </template>
 
@@ -111,8 +113,21 @@ export default {
       this.$refs.upload.click();
     },
     showMsgBox: function () {
+      let msg = [
+        "1. 修改 server 端的 <b>ssh</b> 服务配置<b>/etc/ssh/ssh_config</b> 文件，修改如下点：",
+        "<p>",
+        "&nbsp;&nbsp;&nbsp;&nbsp;<em>StrictHostKeyChecking no</em>",
+        "</p>",
+        "2. 修改 server 端的 <b>sshd</b> 服务配置<b>/etc/ssh/sshd_config</b> 文件，修改如下点：",
+        "<p>",
+        "&nbsp;&nbsp;&nbsp;&nbsp;<em>UseDNS no</em>",
+        "&nbsp;&nbsp;&nbsp;&nbsp;<em>GSSAPIAuthentication no</em>",
+        "</p>",
+        "3. 修改完成后重启 sshd 服务，参考命令：<em>systemctl restart sshd</em>",
+      ];
       // 创建消息提示框
-      ElMessageBox.alert("待填充的文案", "SSHD 配置", {
+      ElMessageBox.alert(msg.join("</br>"), "sshd 配置", {
+        dangerouslyUseHTMLString: true,
         customStyle: {
           width: "700px",
         },
@@ -121,6 +136,7 @@ export default {
         },
         closeOnClickModal: true,
         showClose: false,
+        confirmButtonText: "关闭",
       });
     },
     downloadTemplate: function () {
@@ -133,6 +149,7 @@ export default {
       document.body.appendChild(link);
       link.click();
     },
+
     selectConfXlsx: function (event) {
       this.uploadFile = event.target.files[0];
       this.uploadFileName = this.uploadFile.name;
@@ -143,6 +160,9 @@ export default {
     },
     importMachine: function () {
       this.uploadBtnDisabled = true;
+      this.isLoading = false;
+      this.isLoadFailed = false;
+      this.isLoadSuccess = false;
 
       console.log("uploading", this.uploadFile.name);
       this.isLoading = true;
@@ -154,7 +174,7 @@ export default {
           type: String,
         },
         root用户名: {
-          prop: "agent_hostname",
+          prop: "hostname",
           required: true,
           type: String,
         },
@@ -203,7 +223,7 @@ export default {
         });
         console.log("zhi", this.importExcelData);
         this.$http
-          .post("import_host_info", {
+          .post("/import_host_info", {
             mod: "import_host_info",
             data: this.importExcelData,
           })
@@ -212,15 +232,23 @@ export default {
               this.isLoading = false;
               this.isLoadSuccess = true;
               this.importMachineCount = res.data.num;
+              this.uploadBtnDisabled = false;
+
+              //  导入成功后通知后台开始检查主机信息
+              this.$http.post("/check_info", {
+                mod: "check_info",
+              });
             } else {
               this.isLoading = false;
               this.isLoadFailed = true;
+              this.uploadBtnDisabled = false;
             }
           })
           .catch((err) => {
             console.log(err);
             this.isLoading = false;
             this.isLoadFailed = true;
+            this.uploadBtnDisabled = false;
           });
       });
     },
@@ -235,6 +263,7 @@ export default {
 <style scoped>
 .cardBox {
   margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .darkblueHeaderText {
@@ -272,5 +301,8 @@ export default {
 }
 .loading {
   animation: rotate 1s linear infinite;
+}
+.left {
+  margin-left: 20px;
 }
 </style>
