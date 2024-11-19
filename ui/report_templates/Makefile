@@ -1,24 +1,29 @@
 SHELL := /bin/bash
 RELEASE_DIR = release
 .ONESHELL:
+
+all:  build dist
+
 build:
-        ifeq ($(shell uname -m), x86_64)
-		mkdir -p build/node
-		tar -xf $(wildcard ../3rdparty/node/node-v*-linux-x64.tar.xz) -C build/node
-		mv -f build/node/node-v*-linux-x64 build/node/node
-        endif
-
-        ifeq ($(shell uname -m), aarch64)
-		mkdir -p build/node
-		tar -xf $(wildcard ../3rdparty/node/node-v*-linux-arm64.tar.xz) -C build/node
-		mv -f build/node/node-v*-linux-arm64 build/node/node
-        endif
-
-	export PATH=$(PWD)/build/node/node/bin:$$PATH;
-	npm config set registry 'https://registry.npmmirror.com';
-	npm install;
-
-release:
+	[ -f ~/.bashrc ] && source ~/.bashrc
+	if node -v ;then
+		echo "node is installed"
+	else
+		touch ~/.bashrc
+		curl -o- https://ghproxy.com/https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh| \
+		sed -e 's|https://github.com|https://ghproxy.com/https://github.com|g' \
+		-e 's|https://raw.githubusercontent.com|https://ghproxy.com/https://raw.githubusercontent.com|g'\
+		| bash
+		source ~/.bashrc
+		export NVM_NODEJS_ORG_MIRROR=https://npmmirror.com/mirrors/node/
+		nvm install --no-progress --latest-npm --lts
+		nvm use --lts
+	fi
+		source ~/.bashrc
+		npm config set registry 'https://registry.npmmirror.com';
+		npm i
+dist:
+	[ -f ~/.bashrc ] && source ~/.bashrc
 # 把APP.vue 文件中用于开发模式的 json 文件导入语句注释掉
 	find src/ -name "App.vue" | xargs -I {} sed -i '/dataPlaceholder/s|import|// import|g' {}
 # 编译的时候，需要把所有的资源都打包到 html 文件中，最终只输出对应的 html 文件
@@ -32,6 +37,7 @@ release:
 	declare -A pages=(
 		[rc]="stock_replace_check"
 		[ra]="stock_replace_analysis"
+		[ec]="new_expansion_check"
 	)
 	for key in $$(echo $${!pages[@]});do \
 		value=$${pages[$$key]}; \
@@ -48,15 +54,16 @@ release:
 	mv ${RELEASE_DIR}/*.html dist/
 	rm -rf ${RELEASE_DIR}
 
-
 # 把APP.vue 文件中用于开发模式的 json 文件导入语句反注释掉,方便开发时，开箱即用
 	find src/ -name "App.vue" | xargs -I {} sed -i '/dataPlaceholder/s|// import|import|g' {}
 
 dev:
-# 开发模式
+# 开发模式，用户编译打包后替换 html 文件中的 dataPlaceholder 变量，查看网页是否正常
+# 报告模板命令： https://doc.uniontech.com/docs/JHJv9ywpYGk8tKgV
 	declare -A pages=(
 		[rc]="stock_replace_check"
 		[ra]="stock_replace_analysis"
+		[ec]="new_expansion_check"
 	)
 	for key in $$(echo $${!pages[@]});do \
 		value=$${pages[$$key]}; \
@@ -67,9 +74,8 @@ dev:
 # 打开网页，查看网页是否正常
 	python3 -m http.server -d dist
 
-
-.PHONY: release
-.DEFAULT_GOAL := release
+.PHONY: dist build all
+.DEFAULT_GOAL := all
 
 clean:
 	rm -rf dist node_modules build
