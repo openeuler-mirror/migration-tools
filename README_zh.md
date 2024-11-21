@@ -74,7 +74,7 @@ TYPE = local
 
 - uyi7.repo或uyi8.repo
 ```commandline
-# 迁移cnetos7系统配置uyi7.repo，迁移centos8则配置uyi8.repo，包含centos7/8和迁移软件的本地源
+# 迁移cnetos7系统配置uyi7.repo，迁移centos8则配置uyi8.repo，包含centos7/8和迁移软件的本地源，这里需要配置一个可用于装包的软件源。以及编译好的agent软件包的源。
 [root@localhost migration-tools]# cat /etc/migration-tools/uyi7.repo 
 [uyi0]
 name=uyi0
@@ -158,19 +158,19 @@ TYPE = local
 
 #### 迁移UOS系统
 
-在准备迁移的centos机器上执行以下步骤
->**注意:** 目前migration-tools仅支持centos7.4 cui迁移至openeuler 20.03-LTS-SP1
+- 导入
 
-- 安装migration-tools-agent软件包（centos7系列需安装对应架构的软件包）
+- 选择需要迁移的系统
 
+- 筛选可用空间不足的主机
 
 - 修改配置文件
 
 ``` shell
 vim /etc/yum.repos.d/openeuler.repo
 ```
-
-###### 验证步骤
+- 开始迁移
+#### 验证步骤
 
 1. UOS系统执行以下命令，检查操作系统版本是否已升级至目标操作系统。
 

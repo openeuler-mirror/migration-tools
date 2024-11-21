@@ -213,8 +213,9 @@ def main():
     os.system("yum-config-manager --disable base updates extras")
 
     repofile = "/etc/yum.repos.d/openeuler.repo"
-    with open(repofile, 'w') as f:
-        f.write(openeuler_repo)
+    if not os.path.exists(repofile):
+        with open(repofile, 'w') as f:
+            f.write(openeuler_repo)
 
     openEuler_release = 'openEuler-release'
     if not check_pkg(openEuler_release):
