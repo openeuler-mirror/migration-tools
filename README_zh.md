@@ -12,7 +12,7 @@ migration-tools工具提供网页界面方式进行操作，以供使用者在�
 #### 支持迁移的系统
 
 1.支持将AMD64和ARM64架构的CentOS系列系统迁移到UOS系统，迁移前需自行准备目标系统的全量源。
-2.openeuler迁移：目前仅支持centos 7.4 cui系统迁移至openeuler 20.03-LTS-SP1
+2.openeuler迁移：目前仅支持centos 7.4 cui系统迁移至openeuler 20.03-LTS-SP1或22.03-LTS-SP4(需导入后手动修改软件仓库)
 3.不建议对安装了i686架构的rpm包的原系统进行迁移，如果对这种原系统进行迁移会出现迁移失败的结果。
 
 |原系统|目标系统|使用的软件源|
