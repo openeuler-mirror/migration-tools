@@ -4,10 +4,11 @@ import os
 import platform
 import shutil
 import subprocess
-import sys,re
+import sys, re
+
 openeuler_repo = '''[openeuler]
 name = openeuler
-baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-20.03-LTS-SP1/everything/$basearch
+baseurl = http://mirrors.tuna.tsinghua.edu.cn/openeuler/openEuler-22.03-LTS-SP4/everything/$basearch
 enabled = 1
 gpgcheck = 0
 '''
@@ -34,6 +35,7 @@ def local_disabled_release_repo():
                         '#This is a yum repository file that was disabled . <Migration to UniontechOS>\n' + allrepo)
                     fdst.close()
                     os.remove(fpath)
+
 
 def check_pkg(rpm):
     _, ret = run_subprocess('rpm -q {}'.format(rpm).split())
@@ -105,7 +107,7 @@ def run_subprocess(cmd):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False,  # Avoid using shell=True
-            check=True    # Check for non-zero return code and raise exception if found
+            check=True  # Check for non-zero return code and raise exception if found
         )
         output = process.stdout
         print(output)  # Print the output to console
@@ -122,6 +124,18 @@ def swap_release(release):
     cmd = 'yumdownloader {} --destdir {}'.format(release, tmp_dir)
     run_subprocess(cmd.split())
     run_subprocess('rpm -ivh {}/*.rpm --nodeps --force'.format(tmp_dir).split())
+
+
+def check_udev_id_net_name_path():
+    """
+    Check udev renamed for net_work.
+    """
+    try:
+        ret = str(subprocess.check_output('udevadm info -e|grep ID_NET_NAME_PATH', shell=True), 'utf-8')[:-1]
+        if ret:
+            return True
+    except Exception as e:
+        return
 
 
 def set_grub_biosdev_rules():
@@ -200,10 +214,11 @@ def main():
     if not check_pkg('rsync'):
         print('please install rsync')
         return
-    
+
     if not check_pkg('python3'):
-        print('please install python3')
-        return
+        if not os.path.exists('/usr/bin/python3'):
+            print('please install python3')
+            return
 
     if not check_pkg('dnf'):
         print('please install dnf')
@@ -225,11 +240,12 @@ def main():
     # install basic packages
     os.system("yum install -y gdbm-help")
 
-    remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos', 
-                                'iwl7265-firmware', 'ivtv-firmware', 
-                                'sysvinit-tools', 'sg3_utils-libs']
+    remove_packages_nodeps = ['gdm', 'centos-logos', 'redhat-logos',
+                              'iwl7265-firmware', 'ivtv-firmware',
+                              'sysvinit-tools', 'sg3_utils-libs'
+                              ]
     for package in remove_packages_nodeps:
-        nodeps_cmd = "rpm -q " + package+ " && rpm -e --nodeps " + package
+        nodeps_cmd = "rpm -q " + package + " && rpm -e --nodeps " + package
         os.system(nodeps_cmd)
 
         dnf_path = '/usr/bin/dnf'
@@ -239,22 +255,24 @@ def main():
         else:
             shutil.rmtree(install_dir)
     install_cmd = 'yum install -y systemd python3-libdnf libreport-filesystem python3-gpg libmodulemd deltarpm python3-hawkey \
-                    python3-libcomps python3-rpm util-linux --installroot={}'.format(install_dir)
+                    python3-libcomps python3-rpm util-linux libselinux libcurl python python3 --installroot={}'.format(
+        install_dir)
     os.system(install_cmd)
 
     # download dnf
-    download_dnf = '/usr/bin/yumdownloader {} --destdir={}'.format('dnf python3-dnf dnf-help', os.path.join(install_dir, 'root'))
+    download_dnf = '/usr/bin/yumdownloader {} --destdir={}'.format('dnf python3-dnf dnf-help dnf-data',
+                                                                   os.path.join(install_dir, 'root'))
     os.system(download_dnf)
 
     # rebuild dnfdb
     subprocess.run("/sbin/chroot /var/DNF /bin/bash -c 'rpm --rebuilddb'", shell=True)
     # install dnf 
-    subprocess.run("/sbin/chroot /var/DNF /bin/bash -c 'rpm -ivh /root/*'", shell=True)
+    subprocess.run("/sbin/chroot /var/DNF /bin/bash -c 'rpm -ivh --force --nodeps /root/*'", shell=True)
 
     # sync files
     rsync = '/usr/bin/rsync -a {}/ / --exclude="var/lib/rpm" --exclude="var/cache/yum" --exclude="tmp" ' \
-                '--exclude="sys" --exclude="run" --exclude="lost+found" --exclude="mnt" --exclude="proc" ' \
-                '--exclude="dev" --exclude="media" --exclude="etc" --exclude="root" '.format(install_dir)
+            '--exclude="sys" --exclude="run" --exclude="lost+found" --exclude="mnt" --exclude="proc" ' \
+            '--exclude="dev" --exclude="media" --exclude="etc" --exclude="root" '.format(install_dir)
     subprocess.run(rsync, shell=True)
 
     rpm_perl = '/etc/rpm/macros.perl'
@@ -267,32 +285,45 @@ def main():
     os.system('rpm -e --nodeps  python-backports')
 
     if system_sync():
-        subprocess.run('dnf -y groupinstall Minimal Install', shell=True)
+        subprocess.run('dnf -y groupinstall "Minimal Install"', shell=True)
     else:
         print("Removing confilct package yum...")
-        system_sync()
+        error_remove = ['gdbm-libs', 'cockpit-ws', 'shadow-utils', 'python-libs', 'python2-libcomps', 'python-gobject-base', 'libselinux-python',
+                        'libxml2-python', 'rpm-python', 'newt-python', 'bind-export-libs', 'pygpgme', 'python-slip',
+                        'systemd-sysv', 'pyliblzma', 'python', 'python-perf', 'pyxattr', 'yum-metadata-parser',
+                        'python-pyudev', 'python-slip-dbus', 'python2-chardet']
+        for package in error_remove:
+            nodeps_cmd = "rpm -q " + package + " && rpm -e --nodeps " + package
+            os.system(nodeps_cmd)
+        subprocess.run('dnf -y groupinstall "Minimal Install"', shell=True)
+        subprocess.run('dnf install glibc-headers -y', shell=True)
+        cmd = 'dnf -y update --allowerasing --skip-broken'
+        subprocess.run(cmd, shell=True)
 
     # boot cui
     print("set boot target to cui")
     cmd = 'systemctl set-default multi-user.target'
     run_subprocess(cmd.split())
-    
+
     if not os.path.exists('/usr/bin/python3'):
         cmd = 'ln -s /usr/bin/python3.7 /usr/bin/python3'
         print("Create symlink for python3")
         run_subprocess(cmd.split())
+    if not os.path.exists('/usr/bin/python'):
+        run_subprocess('dnf install python -y'.split())
 
     yum_conflict_dir = '/etc/yum/'
     if os.path.exists(yum_conflict_dir):
         shutil.rmtree(yum_conflict_dir)
     print("Installing yum...")
-    set_grub_biosdev_rules()
+    if not check_udev_id_net_name_path():
+        set_grub_biosdev_rules()
     conf_grub()
     run_subprocess('dnf install -y yum'.split())
-    
+
     print("System migration completed, rebooting system")
     # os.system("reboot")
-    
+
 
 if __name__ == '__main__':
     main()
